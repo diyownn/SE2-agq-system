@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transactions</title>
+    <link rel="stylesheet" href="otp.css">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="search-container">
+        <input type="text" class="search-bar" placeholder="">
+        <button class="search-button">SEARCH</button>
+    </div>
+    <div class="transactions">
+        <div class="transaction">
+            <div class="transaction-header">TRANSACTION 1 ▼</div>
+            <div class="transaction-content">
+                <div class="transaction-item">
+                    <span>STATEMENT OF ACCOUNT</span> 
+                    <input type="checkbox">
+                </div>
+                <div class="transaction-item">
+                    <span>INVOICE</span> 
+                    <input type="checkbox">
+                </div>
+                <div class="transaction-item">
+                    <span>SUMMARY</span> 
+                    <input type="checkbox">
+                </div>
+            </div>
+        </div>
+
+        <div class="transaction">
+            <div class="transaction-header">TRANSACTION 2 ▼</div>
+            <div class="transaction-content">
+                <div class="transaction-item">
+                    <span>STATEMENT OF ACCOUNT</span> 
+                    <input type="checkbox">
+                </div>
+                <div class="transaction-item">
+                    <span>INVOICE</span> 
+                    <input type="checkbox">
+                </div>
+                <div class="transaction-item">
+                    <span>SUMMARY</span> 
+                    <input type="checkbox">
+                </div>
+            </div>
+        </div>
+    
+    <div class="transaction">
+        <div class="transaction-header">TRANSACTION 3 ▼</div>
+        <div class="transaction-content">
+            <div class="transaction-item">
+                <span>STATEMENT OF ACCOUNT</span> 
+                <input type="checkbox">
+            </div>
+            <div class="transaction-item">
+                <span>INVOICE</span> 
+                <input type="checkbox">
+            </div>
+            <div class="transaction-item">
+                <span>SUMMARY</span> 
+                <input type="checkbox">
+            </div>
+        </div>
+    </div>
+
+    <div class="transaction">
+        <div class="transaction-header">TRANSACTION 4 ▼</div>
+        <div class="transaction-content">
+            <div class="transaction-item">
+                <span>STATEMENT OF ACCOUNT</span> 
+                <input type="checkbox">
+            </div>
+            <div class="transaction-item">
+                <span>INVOICE</span> 
+                <input type="checkbox">
+            </div>
+            <div class="transaction-item">
+                <span>SUMMARY</span> 
+                <input type="checkbox">
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const headers = document.querySelectorAll(".transaction-header");
+
+        headers.forEach(header => {
+            header.addEventListener("click", function() {
+                const content = this.nextElementSibling;
+
+                if (content.classList.contains("open")) {
+                    content.classList.remove("open");
+                    this.innerHTML = this.innerHTML.replace("▲", "▼");
+                    this.classList.remove("active");
+                } else {
+                    content.classList.add("open");
+                    this.innerHTML = this.innerHTML.replace("▼", "▲");
+                    this.classList.add("active");
+                }
+            });
+        });
+    });
+</script>
+
+</script>
+
+
+</body>
+</html>
