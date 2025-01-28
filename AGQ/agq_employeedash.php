@@ -136,7 +136,7 @@ while ($row = $result->fetch_assoc()) {
                     $index++;
                 }
 
-                echo '</div>'; // Close the last row
+                echo '</div>'; 
             } else {
                 echo "No companies found in the database.";
             }
