@@ -178,7 +178,7 @@
 
         $finalPass = $_POST['rePword'];
 
-        $reset_pass = "Update tbl_user set Password = '".$finalPass."' where Name = 'John Doe'";
+        $reset_pass = "Update tbl_user set Password = '".$finalPass."' where Password = ''";
         $conn->query($reset_pass);
 
         ?>
