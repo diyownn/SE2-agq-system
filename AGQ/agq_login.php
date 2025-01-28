@@ -31,7 +31,7 @@
                     <input type="text" name="email" id="inputs" class="form-control" required>
 
                     <label for="inputs" class="form-label" id="labels">Password</label>
-                    <input type="password" name="password" id="inputs" class="form-control" required> 
+                    <input type="password" name="password" id="inputs0" class="form-control" required> 
 
                     <p class="text-center" id="forgotP"><a href="agq_forgotEmail.php">Forgot Password?</a></p>
                     <div class="d-flex justify-content-center">
@@ -54,47 +54,104 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+    <script>
+        function disableInputField() {
+            var inputEmail = document.getElementById("inputs");
+            var inputPass = document.getElementById("inputs0");
+            inputEmail.disabled = true;
+            inputPass.disabled = true;
+
+            setTimeout(function() {
+                inputEmail.disabled = false;
+                inputPass.disabled = false;
+            }, 60000);
+        }
+    </script>
+
 </body>
 </html>
 
 <?php
+    session_start(); // Start the session at the beginning of your script
     require_once "db_agq.php";
+    include "agq_mailer.php";
+
+    if (!isset($_SESSION['login_attempts'])) {
+        $_SESSION['login_attempts'] = 1; // Initialize login attempts counter if not set
+    }
+    if (!isset($_SESSION['last_attempt_time'])) {
+        $_SESSION['last_attempt_time'] = time(); // Initialize last attempt time if not set
+    }
+
+    // Reset login attempts if 5 minutes have passed since the last attempt
+    if (time() - $_SESSION['last_attempt_time'] > 60) {
+        $_SESSION['login_attempts'] = 1;
+    }
 
     if ((isset($_POST['email']) && $_POST['email'] != NULL) && 
     (isset($_POST['password']) && $_POST['password'] != NULL)) {
 
-        $mail = $_POST['email'];
+        $email = $_POST['email'];
         $pass = $_POST['password'];
-        
-        $loginVerify = "SELECT * FROM tbl_user WHERE Email = '$mail' AND Password = '$pass'";
-        $queryVerify = $conn->query($loginVerify);
 
-        if ($queryVerify->num_rows>0) {
-            $row = $queryVerify->fetch_assoc();
-            $role = $row['Department'];
-            $pword = $row['Password'];
-
-            if ($role == 'admin' || $role == 'Admin' || $role == 'owner' || $role == 'Owner' && $pword != 'agqLogistics') {
-                header("location:agq_owner.php");
-            }else if ($role == 'Export Forwarding' || $role == 'Import Forwarding' || $role == 'Export Brokerage' || $role == 'Import Brokerage' && $pword != 'agqLogistics'){
-                header("location:agq_employee.php");
-            }else {
-                header("location:agq_otp.php");
-            }
-        }else {
+        if ($_SESSION['login_attempts'] >= 5) {
             ?>
             <script>
                 Swal.fire({
                     position: "center",
                     icon: "error",
-                    title: "Invalid Log In",
-                    text: "Account does not Exist or Email and Password does not match.",
+                    title: "Account Locked",
+                    text: "Due to numerous failed attempts, you have been locked out for 1 minute.",
                     showConfirmButton: false,
                     timer: 3000
                 });
+                disableInputField(); // Disable input field for 1 minute
             </script>
-        
             <?php
+        } else {
+            $loginVerify = "SELECT * FROM tbl_user WHERE Email = '$email' AND Password = '$pass'";
+            $queryVerify = $conn->query($loginVerify);
+
+            if ($queryVerify->num_rows > 0) {
+                $row = $queryVerify->fetch_assoc();
+                $role = $row['Department'];
+                $pword = $row['Password'];
+
+                // Reset login attempts counter on successful login
+                $_SESSION['login_attempts'] = 0;
+
+                if ($role == 'admin' || $role == 'Admin' || $role == 'owner' || $role == 'Owner' && $pword != 'agqLogistics') {
+                    header("location:agq_owner.php");
+                } else if ($role == 'Export Forwarding' || $role == 'Import Forwarding' || $role == 'Export Brokerage' || $role == 'Import Brokerage' && $pword != 'agqLogistics') {
+                    header("location:agq_employee.php");
+                } else {
+                    $otp = rand(000000,999999);
+                    
+                    $otpQuery = "UPDATE tbl_user SET Otp = '$otp' WHERE Email = '$email' AND Password = '$pass'";
+                    $conn->query($otpQuery);
+
+                    emailVerification($email, $otp);
+
+                    //header("location:agq_otp.php");
+                }
+            }else {
+                // Increment login attempts counter on failed login
+                $_SESSION['login_attempts']++;
+                $_SESSION['last_attempt_time'] = time();
+
+                ?>
+                <script>
+                    Swal.fire({
+                        position: "center",
+                        icon: "error",
+                        title: "Invalid Log In",
+                        text: "Account does not Exist or Email and Password does not match.",
+                        showConfirmButton: false,
+                        timer: 3000
+                    });
+                </script>
+                <?php
+            }
         }
 
     }

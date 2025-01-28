@@ -55,16 +55,24 @@
 
 <?php
     require_once "db_agq.php";
+    include "agq_mailer.php";
 
     if ((isset($_POST['email']) && $_POST['email'] != NULL)) {
         
-        $mail = $_POST['email'];
+        $email = $_POST['email'];
 
-        $emailVerify = "SELECT * FROM tbl_user WHERE Email = '$mail'";
+        $emailVerify = "SELECT * FROM tbl_user WHERE Email = '$email'";
         $queryVerify = $conn->query($emailVerify);
 
         if ($queryVerify->num_rows>0) {
-           header("location:agq_otp.php");
+            $otp = rand(000000,999999);
+                    
+            $otpQuery = "UPDATE tbl_user SET Otp = '$otp' WHERE Email = '$email'";
+            $conn->query($otpQuery);
+
+            emailVerification($email, $otp);
+
+            //header("location:agq_otp.php");
         }else {
             ?>
             <script>
