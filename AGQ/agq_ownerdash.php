@@ -1,6 +1,39 @@
 <?php
 require 'db.php';
+/*
+function encrypt_url($url, $key)
+{
+    
+    $iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length('aes-256-cbc'));
+    $encrypted_url = openssl_encrypt($url, 'aes-256-cbc', $key, 0, $iv);
+   
+    return base64_encode($encrypted_url . '::' . $iv);
+}
 
+
+function decrypt_url($encrypted_url, $key)
+{
+  
+    list($encrypted_url, $iv) = explode('::', base64_decode($encrypted_url), 2);
+
+    return openssl_decrypt($encrypted_url, 'aes-256-cbc', $key, 0, $iv);
+}
+
+
+$original_url = 'http://localhost/SOFT%20ENG/test.php';
+$key = '0jRw1M89WhVwukjsZiZvhPPsRVFgK/IIQnLOYVEWDdi2TXJjx8QPOAOIxMH7b+uW'; 
+
+
+$encrypted_url = encrypt_url($original_url, $key);
+echo "Encrypted URL: " . $encrypted_url . "<br>";
+
+
+$encoded_url = urlencode($encrypted_url);
+
+
+header('Location: dashpage.php?url=' . $encoded_url);
+exit;
+*/
 session_start();
 
 /*
@@ -63,10 +96,20 @@ if (isset($_GET['logout']) && $_GET['logout'] == 'true') {
     exit();
 }
 /*
-$sql = "SELECT TransactionID FROM trans_test WHERE TransactionID LIKE '%$query%' OR description LIKE '%$query%'";
-$result = $conn->query($sql);
-while ($row = $result->fetch_assoc()) {
-    $results[] = 'Transaction: ' . $row['TransactionID'];
+if (isset($_GET['q'])) {
+    $query = $conn->real_escape_string($_GET['q']);
+    $sql = "SELECT TransactionID, description FROM trans_test WHERE TransactionID LIKE '%$query%' OR description LIKE '%$query%'";
+    $result = $conn->query($sql);
+
+    $results = [];
+    while ($row = $result->fetch_assoc()) {
+        $results[] = [
+            'id' => $row['TransactionID'],
+            'description' => $row['description']
+        ];
+    }
+
+    echo json_encode($results);
 }
 */
 ?>
@@ -103,51 +146,51 @@ while ($row = $result->fetch_assoc()) {
                 COMPANIES
             </div>
             <div>
-                <button class="add-company">
+                <button class="add-company" onclick="window.location.href='agq_newcompany.php'">
                     NEW COMPANY
                     <img class="add-symbol" src="company-logos/plus-sign.png">
                 </button>
 
             </div>
         </div>
- 
-            <?php
-            $companies = "SELECT Company_name, Company_picture FROM company";
-            $result = $conn->query($companies);
 
-            if ($result->num_rows > 0) {
-                $index = 0;
-                echo '<div class="company-container-row">'; 
+        <?php
+        $companies = "SELECT Company_name, Company_picture FROM company";
+        $result = $conn->query($companies);
 
-                while ($row = $result->fetch_assoc()) {
-                    $varName = 'Company' . $index;
-                    $$varName = $row['Company_name'];
+        if ($result->num_rows > 0) {
+            $index = 0;
+            echo '<div class="company-container-row">';
 
-                    $company_name = $$varName;
-                    $company_picture = $row['Company_picture'];
+            while ($row = $result->fetch_assoc()) {
+                $varName = 'Company' . $index;
+                $$varName = $row['Company_name'];
 
-                    $company_picture_base64 = base64_encode($company_picture);
-                    $company_picture_src = 'data:image/jpeg;base64,' . $company_picture_base64;
+                $company_name = $$varName;
+                $company_picture = $row['Company_picture'];
 
-                    
-                    if ($index > 0 && $index % 5 === 0) {
-                        echo '</div><div class="company-container-row">';
-                    }
+                $company_picture_base64 = base64_encode($company_picture);
+                $company_picture_src = 'data:image/jpeg;base64,' . $company_picture_base64;
 
-                    echo '<div class="company-button">';
-                    echo '<button class="company-container" onclick="window.location.href=\'login.php\'">'; 
-                    echo '<img class="company-logo" src="' . $company_picture_src . '" alt="' . $company_name . '">';
-                    echo '</button>';
-                    echo '</div>';
 
-                    $index++;
+                if ($index > 0 && $index % 5 === 0) {
+                    echo '</div><div class="company-container-row">';
                 }
 
-                echo '</div>'; // Close the last row
-            } else {
-                echo "No companies found in the database.";
+                echo '<div class="company-button">';
+                echo '<button class="company-container" onclick="window.location.href=\'login.php\'">';
+                echo '<img class="company-logo" src="' . $company_picture_src . '" alt="' . $company_name . '">';
+                echo '</button>';
+                echo '</div>';
+
+                $index++;
             }
-            ?>
+
+            echo '</div>'; // Close the last row
+        } else {
+            echo "No companies found in the database.";
+        }
+        ?>
 
 
 </body>
@@ -178,6 +221,15 @@ while ($row = $result->fetch_assoc()) {
                 }
             });
     }
+
+    function redirectToSearchResults() {
+        const query = document.querySelector('.search-bar').value.trim();
+        if (query.length > 0) {
+            window.location.href = `search_results.php?q=${encodeURIComponent(query)}`;
+        }
+    }
+    // Search Button
+    document.querySelector('.search-button').addEventListener('click', redirectToSearchResults);
 </script>
 
 </html
