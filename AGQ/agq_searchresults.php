@@ -3,7 +3,7 @@ require 'db.php';
 
 $searchQuery = isset($_GET['q']) ? $conn->real_escape_string($_GET['q']) : '';
 
-$sql = "SELECT TransactionID, description FROM trans_test WHERE TransactionID LIKE '%$searchQuery%' OR description LIKE '%$searchQuery%'";
+$sql = "SELECT TransactionID, description FROM search_test WHERE TransactionID LIKE '%$searchQuery%' OR description LIKE '%$searchQuery%'";
 $result = $conn->query($sql);
 ?>
 

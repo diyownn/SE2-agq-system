@@ -136,7 +136,7 @@ if (isset($_GET['q'])) {
         <div class="search-container">
             <input type="text" class="search-bar" placeholder="Search..." oninput="fetchResults()" autocomplete="off">
             <div id="dropdown" class="dropdown" style="display: none;"></div>
-            <button class="search-button"> SEARCH </button>
+            <button class="search-button" onclick="window.location.href='agq_searchresults.php'""> SEARCH </button>
         </div>
     </div>
 
