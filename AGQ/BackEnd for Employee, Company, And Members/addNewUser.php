@@ -1,5 +1,15 @@
 <?php
-require 'db.php';
+$host = 'localhost';
+$dbname = 'agq_database';
+$username = 'root';
+$password = '';
+
+$conn = new mysqli($host, $username, $password, $dbname);
+
+// Check for connection errors
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
 
 // Handle form submission to add new user to the database
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -11,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $otp = null; // Default to null for OTP
 
     // Insert the new user into the database
-    $stmt = $conn->prepare("INSERT INTO user_test (User_id, Name, Email, Password, Department, Otp) VALUES (?, ?, ?, ?, ?, ?)");
+    $stmt = $conn->prepare("INSERT INTO tbl_user (User_id, Name, Email, Password, Department, Otp) VALUES (?, ?, ?, ?, ?, ?)");
     $stmt->bind_param("sssssi", $user_id, $name, $email, $password, $department, $otp);
 
     if ($stmt->execute()) {
@@ -28,14 +38,14 @@ if (isset($_GET['delete_id'])) {
     $delete_id = $_GET['delete_id'];
 
     // Delete user from database
-    $stmt = $conn->prepare("DELETE FROM user_test WHERE User_id = ?");
+    $stmt = $conn->prepare("DELETE FROM tbl_user WHERE User_id = ?");
     $stmt->bind_param("s", $delete_id);
     $stmt->execute();
     $stmt->close();
 }
 
 // Fetch all users from the database
-$query = "SELECT * FROM user_test";
+$query = "SELECT * FROM tbl_user";
 $result = $conn->query($query);
 
 ?>
