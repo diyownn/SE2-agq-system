@@ -132,7 +132,6 @@
 
                     emailVerification($email, $otp);
 
-                    //header("location:agq_otp.php");
                 }
             }else {
                 // Increment login attempts counter on failed login
@@ -152,7 +151,12 @@
                 </script>
                 <?php
             }
+
+        
+            $conn->close();    
+        
         }
 
     }
+
 ?>
