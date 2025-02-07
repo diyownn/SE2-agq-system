@@ -89,13 +89,25 @@
                     nPass_error.classList.add("invalid-feedback");
                     
                     return false;
-                }else{
-                    nPass.classList.remove("is-invalid");
-                    nPass_error.innerHTML = "";
-                    nPass_error.classList.remove("invalid-feedback");
-
-                    return true;
                 }
+
+                var symbolregex = /[!@#$%^&*()_+\-={};:'"\\|,.<>\/?~]/;
+
+                if (symbolregex.test(nPass.value)) {
+                    nPass.classList.add("is-invalid");
+                    error_text = "*Your Password must not contain symbols";
+                    nPass_error.innerHTML = error_text;
+                    nPass_error.classList.add("invalid-feedback");
+                    
+                    return false;
+                }
+                
+                nPass.classList.remove("is-invalid");
+                nPass_error.innerHTML = "";
+                nPass_error.classList.remove("invalid-feedback");
+
+                return true;
+                
             }
 
         }
@@ -121,13 +133,24 @@
                     rPass_error.classList.add("invalid-feedback");
                     
                     return false;
-                }else{
-                    rPass.classList.remove("is-invalid");
-                    rPass_error.innerHTML = "";
-                    rPass_error.classList.remove("invalid-feedback");
-
-                    return true;
                 }
+
+                var symbolregex = /[!@#$%^&*()_+\-={};:'"\\|,.<>\/?~]/;
+
+                if (symbolregex.test(rPass.value)) {
+                    rPass.classList.add("is-invalid");
+                    error_text = "*Your Password must not contain symbols";
+                    rPass_error.innerHTML = error_text;
+                    rPass_error.classList.add("invalid-feedback");
+                    
+                    return false;
+                }
+                
+                rPass.classList.remove("is-invalid");
+                rPass_error.innerHTML = "";
+                rPass_error.classList.remove("invalid-feedback");
+
+                return true;
             }
 
         }
@@ -195,6 +218,9 @@
                     });
             </script>
         <?php
+
+        $conn->close();
+        
     }
 
 ?>
