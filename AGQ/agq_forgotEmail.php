@@ -72,7 +72,6 @@
 
             emailVerification($email, $otp);
 
-            //header("location:agq_otp.php");
         }else {
             ?>
             <script>
@@ -89,6 +88,8 @@
             <?php
 
         }
+
+        $conn->close();
 
     }
 ?>
