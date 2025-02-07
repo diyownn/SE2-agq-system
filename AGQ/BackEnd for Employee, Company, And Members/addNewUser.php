@@ -70,17 +70,8 @@ $result = $conn->query($query);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Users</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        form { margin-bottom: 20px; }
-        label { display: block; margin: 10px 0 5px; }
-        input { padding: 8px; width: 100%; max-width: 300px; margin-bottom: 10px; }
-        button { padding: 10px 15px; background-color: #4CAF50; color: white; border: none; cursor: pointer; }
-        table { border-collapse: collapse; width: 100%; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background-color: #f4f4f4; }
-        .error { color: red; }
-    </style>
+    <link rel = "stylesheet" type = "text/css" href = "newUser.css">
+    
 </head>
 <body>
     <h1>Create Users</h1>
