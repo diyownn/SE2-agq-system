@@ -159,4 +159,6 @@
 
     }
 
+    session_destroy();    
+
 ?>
