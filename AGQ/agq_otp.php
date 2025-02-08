@@ -28,11 +28,11 @@
 
                 <form action="agq_otp.php" method="post" class="form-content">
                     <div class="d-flex justify-content-center">
-                        <input type="number" name="otp" id="input1" class="form-control" required> 
+                        <input type="number" name="otp" id="inputs" style="margin-top: 5%; width: 160px" class="form-control" required> 
                     </div>
 
                     <div class="d-flex justify-content-center">
-                        <input type="submit" id="button2" value="SUBMIT">
+                        <input type="submit" id="button1" style="margin-bottom: 50.5%" value="SUBMIT">
                     </div>
 
                 </form>
