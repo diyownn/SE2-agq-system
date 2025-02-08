@@ -36,7 +36,7 @@
                     <div id="pass-error2"></div>
 
                     <div class="d-flex justify-content-center">
-                        <input type="submit" id="button3" value="SAVE">
+                        <input type="submit" id="button1" style="margin-top: 10%; margin-bottom: 0%" value="SAVE">
                     </div>
 
                 </form>
