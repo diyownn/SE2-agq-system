@@ -75,7 +75,6 @@ $result = $conn->query($query);
 </head>
 <body>
     <h1>Create Users</h1>
-    
     <?php if (!empty($errors)): ?>
         <div class="error">
             <ul>
