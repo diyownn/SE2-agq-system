@@ -67,43 +67,64 @@ $result = $conn->query($query);
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Users</title>
+    <meta name ="viewport" content = "width=device-width, initial-scale=1.0"> <!-- provide viewport -->
+    <meta charset ="utf-8"> 
+    <meta name ="keywords" content = ""> <!-- provide keywords -->
+    <meta name ="description" content = ""> <!-- provide description -->
+    <title> Employee Form </title> <!-- provide title -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="icon" type="image/x-icon" href="/AGQ/images/favicon.ico">
+    <!-- Font Style -->
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- CSS -->
     <link rel = "stylesheet" type = "text/css" href = "newUser.css">
-    
 </head>
 <body>
-    <h1>Create Users</h1>
-    <?php if (!empty($errors)): ?>
-        <div class="error">
-            <ul>
-                <?php foreach ($errors as $error): ?>
-                    <li><?= htmlspecialchars($error) ?></li>
-                <?php endforeach; ?>
-            </ul>
+    <div class="container">
+        <div class="form-container">
+            <div class="form-box">
+                <h3 class="text-center fw-bold">EMPLOYEE FORM</h3>
+                <?php if (!empty($errors)): ?>
+                    <div class="alert alert-danger">
+                        <ul>
+                            <?php foreach ($errors as $error): ?>
+                                <li><?= htmlspecialchars($error) ?></li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </div>
+                <?php endif; ?>
+                <form method="POST" action="">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <input type="text" class="form-control" name="Name" placeholder="Full Name" required>
+                        </div>
+                        <div class="col-md-6">
+                            <input type="email" class="form-control" name="Email" placeholder="Email Address" required>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <input type="password" class="form-control" name="Password" placeholder="Password" required>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="text" class="form-control" name="Department" placeholder="Department" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-save">SAVE</button>
+                </form>
+            </div>
         </div>
-    <?php endif; ?>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
 
-    <form method="POST" action="">
-        <label for="Name">Name:</label>
-        <input type="text" id="Name" name="Name" required>
-
-        <label for="Email">Email:</label>
-        <input type="email" id="Email" name="Email" required>
-
-        <label for="Password">Password:</label>
-        <input type="password" id="Password" name="Password" required>
-
-        <label for="Department">Department:</label>
-        <input type="text" id="Department" name="Department" required>
-        <br>
-
-        <button type="submit">Create User</button>
-    </form>
-
+<!--
     <h2>Created Users</h2>
-    
+
     <?php if ($result->num_rows > 0): ?>
         <table>
             <thead>
@@ -134,6 +155,4 @@ $result = $conn->query($query);
     <?php else: ?>
         <p>No users created yet.</p>
     <?php endif; ?>
-
-</body>
-</html>
+    -->
