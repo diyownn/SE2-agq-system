@@ -1,12 +1,8 @@
 <?php
-require 'db.php';
+require 'db_agq.php';
+$searchQuery = isset($_GET['q']) ? trim($_GET['q']) : '';
 
-$searchQuery = isset($_GET['q']) ? $conn->real_escape_string($_GET['q']) : '';
-
-$sql = "SELECT TransactionID, description FROM search_test WHERE TransactionID LIKE '%$searchQuery%' OR description LIKE '%$searchQuery%'";
-$result = $conn->query($sql);
 ?>
-
 <html>
 
 <head>
@@ -17,20 +13,32 @@ $result = $conn->query($sql);
 <body>
     <h2>Search Results for "<?php echo htmlspecialchars($searchQuery); ?>"</h2>
 
-    <?php if ($result->num_rows > 0) : ?>
-        <ul>
-            <?php while ($row = $result->fetch_assoc()) : ?>
-                <li>
-                    <strong>Transaction ID:</strong> <?php echo $row['TransactionID']; ?><br>
-                    <strong>Description:</strong> <?php echo $row['description']; ?>
-                </li>
-            <?php endwhile; ?>
-        </ul>
-    <?php else : ?>
-        <p>No results found.</p>
-    <?php endif; ?>
+    <?php
+    if (!empty($searchQuery)) {
+        // Prepare a safe SQL query
+        $searchParam = "%{$searchQuery}%";
+        $stmt = $conn->prepare("SELECT TransactionID FROM tbl_transaction WHERE TransactionID LIKE ?");
+        $stmt->bind_param("s", $searchParam);
+        $stmt->execute();
+        $result = $stmt->get_result();
 
-    <a href="dashboard.php">Back</a>
+        if ($result->num_rows > 0) : ?>
+            <ul>
+                <?php while ($row = $result->fetch_assoc()) : ?>
+                    <li><strong>Transaction ID:</strong> <?php echo htmlspecialchars($row['TransactionID']); ?></li>
+                <?php endwhile; ?>
+            </ul>
+        <?php else : ?>
+            <p>No results found.</p>
+    <?php endif;
+
+        $stmt->close();
+    } else {
+        echo "<p>Please enter a search query.</p>";
+    }
+    ?>
+
+    <a href="agq_employdash.php">Back</a>
 </body>
 
 </html>

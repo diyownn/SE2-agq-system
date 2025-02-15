@@ -1,0 +1,130 @@
+body{
+ 
+    background-image: url('../AGQ/images/agq_bg2.png'); 
+    background-repeat: no-repeat;
+    background-position: center;
+    min-height: 100vh;
+    background-size: cover;
+    
+}
+
+#agqlogo {
+    width: 70px;
+    height: 50px;
+}
+
+#title {
+    font-family: "IBM Plex Sans", serif;
+    font-weight: 700;
+    font-style: normal; 
+    text-decoration: underline;
+    margin-top: 4.5%;
+}
+
+#border {
+    margin-top: 10%;
+    background-color: #fefefd;
+    height: fit-content;
+    width: 390px;
+    padding: 70px;
+    border-radius: 15px;
+    border: 2px solid #90ae5e;
+}
+
+#labels {
+    margin-top: 6%;
+    font-family: "IBM Plex Sans", serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: smaller;
+}
+
+#inputs{
+    background-color: #d9d9d9;
+    border-radius: 9px;
+}
+
+#inputs0{
+    background-color: #d9d9d9;
+    border-radius: 9px;
+}
+
+#input1{
+    margin-top: 5%;
+    width: 160px;
+    background-color: #d9d9d9;
+    border-radius: 9px;
+}
+
+#newPass, #rePass {
+    background-color: #d9d9d9;
+    border-radius: 9px;
+}
+
+#forgotP a {
+    margin-top: 11%;
+    font-family: "IBM Plex Sans", serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: smaller;
+    color: inherit;
+    display: inline-block;
+}
+
+
+#button {
+    text-align: center;
+    background-color: #90ae5e;
+    font-family: "IBM Plex Sans", serif;
+    font-weight: 500;
+    font-style: normal;
+    font-size: x-small;
+    border: none;
+    border-radius: 20px;
+    width: 140px;
+    height: 30px;
+}
+
+#button1 {
+    margin-top: 20%;
+    text-align: center;
+    background-color: #90ae5e;
+    font-family: "IBM Plex Sans", serif;
+    font-weight: 500;
+    font-style: normal;
+    font-size: x-small;
+    border: none;
+    border-radius: 20px;
+    width: 90px;
+    height: 30px;
+    margin-bottom: 38%;
+}
+
+#button2 {
+    margin-top: 20%;
+    text-align: center;
+    background-color: #90ae5e;
+    font-family: "IBM Plex Sans", serif;
+    font-weight: 500;
+    font-style: normal;
+    font-size: x-small;
+    border: none;
+    border-radius: 20px;
+    width: 90px;
+    height: 30px;
+    margin-bottom: 50.5%;
+}
+
+#button3 {
+    margin-top: 10%;
+    text-align: center;
+    background-color: #90ae5e;
+    font-family: "IBM Plex Sans", serif;
+    font-weight: 500;
+    font-style: normal;
+    font-size: x-small;
+    border: none;
+    border-radius: 20px;
+    width: 90px;
+    height: 30px;
+}

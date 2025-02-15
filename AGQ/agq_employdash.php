@@ -1,50 +1,45 @@
 <?php
-require 'db.php';
-/*
-function encrypt_url($url, $key)
-{
-    
-    $iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length('aes-256-cbc'));
-    $encrypted_url = openssl_encrypt($url, 'aes-256-cbc', $key, 0, $iv);
-   
-    return base64_encode($encrypted_url . '::' . $iv);
-}
-
-
-function decrypt_url($encrypted_url, $key)
-{
-  
-    list($encrypted_url, $iv) = explode('::', base64_decode($encrypted_url), 2);
-
-    return openssl_decrypt($encrypted_url, 'aes-256-cbc', $key, 0, $iv);
-}
-
-
-$original_url = 'http://localhost/SOFT%20ENG/test.php';
-$key = '0jRw1M89WhVwukjsZiZvhPPsRVFgK/IIQnLOYVEWDdi2TXJjx8QPOAOIxMH7b+uW'; 
-
-
-$encrypted_url = encrypt_url($original_url, $key);
-echo "Encrypted URL: " . $encrypted_url . "<br>";
-
-
-$encoded_url = urlencode($encrypted_url);
-
-
-header('Location: dashpage.php?url=' . $encoded_url);
-exit;
-*/
+require 'db_agq.php';
 session_start();
+/*
+if (!isset($_SESSION['redirected'])) {
+    $_SESSION['redirected'] = true; // To compact pages
+
+    function encrypt_url($url, $key)
+    {
+        $iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length('aes-256-cbc'));
+        $encrypted_url = openssl_encrypt($url, 'aes-256-cbc', $key, 0, $iv);
+        return base64_encode($encrypted_url . '::' . $iv);
+    }
+
+    function decrypt_url($encrypted_url, $key)
+    {
+        list($encrypted_url, $iv) = explode('::', base64_decode($encrypted_url), 2);
+        return openssl_decrypt($encrypted_url, 'aes-256-cbc', $key, 0, $iv);
+    }
+
+    $original_url = 'http://localhost/SOFT%20ENG/employdash.php';
+    $key = '0jRw1M89WhVwukjsZiZvhPPsRVFgK/IIQnLOYVEWDdi2TXJjx8QPOAOIxMH7b+uW';
+
+    $encrypted_url = encrypt_url($original_url, $key);
+    $encoded_url = urlencode($encrypted_url);
+
+    header('Location: agq_employdash.php?url=' . $encoded_url);
+    exit;
+} else {
+
+    unset($_SESSION['redirected']);
+}
 
 /*
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Retrieve and sanitize input
+   
     $name = isset($_POST['Name']) ? htmlspecialchars(trim($_POST['Name'])) : '';
     $department = isset($_POST['Department']) ? htmlspecialchars(trim($_POST['Department'])) : '';
 
-    
+
     if (!empty($name) && !empty($department)) {
-        // Store data in session
+       
         $_SESSION['Name'] = $name;
         $_SESSION['Department'] = $department;
 
@@ -74,7 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 exit();
 
             default:
-                echo "Unauthorized Account."; // Work in progress
+                echo "Unauthorized Account."; // Commented out for testing purposes
                 break;
         }
     } else {
@@ -83,35 +78,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 */
 
-// Check if logout is requested
-if (isset($_GET['logout']) && $_GET['logout'] == 'true') {
-    // Unset all session variables
-    session_unset();
 
-    // Destroy the session
+if (isset($_GET['logout']) && $_GET['logout'] == 'true') {
+
+    session_unset();
     session_destroy();
 
-    // Redirect to the login page
+
     header("Location: login.php");
     exit();
 }
-/*
-if (isset($_GET['q'])) {
-    $query = $conn->real_escape_string($_GET['q']);
-    $sql = "SELECT TransactionID, description FROM trans_test WHERE TransactionID LIKE '%$query%' OR description LIKE '%$query%'";
-    $result = $conn->query($sql);
 
-    $results = [];
+if (isset($_GET['query'])) {
+    $search = "%" . $_GET['query'] . "%";
+    $stmt = $conn->prepare("SELECT TransactionID FROM tbl_transaction WHERE TransactionID LIKE ?");
+    $stmt->bind_param("s", $search);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    $transactions = [];
     while ($row = $result->fetch_assoc()) {
-        $results[] = [
-            'id' => $row['TransactionID'],
-            'description' => $row['description']
-        ];
+        $transactions[] = $row;
     }
 
-    echo json_encode($results);
+    echo json_encode($transactions);
 }
-*/
+
 ?>
 
 
@@ -120,42 +112,37 @@ if (isset($_GET['q'])) {
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- provide viewport -->
     <meta charset="utf-8">
-    <meta name="keywords" content=""> <!-- provide keywords -->
-    <meta name="description" content=""> <!-- provide description -->
-    <title> AGQ Unnamed System </title> <!-- provide title -->
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <title> AGQ Unnamed System </title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="icon" type="image/x-icon" href="/AGQ/images/favicon.ico">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="dashboard.css">
+    <link rel="stylesheet" type="text/css" href="../css/EmployDash.css">
+
 </head>
+<link rel="icon" href="images/agq_logo.png" type="image/ico">
 
 <body>
     <div class="header-container">
         <div class="search-container">
-            <input type="text" class="search-bar" placeholder="Search..." oninput="fetchResults()" autocomplete="off">
+            <input type="text" class="search-bar" id="search-input" placeholder="Search transactions..." oninput="fetchResults(this.value)" autocomplete="off">
             <div id="dropdown" class="dropdown" style="display: none;"></div>
-            <button class="search-button" onclick="window.location.href='agq_searchresults.php'""> SEARCH </button>
+            <button class="search-button" onclick="window.location.href='agq_searchresults.php'"> SEARCH </button>
         </div>
     </div>
 
 
-    <div class="dashboard-body">
+    <div class=" dashboard-body">
         <div class="company-head">
             <div class="company-title">
                 COMPANIES
             </div>
-            <div>
-                <button class="add-company" onclick="window.location.href='agq_newcompany.php'">
-                    NEW COMPANY
-                    <img class="add-symbol" src="company-logos/plus-sign.png">
-                </button>
-
-            </div>
         </div>
 
         <?php
-        $companies = "SELECT Company_name, Company_picture FROM company";
+        $companies = "SELECT Company_name, Company_picture FROM tbl_company";
         $result = $conn->query($companies);
 
         if ($result->num_rows > 0) {
@@ -186,7 +173,7 @@ if (isset($_GET['q'])) {
                 $index++;
             }
 
-            echo '</div>'; // Close the last row
+            echo '</div>';
         } else {
             echo "No companies found in the database.";
         }
@@ -195,41 +182,58 @@ if (isset($_GET['q'])) {
 
 </body>
 <script>
-    function fetchResults() {
-        const query = document.getElementById('searchBar').value;
-        if (companies.length < 2) {
-            document.getElementById('dropdown').style.display = 'none';
+    document.getElementById("search-input").addEventListener("input", function() {
+        let query = this.value.trim();
+
+        if (query.length === 0) {
+            document.getElementById("dropdown").style.display = "none";
             return;
         }
 
-        fetch(`search.php?q=${encodeURIComponent(companies)}`)
+        fetch("FETCH_RESULTS.php?query=" + encodeURIComponent(query))
             .then(response => response.json())
             .then(data => {
-                const dropdown = document.getElementById('dropdown');
-                dropdown.innerHTML = '';
+                console.log("API Response:", data);
+                let dropdown = document.getElementById("dropdown");
+                dropdown.innerHTML = "";
 
-                if (data.length > 0) {
-                    dropdown.style.display = 'block';
+                if (data.length > 0 && !data.error) {
                     data.forEach(item => {
-                        const div = document.createElement('div');
-                        div.className = 'dropdown-item';
-                        div.textContent = item;
+                        let div = document.createElement("div");
+                        div.classList.add("dropdown-item");
+                        div.textContent = item.TransactionID;
+                        div.onclick = function() {
+                            document.getElementById("search-input").value = item.TransactionID;
+                            dropdown.style.display = "none";
+                        };
                         dropdown.appendChild(div);
                     });
+
+                    dropdown.style.display = "block";
                 } else {
-                    dropdown.style.display = 'none';
+                    dropdown.style.display = "none";
                 }
-            });
-    }
+            })
+            .catch(error => console.error("Error fetching search results:", error));
+    });
+
+
+
+    document.addEventListener("click", function(event) {
+        if (!searchInput.contains(event.target) && !dropdown.contains(event.target)) {
+            dropdown.style.display = "none";
+        }
+    });
+
 
     function redirectToSearchResults() {
         const query = document.querySelector('.search-bar').value.trim();
         if (query.length > 0) {
-            window.location.href = `search_results.php?q=${encodeURIComponent(query)}`;
+            window.location.href = `agq_searchresults.php?q=${encodeURIComponent(query)}`;
         }
     }
-    // Search Button
-    document.querySelector('.search-button').addEventListener('click', redirectToSearchResults);
+
+    document.querySelector('.search-button').addEventListener('click', () => redirectToSearchResults());
 </script>
 
 </html

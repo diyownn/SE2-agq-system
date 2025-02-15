@@ -1,6 +1,6 @@
 body{
  
-    background-image: url('images/agq_bg2.png'); 
+    background-image: url('../images/agq_bg2.png'); 
     background-repeat: no-repeat;
     background-position: center;
     min-height: 100vh;
