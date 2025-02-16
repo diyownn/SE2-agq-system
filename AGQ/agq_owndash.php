@@ -18,7 +18,7 @@ if (!isset($_SESSION['redirected'])) {
         return openssl_decrypt($encrypted_url, 'aes-256-cbc', $key, 0, $iv);
     }
 
-    $original_url = 'http://localhost/SOFT%20ENG/test.php';
+    $original_url = 'http://localhost/SOFT%20ENG/owndash.php';
     $key = '0jRw1M89WhVwukjsZiZvhPPsRVFgK/IIQnLOYVEWDdi2TXJjx8QPOAOIxMH7b+uW';
 
     $encrypted_url = encrypt_url($original_url, $key);
@@ -109,6 +109,7 @@ if (isset($_GET['query'])) {
 
 <html>
 <link rel="icon" href="images/agq_logo.png" type="image/ico">
+
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- provide viewport -->
     <meta charset="utf-8">
@@ -140,7 +141,7 @@ if (isset($_GET['query'])) {
                     <div>
                         <button class="add-company" onclick="window.location.href='agq_companyForm.php'">
                             NEW COMPANY
-                            <img class="add-symbol" src="company-logos/plus-sign.png">
+                            <img class="add-symbol" src="../AGQ//images/plus-sign.png">
                         </button>
 
                     </div>

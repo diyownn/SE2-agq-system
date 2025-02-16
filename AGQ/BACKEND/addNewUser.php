@@ -4,6 +4,35 @@ $dbname = 'agq_database';
 $username = 'root';
 $password = '';
 
+if (!isset($_SESSION['redirected'])) {
+    $_SESSION['redirected'] = true; // To compact pages
+
+    function encrypt_url($url, $key)
+    {
+        $iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length('aes-256-cbc'));
+        $encrypted_url = openssl_encrypt($url, 'aes-256-cbc', $key, 0, $iv);
+        return base64_encode($encrypted_url . '::' . $iv);
+    }
+
+    function decrypt_url($encrypted_url, $key)
+    {
+        list($encrypted_url, $iv) = explode('::', base64_decode($encrypted_url), 2);
+        return openssl_decrypt($encrypted_url, 'aes-256-cbc', $key, 0, $iv);
+    }
+
+    $original_url = 'http://localhost/SOFTENGOFFICIAL/AGQ/addNewUser.php';
+    $key = '0jRw1M89WhVwukjsZiZvhPPsRVFgK/IIQnLOYVEWDdi2TXJjx8QPOAOIxMH7b+uW';
+
+    $encrypted_url = encrypt_url($original_url, $key);
+    $encoded_url = urlencode($encrypted_url);
+
+    header('Location: addNewUser.php?url=' . $encoded_url);
+    exit;
+} else {
+
+    unset($_SESSION['redirected']);
+}
+
 $conn = new mysqli($host, $username, $password, $dbname);
 
 // Check for connection errors
@@ -26,11 +55,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (empty($name) || empty($email) || empty($password) || empty($department)) {
         $errors[] = "All fields are required.";
     }
-    
+
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $errors[] = "Invalid email format.";
     }
-    
+
     if (!preg_match('/^(?=.*[a-zA-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{10,}$/', $password)) {
         $errors[] = "Password must be at least 10 characters long, contain at least one letter, one number, and one special character.";
     }
@@ -66,11 +95,12 @@ $result = $conn->query($query);
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta name ="viewport" content = "width=device-width, initial-scale=1.0"> <!-- provide viewport -->
-    <meta charset ="utf-8"> 
-    <meta name ="keywords" content = ""> <!-- provide keywords -->
-    <meta name ="description" content = ""> <!-- provide description -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- provide viewport -->
+    <meta charset="utf-8">
+    <meta name="keywords" content=""> <!-- provide keywords -->
+    <meta name="description" content=""> <!-- provide description -->
     <title> Employee Form </title> <!-- provide title -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="icon" type="image/x-icon" href="/AGQ/images/favicon.ico">
@@ -80,8 +110,9 @@ $result = $conn->query($query);
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- CSS -->
-    <link rel = "stylesheet" type = "text/css" href = "newUser.css">
+    <link rel="stylesheet" type="text/css" href="../css/newUser.css">
 </head>
+
 <body>
     <div class="container">
         <div class="form-container">
@@ -120,6 +151,7 @@ $result = $conn->query($query);
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>
 
 <!--

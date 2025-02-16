@@ -1,7 +1,7 @@
 <?php
 require 'db_agq.php';
 session_start();
-/*
+
 if (!isset($_SESSION['redirected'])) {
     $_SESSION['redirected'] = true; // To compact pages
 
