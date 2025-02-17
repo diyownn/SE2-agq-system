@@ -84,7 +84,7 @@
     }
 
 // Reset login attempts if 5 minutes have passed since the last attempt
-if (time() - $_SESSION['last_attempt_time'] > 60) {
+if (time() - $_SESSION['last_attempt_time'] > 300) {
     $_SESSION['login_attempts'] = 1;
 }
 
@@ -101,7 +101,7 @@ if (time() - $_SESSION['last_attempt_time'] > 60) {
                 position: "center",
                 icon: "error",
                 title: "Account Locked",
-                text: "Due to numerous failed attempts, you have been locked out for 1 minute.",
+                text: "Due to numerous failed attempts, you have been locked out for 5 minutes.",
                 showConfirmButton: false,
                 timer: 3000
             });
@@ -122,8 +122,10 @@ if (time() - $_SESSION['last_attempt_time'] > 60) {
 
             if ($role == 'admin' || $role == 'Admin' || $role == 'owner' || $role == 'Owner' && $pword != 'agqLogistics') {
                 header("location: agq_owndash.php");
+                session_destroy();
             } else if ($role == 'Export Forwarding' || $role == 'Import Forwarding' || $role == 'Export Brokerage' || $role == 'Import Brokerage' && $pword != 'agqLogistics') {
                 header("location: agq_employdash.php");
+                session_destroy();
             } else {
                 $otp = rand(000000, 999999);
 
@@ -131,6 +133,7 @@ if (time() - $_SESSION['last_attempt_time'] > 60) {
                 $conn->query($otpQuery);
 
                 emailVerification($email, $otp);
+                session_destroy();
             }
         } else {
             // Increment login attempts counter on failed login
