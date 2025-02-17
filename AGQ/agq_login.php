@@ -101,7 +101,7 @@
                     position: "center",
                     icon: "error",
                     title: "Account Locked",
-                    text: "Due to numerous failed attempts, you have been locked out for 1 minute.",
+                    text: "Due to numerous failed attempts, you have been locked out for 5 minutes.",
                     showConfirmButton: false,
                     timer: 3000
                 });
