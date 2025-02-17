@@ -83,10 +83,10 @@
         $_SESSION['last_attempt_time'] = time(); // Initialize last attempt time if not set
     }
 
-    // Reset login attempts if 5 minutes have passed since the last attempt
-    if (time() - $_SESSION['last_attempt_time'] > 300) {
-        $_SESSION['login_attempts'] = 1;
-    }
+// Reset login attempts if 5 minutes have passed since the last attempt
+if (time() - $_SESSION['last_attempt_time'] > 60) {
+    $_SESSION['login_attempts'] = 1;
+}
 
     if ((isset($_POST['email']) && $_POST['email'] != NULL) && 
     (isset($_POST['password']) && $_POST['password'] != NULL)) {
@@ -94,23 +94,23 @@
         $email = $_POST['email'];
         $pass = $_POST['password'];
 
-        if ($_SESSION['login_attempts'] >= 5) {
-            ?>
-            <script>
-                Swal.fire({
-                    position: "center",
-                    icon: "error",
-                    title: "Account Locked",
-                    text: "Due to numerous failed attempts, you have been locked out for 5 minute.",
-                    showConfirmButton: false,
-                    timer: 3000
-                });
-                disableInputField(); // Disable input field for 1 minute
-            </script>
-            <?php
-        } else {
-            $loginVerify = "SELECT * FROM tbl_user WHERE Email = '$email' AND Password = '$pass'";
-            $queryVerify = $conn->query($loginVerify);
+    if ($_SESSION['login_attempts'] >= 5) {
+?>
+        <script>
+            Swal.fire({
+                position: "center",
+                icon: "error",
+                title: "Account Locked",
+                text: "Due to numerous failed attempts, you have been locked out for 1 minute.",
+                showConfirmButton: false,
+                timer: 3000
+            });
+            disableInputField(); // Disable input field for 1 minute
+        </script>
+        <?php
+    } else {
+        $loginVerify = "SELECT * FROM tbl_user WHERE Email = '$email' AND Password = '$pass'";
+        $queryVerify = $conn->query($loginVerify);
 
             if ($queryVerify->num_rows > 0) {
                 $row = $queryVerify->fetch_assoc();
@@ -120,26 +120,22 @@
                 // Reset login attempts counter on successful login
                 $_SESSION['login_attempts'] = 0;
 
-                if ($role == 'admin' || $role == 'Admin' || $role == 'owner' || $role == 'Owner' && $pword != 'agqLogistics') {
-                    header("location:agq_owner.php");
-                    session_destroy();
-                } else if ($role == 'Export Forwarding' || $role == 'Import Forwarding' || $role == 'Export Brokerage' || $role == 'Import Brokerage' && $pword != 'agqLogistics') {
-                    header("location:agq_employee.php");
-                    session_destroy();
-                } else {
-                    $otp = rand(000000,999999);
-                    
-                    $otpQuery = "UPDATE tbl_user SET Otp = '$otp' WHERE Email = '$email' AND Password = '$pass'";
-                    $conn->query($otpQuery);
+            if ($role == 'admin' || $role == 'Admin' || $role == 'owner' || $role == 'Owner' && $pword != 'agqLogistics') {
+                header("location: agq_owndash.php");
+            } else if ($role == 'Export Forwarding' || $role == 'Import Forwarding' || $role == 'Export Brokerage' || $role == 'Import Brokerage' && $pword != 'agqLogistics') {
+                header("location: agq_employdash.php");
+            } else {
+                $otp = rand(000000, 999999);
 
-                    emailVerification($email, $otp);
-                    session_destroy();
+                $otpQuery = "UPDATE tbl_user SET Otp = '$otp' WHERE Email = '$email' AND Password = '$pass'";
+                $conn->query($otpQuery);
 
-                }
-            }else {
-                // Increment login attempts counter on failed login
-                $_SESSION['login_attempts']++;
-                $_SESSION['last_attempt_time'] = time();
+                emailVerification($email, $otp);
+            }
+        } else {
+            // Increment login attempts counter on failed login
+            $_SESSION['login_attempts']++;
+            $_SESSION['last_attempt_time'] = time();
 
                 ?>
                 <script>

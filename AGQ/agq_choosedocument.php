@@ -1,5 +1,5 @@
 <?php
-require "db.php";
+require "db_agq.php";
 
 /*
 session_start();
@@ -74,12 +74,14 @@ $conn->close();
     <meta charset="utf-8">
     <meta name="keywords" content=""> <!-- provide keywords -->
     <meta name="description" content=""> <!-- provide description -->
-    <title> Choose Document </title> <!-- provide title -->
+    <title> Choose Document | AGQ </title> <!-- provide title -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="documenttype.css">
 </head>
+
+<link rel="icon" href="images/agq_logo.png" type="image/ico">
 
 <body>
     <div class="document-type-body">
