@@ -4,6 +4,8 @@ $dbname = 'agq_database';
 $username = 'root';
 $password = '';
 
+session_start();
+
 if (!isset($_SESSION['redirected'])) {
     $_SESSION['redirected'] = true; // To compact pages
 
