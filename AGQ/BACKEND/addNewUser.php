@@ -143,7 +143,13 @@ $result = $conn->query($query);
                             <input type="password" class="form-control" name="Password" placeholder="Password" required>
                         </div>
                         <div class="col-md-8">
-                            <input type="text" class="form-control" name="Department" placeholder="Department" required>
+                            <select class="form-control" name="Department" required>
+                                <option value="">--Select Department--</option>
+                                <option value="Export Brokerage">Export Brokerage</option>
+                                <option value="Export Forwarding">Export Forwarding</option>
+                                <option value="Import Brokerage">Import Brokerage</option>
+                                <option value="Import Forwarding">Import Forwarding</option>
+                            </select>
                         </div>
                     </div>
                     <button type="submit" class="btn btn-save">SAVE</button>
