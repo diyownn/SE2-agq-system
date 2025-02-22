@@ -3,7 +3,7 @@ $host = 'localhost';
 $dbname = 'agq_database';
 $username = 'root';
 $password = '';
-
+/*
 session_start();
 
 if (!isset($_SESSION['redirected'])) {
@@ -34,7 +34,7 @@ if (!isset($_SESSION['redirected'])) {
 
     unset($_SESSION['redirected']);
 }
-
+*/
 $conn = new mysqli($host, $username, $password, $dbname);
 
 // Check for connection errors
@@ -69,7 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (empty($errors)) {
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
         $stmt = $conn->prepare("INSERT INTO tbl_user (User_id, Name, Email, Password, Department, Otp) VALUES (?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("sssssi", $user_id, $name, $email, $hashedPassword, $department, $otp);
+        $stmt->bind_param("sssssi", $user_id, $name, $email, $password, $department, $otp);
 
         if ($stmt->execute()) {
             echo "<script>alert('User created and saved to the database.');</script>";
@@ -112,7 +112,7 @@ $result = $conn->query($query);
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- CSS -->
-    <link rel="stylesheet" type="text/css" href="..\css\newUser.css">
+    <link rel="stylesheet" type="text/css" href="../css/newUser.css">
 </head>
 
 <body>
