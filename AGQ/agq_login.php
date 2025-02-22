@@ -153,9 +153,9 @@ if (time() - $_SESSION['last_attempt_time'] > 300) {
                 </script>
                 <?php
             }
-
         
             $conn->close();    
+
         
         }
 
