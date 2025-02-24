@@ -91,6 +91,11 @@ body {
   justify-content: center;
   align-items: center;
 }
+
+.icon svg {
+  width: 14px;
+  height: 14px;
+}
   
   .add-symbol {
     width: 20px;
