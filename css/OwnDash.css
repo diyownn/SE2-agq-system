@@ -71,16 +71,26 @@ body {
 }
 
 
-  .add-company {
-    background-color: rgb(144, 174, 94);
-    padding: 0px 5px 7px 20px;
-    border: none;
-    border-radius: 15px;
-    font-family: 'IBM Plex Sans', 'Arial';
-    margin-top: 20px;
-    cursor: pointer;
-    font-weight: bold;
-  }
+.add-company {
+  background-color: rgb(144, 174, 94);
+  padding: 0px 5px 7px 20px;
+  border: none;
+  border-radius: 15px;
+  font-family: 'IBM Plex Sans', 'Arial';
+  margin-top: 20px;
+  cursor: pointer;
+  font-weight: bold;
+}
+  
+.icon {
+  width: 24px;
+  height: 24px;
+  background: #E0E0E0;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
   
   .add-symbol {
     width: 20px;
