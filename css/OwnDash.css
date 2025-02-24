@@ -72,22 +72,31 @@ body {
 
 
 .add-company {
-  background-color: rgb(144, 174, 94);
-  padding: 10px 15px;
-  border: none;
-  border-radius: 15px;
-  font-family: 'IBM Plex Sans', 'Arial';
-  margin-top: 20px;
-  cursor: pointer;
-  font-weight: bold;
   display: flex;
   align-items: center;
-  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);        
+  background-color: #94ae5e;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 50px;
+  font-family: 'IBM Plex Sans', Arial, sans-serif;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease;      
+}
+
+.add-company:hover {
+  background-color: #63852e;
+}
+
+.add-company span {
+  color: black;
+  margin-right: 10px;
 }
   
 .icon {
-  width: 24px;
-  height: 24px;
+  width: 30px;
+  height: 30px;
   background: #E0E0E0;
   border-radius: 50%;
   display: flex;
