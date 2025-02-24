@@ -36,6 +36,8 @@
 
                 </form>
 
+                <a href="agq_login.php" style="text-decoration: none; color: black; font-size: x-large">←</a>
+
             </div>
         </div>
     </div>

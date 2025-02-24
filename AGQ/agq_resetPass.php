@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>New Password | AGQ</title>
 
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css" rel="stylesheet">
+
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 
@@ -27,19 +29,32 @@
                 <p id="title" class="text-center">Reset Password</p>
 
                 <form action="agq_resetPass.php" method="post" class="form-content" onsubmit="return validate_form()">
+                    
                     <label for="newPass" class="form-label" id="labels">Enter New Password</label>
-                    <input type="password" name="newPword" id="newPass" class="form-control">
-                    <div id="pass-error1"></div>
+                    <div class="input-group mb-3">
+                        <input type="password" name="newPword" id="newPass" class="form-control">
+                        <span class="input-group-text" id="toggle-password" style="cursor: pointer;">
+                            <i class="bi bi-eye-fill" id="toggle-password-icon"></i> 
+                        </span>
+                        <div id="pass-error1"></div>
+                    </div>
 
                     <label for="rePass" class="form-label" id="labels">Re-enter Password</label>
-                    <input type="password" name="rePword" id="rePass" class="form-control"> 
-                    <div id="pass-error2"></div>
+                    <div class="input-group mb-3">
+                        <input type="password" name="rePword" id="rePass" class="form-control"> 
+                        <span class="input-group-text" id="toggle-password1" style="cursor: pointer;">
+                            <i class="bi bi-eye-fill" id="toggle-password-icon1"></i> 
+                        </span>
+                        <div id="pass-error2"></div>
+                    </div>
 
                     <div class="d-flex justify-content-center">
                         <input type="submit" id="button1" style="margin-top: 10%; margin-bottom: 0%" value="SAVE">
                     </div>
 
                 </form>
+
+                <a href="agq_otp.php" style="text-decoration: none; color: black; font-size: x-large">←</a>
 
             </div>
         </div>
@@ -187,6 +202,36 @@
             }
 
         }
+
+        document.getElementById('toggle-password').addEventListener('click', function() {
+            const passwordField1 = document.getElementById('newPass');
+            const passwordIcon1 = document.getElementById('toggle-password-icon');
+            
+            if (passwordField1.type === 'password') {
+                passwordField1.type = 'text';
+                passwordIcon1.classList.remove('bi-eye-fill');
+                passwordIcon1.classList.add('bi-eye-slash-fill');
+            } else {
+                passwordField1.type = 'password';
+                passwordIcon1.classList.remove('bi-eye-slash-fill');
+                passwordIcon1.classList.add('bi-eye-fill');
+            }
+        });
+
+        document.getElementById('toggle-password1').addEventListener('click', function() {
+            const passwordField2 = document.getElementById('rePass');
+            const passwordIcon2 = document.getElementById('toggle-password-icon1');
+            
+            if (passwordField2.type === 'password') {
+                passwordField2.type = 'text';
+                passwordIcon2.classList.remove('bi-eye-fill');
+                passwordIcon2.classList.add('bi-eye-slash-fill');
+            } else {
+                passwordField2.type = 'password';
+                passwordIcon2.classList.remove('bi-eye-slash-fill');
+                passwordIcon2.classList.add('bi-eye-fill');
+            }
+        });
 
     </script>
 
