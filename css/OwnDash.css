@@ -100,44 +100,40 @@ body {
   height: 14px;
 }
   
-  .add-symbol {
-    width: 20px;
-    height: 20px;
-  }
   
-  .company-container-row {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-evenly;
-    margin: 20px 0px 40px 0;
-  }
+.company-container-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  margin: 20px 0px 40px 0;
+}
   
-  .company-container {
-    background-color: rgb(144, 174, 94);
-    padding: 10px 10px 10px 10px;
-    margin: 0px 15px 0px 15px;
-    border-style: none;
-    border-radius: 25px;
-    cursor: pointer;
-    transition: box-shadow 0.15s,
-                opacity 0.1s;
-  }
+.company-container {
+  background-color: rgb(144, 174, 94);
+  padding: 10px 10px 10px 10px;
+  margin: 0px 15px 0px 15px;
+  border-style: none;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: box-shadow 0.15s,
+              opacity 0.1s;
+}
   
-  .company-container:hover {
-    box-shadow: 0px 0px 20px rgb(135, 164, 89);
-  }
+.company-container:hover {
+  box-shadow: 0px 0px 20px rgb(135, 164, 89);
+}
   
-  .company-container:active {
-    opacity: 0.7;
-  }
+.company-container:active {
+  opacity: 0.7;
+}
   
-  .company-title {
-    font-weight: 600;
-    font-size: 40px;
-    margin-bottom: 13px;
-  }
+.company-title {
+  font-weight: 600;
+  font-size: 40px;
+  margin-bottom: 13px;
+}
   
-  .company-logo {
-    width: 200px;
-    height: 200px;
-  }
+.company-logo {
+  width: 200px;
+  height: 200px;
+}
