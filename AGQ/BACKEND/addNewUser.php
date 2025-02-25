@@ -3,6 +3,8 @@ $host = 'localhost';
 $dbname = 'agq_database';
 $username = 'root';
 $password = '';
+/*
+session_start();
 
 if (!isset($_SESSION['redirected'])) {
     $_SESSION['redirected'] = true; // To compact pages
@@ -32,7 +34,7 @@ if (!isset($_SESSION['redirected'])) {
 
     unset($_SESSION['redirected']);
 }
-
+*/
 $conn = new mysqli($host, $username, $password, $dbname);
 
 // Check for connection errors
@@ -67,7 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (empty($errors)) {
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
         $stmt = $conn->prepare("INSERT INTO tbl_user (User_id, Name, Email, Password, Department, Otp) VALUES (?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("sssssi", $user_id, $name, $email, $hashedPassword, $department, $otp);
+        $stmt->bind_param("sssssi", $user_id, $name, $email, $password, $department, $otp);
 
         if ($stmt->execute()) {
             echo "<script>alert('User created and saved to the database.');</script>";
@@ -141,7 +143,13 @@ $result = $conn->query($query);
                             <input type="password" class="form-control" name="Password" placeholder="Password" required>
                         </div>
                         <div class="col-md-8">
-                            <input type="text" class="form-control" name="Department" placeholder="Department" required>
+                            <select class="form-control" name="Department" required>
+                                <option value="">--Select Department--</option>
+                                <option value="Export Brokerage">Export Brokerage</option>
+                                <option value="Export Forwarding">Export Forwarding</option>
+                                <option value="Import Brokerage">Import Brokerage</option>
+                                <option value="Import Forwarding">Import Forwarding</option>
+                            </select>
                         </div>
                     </div>
                     <button type="submit" class="btn btn-save">SAVE</button>

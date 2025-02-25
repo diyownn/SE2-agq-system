@@ -124,12 +124,16 @@ if (isset($_GET['query'])) {
 </head>
 
 <body>
-    <div class="header-container">
-        <div class="search-container">
-            <input type="text" class="search-bar" id="search-input" placeholder="Search transactions..." oninput="fetchResults(this.value)" autocomplete="off">
-            <div id="dropdown" class="dropdown" style="display: none;"></div>
-            <button class="search-button" onclick="window.location.href='agq_searchresults.php'""> SEARCH </button>
-        </div>
+<div class="header-container">
+      <div class="search-container">
+          <input type="text" class="search-bar" id="search-input" placeholder="Search transactions...">
+          <div id="dropdown" class="dropdown" style="display: none;"></div>
+          <button class="search-button" onclick="window.location.href='agq_searchresults.php'""> SEARCH </button>
+      </div>
+      <div class ="nav-link-container">
+          <a href = "">Members</a>
+          <a href = "">Logout</a>
+      </div>
     </div>
 
 
@@ -140,10 +144,13 @@ if (isset($_GET['query'])) {
                     </div>
                     <div>
                         <button class="add-company" onclick="window.location.href='agq_companyForm.php'">
-                            NEW COMPANY
-                            <img class="add-symbol" src="../AGQ//images/plus-sign.png">
+                            <span>NEW COMPANY </span>
+                            <div class="icon">
+                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 5V19M5 12H19" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </div>
                         </button>
-
                     </div>
                 </div>
 
@@ -184,9 +191,8 @@ if (isset($_GET['query'])) {
                     echo "No companies found in the database.";
                 }
                 ?>
-
-
 </body>
+
 <script>
     document.getElementById("search-input").addEventListener("input", function() {
         let query = this.value.trim();
@@ -242,4 +248,4 @@ if (isset($_GET['query'])) {
     document.querySelector('.search-button').addEventListener('click', () => redirectToSearchResults());
 </script>
 
-</html
+</html>

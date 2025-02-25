@@ -34,7 +34,7 @@ function emailVerification($email, $otp){
         $mail->Port = 587;                                    // TCP port to connect to
     
         //Recipients
-        $mail->setFrom( 'danikkacarreon@gmail.com', 'AGQ Logistics');
+        $mail->setFrom( 'danikkacarreon@gmail.com', 'AGQ Freight Logistics');
         $mail->addAddress( $email);     // Add a recipient
         //Content
         $mail->isHTML(true);  // Set email format to HTML
