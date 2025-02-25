@@ -5,7 +5,7 @@ body {
   
 .search-container {
   display: flex;
-  max-width: 600px;
+  width: 600px;
   margin: 0 auto 20px;
 }
 
