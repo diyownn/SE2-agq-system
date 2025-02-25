@@ -1,73 +1,96 @@
 body {
-    background-color: rgb(253, 253, 251);
-    font-family: IBM Plex Sans;
-  }
+  background-color: rgb(253, 253, 251);
+  font-family: IBM Plex Sans;
+}
   
-  .search-container {
-    display: flex;
-    max-width: 600px;
-    margin: 0 auto 20px;
-  }
+.search-container {
+  display: flex;
+  max-width: 600px;
+  margin: 0 auto 20px;
+}
+
+.header-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 40px;
+}
+
+.search-bar {
+  flex: 1;
+  padding: 7px;
+  border: 1px solid rgb(204, 204, 204);
+  border-right: none;
+  border-radius: 50px 0 0 50px;
+  font-size: 16px;
+  background-color: rgb(209, 209, 209); 
+  font-weight: bold;
+}
   
-  .search-bar {
-    flex: 1;
-    padding: 7px;
-    border: 1px solid rgb(204, 204, 204);
-    border-right: none;
-    border-radius: 50px 0 0 50px;
-    font-size: 16px;
-    background-color: rgb(209, 209, 209); 
-    font-weight: bold;
-  }
+.search-button {
+  padding: 12px 25px;
+  border: none;
+  background-color: rgb(144, 174, 94);
+  color: white;
+  font-size: 16px;
+  font-family: 'IBM Plex Sans', 'Arial';
+  border-radius: 0 50px 50px 0;
+  cursor: pointer;
+}
+
+.nav-link-container {
+  display: flex;
+  gap: 55px;
+  margin-left: 0px;
+  align-items: center;
+  padding: 0 0 20px;
+}
+
+.nav-link-container a {
+  text-decoration: none;
+  color: #94ae5e;
+  font-weight: bold;
+  font-size: 14px; 
+}
   
-  .search-button {
-    padding: 12px 25px;
-    border: none;
-    background-color: rgb(144, 174, 94);
-    color: white;
-    font-size: 16px;
-    font-family: 'IBM Plex Sans', 'Arial';
-    border-radius: 0 50px 50px 0;
-    cursor: pointer;
-  }
+.search-button:hover {
+  opacity: 1;
+  background-color: rgb(99, 133, 46);
+}
   
-  .search-button:hover {
-    opacity: 1;
-    background-color: rgb(99, 133, 46);
-  }
+.dashboard-body {
+  margin: 30px 80px 10px 80px;
+}
   
-  .dashboard-body {
-    margin: 30px 80px 10px 80px;
-  }
-  
-  .company-head {
-    display: flex;
-    flex-direction: row;
-    margin: 0px 15px 0px 10px;
-    justify-content: space-between;
-  }
-  
+.company-head {
+  display: flex;
+  flex-direction: row;
+  margin: 0px 15px 0px 10px;
+  justify-content: space-between;
+} 
+ 
 
 .dropdown {
-    position: absolute;
-    background: white;
-    border: 1px solid #ccc;
-    width: 300px;
-    max-height: 200px;
-    overflow-y: auto;
-    display: none;
-    z-index: 1000;
+  position: absolute;
+  background: white;
+  border: 1px solid #ccc;
+  width: 300px;
+  max-height: 200px;
+  overflow-y: auto;
+  display: none;
+  z-index: 1000;
 }
 
 
 .dropdown-item {
-    padding: 10px;
-    cursor: pointer;
-    border-bottom: 1px solid #eee;
+  padding: 10px;
+  cursor: pointer;
+  border-bottom: 1px solid #eee;
 }
 
 .dropdown-item:hover {
-    background-color: #f0f0f0;
+  background-color: #f0f0f0;
 }
 
 

@@ -124,12 +124,16 @@ if (isset($_GET['query'])) {
 </head>
 
 <body>
-    <div class="header-container">
-        <div class="search-container">
-            <input type="text" class="search-bar" id="search-input" placeholder="Search transactions..." oninput="fetchResults(this.value)" autocomplete="off">
-            <div id="dropdown" class="dropdown" style="display: none;"></div>
-            <button class="search-button" onclick="window.location.href='agq_searchresults.php'""> SEARCH </button>
-        </div>
+<div class="header-container">
+      <div class="search-container">
+          <input type="text" class="search-bar" id="search-input" placeholder="Search transactions...">
+          <div id="dropdown" class="dropdown" style="display: none;"></div>
+          <button class="search-button" onclick="window.location.href='agq_searchresults.php'""> SEARCH </button>
+      </div>
+      <div class ="nav-link-container">
+          <a href = "">Members</a>
+          <a href = "">Logout</a>
+      </div>
     </div>
 
 
@@ -187,9 +191,8 @@ if (isset($_GET['query'])) {
                     echo "No companies found in the database.";
                 }
                 ?>
-
-
 </body>
+
 <script>
     document.getElementById("search-input").addEventListener("input", function() {
         let query = this.value.trim();
@@ -245,4 +248,4 @@ if (isset($_GET['query'])) {
     document.querySelector('.search-button').addEventListener('click', () => redirectToSearchResults());
 </script>
 
-</html
+</html>
