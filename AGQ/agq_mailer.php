@@ -39,7 +39,7 @@ function emailVerification($email, $otp){
         //Content
         $mail->isHTML(true);  // Set email format to HTML
         $mail->Subject = "AGQ OTP Verification";
-        $mail->Body    = "<p>Good day, this your account verification code</p> 
+        $mail->Body    = "<p>Good day, this is your account verification code</p> 
                           <br><h1><b>".$otp."</b></h1>";
 
         $mail->send();

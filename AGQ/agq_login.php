@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 <link rel="icon" href="images/agq_logo.png" type="image/ico">
 <head>
@@ -75,7 +76,7 @@
 
     // Reset login attempts if 5 minutes have passed since the last lockout period
     if (time() - $_SESSION['last_attempt_time'] > 300) {
-        $_SESSION['login_attempts'] = 5;
+        $_SESSION['login_attempts'] = 4;
         $_SESSION['lockout_start'] = 0; // Reset lockout start time
     }
 
@@ -113,19 +114,21 @@
                 $_SESSION['lockout_start'] = 0; // Reset lockout start time
 
                 if ($role == 'admin' || $role == 'Admin' || $role == 'owner' || $role == 'Owner' && $pword != 'agqLogistics') {
+                    session_destroy();
                     header("location:agq_owner.php");
-                    session_destroy();
+                    
                 } else if ($role == 'Export Forwarding' || $role == 'Import Forwarding' || $role == 'Export Brokerage' || $role == 'Import Brokerage' && $pword != 'agqLogistics') {
-                    header("location:agq_employee.php");
                     session_destroy();
+                    header("location:agq_employee.php");
+                    
                 } else {
                     $otp = rand(000000,999999);
                     
                     $otpQuery = "UPDATE tbl_user SET Otp = '$otp' WHERE Email = '$email' AND Password = '$pass'";
                     $conn->query($otpQuery);
 
+                    $_SESSION['email'] = $email;
                     emailVerification($email, $otp);
-                    session_destroy();
 
                 }
             }else {

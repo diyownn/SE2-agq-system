@@ -84,47 +84,53 @@
         }
 
         function validate_newPassword(){
-            var nPass =document.getElementById("newPass");
-            var nPass_error =document.getElementById("pass-error1");
-
+            var nPass = document.getElementById("newPass");
+            var nPass_error = document.getElementById("pass-error1");
+        
             if(nPass.value == ''){
                 nPass.classList.add("is-invalid");
                 error_text = "*Please enter your new Password";
                 nPass_error.innerHTML = error_text;
                 nPass_error.classList.add("invalid-feedback");
-                
-                return false;
-            }else{
+            return false;
+            } else {
                 var passregex = /^.{8,100}$/; 
 
                 if(!passregex.test(nPass.value)){ 
                     nPass.classList.add("is-invalid");
-                    error_text = "*Your Password must be atleast 8 characters";
+                    error_text = "*Your Password must be at least 8 characters";
                     nPass_error.innerHTML = error_text;
                     nPass_error.classList.add("invalid-feedback");
-                    
                     return false;
                 }
 
-                var symbolregex = /[!@#$%^&*()_+\-={};:'"\\|,.<>\/?~]/;
+                var symbolregex = /[#%^&*()_+\-={};:'"\\|,.<>\/?~]/;
 
                 if (symbolregex.test(nPass.value)) {
                     nPass.classList.add("is-invalid");
                     error_text = "*Your Password must not contain symbols";
                     nPass_error.innerHTML = error_text;
                     nPass_error.classList.add("invalid-feedback");
-                    
                     return false;
                 }
-                
+
+                var allNumbersRegex = /^\d+$/;
+                var allUppercaseRegex = /^[A-Z]+$/;
+                var allLowercaseRegex = /^[a-z]+$/;
+
+                if (allNumbersRegex.test(nPass.value) || allUppercaseRegex.test(nPass.value) || allLowercaseRegex.test(nPass.value)) {
+                    nPass.classList.add("is-invalid");
+                    error_text = "*Your Password must be alphanumeric";
+                    nPass_error.innerHTML = error_text;
+                    nPass_error.classList.add("invalid-feedback");
+                    return false;
+                }
+
                 nPass.classList.remove("is-invalid");
                 nPass_error.innerHTML = "";
                 nPass_error.classList.remove("invalid-feedback");
-
                 return true;
-                
             }
-
         }
 
         function validate_rePassword(){
@@ -150,7 +156,7 @@
                     return false;
                 }
 
-                var symbolregex = /[!@#$%^&*()_+\-={};:'"\\|,.<>\/?~]/;
+                var symbolregex = /[#%^&*()_+\-={};:'"\\|,.<>\/?~]/;
 
                 if (symbolregex.test(rPass.value)) {
                     rPass.classList.add("is-invalid");
@@ -161,10 +167,21 @@
                     return false;
                 }
                 
+                var allNumbersRegex = /^\d+$/;
+                var allUppercaseRegex = /^[A-Z]+$/;
+                var allLowercaseRegex = /^[a-z]+$/;
+
+                if (allNumbersRegex.test(rPass.value) || allUppercaseRegex.test(rPass.value) || allLowercaseRegex.test(rPass.value)) {
+                    rPass.classList.add("is-invalid");
+                    error_text = "*Your Password must be alphanumeric";
+                    rPass_error.innerHTML = error_text;
+                    rPass_error.classList.add("invalid-feedback");
+                    return false;
+                }
+
                 rPass.classList.remove("is-invalid");
                 rPass_error.innerHTML = "";
                 rPass_error.classList.remove("invalid-feedback");
-
                 return true;
             }
 
@@ -239,14 +256,17 @@
 </html>
 
 <?php
+    session_start();
     require_once "db_agq.php";
+
+    $email = isset($_SESSION['email']) ? $_SESSION['email'] : '';
 
     if ((isset($_POST['newPword']) && $_POST['newPword'] != NULL) && 
     (isset($_POST['rePword']) && $_POST['rePword'] != NULL)) {
 
         $finalPass = $_POST['rePword'];
 
-        $reset_pass = "Update tbl_user set Password = '".$finalPass."' where Password = ''";
+        $reset_pass = "Update tbl_user set Password = '".$finalPass."' where Email = '".$email."'";
         $conn->query($reset_pass);
 
         ?>

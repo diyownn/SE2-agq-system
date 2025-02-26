@@ -56,6 +56,8 @@
 </html>
 
 <?php
+    session_start();
+
     require_once "db_agq.php";
     include "agq_mailer.php";
 
@@ -71,6 +73,8 @@
                     
             $otpQuery = "UPDATE tbl_user SET Otp = '$otp' WHERE Email = '$email'";
             $conn->query($otpQuery);
+
+            $_SESSION['email'] = $email;
 
             emailVerification($email, $otp);
 
