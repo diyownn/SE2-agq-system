@@ -1,35 +1,7 @@
 <?php
 require 'db_agq.php';
+
 session_start();
-
-if (!isset($_SESSION['redirected'])) {
-    $_SESSION['redirected'] = true; // To compact pages
-
-    function encrypt_url($url, $key)
-    {
-        $iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length('aes-256-cbc'));
-        $encrypted_url = openssl_encrypt($url, 'aes-256-cbc', $key, 0, $iv);
-        return base64_encode($encrypted_url . '::' . $iv);
-    }
-
-    function decrypt_url($encrypted_url, $key)
-    {
-        list($encrypted_url, $iv) = explode('::', base64_decode($encrypted_url), 2);
-        return openssl_decrypt($encrypted_url, 'aes-256-cbc', $key, 0, $iv);
-    }
-
-    $original_url = 'http://localhost/SOFT%20ENG/employdash.php';
-    $key = '0jRw1M89WhVwukjsZiZvhPPsRVFgK/IIQnLOYVEWDdi2TXJjx8QPOAOIxMH7b+uW';
-
-    $encrypted_url = encrypt_url($original_url, $key);
-    $encoded_url = urlencode($encrypted_url);
-
-    header('Location: agq_employdash.php?url=' . $encoded_url);
-    exit;
-} else {
-
-    unset($_SESSION['redirected']);
-}
 
 /*
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -80,12 +52,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
 if (isset($_GET['logout']) && $_GET['logout'] == 'true') {
-
     session_unset();
     session_destroy();
-
-
-    header("Location: login.php");
+    header("Location: agq_login.php");
     exit();
 }
 
@@ -131,6 +100,11 @@ if (isset($_GET['query'])) {
             <div id="dropdown" class="dropdown" style="display: none;"></div>
             <button class="search-button" onclick="window.location.href='agq_searchresults.php'"> SEARCH </button>
         </div>
+        <div class=" nav-link-container">
+            <a href="agq_members.php">Members</a>
+            <a href="?logout=true">Logout</a>
+        </div>
+    </div>
     </div>
 
 

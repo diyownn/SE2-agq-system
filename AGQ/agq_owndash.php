@@ -1,16 +1,17 @@
 <?php
 require 'db_agq.php';
+
 session_start();
 
 /*
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Retrieve and sanitize input
+   
     $name = isset($_POST['Name']) ? htmlspecialchars(trim($_POST['Name'])) : '';
     $department = isset($_POST['Department']) ? htmlspecialchars(trim($_POST['Department'])) : '';
 
-    
+
     if (!empty($name) && !empty($department)) {
-        // Store data in session
+       
         $_SESSION['Name'] = $name;
         $_SESSION['Department'] = $department;
 
@@ -40,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 exit();
 
             default:
-                echo "Unauthorized Account."; // Work in progress
+                echo "Unauthorized Account."; // Commented out for testing purposes
                 break;
         }
     } else {
@@ -51,12 +52,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
 if (isset($_GET['logout']) && $_GET['logout'] == 'true') {
-
     session_unset();
     session_destroy();
-
-
-    header("Location: login.php");
+    header("Location: agq_login.php");
     exit();
 }
 
@@ -79,91 +77,84 @@ if (isset($_GET['query'])) {
 
 
 <html>
-<link rel="icon" href="images/agq_logo.png" type="image/ico">
 
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- provide viewport -->
     <meta charset="utf-8">
-    <meta name="keywords" content=""> <!-- provide keywords -->
-    <meta name="description" content=""> <!-- provide description -->
-    <title> AGQ Unnamed System </title> <!-- provide title -->
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <title> AGQ Unnamed System </title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="icon" type="image/x-icon" href="/AGQ/images/favicon.ico">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="../css/OwnDash.css">
+    <link rel="stylesheet" type="text/css" href="../css/EmployDash.css">
+
 </head>
+<link rel="icon" href="images/agq_logo.png" type="image/ico">
 
 <body>
-<div class="header-container">
-      <div class="search-container">
-          <input type="text" class="search-bar" id="search-input" placeholder="Search transactions...">
-          <div id="dropdown" class="dropdown" style="display: none;"></div>
-          <button class="search-button" onclick="window.location.href='agq_searchresults.php'""> SEARCH </button>
-      </div>
-      <div class ="nav-link-container">
-          <a href = "">Members</a>
-          <a href = "">Logout</a>
-      </div>
+    <div class="header-container">
+        <div class="search-container">
+            <input type="text" class="search-bar" id="search-input" placeholder="Search transactions..." oninput="fetchResults(this.value)" autocomplete="off">
+            <div id="dropdown" class="dropdown" style="display: none;"></div>
+            <button class="search-button" onclick="window.location.href='agq_searchresults.php'"> SEARCH </button>
+        </div>
+        <div class=" nav-link-container">
+            <a href="agq_members.php">Members</a>
+            <a href="?logout=true">Logout</a>
+        </div>
+    </div>
     </div>
 
 
     <div class=" dashboard-body">
-                <div class="company-head">
-                    <div class="company-title">
-                        COMPANIES
-                    </div>
-                    <div>
-                        <button class="add-company" onclick="window.location.href='agq_companyForm.php'">
-                            <span>NEW COMPANY </span>
-                            <div class="icon">
-                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M12 5V19M5 12H19" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                            </div>
-                        </button>
-                    </div>
-                </div>
+        <div class="company-head">
+            <div class="company-title">
+                COMPANIES
+            </div>
+        </div>
 
-                <?php
-                $companies = "SELECT Company_name, Company_picture FROM tbl_company";
-                $result = $conn->query($companies);
+        <?php
+        $companies = "SELECT Company_name, Company_picture FROM tbl_company";
+        $result = $conn->query($companies);
 
-                if ($result->num_rows > 0) {
-                    $index = 0;
-                    echo '<div class="company-container-row">';
+        if ($result->num_rows > 0) {
+            $index = 0;
+            echo '<div class="company-container-row">';
 
-                    while ($row = $result->fetch_assoc()) {
-                        $varName = 'Company' . $index;
-                        $$varName = $row['Company_name'];
+            while ($row = $result->fetch_assoc()) {
+                $varName = 'Company' . $index;
+                $$varName = $row['Company_name'];
 
-                        $company_name = $$varName;
-                        $company_picture = $row['Company_picture'];
+                $company_name = $$varName;
+                $company_picture = $row['Company_picture'];
 
-                        $company_picture_base64 = base64_encode($company_picture);
-                        $company_picture_src = 'data:image/jpeg;base64,' . $company_picture_base64;
+                $company_picture_base64 = base64_encode($company_picture);
+                $company_picture_src = 'data:image/jpeg;base64,' . $company_picture_base64;
 
 
-                        if ($index > 0 && $index % 5 === 0) {
-                            echo '</div><div class="company-container-row">';
-                        }
-
-                        echo '<div class="company-button">';
-                        echo '<button class="company-container" onclick="window.location.href=\'login.php\'">';
-                        echo '<img class="company-logo" src="' . $company_picture_src . '" alt="' . $company_name . '">';
-                        echo '</button>';
-                        echo '</div>';
-
-                        $index++;
-                    }
-
-                    echo '</div>';
-                } else {
-                    echo "No companies found in the database.";
+                if ($index > 0 && $index % 5 === 0) {
+                    echo '</div><div class="company-container-row">';
                 }
-                ?>
-</body>
 
+                echo '<div class="company-button">';
+                echo '<button class="company-container" onclick="window.location.href=\'login.php\'">';
+                echo '<img class="company-logo" src="' . $company_picture_src . '" alt="' . $company_name . '">';
+                echo '</button>';
+                echo '</div>';
+
+                $index++;
+            }
+
+            echo '</div>';
+        } else {
+            echo "No companies found in the database.";
+        }
+        ?>
+
+
+</body>
 <script>
     document.getElementById("search-input").addEventListener("input", function() {
         let query = this.value.trim();
@@ -219,4 +210,4 @@ if (isset($_GET['query'])) {
     document.querySelector('.search-button').addEventListener('click', () => redirectToSearchResults());
 </script>
 
-</html>
+</html
