@@ -12,10 +12,10 @@ if ($conn->connect_error) {
 // Handle form submission (Create User)
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $UserID = (string) random_int(10000000, 99999999);
-    $name = htmlspecialchars(trim($_POST['name']));
-    $email = htmlspecialchars(trim($_POST['email']));
-    $password = $_POST['password'];
-    $department = htmlspecialchars(trim($_POST['department']));
+    $name = htmlspecialchars(trim($_POST['Name']));
+    $email = htmlspecialchars(trim($_POST['Email']));
+    $password = $_POST['Password'];
+    $department = htmlspecialchars(trim($_POST['Department']));
     $otp = null;
 
     if (empty($name) || empty($email) || empty($password) || empty($department)) {
@@ -28,11 +28,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         exit;
     }
 
-    $stmt = $conn->prepare("INSERT INTO tbl_user (UserID, Name, Email, Password, Department, Otp) VALUES (?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("sssssi", $UserID, $name, $email, $password, $department, $otp);
+    $stmt = $conn->prepare("INSERT INTO tbl_user (User_id, Name, Email, Password, Department, Otp) VALUES (?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("sssssi", $User_id, $name, $email, $password, $department, $otp);
 
     if ($stmt->execute()) {
-        $stmt = $conn->prepare("SELECT UserID, Name, Email, Department FROM tbl_user WHERE UserID = ?");
+        $stmt = $conn->prepare("SELECT User_id, Name, Email, Department FROM tbl_user WHERE User_id = ?");
         $stmt->bind_param("s", $UserID);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -50,9 +50,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 // Handle deletion
 if (isset($_GET['delete_id'])) {
     $delete_id = $_GET['delete_id'];
-    $stmt = $conn->prepare("DELETE FROM tbl_user WHERE UserID = ?");
+    $stmt = $conn->prepare("DELETE FROM tbl_user WHERE User_id = ?");
     $stmt->bind_param("s", $delete_id);
-    
+
     if ($stmt->execute() && $stmt->affected_rows > 0) {
         echo json_encode(["success" => true, "message" => "User deleted successfully!"]);
     } else {
@@ -66,7 +66,7 @@ if (isset($_GET['delete_id'])) {
 // Search functionality
 if (isset($_GET['search'])) {
     $searchTerm = "%" . $_GET['search'] . "%";
-    $stmt = $conn->prepare("SELECT UserID, Name, Email, Department FROM tbl_user WHERE Name LIKE ? OR Email LIKE ? OR Department LIKE ?");
+    $stmt = $conn->prepare("SELECT User_id, Name, Email, Department FROM tbl_user WHERE Name LIKE ? OR Email LIKE ? OR Department LIKE ?");
     $stmt->bind_param("sss", $searchTerm, $searchTerm, $searchTerm);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -81,18 +81,20 @@ if (isset($_GET['search'])) {
 }
 
 // Fetch all users initially
-$query = "SELECT UserID, Name, Email, Department FROM tbl_user";
+$query = "SELECT User_id, Name, Email, Department FROM tbl_user";
 $result = $conn->query($query);
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Members of the Company</title>
     <link rel="stylesheet" href="motc.css">
 </head>
+
 <body>
 
     <div class="header">
@@ -118,12 +120,12 @@ $result = $conn->query($query);
                 </thead>
                 <tbody id="userTableBody">
                     <?php while ($user = $result->fetch_assoc()): ?>
-                        <tr data-user-id="<?= htmlspecialchars($user['UserID']); ?>">
-                            <td><?= htmlspecialchars($user['UserID']); ?></td>
+                        <tr data-user-id="<?= htmlspecialchars($user['User_id']); ?>">
+                            <td><?= htmlspecialchars($user['User_id']); ?></td>
                             <td><?= htmlspecialchars($user['Name']); ?></td>
                             <td><?= htmlspecialchars($user['Email']); ?></td>
                             <td><?= htmlspecialchars($user['Department']); ?></td>
-                            <td><button class="delete-btn" onclick='deleteUser("<?= htmlspecialchars($user['UserID']); ?>")'>Delete</button></td>
+                            <td><button class="delete-btn" onclick='deleteUser("<?= htmlspecialchars($user['User_id']); ?>")'>Delete</button></td>
                         </tr>
                     <?php endwhile; ?>
                 </tbody>
@@ -181,18 +183,18 @@ $result = $conn->query($query);
             let formData = new FormData(this);
 
             fetch("motc.php", {
-                method: "POST",
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                alert(data.message);
-                if (data.success) {
-                    addRowToTable(data.user);
-                    closeModal();
-                }
-            })
-            .catch(error => console.error('Error submitting form:', error));
+                    method: "POST",
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message);
+                    if (data.success) {
+                        addRowToTable(data.user);
+                        closeModal();
+                    }
+                })
+                .catch(error => console.error('Error submitting form:', error));
         });
 
         function addRowToTable(user) {
@@ -227,4 +229,5 @@ $result = $conn->query($query);
     </script>
 
 </body>
+
 </html>
