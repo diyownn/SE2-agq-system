@@ -221,7 +221,7 @@
                 
                 return false;
             }else{
-                var passregex = /^.{8,}$/; 
+                var passregex = /^.{8,100}$/; 
 
                 if(!passregex.test(nPass.value)){ 
                     nPass.classList.add("is-invalid");
