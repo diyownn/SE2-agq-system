@@ -1,32 +1,42 @@
 <?php
 require 'db_agq.php';
 
-
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $user_id = (string) random_int(10000000, 99999999);
-    $name = htmlspecialchars(trim($_POST['Name']));
-    $email = htmlspecialchars(trim($_POST['Email']));
-    $password = $_POST['Password']; //$Password = password_hash($password, PASSWORD_DEFAULT); For hashing
-    $department = htmlspecialchars(trim($_POST['Department']));
+    $name = trim($_POST['Name']);
+    $email = trim($_POST['Email']);
+    $password = $_POST['Password'];
+    $department = trim($_POST['Department']);
     $otp = null;
+    $errors = [];
 
-    // Validation checks
-    if (empty($name) || empty($email) || empty($password) || empty($department)) {
-        $errors[] = "All fields are required.";
+    if (!preg_match('/^[a-zA-Z\s]+$/', $name)) {
+        $errors[] = "Name can only contain letters and spaces.";
     }
 
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $errors[] = "Invalid email format.";
     }
 
+
     if (!preg_match('/^(?=.*[a-zA-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{10,}$/', $password)) {
         $errors[] = "Password must be at least 10 characters long, contain at least one letter, one number, and one special character.";
     }
 
+
+    $stmt = $conn->prepare("SELECT Email FROM tbl_user WHERE Email = ?");
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $stmt->store_result();
+    if ($stmt->num_rows > 0) {
+        $errors[] = "Email already exists. Please use a different email.";
+    }
+    $stmt->close();
+
     if (empty($errors)) {
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
         $stmt = $conn->prepare("INSERT INTO tbl_user (User_id, Name, Email, Password, Department, Otp) VALUES (?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("sssssi", $user_id, $name, $email, $password, $department, $otp);
+        $stmt->bind_param("sssssi", $user_id, $name, $email, $hashedPassword, $department, $otp);
 
         if ($stmt->execute()) {
             echo "<script>alert('User created and saved to the database.');</script>";
@@ -36,15 +46,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         $stmt->close();
     }
-}
-
-// Handle deletion of user from the database
-if (isset($_GET['delete_id'])) {
-    $delete_id = $_GET['delete_id'];
-    $stmt = $conn->prepare("DELETE FROM tbl_user WHERE User_id = ?");
-    $stmt->bind_param("s", $delete_id);
-    $stmt->execute();
-    $stmt->close();
 }
 
 // Fetch all users from the database
@@ -98,14 +99,14 @@ $result = $conn->query($query);
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-4">
-                            <input type="password" class="form-control" name="Password" placeholder="Password" required>
+                            <input type="password" class="form-control" name="Password" placeholder="Password" onpaste="return false" oncopy="return false" oncut="return false" required>
                         </div>
                         <div class="col-md-8">
                             <select class="form-control" name="Department" required>
                                 <option value="">--Select Department--</option>
                                 <option value="Admin">Admin</option>
-                                <option value="Export Brokerage">Export Brokerage</option>
                                 <option value="Export Forwarding">Export Forwarding</option>
+                                <option value="Export Brokerage">Export Brokerage</option>
                                 <option value="Import Brokerage">Import Brokerage</option>
                                 <option value="Import Forwarding">Import Forwarding</option>
                             </select>
@@ -117,41 +118,24 @@ $result = $conn->query($query);
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            let passwordField = document.querySelector('input[name="Password"]');
+
+            passwordField.addEventListener('paste', function(event) {
+                event.preventDefault();
+            });
+
+            passwordField.addEventListener('copy', function(event) {
+                event.preventDefault();
+            });
+
+            passwordField.addEventListener('cut', function(event) {
+                event.preventDefault();
+            });
+        });
+    </script>
+
 </body>
 
 </html>
-
-<!--
-    <h2>Created Users</h2>
-
-    <?php if ($result->num_rows > 0): ?>
-        <table>
-            <thead>
-                <tr>
-                    <th>User ID</th>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Password</th>
-                    <th>Department</th>
-                    <th>Otp</th>
-                    <th>Delete</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php while ($user = $result->fetch_assoc()): ?>
-                    <tr>
-                        <td><?= htmlspecialchars($user['User_id']); ?></td>
-                        <td><?= htmlspecialchars($user['Name']); ?></td>
-                        <td><?= htmlspecialchars($user['Email']); ?></td>
-                        <td><?= str_repeat('*', 10); ?></td>
-                        <td><?= htmlspecialchars($user['Department']); ?></td>
-                        <td><?= isset($user['Otp']) && $user['Otp'] !== null ? htmlspecialchars($user['Otp']) : ''; ?></td>
-                        <td><a href="?delete_id=<?= htmlspecialchars($user['User_id']); ?>" onclick="return confirm('Are you sure you want to delete this user?');">Delete</a></td>
-                    </tr>
-                <?php endwhile; ?>
-            </tbody>
-        </table>
-    <?php else: ?>
-        <p>No users created yet.</p>
-    <?php endif; ?>
-    -->
