@@ -50,6 +50,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 */
 
+//header("Cache-Control: no-cache, must-revalidate, max-age=0");
+//header("Expires: Sat, 26 Jul 1997 05:00:00 GMT");
+//header("Pragma: no-cache");
+
+
+//if (!isset($_SESSION['Name'])) {
+//  header("Location: agq_login.php");
+//exit();
+//}
+
 
 if (isset($_GET['logout']) && $_GET['logout'] == 'true') {
     session_unset();
@@ -58,19 +68,19 @@ if (isset($_GET['logout']) && $_GET['logout'] == 'true') {
     exit();
 }
 
-if (isset($_GET['query'])) {
-    $search = "%" . $_GET['query'] . "%";
-    $stmt = $conn->prepare("SELECT TransactionID FROM tbl_transaction WHERE TransactionID LIKE ?");
-    $stmt->bind_param("s", $search);
+$search_query = isset($_GET['q']) ? trim($_GET['q']) : '';
+
+if (!empty($search_query)) {
+    // Use prepared statements to prevent SQL injection
+    $stmt = $conn->prepare("SELECT Company_name, Company_picture FROM tbl_company WHERE Company_name LIKE ?");
+    $like_query = "%" . $search_query . "%";
+    $stmt->bind_param("s", $like_query);
     $stmt->execute();
     $result = $stmt->get_result();
-
-    $transactions = [];
-    while ($row = $result->fetch_assoc()) {
-        $transactions[] = $row;
-    }
-
-    echo json_encode($transactions);
+} else {
+    // If no search query, display all companies
+    $companies = "SELECT Company_name, Company_picture FROM tbl_company";
+    $result = $conn->query($companies);
 }
 
 ?>
@@ -96,12 +106,11 @@ if (isset($_GET['query'])) {
 <body>
     <div class="header-container">
         <div class="search-container">
-            <input type="text" class="search-bar" id="search-input" placeholder="Search transactions..." oninput="fetchResults(this.value)" autocomplete="off">
+            <input type="text" class="search-bar" id="search-input" placeholder="Search Companies..." oninput="fetchResults(this.value)" autocomplete="off">
             <div id="dropdown" class="dropdown" style="display: none;"></div>
             <button class="search-button" onclick="window.location.href='agq_searchresults.php'"> SEARCH </button>
         </div>
         <div class=" nav-link-container">
-            <a href="agq_members.php">Members</a>
             <a href="?logout=true">Logout</a>
         </div>
     </div>
@@ -175,9 +184,9 @@ if (isset($_GET['query'])) {
                     data.forEach(item => {
                         let div = document.createElement("div");
                         div.classList.add("dropdown-item");
-                        div.textContent = item.TransactionID;
+                        div.textContent = item.Company_name;
                         div.onclick = function() {
-                            document.getElementById("search-input").value = item.TransactionID;
+                            document.getElementById("search-input").value = item.Company_name;
                             dropdown.style.display = "none";
                         };
                         dropdown.appendChild(div);
@@ -189,9 +198,17 @@ if (isset($_GET['query'])) {
                 }
             })
             .catch(error => console.error("Error fetching search results:", error));
+
     });
 
 
+    let searchInput = document.getElementById("search-input");
+    let dropdown = document.getElementById("dropdown");
+
+
+    if (!searchInput.contains(event.target) && !dropdown.contains(event.target)) {
+        dropdown.style.display = "none";
+    }
 
     document.addEventListener("click", function(event) {
         if (!searchInput.contains(event.target) && !dropdown.contains(event.target)) {

@@ -1,17 +1,16 @@
 <?php
 require 'db_agq.php';
-
 session_start();
 
 /*
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-   
+    // Retrieve and sanitize input
     $name = isset($_POST['Name']) ? htmlspecialchars(trim($_POST['Name'])) : '';
     $department = isset($_POST['Department']) ? htmlspecialchars(trim($_POST['Department'])) : '';
 
-
+    
     if (!empty($name) && !empty($department)) {
-       
+        // Store data in session
         $_SESSION['Name'] = $name;
         $_SESSION['Department'] = $department;
 
@@ -41,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 exit();
 
             default:
-                echo "Unauthorized Account."; // Commented out for testing purposes
+                echo "Unauthorized Account."; // Work in progress
                 break;
         }
     } else {
@@ -51,60 +50,52 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 */
 
 
+header("Cache-Control: no-cache, must-revalidate, max-age=0");
+header("Expires: Sat, 26 Jul 1997 05:00:00 GMT");
+header("Pragma: no-cache");
+
+
+if (!isset($_SESSION['department'])) {
+    header("Location: agq_login.php");
+    exit();
+}
+
 if (isset($_GET['logout']) && $_GET['logout'] == 'true') {
     session_unset();
     session_destroy();
     header("Location: agq_login.php");
     exit();
 }
-
-if (isset($_GET['query'])) {
-    $search = "%" . $_GET['query'] . "%";
-    $stmt = $conn->prepare("SELECT TransactionID FROM tbl_transaction WHERE TransactionID LIKE ?");
-    $stmt->bind_param("s", $search);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    $transactions = [];
-    while ($row = $result->fetch_assoc()) {
-        $transactions[] = $row;
-    }
-
-    echo json_encode($transactions);
-}
-
 ?>
 
 
 <html>
+<link rel="icon" href="images/agq_logo.png" type="image/ico">
 
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- provide viewport -->
     <meta charset="utf-8">
-    <meta name="keywords" content="">
-    <meta name="description" content="">
-    <title> AGQ Unnamed System </title>
+    <meta name="keywords" content=""> <!-- provide keywords -->
+    <meta name="description" content=""> <!-- provide description -->
+    <title> AGQ Unnamed System </title> <!-- provide title -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="icon" type="image/x-icon" href="/AGQ/images/favicon.ico">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="../css/EmployDash.css">
-
+    <link rel="stylesheet" type="text/css" href="../css/owndash.css">
 </head>
-<link rel="icon" href="images/agq_logo.png" type="image/ico">
 
 <body>
     <div class="header-container">
         <div class="search-container">
-            <input type="text" class="search-bar" id="search-input" placeholder="Search transactions..." oninput="fetchResults(this.value)" autocomplete="off">
+            <input type="text" class="search-bar" id="search-input" placeholder="Search transactions...">
             <div id="dropdown" class="dropdown" style="display: none;"></div>
-            <button class="search-button" onclick="window.location.href='agq_searchresults.php'"> SEARCH </button>
+            <button class="search-button" onclick="window.location.href='agq_searchresults.php'""> SEARCH </button>
+      </div>
+      <div class =" nav-link-container">
+                <a href="agq_members.php">Members</a>
+                <a href="?logout=true">Logout</a>
         </div>
-        <div class=" nav-link-container">
-            <a href="agq_members.php">Members</a>
-            <a href="?logout=true">Logout</a>
-        </div>
-    </div>
     </div>
 
 
@@ -112,6 +103,16 @@ if (isset($_GET['query'])) {
         <div class="company-head">
             <div class="company-title">
                 COMPANIES
+            </div>
+            <div>
+                <button class="add-company" onclick="window.location.href='agq_companyForm.php'">
+                    <span>NEW COMPANY </span>
+                    <div class="icon">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 5V19M5 12H19" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </div>
+                </button>
             </div>
         </div>
 
@@ -152,9 +153,8 @@ if (isset($_GET['query'])) {
             echo "No companies found in the database.";
         }
         ?>
-
-
 </body>
+
 <script>
     document.getElementById("search-input").addEventListener("input", function() {
         let query = this.value.trim();
@@ -175,9 +175,9 @@ if (isset($_GET['query'])) {
                     data.forEach(item => {
                         let div = document.createElement("div");
                         div.classList.add("dropdown-item");
-                        div.textContent = item.TransactionID;
+                        div.textContent = item.Company_name;
                         div.onclick = function() {
-                            document.getElementById("search-input").value = item.TransactionID;
+                            document.getElementById("search-input").value = item.Company_name;
                             dropdown.style.display = "none";
                         };
                         dropdown.appendChild(div);
@@ -189,9 +189,17 @@ if (isset($_GET['query'])) {
                 }
             })
             .catch(error => console.error("Error fetching search results:", error));
+
     });
 
 
+    let searchInput = document.getElementById("search-input");
+    let dropdown = document.getElementById("dropdown");
+
+
+    if (!searchInput.contains(event.target) && !dropdown.contains(event.target)) {
+        dropdown.style.display = "none";
+    }
 
     document.addEventListener("click", function(event) {
         if (!searchInput.contains(event.target) && !dropdown.contains(event.target)) {
@@ -210,4 +218,4 @@ if (isset($_GET['query'])) {
     document.querySelector('.search-button').addEventListener('click', () => redirectToSearchResults());
 </script>
 
-</html
+</html>
