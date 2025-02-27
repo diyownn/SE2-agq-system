@@ -104,6 +104,7 @@ $result = $conn->query($query);
                             <select class="form-control" name="Department" required>
                                 <option value="">--Select Department--</option>
                                 <option value="Admin">Admin</option>
+                                <option value="Export Brokerage">Export Brokerage</option>
                                 <option value="Export Forwarding">Export Forwarding</option>
                                 <option value="Import Brokerage">Import Brokerage</option>
                                 <option value="Import Forwarding">Import Forwarding</option>
