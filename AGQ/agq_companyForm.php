@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,22 +12,23 @@
     <!-- Font Link -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">    
-    
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+
     <!-- Local CSS -->
-    <link rel = "stylesheet" type="text/css" href="agq.css">
+    <link rel="stylesheet" type="text/css" href="agq.css">
 </head>
-    <!-- Website Icon -->
-    <link rel="icon" href="images/agq_logo.png" type="image/ico">
+<!-- Website Icon -->
+<link rel="icon" href="images/agq_logo.png" type="image/ico">
 
 <body style="background-color: white; background-image:none">
     <div class="container">
         <div class="row d-flex justify-content-center">
             <div class="col-sm-offset-4 col-sm-4" id="border1">
+                <a href="agq_owndash.php" style="text-decoration: none; color: black; font-size: x-large">←</a>
                 <p id="title" class="text-center" style="text-decoration: none; margin-top:0%">COMPANY FORM</p>
 
                 <form action="agq_companyForm.php" method="POST" class="form-content" enctype="multipart/form-data" onsubmit="return validate_form()">
-                
+
                     <img src="" class="d-block mx-auto" id="imgholder" alt="">
 
                     <input type="text" name=" compName" id="input3" class="form-control">
@@ -41,7 +43,7 @@
                         <input type="submit" id="button1" style="margin-top: 12%; margin-bottom: 0%;" value="Save">
                     </div>
 
-                    
+
 
                 </form>
 
@@ -57,32 +59,32 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    
+
     <script>
         function previewImage(event) {
             var imgDisplay = document.getElementById("imgholder");
             imgDisplay.src = URL.createObjectURL(event.target.files[0]);
         }
 
-        function validate_form(){
+        function validate_form() {
             var val_cimg = validate_compImg();
             var val_cname = validate_compName();
 
-            if (val_cimg && val_cname){
+            if (val_cimg && val_cname) {
 
                 return true;
 
-            }else {
+            } else {
                 return false;
             }
         }
 
-        function validate_compImg(){
+        function validate_compImg() {
             var imgDisplay = document.getElementById("imgholder");
             var cpic = document.getElementById("cPic");
             var cpic_error = document.getElementById("image-error");
 
-            if(cpic.files.length === 0){
+            if (cpic.files.length === 0) {
                 cpic.classList.add("is-invalid");
                 error_text = "*Please upload the company logo";
                 cpic_error.innerHTML = error_text;
@@ -90,7 +92,7 @@
 
                 return false;
 
-            }else{
+            } else {
                 cpic.classList.remove("is-invalid");
                 cpic_error.innerHTML = "";
                 cpic_error.classList.remove("invalid-feedback");
@@ -100,60 +102,60 @@
 
         }
 
-        function validate_compName(){
-            var comp =document.getElementById("input3");
-            var comp_error =document.getElementById("name-error");
+        function validate_compName() {
+            var comp = document.getElementById("input3");
+            var comp_error = document.getElementById("name-error");
 
-            if(comp.value == ''){
+            if (comp.value == '') {
                 comp.classList.add("is-invalid");
                 error_text = "*Please enter the company name";
                 comp_error.innerHTML = error_text;
                 comp_error.classList.add("invalid-feedback");
-                
+
                 return false;
 
-            }else{
+            } else {
                 var nameregex = /^.{2,25}$/;
 
-                if(!nameregex.test(comp.value)){ 
+                if (!nameregex.test(comp.value)) {
                     comp.classList.add("is-invalid");
                     error_text = "*Company Name must be 2-25 characters";
                     comp_error.innerHTML = error_text;
                     comp_error.classList.add("invalid-feedback");
-                    
+
                     return false;
                 }
 
                 var symbolregex = /[!@#$%^&*()_+\-={};:'"\\|,.<>\/?~]/;
 
-                if(symbolregex.test(comp.value)){ 
+                if (symbolregex.test(comp.value)) {
                     comp.classList.add("is-invalid");
                     error_text = "*Company Name must not contain symbols";
                     comp_error.innerHTML = error_text;
                     comp_error.classList.add("invalid-feedback");
-                    
+
                     return false;
                 }
-                
+
                 comp.classList.remove("is-invalid");
                 comp_error.innerHTML = "";
                 comp_error.classList.remove("invalid-feedback");
 
                 return true;
-            
+
 
             }
         }
-
     </script>
-    
+
 </body>
+
 </html>
 
 <?php
- require_once "db_agq.php";
+require_once "db_agq.php";
 
- if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['compPic']['tmp_name']) && isset($_POST['compName'])) {
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['compPic']['tmp_name']) && isset($_POST['compName'])) {
     $company_picture = file_get_contents($_FILES['compPic']['tmp_name']);
     $company_name = $_POST['compName'];
     $companyid = (string)random_int(1000000000, 9999999999);  // We are going to make this into an input. Random int for now
@@ -167,14 +169,14 @@
     $stmt->send_long_data(2, $company_picture);
 
     if ($stmt->execute()) {
-        ?>
+?>
         <script>
-                Swal.fire({
-                    icon: "success",
-                    title: "Company Added!",
-                    });
-            </script>
-        <?php
+            Swal.fire({
+                icon: "success",
+                title: "Company Added!",
+            });
+        </script>
+<?php
     } else {
         echo "Error uploading company: " . $stmt->error;
     }
@@ -182,7 +184,6 @@
 
     $stmt->close();
     $conn->close();
-    
-    }
+}
 
 ?>

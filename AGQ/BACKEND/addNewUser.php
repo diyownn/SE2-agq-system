@@ -1,50 +1,7 @@
 <?php
-$host = 'localhost';
-$dbname = 'agq_database';
-$username = 'root';
-$password = '';
-/*
-session_start();
+require 'db_agq.php';
 
-if (!isset($_SESSION['redirected'])) {
-    $_SESSION['redirected'] = true; // To compact pages
 
-    function encrypt_url($url, $key)
-    {
-        $iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length('aes-256-cbc'));
-        $encrypted_url = openssl_encrypt($url, 'aes-256-cbc', $key, 0, $iv);
-        return base64_encode($encrypted_url . '::' . $iv);
-    }
-
-    function decrypt_url($encrypted_url, $key)
-    {
-        list($encrypted_url, $iv) = explode('::', base64_decode($encrypted_url), 2);
-        return openssl_decrypt($encrypted_url, 'aes-256-cbc', $key, 0, $iv);
-    }
-
-    $original_url = 'http://localhost/SOFTENGOFFICIAL/AGQ/addNewUser.php';
-    $key = '0jRw1M89WhVwukjsZiZvhPPsRVFgK/IIQnLOYVEWDdi2TXJjx8QPOAOIxMH7b+uW';
-
-    $encrypted_url = encrypt_url($original_url, $key);
-    $encoded_url = urlencode($encrypted_url);
-
-    header('Location: addNewUser.php?url=' . $encoded_url);
-    exit;
-} else {
-
-    unset($_SESSION['redirected']);
-}
-*/
-$conn = new mysqli($host, $username, $password, $dbname);
-
-// Check for connection errors
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
-$errors = [];
-
-// Handle form submission to add new user to the database
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $user_id = (string) random_int(10000000, 99999999);
     $name = htmlspecialchars(trim($_POST['Name']));
@@ -119,6 +76,7 @@ $result = $conn->query($query);
     <div class="container">
         <div class="form-container">
             <div class="form-box">
+                <a href="agq_owndash.php" style="text-decoration: none; color: black; font-size: x-large">←</a>
                 <h3 class="text-center fw-bold">EMPLOYEE FORM</h3>
                 <?php if (!empty($errors)): ?>
                     <div class="alert alert-danger">
@@ -145,7 +103,7 @@ $result = $conn->query($query);
                         <div class="col-md-8">
                             <select class="form-control" name="Department" required>
                                 <option value="">--Select Department--</option>
-                                <option value="Export Brokerage">Export Brokerage</option>
+                                <option value="Admin">Admin</option>
                                 <option value="Export Forwarding">Export Forwarding</option>
                                 <option value="Import Brokerage">Import Brokerage</option>
                                 <option value="Import Forwarding">Import Forwarding</option>
