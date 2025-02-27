@@ -50,10 +50,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 */
 
 
+/*
 header("Cache-Control: no-cache, must-revalidate, max-age=0");
 header("Expires: Sat, 26 Jul 1997 05:00:00 GMT");
 header("Pragma: no-cache");
-
+*/
 
 /*if (!isset($_SESSION['department'])) {
     header("Location: agq_login.php");
