@@ -55,11 +55,11 @@ header("Expires: Sat, 26 Jul 1997 05:00:00 GMT");
 header("Pragma: no-cache");
 
 
-if (!isset($_SESSION['department'])) {
+/*if (!isset($_SESSION['department'])) {
     header("Location: agq_login.php");
     exit();
 }
-
+*/
 if (isset($_GET['logout']) && $_GET['logout'] == 'true') {
     session_unset();
     session_destroy();

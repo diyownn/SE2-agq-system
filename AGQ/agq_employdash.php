@@ -55,10 +55,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 //header("Pragma: no-cache");
 
 
-//if (!isset($_SESSION['Name'])) {
-//  header("Location: agq_login.php");
-//exit();
-//}
+/*if (!isset($_SESSION['department'])) {
+    header("Location: agq_login.php");
+    exit();
+}
+*/
 
 
 if (isset($_GET['logout']) && $_GET['logout'] == 'true') {
