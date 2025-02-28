@@ -113,6 +113,7 @@ $result = $conn->query($query);
 
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" type="image/x-icon" href="/AGQ/images/favicon.ico">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Members of the Company</title>
     <link rel="stylesheet" href="motc.css">
