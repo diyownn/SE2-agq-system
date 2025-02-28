@@ -72,7 +72,9 @@ DROP TABLE IF EXISTS `tbl_document`;
 CREATE TABLE `tbl_document` (
   `DocumentID` int(11) NOT NULL,
   `Document_type` varchar(20) NOT NULL,
-  `Document_picture` longblob NOT NULL
+  `Document_picture` longblob NOT NULL,
+  `Company_name` varchar(50) DEFAULT NULL,
+  `Department` varchar(25) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -82,6 +84,7 @@ CREATE TABLE `tbl_document` (
 
 LOCK TABLES `tbl_document` WRITE;
 /*!40000 ALTER TABLE `tbl_document` DISABLE KEYS */;
+INSERT INTO `tbl_document` VALUES (2147483647,'Manifesto','',NULL,NULL),(2147483647,'Summary','',NULL,NULL);
 /*!40000 ALTER TABLE `tbl_document` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -127,6 +130,8 @@ CREATE TABLE `tbl_expbrk` (
   `PCCI` mediumint(9) DEFAULT NULL,
   `Total` mediumint(9) DEFAULT NULL,
   `DocType` varchar(20) DEFAULT NULL,
+  `Company_name` varchar(50) DEFAULT NULL,
+  `Department` varchar(25) DEFAULT NULL,
   PRIMARY KEY (`RefNum`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -183,6 +188,8 @@ CREATE TABLE `tbl_expfwd` (
   `Telex` mediumint(9) DEFAULT NULL,
   `Total` mediumint(9) DEFAULT NULL,
   `DocType` varchar(20) DEFAULT NULL,
+  `Company_name` varchar(50) DEFAULT NULL,
+  `Department` varchar(25) DEFAULT NULL,
   PRIMARY KEY (`RefNum`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -256,6 +263,8 @@ CREATE TABLE `tbl_impbrk` (
   `Demurrage` mediumint(9) DEFAULT NULL,
   `Total` mediumint(9) DEFAULT NULL,
   `DocType` varchar(20) DEFAULT NULL,
+  `Company_name` varchar(50) DEFAULT NULL,
+  `Department` varchar(25) DEFAULT NULL,
   PRIMARY KEY (`RefNum`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -315,6 +324,8 @@ CREATE TABLE `tbl_impfwd` (
   `ExWorkCharges` mediumint(9) DEFAULT NULL,
   `Total` mediumint(9) DEFAULT NULL,
   `DocType` varchar(20) DEFAULT NULL,
+  `Company_name` varchar(50) DEFAULT NULL,
+  `Department` varchar(25) DEFAULT NULL,
   PRIMARY KEY (`RefNum`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -351,7 +362,7 @@ CREATE TABLE `tbl_user` (
 
 LOCK TABLES `tbl_user` WRITE;
 /*!40000 ALTER TABLE `tbl_user` DISABLE KEYS */;
-INSERT INTO `tbl_user` VALUES ('18609448','MARK','blair.pollojan@gmail.com','BLAIR123123!','Import Forwarding',NULL),('24664592','pogi','blair.pollojan@gmail.com','Hello123123!','Import Forwarding',NULL),('25804261','Pogipogi','blair.pollojan@gmail.com','HAYOP123123!','Export Brokerage',NULL),('31135747','mahusay','blair.pollojan@gmail.com','MAHUSAY123123!','Admin',NULL),('35198218','Blair','blair.pollojan@gmail.com','HELLO123123!','Export Brokerage',NULL),('36974062','MARK','blair.pollojan@gmail.com','HAYOP123123!','Export Brokerage',NULL),('53877894','pogi','blair.pollojan@gmail.com','Hello123123!','Import Forwarding',NULL),('70403503','Danikka','danikka.carreon.cics@ust.','BABYE123123!','Export Brokerage',NULL);
+INSERT INTO `tbl_user` VALUES ('18609448','MARK','blair.pollojan@gmail.com','BLAIR123123!','Import Forwarding',NULL),('24664592','pogi','blair.pollojan@gmail.com','Hello123123!','Import Forwarding',NULL),('25804261','Pogipogi','blair.pollojan@gmail.com','HAYOP123123!','Export Brokerage',NULL),('31135747','mahusay','blair.pollojan@gmail.com','MAHUSAY123123!','Admin',NULL),('35198218','Blair','blair.pollojan@gmail.com','HELLO123123!','Export Brokerage',NULL),('36974062','MARK','blair.pollojan@gmail.com','HAYOP123123!','Export Brokerage',NULL),('53877894','pogi','blair.pollojan@gmail.com','Hello123123!','Import Forwarding',NULL),('70403503','Danikka','danikka.carreon.cics@ust.edu.ph','BABYE123123!','Export Brokerage',792828);
 /*!40000 ALTER TABLE `tbl_user` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -364,4 +375,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-02-28  4:04:56
+-- Dump completed on 2025-02-28 20:44:37
