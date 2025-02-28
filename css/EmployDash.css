@@ -59,6 +59,21 @@ body {
     z-index: 1000;
 }
 
+.nav-link-container {
+  display: flex;
+  gap: 55px;
+  margin-left: 0px;
+  align-items: center;
+  padding: 0 0 20px;
+}
+
+.nav-link-container a {
+  text-decoration: none;
+  color: #94ae5e;
+  font-weight: bold;
+  font-size: 14px; 
+}
+
 
 .dropdown-item {
     padding: 10px;
