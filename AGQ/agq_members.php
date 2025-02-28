@@ -12,10 +12,10 @@ if ($conn->connect_error) {
 // Handle form submission (Create User)
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $UserID = (string) random_int(10000000, 99999999);
-    $name = htmlspecialchars(trim($_POST['Name']));
-    $email = htmlspecialchars(trim($_POST['Email']));
-    $password = $_POST['Password'];
-    $department = htmlspecialchars(trim($_POST['Department']));
+    $name = htmlspecialchars(trim($_POST['name']));
+    $email = htmlspecialchars(trim($_POST['email']));
+    $password = $_POST['password'];
+    $department = htmlspecialchars(trim($_POST['department']));
     $otp = null;
 
     if (empty($name) || empty($email) || empty($password) || empty($department)) {
@@ -28,11 +28,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         exit;
     }
 
-    $stmt = $conn->prepare("INSERT INTO tbl_user (User_id, Name, Email, Password, Department, Otp) VALUES (?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("sssssi", $User_id, $name, $email, $password, $department, $otp);
+    $stmt = $conn->prepare("INSERT INTO tbl_user (UserID, Name, Email, Password, Department, Otp) VALUES (?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("sssssi", $UserID, $name, $email, $password, $department, $otp);
 
     if ($stmt->execute()) {
-        $stmt = $conn->prepare("SELECT User_id, Name, Email, Department FROM tbl_user WHERE User_id = ?");
+        $stmt = $conn->prepare("SELECT UserID, Name, Email, Department FROM tbl_user WHERE UserID = ?");
         $stmt->bind_param("s", $UserID);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -50,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 // Handle deletion
 if (isset($_GET['delete_id'])) {
     $delete_id = $_GET['delete_id'];
-    $stmt = $conn->prepare("DELETE FROM tbl_user WHERE User_id = ?");
+    $stmt = $conn->prepare("DELETE FROM tbl_user WHERE UserID = ?");
     $stmt->bind_param("s", $delete_id);
 
     if ($stmt->execute() && $stmt->affected_rows > 0) {
@@ -66,7 +66,7 @@ if (isset($_GET['delete_id'])) {
 // Search functionality
 if (isset($_GET['search'])) {
     $searchTerm = "%" . $_GET['search'] . "%";
-    $stmt = $conn->prepare("SELECT User_id, Name, Email, Department FROM tbl_user WHERE Name LIKE ? OR Email LIKE ? OR Department LIKE ?");
+    $stmt = $conn->prepare("SELECT UserID, Name, Email, Department FROM tbl_user WHERE Name LIKE ? OR Email LIKE ? OR Department LIKE ?");
     $stmt->bind_param("sss", $searchTerm, $searchTerm, $searchTerm);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -81,7 +81,7 @@ if (isset($_GET['search'])) {
 }
 
 // Fetch all users initially
-$query = "SELECT User_id, Name, Email, Department FROM tbl_user";
+$query = "SELECT UserID, Name, Email, Department FROM tbl_user";
 $result = $conn->query($query);
 ?>
 
@@ -120,12 +120,12 @@ $result = $conn->query($query);
                 </thead>
                 <tbody id="userTableBody">
                     <?php while ($user = $result->fetch_assoc()): ?>
-                        <tr data-user-id="<?= htmlspecialchars($user['User_id']); ?>">
-                            <td><?= htmlspecialchars($user['User_id']); ?></td>
+                        <tr data-user-id="<?= htmlspecialchars($user['UserID']); ?>">
+                            <td><?= htmlspecialchars($user['UserID']); ?></td>
                             <td><?= htmlspecialchars($user['Name']); ?></td>
                             <td><?= htmlspecialchars($user['Email']); ?></td>
                             <td><?= htmlspecialchars($user['Department']); ?></td>
-                            <td><button class="delete-btn" onclick='deleteUser("<?= htmlspecialchars($user['User_id']); ?>")'>Delete</button></td>
+                            <td><button class="delete-btn" onclick='deleteUser("<?= htmlspecialchars($user['UserID']); ?>")'>Delete</button></td>
                         </tr>
                     <?php endwhile; ?>
                 </tbody>
@@ -133,64 +133,27 @@ $result = $conn->query($query);
         </div>
     </div>
 
-    <div id="userModal" class="container">
-        <div class="form-container">    
-            <div class="form-box">
-                <a href="agq_owndash.php" style="text-decoration: none; color: black; font-size: x-large">←</a>
-                <h3 class="text-center fw-bold">EMPLOYEE FORM</h3>
-                <form id="userForm">
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <input type="text" class="form-control" name="Name" placeholder="Full Name" required>
-                        </div>
-                        <div class="col-md-6">
-                            <input type="email" class="form-control" name="Email" placeholder="Email Address" required>
-                        </div>
-                    </div>
-                        <div class="row mb-3">
-                        <div class="col-md-4">
-                            <input type="password" class="form-control" name="Password" placeholder="Password" onpaste="return false" oncopy="return false" oncut="return false" required>
-                        </div>
-                        <div class="col-md-8">
-                            <select class="form-control" name="Department" required>
-                                <option value="">--Select Department--</option>
-                                <option value="Admin">Admin</option>
-                                <option value="Export Forwarding">Export Forwarding</option>
-                                <option value="Export Brokerage">Export Brokerage</option>
-                                <option value="Import Brokerage">Import Brokerage</option>
-                                <option value="Import Forwarding">Import Forwarding</option>
-                            </select>
-                        </div>
-                    </div>
-                    <button type="submit" class="btn btn-save">SAVE</button>
-                </form>
-            </div>
+    <div id="userModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>EMPLOYEE FORM</h2>
+            <form id="userForm">
+                <label for="name">NAME</label>
+                <input type="text" id="name" name="name" required>
+
+                <label for="email">EMAIL</label>
+                <input type="email" id="email" name="email" required>
+
+                <label for="password">PASSWORD</label>
+                <input type="password" id="password" name="password" required>
+
+                <label for="department">DEPARTMENT</label>
+                <input type="text" id="department" name="department" required>
+
+                <button type="submit">SAVE</button>
+            </form>
         </div>
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            let passwordField = document.querySelector('input[name="Password"]');
-
-            passwordField.addEventListener('paste', function(event) {
-                event.preventDefault();
-            });
-
-            passwordField.addEventListener('copy', function(event) {
-                event.preventDefault();
-            });
-
-            passwordField.addEventListener('cut', function(event) {
-                event.preventDefault();
-            });
-
-            document.getElementById("userForm").addEventListener("submit", function(event) {
-                event.preventDefault();
-                alert("User information submitted!");
-            });
-        });
-    </script>
 
     <script>
         function openModal() {
@@ -203,7 +166,7 @@ $result = $conn->query($query);
 
         function deleteUser(userId) {
             if (confirm("Are you sure you want to delete this user?")) {
-                fetch("motc.php?delete_id=" + encodeURIComponent(userId))
+                fetch("agq_members.php?delete_id=" + encodeURIComponent(userId))
                     .then(response => response.json())
                     .then(data => {
                         alert(data.message);
@@ -219,7 +182,7 @@ $result = $conn->query($query);
             event.preventDefault();
             let formData = new FormData(this);
 
-            fetch("motc.php", {
+            fetch("agq_members.php", {
                     method: "POST",
                     body: formData
                 })
@@ -249,7 +212,7 @@ $result = $conn->query($query);
         }
 
         function searchUser() {
-            fetch("motc.php?search=" + encodeURIComponent(document.getElementById('searchInput').value))
+            fetch("agq_members.php?search=" + encodeURIComponent(document.getElementById('searchInput').value))
                 .then(response => response.json())
                 .then(data => {
                     document.getElementById("userTableBody").innerHTML = data.users.map(user => `
