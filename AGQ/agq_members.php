@@ -125,7 +125,7 @@ $result = $conn->query($query);
                             <td><?= htmlspecialchars($user['Name']); ?></td>
                             <td><?= htmlspecialchars($user['Email']); ?></td>
                             <td><?= htmlspecialchars($user['Department']); ?></td>
-                            <td><button class="delete-btn" onclick='deleteUser("<?= htmlspecialchars($user['UserID']); ?>")'>Delete</button></td>
+                            <td><button class="delete-btn" onclick="deleteUser('<?= htmlspecialchars($user['UserID'], ENT_QUOTES); ?>')">Delete</button></td>
                         </tr>
                     <?php endwhile; ?>
                 </tbody>
@@ -147,8 +147,18 @@ $result = $conn->query($query);
                 <label for="password">PASSWORD</label>
                 <input type="password" id="password" name="password" required>
 
+
                 <label for="department">DEPARTMENT</label>
-                <input type="text" id="department" name="department" required>
+                <select id="department" name="department" required>
+                    <option value="">--Select Department--</option>
+                    <option value="Admin">Admin</option>
+                    <option value="Export Forwarding">Export Forwarding</option>
+                    <option value="Export Brokerage">Export Brokerage</option>
+                    <option value="Import Brokerage">Import Brokerage</option>
+                    <option value="Import Forwarding">Import Forwarding</option>
+                </select>
+
+
 
                 <button type="submit">SAVE</button>
             </form>
