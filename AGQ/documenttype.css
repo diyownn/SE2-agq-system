@@ -42,22 +42,27 @@ button:hover {
   box-shadow: 0 0 20px rgb(85, 114, 39);
 }
 
-.document-type-soa {
+.document-type-manifesto {
   background-color: rgb(144, 174, 94);
   border-width: 2px 2px 1px 2px;
 }
 
-.document-type-freight-invoice {
+.document-type-soa {
   background-color: hwb(78 70% 14%);
   border-width: 1px 2px 1px 2px;
 }
 
-.document-type-summary {
+.document-type-freight-invoice {
   background-color: rgb(144, 174, 94);
-  border-width: 1px 2px 1px 2px;
+  border-width: 2px 2px 1px 2px;
+}
+
+.document-type-summary {
+  background-color: rgb(207, 219, 179);
+  border-width: 1px 2px 2px 2px;
 }
 
 .document-type-others{
-  background-color: rgb(207, 219, 179);
-  border-width: 1px 2px 2px 2px;
+  background-color: rgb(144, 174, 94);
+  border-width: 2px 2px 1px 2px;
 }

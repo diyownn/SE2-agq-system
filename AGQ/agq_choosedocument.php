@@ -91,16 +91,19 @@ $conn->close();
             </span>
         </div>
         <div class="document-bars">
+            <button class="document-type-manifesto" onclick="window.location.href='agq_manifestoForm.php'">
+                MANIFESTO
+            </button>
             <button class="document-type-soa" onclick="window.location.href='agq_ownersoa.php'">
                 STATEMENT OF ACCOUNT
             </button>
             <button class="document-type-freight-invoice" onclick="window.location.href='agq_ownerfreightinvoice.php'">
                 FREIGHT INVOICE
             </button>
-            <button class="document-type-summary" onclick="window.location.href='agq_ownersummary.php'">
+            <button class="document-type-summary" onclick="window.location.href='agq_summaryForm.php'">
                 SUMMARY
             </button>
-            <button class="document-type-others" onclick="window.location.href='agq_ownerothers.php'">
+            <button class="document-type-others" onclick="window.location.href='agq_othersForm.php'">
                 OTHERS
             </button>
         </div>
