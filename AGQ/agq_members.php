@@ -1,33 +1,57 @@
 <?php
-$host = 'localhost';
-$dbname = 'agq_database';
-$username = 'root';
-$password = '';
-
-$conn = new mysqli($host, $username, $password, $dbname);
-if ($conn->connect_error) {
-    die(json_encode(["success" => false, "message" => "Connection failed: " . $conn->connect_error]));
-}
+require 'db_agq.php';
 
 // Handle form submission (Create User)
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $UserID = (string) random_int(10000000, 99999999);
-    $name = htmlspecialchars(trim($_POST['name']));
-    $email = htmlspecialchars(trim($_POST['email']));
-    $password = $_POST['password'];
+    $name = trim($_POST['name']);
+    $email = filter_var(trim($_POST['email']), FILTER_SANITIZE_EMAIL);
+    $password = "agqLogistics";
     $department = htmlspecialchars(trim($_POST['department']));
     $otp = null;
 
-    if (empty($name) || empty($email) || empty($password) || empty($department)) {
-        echo json_encode(["success" => false, "message" => "All fields are required."]);
+    $errors = [];
+
+    // Validate name (only letters and spaces)
+    if (empty($name) || !preg_match("/^[a-zA-Z\s]+$/", $name)) {
+        $errors[] = "Name must contain only letters and spaces.";
+    }
+
+    // Validate email format
+    if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $errors[] = "Invalid email format.";
+    }
+
+    // Validate password (ensure it's not empty)
+    if (empty($password)) {
+        $errors[] = "Password is required.";
+    }
+
+    // Validate department selection
+    if (empty($department)) {
+        $errors[] = "Please select a department.";
+    }
+
+    // Check for errors before proceeding
+    if (!empty($errors)) {
+        echo json_encode(["success" => false, "errors" => $errors]);
         exit;
     }
 
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        echo json_encode(["success" => false, "message" => "Invalid email format."]);
+    $checkEmailStmt = $conn->prepare("SELECT Email FROM tbl_user WHERE Email = ?");
+    $checkEmailStmt->bind_param("s", $email);
+    $checkEmailStmt->execute();
+    $checkEmailStmt->store_result();
+
+    if ($checkEmailStmt->num_rows > 0) {
+        echo json_encode(["success" => false, "errors" => ["Email already exists. Please use a different email."]]);
         exit;
     }
+    $checkEmailStmt->close();
 
+    //$hashed_password = password_hash($password, PASSWORD_BCRYPT);
+
+    // Insert into database
     $stmt = $conn->prepare("INSERT INTO tbl_user (UserID, Name, Email, Password, Department, Otp) VALUES (?, ?, ?, ?, ?, ?)");
     $stmt->bind_param("sssssi", $UserID, $name, $email, $password, $department, $otp);
 
@@ -46,7 +70,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $stmt->close();
     exit;
 }
-
 // Handle deletion
 if (isset($_GET['delete_id'])) {
     $delete_id = $_GET['delete_id'];
@@ -137,15 +160,17 @@ $result = $conn->query($query);
         <div class="modal-content">
             <span class="close" onclick="closeModal()">&times;</span>
             <h2>EMPLOYEE FORM</h2>
+
+            <div id="modalErrors" style="color: red; display: none;"></div>
+
+
             <form id="userForm">
+
                 <label for="name">NAME</label>
                 <input type="text" id="name" name="name" required>
 
                 <label for="email">EMAIL</label>
                 <input type="email" id="email" name="email" required>
-
-                <label for="password">PASSWORD</label>
-                <input type="password" id="password" name="password" required>
 
 
                 <label for="department">DEPARTMENT</label>
@@ -168,6 +193,7 @@ $result = $conn->query($query);
     <script>
         function openModal() {
             document.getElementById("userModal").style.display = "flex";
+            document.getElementById("modalErrors").style.display = "none";
         }
 
         function closeModal() {
@@ -236,6 +262,56 @@ $result = $conn->query($query);
                     `).join('');
                 });
         }
+
+        // Function to display errors in the modal
+        function showErrorMessage(id, message) {
+            const errorElement = document.getElementById(id);
+            if (errorElement) {
+                errorElement.textContent = message;
+                errorElement.style.display = "block";
+            } else {
+                console.error(`Element with ID '${id}' not found.`);
+            }
+        }
+
+
+        // Handle form submission
+        document.getElementById("userForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            let formData = new FormData(this);
+
+            fetch("agq_members.php", {
+                    method: "POST",
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Response Data:", data); // Debugging log
+                    let modalErrors = document.getElementById("modalErrors");
+
+                    if (!data.success) {
+                        if (data.errors && data.errors.length > 0) {
+                            modalErrors.innerHTML = data.errors.map(err => `<p>${err}</p>`).join('');
+                            modalErrors.style.display = "block";
+                        } else {
+                            modalErrors.innerHTML = "<p>An unknown error occurred.</p>";
+                            modalErrors.style.display = "block";
+                        }
+                    } else {
+                        modalErrors.style.display = "none"; // Hide previous errors
+                        addRowToTable(data.user);
+                        closeModal();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error submitting form:', error);
+                    let modalErrors = document.getElementById("modalErrors");
+                    if (modalErrors) {
+                        modalErrors.innerHTML = "<p>Failed to submit. Please try again.</p>";
+                        modalErrors.style.display = "block";
+                    }
+                });
+        });
     </script>
 
 </body>
