@@ -88,7 +88,6 @@ if (!empty($search_query)) {
 
 
 <html>
-
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- provide viewport -->
     <meta charset="utf-8">
@@ -111,7 +110,7 @@ if (!empty($search_query)) {
             <div id="dropdown" class="dropdown" style="display: none;"></div>
             <button class="search-button" onclick="window.location.href='agq_searchresults.php'"> SEARCH </button>
         </div>
-        <div class=" nav-link-container">
+        <div class="nav-link-container">
             <a href="?logout=true">Logout</a>
         </div>
     </div>

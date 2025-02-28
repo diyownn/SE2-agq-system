@@ -186,9 +186,28 @@ input {
     border: 1px solid black;
     background-color: #d3d3d3;
     font-size: 14px;
-    width: 92%;
     margin-top: 5px;
 }
+
+#department {
+    display: block !important;
+    padding: 10px !important;
+    padding-right: 25px !important; 
+    margin-bottom: 10px !important;
+    border: 1px solid black !important;
+    background-color: #d3d3d3 !important;
+    font-size: 14px !important;
+    width: 100% !important;
+    margin-top: 5px !important;
+    appearance: none !important; 
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="black"><path d="M7 10l5 5 5-5z"/></svg>') !important; 
+    background-repeat: no-repeat !important;
+    background-position: calc(100% - 10px) center !important; 
+    background-size: 16px !important;
+}
+
 
 button {
     background-color: #8b9e62;

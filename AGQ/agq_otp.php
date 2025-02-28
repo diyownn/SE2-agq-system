@@ -128,7 +128,7 @@
     $resend_otp = "UPDATE tbl_user SET Otp = NULL WHERE Email = '$email'";
     $conn->query($resend_otp);
 
-    $otp = rand(000000,999999);
+    $otp = rand(100000,999999);
                     
     $otpQuery = "UPDATE tbl_user SET Otp = '$otp' WHERE Email = '$email'";
     $conn->query($otpQuery);

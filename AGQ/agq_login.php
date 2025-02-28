@@ -121,7 +121,7 @@
                 header("location: agq_dashCatcher.php");
 
                 if ($pword == "agqLogistics") {
-                    $otp = rand(000000, 999999);
+                    $otp = rand(100000, 999999);
 
                     $otpQuery = "UPDATE tbl_user SET Otp = '$otp' WHERE Email = '$email' AND Password = '$pass'";
                     $conn->query($otpQuery);

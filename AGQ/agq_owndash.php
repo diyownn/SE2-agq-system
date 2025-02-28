@@ -93,7 +93,7 @@ if (isset($_GET['logout']) && $_GET['logout'] == 'true') {
             <div id="dropdown" class="dropdown" style="display: none;"></div>
             <button class="search-button" onclick="window.location.href='agq_searchresults.php'""> SEARCH </button>
       </div>
-      <div class =" nav-link-container">
+      <div class ="nav-link-container">
                 <a href="agq_members.php">Members</a>
                 <a href="?logout=true">Logout</a>
         </div>

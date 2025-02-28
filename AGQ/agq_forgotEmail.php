@@ -69,7 +69,7 @@
         $queryVerify = $conn->query($emailVerify);
 
         if ($queryVerify->num_rows>0) {
-            $otp = rand(000000,999999);
+            $otp = rand(100000,999999);
                     
             $otpQuery = "UPDATE tbl_user SET Otp = '$otp' WHERE Email = '$email'";
             $conn->query($otpQuery);
