@@ -5,8 +5,16 @@ body {
   
   .search-container {
     display: flex;
-    max-width: 600px;
+    width: 600px;
     margin: 0 auto 20px;
+  }
+  
+  .header-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 40px;
   }
   
   .search-bar {
@@ -138,3 +146,22 @@ body {
     width: 200px;
     height: 200px;
   }
+
+  @media screen and (max-width: 768px) {
+    .header-container {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    .search-container {
+        width: 100%;
+        max-width: 400px;
+    }
+    .company-container-row {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    .company-container {
+        margin: 10px;
+    }
+}

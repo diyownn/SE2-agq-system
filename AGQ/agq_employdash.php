@@ -98,7 +98,7 @@ if (!empty($search_query)) {
     <link rel="icon" type="image/x-icon" href="/AGQ/images/favicon.ico">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="../css/EmployDash.css">
+    <link rel="stylesheet" type="text/css" href="../css/employDash.css">
 
 </head>
 <link rel="icon" href="images/agq_logo.png" type="image/ico">
@@ -227,4 +227,4 @@ if (!empty($search_query)) {
     document.querySelector('.search-button').addEventListener('click', () => redirectToSearchResults());
 </script>
 
-</html
+</html>
