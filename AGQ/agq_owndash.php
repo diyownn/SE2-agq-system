@@ -219,8 +219,9 @@ if (!empty($search_query)) {
         }
 
 
-        searchInput.addEventListener("input", function() {
-            let query = searchInput.value.trim();
+        document.getElementById("search-input").addEventListener("input", function() {
+            let query = this.value.trim();
+            let dropdown = document.getElementById("dropdown");
 
             if (query.length === 0) {
                 dropdown.style.display = "none";
@@ -233,34 +234,43 @@ if (!empty($search_query)) {
                     console.log("API Response:", data);
                     dropdown.innerHTML = "";
 
-                    if (data.length > 0 && !data.error) {
-                        data.forEach(item => {
+                    if (!data || !Array.isArray(data.company)) {
+                        console.error("Error: API response does not contain a valid 'company' array!", data);
+                        return;
+                    }
+
+                    const companies = data.company;
+                    dropdown.innerHTML = "";
+
+                    if (companies.length > 0) {
+                        companies.forEach(item => {
                             let div = document.createElement("div");
                             div.classList.add("dropdown-item");
                             div.textContent = item.Company_name;
                             div.onclick = function() {
-                                searchInput.value = item.Company_name;
+                                document.getElementById("search-input").value = item.Company_name;
                                 dropdown.style.display = "none";
                             };
                             dropdown.appendChild(div);
                         });
-
                         dropdown.style.display = "block";
                     } else {
                         dropdown.style.display = "none";
+                        console.log("Cannot handle ")
                     }
                 })
                 .catch(error => console.error("Error fetching search results:", error));
         });
 
-        
+
+        // Hide dropdown when clicking outside
         document.addEventListener("click", function(event) {
             if (!searchInput.contains(event.target) && !dropdown.contains(event.target)) {
                 dropdown.style.display = "none";
             }
         });
 
-    
+        // Perform search when search button is clicked
         searchButton.addEventListener("click", function() {
             let query = searchInput.value.trim();
 
@@ -270,7 +280,34 @@ if (!empty($search_query)) {
             }
 
             if (query === "") {
-                alert("Please enter a search term.");
+
+                fetch("FETCH_RESULTS.php")
+                    .then(response => response.json())
+                    .then(data => {
+                        container.innerHTML = "";
+
+                        if (!data.company || data.company.length === 0) {
+                            container.innerHTML = "<p>No Companies found.</p>";
+                            return;
+                        }
+
+                        data.company.forEach(company => {
+                            let companyDiv = document.createElement("div");
+                            companyDiv.classList.add("company-container-row");
+
+                            companyDiv.innerHTML = `
+                        <div class="company-button">
+                            <button class="company-container" onclick="window.location.href='login.php'">
+                                <img class="company-logo" src="data:image/jpeg;base64,${company.Company_picture}" alt="${company.Company_name}">
+                            </button>
+                        </div>
+                    `;
+
+                            container.appendChild(companyDiv);
+                        });
+                    })
+                    .catch(error => console.error("Error fetching companies:", error));
+
                 return;
             }
 
