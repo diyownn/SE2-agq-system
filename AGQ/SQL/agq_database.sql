@@ -73,6 +73,9 @@ CREATE TABLE `tbl_document` (
   `DocumentID` int(11) NOT NULL,
   `Document_type` varchar(20) NOT NULL,
   `Document_picture` longblob NOT NULL,
+  `Prepared_by` varchar(25) DEFAULT NULL,
+  `Creation_date` date DEFAULT NULL,
+  `Notes` varchar(255) DEFAULT NULL,
   `Company_name` varchar(50) DEFAULT NULL,
   `Department` varchar(25) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -84,7 +87,7 @@ CREATE TABLE `tbl_document` (
 
 LOCK TABLES `tbl_document` WRITE;
 /*!40000 ALTER TABLE `tbl_document` DISABLE KEYS */;
-INSERT INTO `tbl_document` VALUES (2147483647,'Manifesto','',NULL,NULL),(2147483647,'Summary','',NULL,NULL);
+INSERT INTO `tbl_document` VALUES (2147483647,'Manifesto','',NULL,NULL,NULL,NULL,NULL),(2147483647,'Summary','',NULL,NULL,NULL,NULL,NULL);
 /*!40000 ALTER TABLE `tbl_document` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -129,6 +132,11 @@ CREATE TABLE `tbl_expbrk` (
   `Handling` mediumint(9) DEFAULT NULL,
   `PCCI` mediumint(9) DEFAULT NULL,
   `Total` mediumint(9) DEFAULT NULL,
+  `Prepared_by` varchar(25) DEFAULT NULL,
+  `Approved_by` varchar(25) DEFAULT NULL,
+  `Received_by` varchar(25) DEFAULT NULL,
+  `Printed_name` varchar(25) DEFAULT NULL,
+  `Creation_date` date DEFAULT NULL,
   `DocType` varchar(20) DEFAULT NULL,
   `Company_name` varchar(50) DEFAULT NULL,
   `Department` varchar(25) DEFAULT NULL,
@@ -187,6 +195,11 @@ CREATE TABLE `tbl_expfwd` (
   `Storage` mediumint(9) DEFAULT NULL,
   `Telex` mediumint(9) DEFAULT NULL,
   `Total` mediumint(9) DEFAULT NULL,
+  `Prepared_by` varchar(25) DEFAULT NULL,
+  `Approved_by` varchar(25) DEFAULT NULL,
+  `Received_by` varchar(25) DEFAULT NULL,
+  `Printed_name` varchar(25) DEFAULT NULL,
+  `Creation_date` date DEFAULT NULL,
   `DocType` varchar(20) DEFAULT NULL,
   `Company_name` varchar(50) DEFAULT NULL,
   `Department` varchar(25) DEFAULT NULL,
@@ -262,6 +275,11 @@ CREATE TABLE `tbl_impbrk` (
   `LateCharge` mediumint(9) DEFAULT NULL,
   `Demurrage` mediumint(9) DEFAULT NULL,
   `Total` mediumint(9) DEFAULT NULL,
+  `Prepared_by` varchar(25) DEFAULT NULL,
+  `Approved_by` varchar(25) DEFAULT NULL,
+  `Received_by` varchar(25) DEFAULT NULL,
+  `Printed_name` varchar(25) DEFAULT NULL,
+  `Creation_date` date DEFAULT NULL,
   `DocType` varchar(20) DEFAULT NULL,
   `Company_name` varchar(50) DEFAULT NULL,
   `Department` varchar(25) DEFAULT NULL,
@@ -323,6 +341,11 @@ CREATE TABLE `tbl_impfwd` (
   `ShippingLine` mediumint(9) DEFAULT NULL,
   `ExWorkCharges` mediumint(9) DEFAULT NULL,
   `Total` mediumint(9) DEFAULT NULL,
+  `Prepared_by` varchar(25) DEFAULT NULL,
+  `Approved_by` varchar(25) DEFAULT NULL,
+  `Received_by` varchar(25) DEFAULT NULL,
+  `Printed_name` varchar(25) DEFAULT NULL,
+  `Creation_date` date DEFAULT NULL,
   `DocType` varchar(20) DEFAULT NULL,
   `Company_name` varchar(50) DEFAULT NULL,
   `Department` varchar(25) DEFAULT NULL,
@@ -375,4 +398,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-02-28 20:44:37
+-- Dump completed on 2025-03-01 20:59:28
