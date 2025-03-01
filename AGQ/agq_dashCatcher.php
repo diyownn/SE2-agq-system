@@ -53,7 +53,7 @@ if ($role == 'admin' || $role == 'Admin' || $role == 'owner' || $role == 'Owner'
         return openssl_decrypt($encrypted_url, 'aes-256-cbc', $key, 0, $iv);
     }
 
-    $original_url = 'http://localhost/SOFT%20ENG/owndash.php';
+    $original_url = 'http://localhost/SOFT%20ENG/employdash.php';
     $key = '0jRw1M89WhVwukjsZiZvhPPsRVFgK/IIQnLOYVEWDdi2TXJjx8QPOAOIxMH7b+uW';
 
     $encrypted_url = encrypt_url($original_url, $key);
