@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enter OTP | AGQ</title>
+    <title>OTP | AGQ</title>
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
@@ -23,22 +23,21 @@
     <div class="container">
         <div class="row d-flex justify-content-center">
             <div class="col-sm-offset-4 col-sm-4" id="border">
+                <a href="agq_forgotEmail.php" class="back-button" style="text-decoration: none; color: black; font-size: x-large">←</a>
                 <img src="images/agq_logo.png" alt="logo" class="mx-auto d-block" id="agqlogo">
                 <p id="title" class="text-center">Enter OTP</p>
 
-                <form action="agq_otp.php" method="post" class="form-content" onsubmit="return validate_otp()">
+                <form id="otpForm" action="agq_otp.php" method="post" class="form-content" onsubmit="return validate_otp()">
                     <div class="d-flex justify-content-center flex-column align-items-center" style="margin-top: 5%;">
                         <input type="number" name="otp" id="inputs" class="form-control" style="width: 160px;">
                         <div id="otp-error" class="text-center mt-2"></div>
                     </div>
 
                     <div class="d-flex justify-content-center">
-                        <input type="submit" id="button1" style="margin-bottom: 50.5%;" value="SUBMIT">
-                        <input type="button" id="button1" name="resend" style="margin-bottom: 50.5%; margin-left: 5px" value="RESEND">
+                        <button type="submit" name="submit_otp" id="button1" style="margin-bottom: 50.5%;">SUBMIT</button>
+                        <button type="button" id="button1_1" style="margin-bottom: 50.5%; margin-left: 5px;">RESEND</button>
                     </div>
                 </form>
-
-                <a href="agq_forgotEmail.php" style="text-decoration: none; color: black; font-size: x-large; margin:0%; padding:0%">←</a>
 
             </div>
         </div>
@@ -52,28 +51,28 @@
     $email = isset($_SESSION['email']) ? $_SESSION['email'] : '';
 
 
-    if (!isset($_SESSION['login_attempts'])) {
-        $_SESSION['login_attempts'] = 0; // Initialize login attempts counter if not set
+    if (!isset($_SESSION['otp_attempts'])) {
+        $_SESSION['otp_attempts'] = 0; // Initialize login attempts counter if not set
     }
-    if (!isset($_SESSION['last_attempt_time'])) {
-        $_SESSION['last_attempt_time'] = time(); // Initialize last attempt time if not set
+    if (!isset($_SESSION['last_otpattempt_time'])) {
+        $_SESSION['last_otpattempt_time'] = time(); // Initialize last attempt time if not set
     }
-    if (!isset($_SESSION['lockout_start'])) {
-        $_SESSION['lockout_start'] = 0; // Initialize lockout start time if not set
+    if (!isset($_SESSION['otplockout_start'])) {
+        $_SESSION['otplockout_start'] = 0; // Initialize lockout start time if not set
     }
 
     // Reset login attempts if 5 minutes have passed since the last lockout period
-    if (time() - $_SESSION['last_attempt_time'] > 300) {
-        $_SESSION['login_attempts'] = 4;
-        $_SESSION['lockout_start'] = 0; // Reset lockout start time
+    if (time() - $_SESSION['last_otpattempt_time'] > 300) {
+        $_SESSION['otp_attempts'] = 4;
+        $_SESSION['otplockout_start'] = 0; // Reset lockout start time
     }
 
     if (isset($_POST['otp']) && $_POST['otp'] != NULL) {
         
         $otp = $_POST['otp'];
 
-        if ($_SESSION['login_attempts'] >= 5) {
-            $_SESSION['lockout_start'] = time();
+        if ($_SESSION['otp_attempts'] >= 5) {
+            $_SESSION['otplockout_start'] = time();
             echo "<script>
                     Swal.fire({
                         position: 'center',
@@ -92,8 +91,8 @@
 
         if ($queryVerify->num_rows == 1) {
 
-            $_SESSION['login_attempts'] = 0;
-            $_SESSION['lockout_start'] = 0; // Reset lockout start time
+            $_SESSION['otp_attempts'] = 0;
+            $_SESSION['otplockout_start'] = 0; // Reset lockout start time
 
             $update_pass = "UPDATE tbl_user SET Password = '', Otp = NULL WHERE Email = '$email'";
             $conn->query($update_pass);
@@ -102,8 +101,8 @@
             header("Location: agq_resetPass.php");
 
         } else {
-            $_SESSION['login_attempts']++;
-            $_SESSION['last_attempt_time'] = time();
+            $_SESSION['otp_attempts']++;
+            $_SESSION['last_otpattempt_time'] = time();
 
             ?>
             <script>
@@ -119,23 +118,24 @@
             <?php
 
             }
-
-            $conn->close();
         }
 
-} if (isset($_POST['resend'])) {
+    } 
 
-    $resend_otp = "UPDATE tbl_user SET Otp = NULL WHERE Email = '$email'";
-    $conn->query($resend_otp);
+    if (isset($_POST['resend'])) {
+    
+        $resend_otp = "UPDATE tbl_user SET Otp = NULL WHERE Email = '$email'";
+        $conn->query($resend_otp);
 
-    $otp = rand(100000,999999);
+        $otp = rand(100000,999999);
                     
-    $otpQuery = "UPDATE tbl_user SET Otp = '$otp' WHERE Email = '$email'";
-    $conn->query($otpQuery);
+        $otpQuery = "UPDATE tbl_user SET Otp = '$otp' WHERE Email = '$email'";
+        $conn->query($otpQuery);
 
-    emailVerification($email, $otp);
+        emailVerification($email, $otp);
+    }
 
-}
+    $conn->close();
 
 ?>
 
@@ -149,6 +149,15 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
+        document.getElementById("button1_1").addEventListener("click", function() {
+        var form = document.getElementById("otpForm");
+        var resendInput = document.createElement("input");
+        resendInput.type = "hidden";
+        resendInput.name = "resend";
+        resendInput.value = "1";
+        form.appendChild(resendInput);
+        form.submit();
+    });
         function validate_otp(){
             var otp = document.getElementById("inputs");
             var otp_error = document.getElementById("otp-error");

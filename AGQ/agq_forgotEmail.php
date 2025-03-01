@@ -23,20 +23,20 @@
     <div class="container">
         <div class="row d-flex justify-content-center">
             <div class="col-sm-offset-4 col-sm-4" id="border">
+            <a href="agq_login.php" class="back-button" style="text-decoration: none; color: black; font-size: x-large">←</a>
                 <img src="images/agq_logo.png" alt="logo" class="mx-auto d-block" id="agqlogo">
                 <p id="title" class="text-center">Forgot Password</p>
 
-                <form action="agq_forgotEmail.php" method="post" class="form-content">
+                <form action="agq_forgotEmail.php" method="post" class="form-content" enctype="multipart/form-data" onsubmit="return validate_email()">
                     <label for="inputs" class="form-label" id="labels">Enter email</label>
-                    <input type="text" name="email" id="inputs" class="form-control" required> 
+                    <input type="text" name="email" id="inputs" class="form-control">
+                    <div id="email-error"></div>
 
                     <div class="d-flex justify-content-center">
                         <input type="submit" id="button1" value="NEXT">
                     </div>
 
                 </form>
-
-                <a href="agq_login.php" style="text-decoration: none; color: black; font-size: x-large">←</a>
 
             </div>
         </div>
@@ -51,9 +51,6 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-</body>
-</html>
 
 <?php
     session_start();
@@ -99,3 +96,39 @@
 
     }
 ?>
+    <script>
+         function validate_email() {
+            var email = document.getElementById("inputs");
+            var email_error = document.getElementById("email-error");
+
+            if (email.value == '') {
+                email.classList.add("is-invalid");
+                error_text = "*Please enter your email address";
+                email_error.innerHTML = error_text;
+                email_error.classList.add("invalid-feedback");
+
+                return false;
+            } else {
+                var emailregex = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9_.+-]+$/;
+
+                if (!emailregex.test(email.value)) {
+                    email.classList.add("is-invalid");
+                    error_text = "*Email should be in the format xxx@xxx";
+                    email_error.innerHTML = error_text;
+                    email_error.classList.add("invalid-feedback");
+
+                    return false;
+                }
+
+                email.classList.remove("is-invalid");
+                email_error.innerHTML = "";
+                email_error.classList.remove("invalid-feedback");
+
+                return true;
+            }
+        }
+    </script>
+
+</body>
+</html>
+
