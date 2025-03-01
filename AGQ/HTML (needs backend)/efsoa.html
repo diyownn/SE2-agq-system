@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statement of Account</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f8f2;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        .container {
+         width: 60%;
+         background: white;
+        padding: 20px;
+        border: 15px solid #c5d1a2;
+        text-align: center;
+
+        }
+        .header {
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+        .section input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            min-height: 40px;
+        }
+        .radio-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 14px;
+        }
+        .radio-group input {
+            width: 14px;
+            height: 14px;
+        }
+        .table-container {
+            width: 97%;
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+        .table-header {
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 5px;
+            margin-bottom: 5px;
+        }
+        .table-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 5px;
+        }
+        .table-row input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .footer {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .save-btn {
+            background: #8ea572;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #package-details {
+            display: none;
+            width: 100%;
+        }
+        .hidden {
+            display: none;
+        }
+    @media (max-width: 600px) {
+            .container {
+                width: 100%;
+                padding: 15px;
+                border-width: 8px;
+            }
+            .section {
+                flex-direction: column;
+                gap: 5px;
+            }
+            .table-row {
+                flex-direction: column;
+                gap: 5px;
+            }
+            .table-header {
+                flex-direction: column;
+                text-align: left;
+            }
+            .save-btn {
+                width: 100%;
+            }
+        }
+    </style>
+    <script>
+        function togglePackageField() {
+            document.getElementById("package-details").style.display = "block";
+            updateReimbursableCharges();
+        }
+
+        function updateReimbursableCharges() {
+            const lclSelected = document.getElementById("lcl").checked;
+            const containerSelected = document.getElementById("container").checked;
+            const chargesTable = document.getElementById("charges-table");
+            chargesTable.innerHTML = ""; // Clear existing charges
+
+            if (lclSelected) {
+                const lclCharges = [
+                    "95% Ocean Freight",
+                    "Docs Fee",
+                    "LCL Charge",
+                    "Export Processing",
+                    "Customs Forms/Stamps",
+                    "Arrastre/Wharfage",
+                    "E2M Fee",
+                    "Others",
+                    "Notes"
+                ];
+                generateFixedCharges(lclCharges);
+            } else if (containerSelected) {
+                const containerCharges = [
+                    "THC",
+                    "Docs Fee",
+                    "FAF",
+                    "Seal Fee",
+                    "Storage",
+                    "Telex Fee",
+                    "Others",
+                    "Notes"
+                ];
+                generateFixedCharges(containerCharges);
+            }
+        }
+
+        function generateFixedCharges(charges) {
+            const chargesTable = document.getElementById("charges-table");
+            charges.forEach(charge => {
+                const row = document.createElement("div");
+                row.className = "table-row";
+                row.innerHTML = `
+                    <input type="text" value="${charge}" readonly>
+                    <input type="text" placeholder="Enter amount">
+                `;
+                chargesTable.appendChild(row);
+            });
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">STATEMENT OF ACCOUNT</div>
+        
+        <div class="section">
+            <input type="text" placeholder="To" style="width: 70%">
+            <input type="text" placeholder="Date" style="width: 28%">
+        </div>
+        <div class="section">
+            <input type="text" placeholder="Address" style="width: 100%">
+        </div>
+        <div class="section">
+            <input type="text" placeholder="TIN" style="width: 48%">
+            <input type="text" placeholder="Attention" style="width: 48%">
+        </div>
+        <div class="section">
+            <input type="text" placeholder="Vessel" style="width: 32%">
+            <input type="text" placeholder="ETD/ETA" style="width: 32%">
+            <input type="text" placeholder="Reference No" style="width: 32%">
+        </div>
+        <div class="section">
+            <input type="text" placeholder="Destination/Origin" style="width: 48%">
+            <input type="text" placeholder="E.R" style="width: 22%">
+            <input type="text" placeholder="BL/HBL No" style="width: 22%">
+        </div>
+        <div class="section">
+            <input type="text" placeholder="Nature of Goods" style="width: 100%">
+        </div>
+        <div class="section">
+            <input type="text" placeholder="Packages" style="width: 32%">
+            <input type="text" placeholder="Weight" style="width: 32%">
+            <input type="text" placeholder="Measurement" style="width: 32%">
+        </div>
+        <div class="section radio-group">
+            <label>Package Type:</label>
+            <label>
+                <input type="radio" id="lcl" name="package" value="LCL" onclick="togglePackageField()"> LCL
+            </label>
+            <label>
+                <input type="radio" id="container" name="package" value="Full Container" onclick="togglePackageField()"> Full Container
+            </label>
+        </div>
+        <div class="section" id="package-details">
+            <input type="text" placeholder="Enter package details" style="width: 100%">
+        </div>
+        <div class="table-container">
+            <div class="table-header">
+                <span>Reimbursable Charges</span>
+                <span>Amount</span>
+            </div>
+            <div id="charges-table"></div>
+        </div>
+        <div class="section">
+            <input type="text" placeholder="Total" style="width: 100%">
+        </div>
+        <div class="section">
+            <input type="text" placeholder="Prepared by" style="width: 48%">
+            <input type="text" placeholder="Approved by" style="width: 48%">
+        </div>
+        <div class="section">
+            <input type="text" placeholder="Received by" style="width: 24%">
+            <input type="text" placeholder="Signature" style="width: 24%">
+            <input type="text" placeholder="Printed Name" style="width: 24%">
+            <input type="text" placeholder="Date" style="width: 24%">
+        </div>
+        <div class="footer">
+            <button class="save-btn">Save</button>
+        </div>
+    </div>
+</body>
+</html>
