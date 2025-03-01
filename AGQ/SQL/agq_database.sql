@@ -270,6 +270,7 @@ CREATE TABLE `tbl_impbrk` (
   `EarlyGateIn` mediumint(9) DEFAULT NULL,
   `TABS` mediumint(9) DEFAULT NULL,
   `DocsFee` mediumint(9) DEFAULT NULL,
+  `DetentionCharges` mediumint(9) DEFAULT NULL,
   `ContainerDeposit` mediumint(9) DEFAULT NULL,
   `LateCollection` mediumint(9) DEFAULT NULL,
   `LateCharge` mediumint(9) DEFAULT NULL,
@@ -398,4 +399,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-03-01 20:59:28
+-- Dump completed on 2025-03-01 21:33:46
