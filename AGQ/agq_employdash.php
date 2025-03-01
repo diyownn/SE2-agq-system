@@ -3,6 +3,9 @@ require 'db_agq.php';
 
 session_start();
 
+$role = isset($_SESSION['dept']) ? $_SESSION['dept'] : '';
+
+
 /*
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
    
