@@ -5,56 +5,25 @@ session_start();
 
 $role = isset($_SESSION['dept']) ? $_SESSION['dept'] : '';
 
-
 /*
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-   
-    $name = isset($_POST['Name']) ? htmlspecialchars(trim($_POST['Name'])) : '';
-    $department = isset($_POST['Department']) ? htmlspecialchars(trim($_POST['Department'])) : '';
-
-
-    if (!empty($name) && !empty($department)) {
-       
-        $_SESSION['Name'] = $name;
-        $_SESSION['Department'] = $department;
-
-       
-        header("Location: " . $_SERVER['PHP_SELF']);
-        exit();
-    } else {
-        echo "Please provide all required information.";
-    }
+if (!isset($_SESSION['department'])) {
+    header("Location: agq_login.php");
+    session_destroy();
+    exit();
+} elseif ($role == 'Export Brokerage' || $role == 'Export Forwarding' || $role == 'Import Brokerage' || $role == 'Import Forwarding') {
+    header("Location: agq_dashCatcher.php");
+    session_destroy();
+    exit();
 } else {
-    
-    $name = $_SESSION['Name'] ?? '';
-    $department = $_SESSION['Department'] ?? '';
-
-    
-    if (!empty($name) && !empty($department)) {
-        switch ($department) {
-            case "admin":
-                header("Location: ownerdash.php");
-                exit();
-
-            case "Import Forwarding":
-            case "Import Brokerage":
-            case "Export Forwarding":
-            case "Export Brokerage":
-                header("Location: employdash.php");
-                exit();
-
-            default:
-                echo "Unauthorized Account."; // Commented out for testing purposes
-                break;
-        }
-    } else {
-        echo "No session data found. Please log in.";
-    }
+    return;
 }
 */
+
 /*
-header("Cache-Control: no-cache, must-revalidate, max-age=0");
 header("Expires: Sat, 26 Jul 1997 05:00:00 GMT");
+header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
 */
 

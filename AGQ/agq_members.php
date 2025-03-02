@@ -1,5 +1,16 @@
 <?php
 require 'db_agq.php';
+/*
+if (!isset($_SESSION['department'])) {
+    header("Location: agq_login.php");
+    exit();
+} elseif ($role == 'Export Brokerage' || $role == 'Export Forwarding' || $role == 'Import Brokerage' || $role == 'Import Forwarding') {
+    header("Location: agq_dashCatcher.php");
+    exit();
+} else {
+    return;
+}
+*/
 
 // Handle form submission (Create User)
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
