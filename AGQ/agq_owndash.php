@@ -105,15 +105,23 @@ if (!empty($search_query)) {
 </head>
 
 <body>
-    <div class="header-container">
-        <div class="search-container">
-            <input type="text" class="search-bar" id="search-input" placeholder="Search Companies..." autocomplete="off">
-            <div id="dropdown" class="dropdown" style="display: none;"></div>
-            <button class="search-button" id="search-button"> SEARCH </button>
-        </div>
-        <div class=" nav-link-container">
-            <a href="agq_members.php">Members</a>
-            <a href="?logout=true">Logout</a>
+    <div class="top-container">
+        <div class="dept-container">
+            <div class="dept-label">
+                <?php echo htmlspecialchars($role); ?>
+            </div>
+
+            <div class="header-container">
+                <div class="search-container">
+                    <input type="text" class="search-bar" id="search-input" placeholder="Search Companies..." autocomplete="off">
+                    <div id="dropdown" class="dropdown" style="display: none;"></div>
+                    <button class="search-button" id="search-button"> SEARCH </button>
+                </div>
+                <div class="nav-link-container">
+                    <a href="agq_members.php">Members</a>
+                    <a href="?logout=true">Logout</a>
+                </div>
+            </div>
         </div>
     </div>
 

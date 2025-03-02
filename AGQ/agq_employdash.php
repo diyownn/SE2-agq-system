@@ -108,16 +108,23 @@ if (!empty($search_query)) {
 <link rel="icon" href="images/agq_logo.png" type="image/ico">
 
 <body>
-    <div class="header-container">
-        <div class="search-container">
-            <input type="text" class="search-bar" id="search-input" placeholder="Search Companies..." autocomplete="off">
-            <div id="dropdown" class="dropdown" style="display: none;"></div>
-            <button class="search-button" id="search-button"> SEARCH </button>
+    <div class="top-container">
+        <div class="dept-container">
+            <div class="dept-label">
+                <?php echo htmlspecialchars($role); ?>
+            </div>
+
+            <div class="header-container">
+                <div class="search-container">
+                    <input type="text" class="search-bar" id="search-input" placeholder="Search Companies..." autocomplete="off">
+                    <div id="dropdown" class="dropdown" style="display: none;"></div>
+                    <button class="search-button" id="search-button"> SEARCH </button>
+                </div>
+                <div class="nav-link-container">
+                    <a href="?logout=true">Logout</a>
+                </div>
+            </div>
         </div>
-        <div class="nav-link-container">
-            <a href="?logout=true">Logout</a>
-        </div>
-    </div>
     </div>
 
 
