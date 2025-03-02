@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> Export Brokerage Invoice </title>
+    <title> Import Brokerage Invoice </title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -122,7 +122,6 @@
             if (lclSelected) {
                 const lclCharges = [
                     "Brokerage Fee",
-                    "50% discount",
                     "12% VAT",
                     "Others",
                     "Notes"   
@@ -131,7 +130,6 @@
             } else if (containerSelected) {
                 const containerCharges = [
                     "Brokerage Fee",
-                    "50% discount",
                     "12% VAT",
                     "Others",
                     "Notes"
@@ -152,7 +150,7 @@
                         <select onchange="handleChargeSelection(this)">
                             <option value="">Additional Charges</option>
                             <option value="Others">Other Charges</option>
-                            <option value="PCCI">PCCI</option>
+                            <option value="Trucking Service">Trucking Service</option>
                         </select>
                     `;
                 } else {

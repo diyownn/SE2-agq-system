@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> Export Brokerage Invoice </title>
+    <title> Invoice </title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -121,17 +121,15 @@
     
             if (lclSelected) {
                 const lclCharges = [
+                    "Ocean Freight",
                     "Brokerage Fee",
-                    "50% discount",
-                    "12% VAT",
                     "Others",
                     "Notes"   
                 ];
                 generateFixedCharges(lclCharges);
             } else if (containerSelected) {
                 const containerCharges = [
-                    "Brokerage Fee",
-                    "50% discount",
+                    "Ocean Freight",
                     "12% VAT",
                     "Others",
                     "Notes"

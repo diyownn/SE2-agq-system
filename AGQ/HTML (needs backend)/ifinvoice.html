@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> Export Brokerage Invoice </title>
+    <title> Import Forwarding Invoice </title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -121,17 +121,22 @@
     
             if (lclSelected) {
                 const lclCharges = [
-                    "Brokerage Fee",
-                    "50% discount",
-                    "12% VAT",
+                    "Ocean Freight",
+                    "LCL Charge",
+                    "Docs Fee",
+                    "Documentation",
+                    "Turn Over Fee",
+                    "Handling",
                     "Others",
                     "Notes"   
                 ];
                 generateFixedCharges(lclCharges);
             } else if (containerSelected) {
                 const containerCharges = [
-                    "Brokerage Fee",
-                    "50% discount",
+                    "FCL charge",
+                    "Documentation",
+                    "Handling Fee",
+                    "Ocean Freight",
                     "12% VAT",
                     "Others",
                     "Notes"
@@ -198,7 +203,7 @@
 </head>
 <body>
     <div class="container">
-        <div class="header">INVOICE</div>
+        <div class="header"> INVOICE </div>
         
         <div class="section">
             <input type="text" placeholder="To" style="width: 70%">
