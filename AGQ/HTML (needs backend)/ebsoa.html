@@ -86,6 +86,20 @@
             border: 1px solid #ccc;
             border-radius: 5px;
         }
+        .table-row select {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .table-row button {
+            padding: 5px 10px;
+            background: #f44336;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
         .footer {
             display: flex;
             justify-content: center;
@@ -105,6 +119,46 @@
         }
         .hidden {
             display: none;
+        }
+        .additional-charges-container {
+            width: 97%;
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+        .select-container {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        .select-container select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        @media (max-width: 600px) {
+            .container {
+                width: 100%;
+                padding: 15px;
+                border-width: 8px;
+            }
+            .section {
+                flex-direction: column;
+                gap: 5px;
+            }
+            .table-row {
+                flex-direction: column;
+                gap: 5px;
+            }
+            .table-header {
+                flex-direction: column;
+                text-align: left;
+            }
+            .save-btn {
+                width: 100%;
+            }
         }
     </style>
     <script>
@@ -138,40 +192,27 @@
                     "E2M Lodgement",
                     "Handling",
                     "Others",
-                    "Notes",
-                    "Additional Charges"
+                    "Notes"
                 ];
-                generateFixedCharges(containerCharges, true);
+                generateFixedCharges(containerCharges);
             }
         }
     
-        function generateFixedCharges(charges, isContainer = false) {
+        function generateFixedCharges(charges) {
             const chargesTable = document.getElementById("charges-table");
     
             charges.forEach(charge => {
                 const row = document.createElement("div");
                 row.className = "table-row";
-    
-                if (charge === "Additional Charges") {
-                    row.innerHTML = `
-                        <select onchange="handleChargeSelection(this)">
-                            <option value="">Additional Charges</option>
-                            <option value="Others">Other Charges</option>
-                            <option value="PCCI">PCCI</option>
-                        </select>
-                    `;
-                } else {
-                    row.innerHTML = `
-                        <input type="text" value="${charge}" readonly>
-                        <input type="number" placeholder="Enter amount">
-                    `;
-                }
-    
+                row.innerHTML = `
+                    <input type="text" value="${charge}" readonly>
+                    <input type="text" placeholder="Enter amount">
+                `;
                 chargesTable.appendChild(row);
             });
         }
     
-        function handleChargeSelection(selectElement) {
+        function handleAdditionalChargeSelection(selectElement) {
             const selectedCharge = selectElement.value;
             if (!selectedCharge) return; // Do nothing if default is selected
     
@@ -182,19 +223,23 @@
             }
     
             // Add new charge field
-            const chargesTable = document.getElementById("charges-table");
+            const additionalChargesTable = document.getElementById("additional-charges-table");
             const newRow = document.createElement("div");
             newRow.className = "table-row added-charge";
             newRow.dataset.charge = selectedCharge; // Store charge type
     
             newRow.innerHTML = `
                 <input type="text" value="${selectedCharge}" readonly>
-                <input type="number" placeholder="Enter amount">
+                <input type="text" placeholder="Enter amount">
                 <button onclick="removeCharge(this)">Remove</button>
             `;
     
-            chargesTable.appendChild(newRow);
+            additionalChargesTable.appendChild(newRow);
+            
+            // Reset the select to default option
+            selectElement.value = "";
         }
+        
         function removeCharge(button) {
             button.parentElement.remove(); // Remove the selected charge row
         }
@@ -207,7 +252,7 @@
         
         <div class="section">
             <input type="text" placeholder="To" style="width: 70%">
-            <input type="date" placeholder="Date" style="width: 28%">
+            <input type="text" placeholder="Date" style="width: 28%">
         </div>
         <div class="section">
             <input type="text" placeholder="Address" style="width: 100%">
@@ -244,7 +289,7 @@
             </label>
         </div>
         <div class="section" id="package-details">
-            <!-- <input type="text" placeholder="Enter package details" style="width: 100%"> -->
+            <input type="text" placeholder="Enter package details" style="width: 100%">
         </div>
         <div class="table-container">
             <div class="table-header">
@@ -254,8 +299,20 @@
             <div id="charges-table"></div>
         </div>
         <div class="section">
-            <input type="number" placeholder="Total" style="width: 100%">
+            <input type="text" placeholder="Total" style="width: 100%">
         </div>
+        <div class="select-container">
+            <select onchange="handleAdditionalChargeSelection(this)">
+                <option value="">Additional Charges</option>
+                <option value="Late Charge">Late Charge</option>
+                <option value="PICC">PICC</option>
+            </select>
+        </div>
+        
+        <div class="additional-charges-container">
+            <div id="additional-charges-table"></div>
+        </div>
+        
         <div class="section">
             <input type="text" placeholder="Prepared by" style="width: 48%">
             <input type="text" placeholder="Approved by" style="width: 48%">
@@ -263,8 +320,8 @@
         <div class="section">
             <input type="text" placeholder="Received by" style="width: 24%">
             <input type="text" placeholder="Signature" style="width: 24%">
-            <!-- <input type="text" placeholder="Printed Name" style="width: 24%"> -->
-            <input type="date" placeholder="Date" style="width: 24%">
+            <input type="text" placeholder="Printed Name" style="width: 24%">
+            <input type="text" placeholder="Date" style="width: 24%">
         </div>
         <div class="footer">
             <button class="save-btn">Save</button>
