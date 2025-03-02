@@ -126,7 +126,7 @@
                     return false;
                 }
 
-                var symbolregex = /[!@#$%^&*()_+\-={};:'"\\|,.<>\/?~]/;
+                var symbolregex = /[!@#$%^&*()_+\-={};:'"\\|,<>\/?~]/;
 
                 if (symbolregex.test(comp.value)) {
                     comp.classList.add("is-invalid");
