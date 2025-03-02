@@ -24,6 +24,13 @@ header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
 
+if (isset($_GET['logout']) && $_GET['logout'] == 'true') {
+    session_unset();
+    session_destroy();
+    header("Location: agq_login.php");
+    exit();
+}
+
 $search_query = isset($_GET['q']) ? trim($_GET['q']) : '';
 
 if (!empty($search_query)) {
