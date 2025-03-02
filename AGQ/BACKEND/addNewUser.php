@@ -1,5 +1,5 @@
 <?php
-require 'db_agq.php';
+require '../db_agq.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $user_id = (string) random_int(10000000, 99999999);

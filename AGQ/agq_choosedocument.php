@@ -1,8 +1,10 @@
 <?php
 require "db_agq.php";
 
-/*
 session_start();
+$role = isset($_SESSION['dept']) ? $_SESSION['dept'] : '';
+
+/*
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Retrieve and sanitize input
@@ -66,7 +68,6 @@ $conn->close();
 */
 ?>
 
-
 <html>
 
 <head>
@@ -79,6 +80,7 @@ $conn->close();
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="documenttype.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 
 <link rel="icon" href="images/agq_logo.png" type="image/ico">
@@ -91,13 +93,13 @@ $conn->close();
             </span>
         </div>
         <div class="document-bars">
-            <button class="document-type-manifesto" onclick="window.location.href='agq_manifestoForm.php'">
+            <button class="document-type-manifesto" id="manifesto" onclick="window.location.href='agq_manifestoForm.php'">
                 MANIFESTO
             </button>
-            <button class="document-type-soa" onclick="window.location.href='agq_ownersoa.php'">
+            <button class="document-type-soa" onclick="window.location.href='agq_soaCatcher.php'">
                 STATEMENT OF ACCOUNT
             </button>
-            <button class="document-type-freight-invoice" onclick="window.location.href='agq_ownerfreightinvoice.php'">
+            <button class="document-type-freight-invoice" onclick="window.location.href='agq_invoiceCatcher.php'">
                 FREIGHT INVOICE
             </button>
             <button class="document-type-summary" onclick="window.location.href='agq_summaryForm.php'">
@@ -108,6 +110,23 @@ $conn->close();
             </button>
         </div>
     </div>
-</body>
 
+    <script>
+        function disableInputField() {
+            var manButton = document.getElementById("manifesto");
+            manButton.disabled = true;
+            manButton.classList.add("disabled");
+
+    }
+    </script>
+
+    <?php
+    if ($role !== 'Import Forwarding') {
+        echo "<script>disableInputField();</script>";
+    }
+
+    
+    ?>
+</body>
 </html>
+

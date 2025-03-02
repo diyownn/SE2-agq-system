@@ -96,7 +96,7 @@ body{
     height: 30px;
 }
 
-#button1 {
+#button1, #button1_1 {
     margin-top: 20%;
     text-align: center;
     background-color: #90ae5e;
@@ -110,6 +110,7 @@ body{
     height: 30px;
     margin-bottom: 38%;
 }
+
 
 .file-upload {
     position: relative;
@@ -139,4 +140,15 @@ body{
     background-color: #d9d9d9;
     border: 1px solid;
 
+}
+
+.back-button {
+    position: absolute;
+    top: 10px;
+    left: 30px;
+    margin: 0; /* Ignore preset margins */
+}
+
+#border {
+    position: relative; /* Ensure the containing element is positioned relatively */
 }

@@ -25,13 +25,14 @@
             <div class="col-sm-offset-4 col-sm-4" id="border1">
                 <p id="title" class="text-center" style="text-decoration: none; margin-top:0%">OTHERS</p>
 
-                <form action="agq_othersForm.php" method="POST" class="form-content" enctype="multipart/form-data" onsubmit="return validate_form()">
+                <form action="agq_othersForm.php" method="POST" class="form-content" enctype="multipart/form-data" onsubmit="return validate_otImg()">
                     <img src="" class="d-block mx-auto" id="imgholder" alt="" style="width: 335px; height: 350px">
-
+                    
                     <div class="d-flex justify-content-center">
                         <label class="file-upload d-flex justify-content-center">
                             <input type="file" id="cPic" name="otPic" accept="image/*" onchange="previewImage(event)">
                             <input type="button" id="button1" style="margin-top: 39.5%; margin-bottom: 0%; margin-right: 10px;" value="Upload">
+                            <div id="image-error"></div>
                         </label>
                         <input type="submit" id="button1" style="margin-top: 12%; margin-bottom: 0%;" value="Save">
                     </div>
@@ -57,6 +58,29 @@
         function previewImage(event) {
             var imgDisplay = document.getElementById("imgholder");
             imgDisplay.src = URL.createObjectURL(event.target.files[0]);
+        }
+
+        function validate_otImg() {
+            var imgDisplay = document.getElementById("imgholder");
+            var cpic = document.getElementById("cPic");
+            var cpic_error = document.getElementById("image-error");
+
+            if (cpic.files.length === 0) {
+                cpic.classList.add("is-invalid");
+                error_text = "*Please upload the company logo";
+                cpic_error.innerHTML = error_text;
+                cpic_error.classList.add("invalid-feedback");
+
+                return false;
+
+            } else {
+                cpic.classList.remove("is-invalid");
+                cpic_error.innerHTML = "";
+                cpic_error.classList.remove("invalid-feedback");
+
+                return true;
+            }
+
         }
     
     </script>

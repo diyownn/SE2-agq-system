@@ -3,6 +3,9 @@ require 'db_agq.php';
 
 session_start();
 
+$role = isset($_SESSION['dept']) ? $_SESSION['dept'] : '';
+
+
 /*
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
    
@@ -94,7 +97,7 @@ if (!empty($search_query)) {
     <meta charset="utf-8">
     <meta name="keywords" content="">
     <meta name="description" content="">
-    <title> AGQ Unnamed System </title>
+    <title> Dashboard | AGQ </title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="icon" type="image/x-icon" href="/AGQ/images/favicon.ico">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -148,7 +151,7 @@ if (!empty($search_query)) {
                     }
 
                     echo '<div class="company-button">';
-                    echo '<button class="company-container" onclick="window.location.href=\'login.php\'">';
+                    echo '<button class="company-container" onclick="window.location.href=\'agq_choosedocument.php\'">';
                     echo '<img class="company-logo" src="' . $company_picture_src . '" alt="' . $company_name . '">';
                     echo '</button>';
                     echo '</div>';

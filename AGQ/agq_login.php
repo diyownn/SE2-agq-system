@@ -24,7 +24,7 @@
     <link rel="stylesheet" type="text/css" href="agq.css">
 
     <!-- Website Icon -->
-    <link rel="icon" href="images/agq_logo.png" type="image/ico">
+    <link rel="icon" type="image/x-icon" href="/AGQ/images/favicon.ico">
 
 </head>
 
@@ -60,7 +60,7 @@
     </div>
 
 
-    <?php
+<?php
     session_start(); // Start the session at the beginning of your script
     require_once "db_agq.php";
     include "agq_mailer.php";
@@ -112,14 +112,13 @@
                 $role = $row['Department'];
                 $pword = $row['Password'];
 
+                $_SESSION['dept'] = $role;
+
                 // Reset login attempts counter on successful login
                 $_SESSION['login_attempts'] = 0;
                 $_SESSION['lockout_start'] = 0; // Reset lockout start time
 
-                $_SESSION['department'] = $role;
-
-                header("location: agq_dashCatcher.php");
-
+                
                 if ($pword == "agqLogistics") {
                     $otp = rand(100000, 999999);
 
@@ -128,10 +127,15 @@
 
                     $_SESSION['email'] = $email;
                     emailVerification($email, $otp);
+                }else{
+                    $_SESSION['department'] = $role;
+                    header("location: agq_dashCatcher.php");
                 }
+
+
             } else {
                 // Increment login attempts counter on failed login
-                // $_SESSION['login_attempts']++;
+                $_SESSION['login_attempts']++;
                 $_SESSION['last_attempt_time'] = time();
 
     ?>
