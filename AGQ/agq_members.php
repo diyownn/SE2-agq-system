@@ -1,6 +1,9 @@
 <?php
 require 'db_agq.php';
-/*
+
+session_start();
+
+
 if (!isset($_SESSION['department'])) {
     header("Location: agq_login.php");
     exit();
@@ -10,7 +13,7 @@ if (!isset($_SESSION['department'])) {
 } else {
     return;
 }
-*/
+
 
 // Handle form submission (Create User)
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {

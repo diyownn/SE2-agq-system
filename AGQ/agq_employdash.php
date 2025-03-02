@@ -5,7 +5,7 @@ session_start();
 
 $role = isset($_SESSION['dept']) ? $_SESSION['dept'] : '';
 
-/*
+
 if (!isset($_SESSION['department'])) {
     header("Location: agq_login.php");
     session_destroy();
@@ -17,29 +17,14 @@ if (!isset($_SESSION['department'])) {
 } else {
     return;
 }
-*/
 
-/*
+
+
 header("Expires: Sat, 26 Jul 1997 05:00:00 GMT");
 header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
-*/
-
-/*if (!isset($_SESSION['department'])) {
-    header("Location: agq_login.php");
-    exit();
-}
-*/
-
-
-if (isset($_GET['logout']) && $_GET['logout'] == 'true') {
-    session_unset();
-    session_destroy();
-    header("Location: agq_login.php");
-    exit();
-}
 
 $search_query = isset($_GET['q']) ? trim($_GET['q']) : '';
 
@@ -71,7 +56,7 @@ if (!empty($search_query)) {
     <link rel="icon" type="image/x-icon" href="/AGQ/images/favicon.ico">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="../css/EmployDash.css">
+    <link rel="stylesheet" type="text/css" href="../css/employdash.css">
 
 </head>
 <link rel="icon" href="images/agq_logo.png" type="image/ico">

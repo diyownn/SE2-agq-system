@@ -4,7 +4,7 @@ session_start();
 
 $role = isset($_SESSION['department']) ? $_SESSION['department'] : '';
 
-/*
+
 if (!isset($_SESSION['department'])) {
     header("Location: agq_login.php");
     session_destroy();
@@ -16,15 +16,15 @@ if (!isset($_SESSION['department'])) {
 } else {
     return;
 }
-*/
 
-/*
+
+
 header("Expires: Sat, 26 Jul 1997 05:00:00 GMT");
 header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
-*/
+
 
 
 if (isset($_GET['logout']) && $_GET['logout'] == 'true') {
@@ -71,11 +71,12 @@ if (!empty($search_query)) {
 <body>
     <div class="top-container">
         <div class="dept-container">
-            <div class="dept-label">
-                <?php echo htmlspecialchars($role); ?>
-            </div>
+
 
             <div class="header-container">
+                <div class="dept-label">
+                    <?php echo htmlspecialchars($role); ?>
+                </div>
                 <div class="search-container">
                     <input type="text" class="search-bar" id="search-input" placeholder="Search Companies..." autocomplete="off">
                     <div id="dropdown" class="dropdown" style="display: none;"></div>
