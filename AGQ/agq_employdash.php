@@ -14,8 +14,6 @@ if (!isset($_SESSION['department'])) {
     header("Location: agq_dashCatcher.php");
     session_destroy();
     exit();
-} else {
-    return;
 }
 
 
