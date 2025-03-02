@@ -36,7 +36,7 @@
             margin-bottom: 10px;
             align-items: center;
         }
-        .section input {
+        .section input, .section select {
             flex: 1;
             padding: 10px;
             border: 1px solid #ccc;
@@ -80,13 +80,7 @@
             gap: 10px;
             margin-bottom: 5px;
         }
-        .table-row input {
-            flex: 1;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        .table-row select {
+        .table-row input, .table-row select {
             flex: 1;
             padding: 10px;
             border: 1px solid #ccc;
@@ -120,6 +114,7 @@
         .hidden {
             display: none;
         }
+        /* New styles for additional charges */
         .additional-charges-container {
             width: 97%;
             border: 1px solid #ccc;
@@ -128,37 +123,13 @@
             margin-top: 10px;
             margin-bottom: 10px;
         }
-        .select-container {
-            width: 100%;
-            margin-bottom: 10px;
-        }
-        .select-container select {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        @media (max-width: 600px) {
-            .container {
-                width: 100%;
-                padding: 15px;
-                border-width: 8px;
-            }
-            .section {
-                flex-direction: column;
-                gap: 5px;
-            }
-            .table-row {
-                flex-direction: column;
-                gap: 5px;
-            }
-            .table-header {
-                flex-direction: column;
-                text-align: left;
-            }
-            .save-btn {
-                width: 100%;
-            }
+        .additional-charges-header {
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 5px;
+            margin-bottom: 5px;
         }
     </style>
     <script>
@@ -206,7 +177,7 @@
                 row.className = "table-row";
                 row.innerHTML = `
                     <input type="text" value="${charge}" readonly>
-                    <input type="text" placeholder="Enter amount">
+                    <input type="number" placeholder="Enter amount">
                 `;
                 chargesTable.appendChild(row);
             });
@@ -230,7 +201,7 @@
     
             newRow.innerHTML = `
                 <input type="text" value="${selectedCharge}" readonly>
-                <input type="text" placeholder="Enter amount">
+                <input type="number" placeholder="Enter amount">
                 <button onclick="removeCharge(this)">Remove</button>
             `;
     
@@ -243,6 +214,19 @@
         function removeCharge(button) {
             button.parentElement.remove(); // Remove the selected charge row
         }
+        
+        // Calculate totals when amounts change
+        document.addEventListener('DOMContentLoaded', function() {
+            document.body.addEventListener('input', function(e) {
+                if (e.target.type === 'number' && e.target.placeholder === 'Enter amount') {
+                    calculateTotal();
+                }
+            });
+        });
+        
+        function calculateTotal() {
+            // Future enhancement - add total calculation logic
+        }
     </script>
     
 </head>
@@ -252,7 +236,7 @@
         
         <div class="section">
             <input type="text" placeholder="To" style="width: 70%">
-            <input type="text" placeholder="Date" style="width: 28%">
+            <input type="date" placeholder="Date" style="width: 28%">
         </div>
         <div class="section">
             <input type="text" placeholder="Address" style="width: 100%">
@@ -289,8 +273,10 @@
             </label>
         </div>
         <div class="section" id="package-details">
-            <input type="text" placeholder="Enter package details" style="width: 100%">
+            <!-- Package details content will be generated dynamically -->
         </div>
+        
+        <!-- Reimbursable Charges Section -->
         <div class="table-container">
             <div class="table-header">
                 <span>Reimbursable Charges</span>
@@ -298,18 +284,26 @@
             </div>
             <div id="charges-table"></div>
         </div>
+        
+        <!-- Total Section -->
         <div class="section">
-            <input type="text" placeholder="Total" style="width: 100%">
+            <input type="number" placeholder="Total" style="width: 100%">
         </div>
-        <div class="select-container">
-            <select onchange="handleAdditionalChargeSelection(this)">
+        
+        <!-- Additional Charges Section - Now positioned after the Total -->
+        <div class="section">
+            <select onchange="handleAdditionalChargeSelection(this)" style="width: 100%">
                 <option value="">Additional Charges</option>
-                <option value="Late Charge">Late Charge</option>
-                <option value="PICC">PICC</option>
+                <option value="Others">Other Charges</option>
+                <option value="PCCI">PCCI</option>
             </select>
         </div>
         
         <div class="additional-charges-container">
+            <div class="additional-charges-header">
+                <span>Additional Charges</span>
+                <span>Amount</span>
+            </div>
             <div id="additional-charges-table"></div>
         </div>
         
@@ -320,8 +314,7 @@
         <div class="section">
             <input type="text" placeholder="Received by" style="width: 24%">
             <input type="text" placeholder="Signature" style="width: 24%">
-            <input type="text" placeholder="Printed Name" style="width: 24%">
-            <input type="text" placeholder="Date" style="width: 24%">
+            <input type="date" placeholder="Date" style="width: 24%">
         </div>
         <div class="footer">
             <button class="save-btn">Save</button>
