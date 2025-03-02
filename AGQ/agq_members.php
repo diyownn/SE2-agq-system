@@ -22,11 +22,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $errors[] = "Invalid email format.";
     }
 
-    // Validate password (ensure it's not empty)
-    if (empty($password)) {
-        $errors[] = "Password is required.";
-    }
-
     // Validate department selection
     if (empty($department)) {
         $errors[] = "Please select a department.";
