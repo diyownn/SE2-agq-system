@@ -2,6 +2,8 @@
 require 'db_agq.php';
 session_start();
 
+$role = isset($_SESSION['department']) ? $_SESSION['department'] : '';
+
 /*
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Retrieve and sanitize input
