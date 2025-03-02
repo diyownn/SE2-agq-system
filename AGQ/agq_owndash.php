@@ -2,64 +2,30 @@
 require 'db_agq.php';
 session_start();
 
-/*
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Retrieve and sanitize input
-    $name = isset($_POST['Name']) ? htmlspecialchars(trim($_POST['Name'])) : '';
-    $department = isset($_POST['Department']) ? htmlspecialchars(trim($_POST['Department'])) : '';
+$role = isset($_SESSION['department']) ? $_SESSION['department'] : '';
 
-    
-    if (!empty($name) && !empty($department)) {
-        // Store data in session
-        $_SESSION['Name'] = $name;
-        $_SESSION['Department'] = $department;
-
-       
-        header("Location: " . $_SERVER['PHP_SELF']);
-        exit();
-    } else {
-        echo "Please provide all required information.";
-    }
-} else {
-    
-    $name = $_SESSION['Name'] ?? '';
-    $department = $_SESSION['Department'] ?? '';
-
-    
-    if (!empty($name) && !empty($department)) {
-        switch ($department) {
-            case "admin":
-                header("Location: ownerdash.php");
-                exit();
-
-            case "Import Forwarding":
-            case "Import Brokerage":
-            case "Export Forwarding":
-            case "Export Brokerage":
-                header("Location: employdash.php");
-                exit();
-
-            default:
-                echo "Unauthorized Account."; // Work in progress
-                break;
-        }
-    } else {
-        echo "No session data found. Please log in.";
-    }
-}
-*/
-
-/*
-header("Cache-Control: no-cache, must-revalidate, max-age=0");
-header("Expires: Sat, 26 Jul 1997 05:00:00 GMT");
-header("Pragma: no-cache");
-*/
 /*
 if (!isset($_SESSION['department'])) {
     header("Location: agq_login.php");
+    session_destroy();
     exit();
+} elseif ($role == 'Export Brokerage' || $role == 'Export Forwarding' || $role == 'Import Brokerage' || $role == 'Import Forwarding') {
+    header("Location: agq_dashCatcher.php");
+    session_destroy();
+    exit();
+} else {
+    return;
 }
 */
+
+/*
+header("Expires: Sat, 26 Jul 1997 05:00:00 GMT");
+header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
+*/
+
 
 if (isset($_GET['logout']) && $_GET['logout'] == 'true') {
     session_unset();
@@ -103,15 +69,23 @@ if (!empty($search_query)) {
 </head>
 
 <body>
-    <div class="header-container">
-        <div class="search-container">
-            <input type="text" class="search-bar" id="search-input" placeholder="Search Companies..." autocomplete="off">
-            <div id="dropdown" class="dropdown" style="display: none;"></div>
-            <button class="search-button" id="search-button"> SEARCH </button>
-        </div>
-        <div class=" nav-link-container">
-            <a href="agq_members.php">Members</a>
-            <a href="?logout=true">Logout</a>
+    <div class="top-container">
+        <div class="dept-container">
+            <div class="dept-label">
+                <?php echo htmlspecialchars($role); ?>
+            </div>
+
+            <div class="header-container">
+                <div class="search-container">
+                    <input type="text" class="search-bar" id="search-input" placeholder="Search Companies..." autocomplete="off">
+                    <div id="dropdown" class="dropdown" style="display: none;"></div>
+                    <button class="search-button" id="search-button"> SEARCH </button>
+                </div>
+                <div class="nav-link-container">
+                    <a href="agq_members.php">Members</a>
+                    <a href="?logout=true">Logout</a>
+                </div>
+            </div>
         </div>
     </div>
 

@@ -1,33 +1,107 @@
 body {
   background-color: rgb(253, 253, 251);
   font-family: IBM Plex Sans;
+  margin: 0;
 }
-  
-.search-container {
+
+.top-container{
   display: flex;
-  width: 600px;
-  margin: 0 auto 20px;
+  flex-direction: row;
+  align-items: flex-start; /* Align items to the top */
+  width: 100%;
+  padding-bottom: 10px;
+
+}
+
+.dept-container {
+  position: relative;
+  display: flex;
+  flex-direction: column; /* Arrange elements in a column */
+  justify-content: space-between; /* Push search and logout to the bottom */
+  height: 120px; /* Adjust based on needs */
+  width: 100%;
+}
+
+.dept-label {
+  background-color: rgb(144, 174, 94);
+  color: white;
+  font-size: 14px;
+  text-align: start;
+  padding: 10px 1px;
+  width: fit-content;
+  min-width: 140px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-radius: 0 25px  25px 0;
+  
+  /* Shape */
+  
+  /* Center text vertically */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media screen and (max-width: 768px) {
+.search-container {
+  margin-top: 100px;
+    max-width: 100%; /* Ensure full width */
+    align-items: stretch;
+    padding: 0 20px;
+}
+
+.search-bar, .search-button {
+    border-radius: 50px;
+    border: 1px solid rgb(204, 204, 204);
+}
+
+.search-button {
+    border-left: 1px solid rgb(204, 204, 204);
+}
+}
+
+@media (max-width: 600px) {
+  .dept-container {
+      flex-direction: column; /* Stack elements vertically */
+      align-items: flex-start; /* Align to the left */
+  }
 }
 
 .header-container {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 40px;
+margin-top: auto; /* Push the search and logout to the bottom */
+display: flex;
+flex-direction: row;
+align-items: center;
+justify-content: space-between;
+padding: 10px 40px;
 }
+
+
+.search-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto 20px;
+}
+
 
 .search-bar {
   flex: 1;
-  padding: 7px;
+  min-width: 0;
+  padding: 12px 15px; /* Match button padding */
   border: 1px solid rgb(204, 204, 204);
   border-right: none;
   border-radius: 50px 0 0 50px;
   font-size: 16px;
   background-color: rgb(209, 209, 209); 
   font-weight: bold;
+  height: 44px;
 }
-  
+
 .search-button {
   padding: 12px 25px;
   border: none;
@@ -36,7 +110,13 @@ body {
   font-size: 16px;
   font-family: 'IBM Plex Sans', 'Arial';
   border-radius: 0 50px 50px 0;
+  height: 44px; 
   cursor: pointer;
+}
+
+.search-button:hover {
+  opacity: 1;
+  background-color: rgb(99, 133, 46);
 }
 
 .nav-link-container {
