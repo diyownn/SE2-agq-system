@@ -119,7 +119,7 @@
                 $_SESSION['lockout_start'] = 0; // Reset lockout start time
 
                 
-                if ($pword == "agqLogistics") {
+                if ($pword == "agqFreight") {
                     $otp = rand(100000, 999999);
 
                     $otpQuery = "UPDATE tbl_user SET Otp = '$otp' WHERE Email = '$email' AND Password = '$pass'";
