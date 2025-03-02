@@ -306,7 +306,6 @@ $result = $conn->query($query);
                         }
                     } else {
                         modalErrors.style.display = "none"; // Hide previous errors
-                        addRowToTable(data.user);
                         closeModal();
                     }
                 })
