@@ -67,10 +67,13 @@
 
             if (cpic.files.length === 0) {
                 cpic.classList.add("is-invalid");
-                error_text = "*Please upload the company logo";
+                error_text = "*Please upload the needed document";
                 cpic_error.innerHTML = error_text;
                 cpic_error.classList.add("invalid-feedback");
-
+                
+                return false;
+            } else if (!validateFileSize(cpic)) {
+                // Additional check for file size
                 return false;
 
             } else {
@@ -81,6 +84,24 @@
                 return true;
             }
 
+        }
+
+        function validateFileSize(fileInput) {
+            var file = fileInput.files[0];
+            var fileError = document.getElementById("image-error");
+
+            if (file.size > 2 * 1024 * 1024) { // 2MB in bytes
+                fileInput.classList.add("is-invalid");
+                error_text = "*File size must be less than or equal to 2MB.";
+                fileError.innerHTML = error_text;
+                fileError.classList.add("invalid-feedback");
+                return false;
+            } else {
+                fileInput.classList.remove("is-invalid");
+                fileError.innerHTML = "";
+                fileError.classList.remove("invalid-feedback");
+                return true;
+            }
         }
     
     </script>

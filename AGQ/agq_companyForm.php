@@ -43,8 +43,6 @@
                         <input type="submit" id="button1" style="margin-top: 12%; margin-bottom: 0%;" value="Save">
                     </div>
 
-
-
                 </form>
 
             </div>
@@ -71,9 +69,7 @@
             var val_cname = validate_compName();
 
             if (val_cimg && val_cname) {
-
                 return true;
-
             } else {
                 return false;
             }
@@ -89,17 +85,34 @@
                 error_text = "*Please upload the company logo";
                 cpic_error.innerHTML = error_text;
                 cpic_error.classList.add("invalid-feedback");
-
                 return false;
-
+            } else if (!validateFileSize(cpic)) {
+                // Additional check for file size
+                return false;
             } else {
                 cpic.classList.remove("is-invalid");
                 cpic_error.innerHTML = "";
                 cpic_error.classList.remove("invalid-feedback");
-
                 return true;
             }
+        }
 
+        function validateFileSize(fileInput) {
+            var file = fileInput.files[0];
+            var fileError = document.getElementById("image-error");
+
+            if (file.size > 2 * 1024 * 1024) { // 2MB in bytes
+                fileInput.classList.add("is-invalid");
+                error_text = "*File size must be less than or equal to 2MB.";
+                fileError.innerHTML = error_text;
+                fileError.classList.add("invalid-feedback");
+                return false;
+            } else {
+                fileInput.classList.remove("is-invalid");
+                fileError.innerHTML = "";
+                fileError.classList.remove("invalid-feedback");
+                return true;
+            }
         }
 
         function validate_compName() {
@@ -111,9 +124,7 @@
                 error_text = "*Please enter the company name";
                 comp_error.innerHTML = error_text;
                 comp_error.classList.add("invalid-feedback");
-
                 return false;
-
             } else {
                 var nameregex = /^.{2,25}$/;
 
@@ -122,7 +133,6 @@
                     error_text = "*Company Name must be 2-25 characters";
                     comp_error.innerHTML = error_text;
                     comp_error.classList.add("invalid-feedback");
-
                     return false;
                 }
 
@@ -133,17 +143,13 @@
                     error_text = "*Company Name must not contain symbols";
                     comp_error.innerHTML = error_text;
                     comp_error.classList.add("invalid-feedback");
-
                     return false;
                 }
 
                 comp.classList.remove("is-invalid");
                 comp_error.innerHTML = "";
                 comp_error.classList.remove("invalid-feedback");
-
                 return true;
-
-
             }
         }
     </script>

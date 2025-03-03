@@ -120,7 +120,7 @@
         function validate_newPassword(){
             var nPass = document.getElementById("newPass");
             var nPass_error = document.getElementById("pass-error1");
-        
+
             if(nPass.value == ''){
                 nPass.classList.add("is-invalid");
                 error_text = "*Please enter your new Password";
@@ -138,11 +138,11 @@
                     return false;
                 }
 
-                var symbolregex = /[#%^&*()_+\-={};:'"\\|,.<>\/?~]/;
+                var symbolregex = /[^a-zA-Z0-9!@$%^&()_+\-:|,~]/;
 
                 if (symbolregex.test(nPass.value)) {
                     nPass.classList.add("is-invalid");
-                    error_text = "*Your Password must not contain symbols";
+                    error_text = "*Your Password contains invalid symbols";
                     nPass_error.innerHTML = error_text;
                     nPass_error.classList.add("invalid-feedback");
                     return false;
@@ -154,7 +154,7 @@
 
                 if (allNumbersRegex.test(nPass.value) || allUppercaseRegex.test(nPass.value) || allLowercaseRegex.test(nPass.value)) {
                     nPass.classList.add("is-invalid");
-                    error_text = "*Your Password must be alphanumeric";
+                    error_text = "*Your Password must be alphanumeric or contains symbols";
                     nPass_error.innerHTML = error_text;
                     nPass_error.classList.add("invalid-feedback");
                     return false;
@@ -168,39 +168,37 @@
         }
 
         function validate_rePassword(){
-            var rPass =document.getElementById("rePass");
-            var rPass_error =document.getElementById("pass-error2");
+            var rPass = document.getElementById("rePass");
+            var rPass_error = document.getElementById("pass-error2");
 
             if(rPass.value == ''){
                 rPass.classList.add("is-invalid");
                 error_text = "*Please re-enter your new Password";
                 rPass_error.innerHTML = error_text;
                 rPass_error.classList.add("invalid-feedback");
-                
                 return false;
-            }else{
+            } else {
+            
                 var passregex = /^.{8,100}$/; 
 
                 if(!passregex.test(rPass.value)){ 
                     rPass.classList.add("is-invalid");
-                    error_text = "*Your Password must be atleast 8 characters";
+                    error_text = "*Your Password must be at least 8 characters";
                     rPass_error.innerHTML = error_text;
                     rPass_error.classList.add("invalid-feedback");
-                    
                     return false;
                 }
 
-                var symbolregex = /[#%^&*()_+\-={};:'"\\|,.<>\/?~]/;
+                var symbolregex = /[^a-zA-Z0-9!@$%^&()_+\-:|,~]/;
 
                 if (symbolregex.test(rPass.value)) {
                     rPass.classList.add("is-invalid");
-                    error_text = "*Your Password must not contain symbols";
+                    error_text = "*Your Password contains invalid symbols";
                     rPass_error.innerHTML = error_text;
                     rPass_error.classList.add("invalid-feedback");
-                    
                     return false;
                 }
-                
+
                 var allNumbersRegex = /^\d+$/;
                 var allUppercaseRegex = /^[A-Z]+$/;
                 var allLowercaseRegex = /^[a-z]+$/;
@@ -218,14 +216,13 @@
                 rPass_error.classList.remove("invalid-feedback");
                 return true;
             }
-
         }
 
         function validate_finalPassword() {
-            var nPass =document.getElementById("newPass");
-            var rPass =document.getElementById("rePass");
-            var rPass_error =document.getElementById("pass-error2");
-            var nPass_error =document.getElementById("pass-error1");
+            var nPass = document.getElementById("newPass");
+            var rPass = document.getElementById("rePass");
+            var rPass_error = document.getElementById("pass-error2");
+            var nPass_error = document.getElementById("pass-error1");
 
             if (nPass.value !== rPass.value) {
                 nPass.classList.add("is-invalid");
@@ -237,9 +234,8 @@
                 error_text = "*Passwords do not match.";
                 rPass_error.innerHTML = error_text;
                 rPass_error.classList.add("invalid-feedback");
-
                 return false;
-            }else {
+            } else {
                 nPass.classList.remove("is-invalid");
                 nPass_error.innerHTML = "";
                 nPass_error.classList.remove("invalid-feedback");
@@ -247,12 +243,10 @@
                 rPass.classList.remove("is-invalid");
                 rPass_error.innerHTML = "";
                 rPass_error.classList.remove("invalid-feedback");
-
                 return true;
-
             }
-
         }
+
 
         document.getElementById('toggle-password').addEventListener('click', function() {
             const passwordField1 = document.getElementById('newPass');
