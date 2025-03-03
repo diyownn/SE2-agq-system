@@ -61,22 +61,21 @@
 
 
 <?php
-    session_start(); // Start the session at the beginning of your script
+    session_start(); 
     require_once "db_agq.php";
     include "agq_mailer.php";
 
     if (!isset($_SESSION['login_attempts'])) {
-        $_SESSION['login_attempts'] = 0; // Initialize login attempts counter if not set
+        $_SESSION['login_attempts'] = 0; 
     }
     if (!isset($_SESSION['last_attempt_time'])) {
-        $_SESSION['last_attempt_time'] = time(); // Initialize last attempt time if not set
+        $_SESSION['last_attempt_time'] = time(); 
     }
     if (!isset($_SESSION['lockout_start'])) {
-        $_SESSION['lockout_start'] = 0; // Initialize lockout start time if not set
+        $_SESSION['lockout_start'] = 0;
     }
 
-    // Reset login attempts if 5 minutes have passed since the last lockout period
-    if (time() - $_SESSION['last_attempt_time'] > 300) {
+    if (time() - $_SESSION['last_attempt_time'] > 300) { //Reset in seconds
         $_SESSION['login_attempts'] = 4;
         $_SESSION['lockout_start'] = 0; // Reset lockout start time
     }
@@ -134,7 +133,6 @@
 
 
             } else {
-                // Increment login attempts counter on failed login
                 $_SESSION['login_attempts']++;
                 $_SESSION['last_attempt_time'] = time();
 

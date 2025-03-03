@@ -87,7 +87,7 @@
                 cpic_error.classList.add("invalid-feedback");
                 return false;
             } else if (!validateFileSize(cpic)) {
-                // Additional check for file size
+               
                 return false;
             } else {
                 cpic.classList.remove("is-invalid");
@@ -101,7 +101,7 @@
             var file = fileInput.files[0];
             var fileError = document.getElementById("image-error");
 
-            if (file.size > 2 * 1024 * 1024) { // 2MB in bytes
+            if (file.size > 2 * 1024 * 1024) { //bytes form
                 fileInput.classList.add("is-invalid");
                 error_text = "*File size must be less than or equal to 2MB.";
                 fileError.innerHTML = error_text;
@@ -164,7 +164,7 @@ require_once "db_agq.php";
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['compPic']['tmp_name']) && isset($_POST['compName'])) {
     $company_picture = file_get_contents($_FILES['compPic']['tmp_name']);
     $company_name = $_POST['compName'];
-    $companyid = (string)random_int(1000000000, 9999999999);  // We are going to make this into an input. Random int for now
+    $companyid = (string)random_int(1000000000, 9999999999); 
 
     $stmt = $conn->prepare("INSERT INTO tbl_company (CompanyID, Company_name, Company_picture) VALUES (?, ?, ?)");
     if (!$stmt) {

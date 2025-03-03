@@ -73,7 +73,7 @@
                 
                 return false;
             } else if (!validateFileSize(cpic)) {
-                // Additional check for file size
+                
                 return false;
 
             } else {

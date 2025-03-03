@@ -44,7 +44,7 @@
     </div>
 
 <?php
-    session_start();// Start the session at the beginning of your script
+    session_start();
     require_once "db_agq.php";
     include "agq_mailer.php";
 
@@ -52,16 +52,15 @@
 
 
     if (!isset($_SESSION['otp_attempts'])) {
-        $_SESSION['otp_attempts'] = 0; // Initialize login attempts counter if not set
+        $_SESSION['otp_attempts'] = 0; 
     }
     if (!isset($_SESSION['last_otpattempt_time'])) {
-        $_SESSION['last_otpattempt_time'] = time(); // Initialize last attempt time if not set
+        $_SESSION['last_otpattempt_time'] = time(); 
     }
     if (!isset($_SESSION['otplockout_start'])) {
-        $_SESSION['otplockout_start'] = 0; // Initialize lockout start time if not set
+        $_SESSION['otplockout_start'] = 0; 
     }
 
-    // Reset login attempts if 5 minutes have passed since the last lockout period
     if (time() - $_SESSION['last_otpattempt_time'] > 300) {
         $_SESSION['otp_attempts'] = 4;
         $_SESSION['otplockout_start'] = 0; // Reset lockout start time
