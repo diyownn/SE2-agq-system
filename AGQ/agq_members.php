@@ -3,6 +3,7 @@ require 'db_agq.php';
 
 session_start();
 
+$role = isset($_SESSION['department']) ? $_SESSION['department'] : '';
 
 if (!isset($_SESSION['department'])) {
     header("Location: agq_login.php");
@@ -10,9 +11,7 @@ if (!isset($_SESSION['department'])) {
 } elseif ($role == 'Export Brokerage' || $role == 'Export Forwarding' || $role == 'Import Brokerage' || $role == 'Import Forwarding') {
     header("Location: agq_dashCatcher.php");
     exit();
-} else {
-    return;
-}
+} 
 
 
 // Handle form submission (Create User)

@@ -135,7 +135,7 @@
 
             } else {
                 // Increment login attempts counter on failed login
-                $_SESSION['login_attempts']++;
+                //$_SESSION['login_attempts']++;
                 $_SESSION['last_attempt_time'] = time();
 
     ?>
