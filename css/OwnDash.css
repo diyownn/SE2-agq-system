@@ -7,18 +7,17 @@ body {
 .top-container{
   display: flex;
   flex-direction: row;
-  align-items: flex-start; /* Align items to the top */
+  align-items: flex-start;
   width: 100%;
   padding-bottom: 10px;
-
 }
 
 .dept-container {
   position: relative;
   display: flex;
-  flex-direction: column; /* Arrange elements in a column */
-  justify-content: space-between; /* Push search and logout to the bottom */
-  height: 120px; /* Adjust based on needs */
+  flex-direction: column;
+  justify-content: space-between;
+  height: 120px;
   width: 100%;
 }
 
@@ -33,66 +32,42 @@ body {
   position: absolute;
   top: 0;
   left: 0;
-  border-radius: 0 25px  25px 0;
-  
-  /* Shape */
-  
-  /* Center text vertically */
+  border-radius: 0 25px 25px 0;
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-@media screen and (max-width: 768px) {
-.search-container {
-  margin-top: 100px;
-    max-width: 100%; /* Ensure full width */
-    align-items: stretch;
-    padding: 0 20px;
-}
-
-.search-bar, .search-button {
-    border-radius: 50px;
-    border: 1px solid rgb(204, 204, 204);
-}
-
-.search-button {
-    border-left: 1px solid rgb(204, 204, 204);
-}
-}
-
-@media (max-width: 600px) {
-  .dept-container {
-      flex-direction: column; /* Stack elements vertically */
-      align-items: flex-start; /* Align to the left */
-  }
 }
 
 .header-container {
-margin-top: auto; /* Push the search and logout to the bottom */
-display: flex;
-flex-direction: row;
-align-items: center;
-justify-content: space-between;
-padding: 10px 40px;
+  margin-top: auto;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 40px;
 }
-
 
 .search-container {
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   width: 100%;
   max-width: 600px;
   margin: 0 auto 20px;
+  position: relative;
 }
 
-
-.search-bar {
+.search-wrapper {
+  position: relative;
   flex: 1;
   min-width: 0;
-  padding: 12px 15px; /* Match button padding */
+  display: flex;
+}
+
+.search-bar {
+  width: 100%;
+  padding: 12px 15px;
   border: 1px solid rgb(204, 204, 204);
   border-right: none;
   border-radius: 50px 0 0 50px;
@@ -100,6 +75,7 @@ padding: 10px 40px;
   background-color: rgb(209, 209, 209); 
   font-weight: bold;
   height: 44px;
+  box-sizing: border-box;
 }
 
 .search-button {
@@ -112,11 +88,44 @@ padding: 10px 40px;
   border-radius: 0 50px 50px 0;
   height: 44px; 
   cursor: pointer;
+  flex-shrink: 0;
 }
 
 .search-button:hover {
   opacity: 1;
   background-color: rgb(99, 133, 46);
+}
+
+.dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: calc(100% - 111px); /* Subtract search button width to match search bar exactly */
+  background: white;
+  border: 1px solid #ccc;
+  border-top: none; /* Remove top border to connect with search bar */
+  border-radius: 0 0 0 8px; /* Round only bottom-left corner */
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 1000;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  display: none;
+}
+
+.dropdown-item {
+  padding: 10px 15px;
+  cursor: pointer;
+  border-bottom: 1px solid #eee;
+  transition: background-color 0.2s ease;
+}
+
+.dropdown-item:last-child {
+  border-bottom: none;
+  border-radius: 0 0 0 8px; /* Match the dropdown's bottom-left corner */
+}
+
+.dropdown-item:hover {
+  background-color: #f0f0f0;
 }
 
 .nav-link-container {
@@ -133,12 +142,7 @@ padding: 10px 40px;
   font-weight: bold;
   font-size: 14px; 
 }
-  
-.search-button:hover {
-  opacity: 1;
-  background-color: rgb(99, 133, 46);
-}
-  
+
 .dashboard-body {
   margin: 30px 80px 10px 80px;
 }
@@ -149,30 +153,6 @@ padding: 10px 40px;
   margin: 0px 15px 0px 10px;
   justify-content: space-between;
 } 
- 
-
-.dropdown {
-  position: absolute;
-  background: white;
-  border: 1px solid #ccc;
-  width: 300px;
-  max-height: 200px;
-  overflow-y: auto;
-  display: none;
-  z-index: 1000;
-}
-
-
-.dropdown-item {
-  padding: 10px;
-  cursor: pointer;
-  border-bottom: 1px solid #eee;
-}
-
-.dropdown-item:hover {
-  background-color: #f0f0f0;
-}
-
 
 .add-company {
   display: flex;
@@ -212,7 +192,6 @@ padding: 10px 40px;
   height: 14px;
 }
   
-  
 .company-container-row {
   display: flex;
   flex-direction: row;
@@ -248,4 +227,37 @@ padding: 10px 40px;
 .company-logo {
   width: 200px;
   height: 200px;
+}
+
+@media screen and (max-width: 768px) {
+  .search-container {
+    margin-top: 20px;
+    max-width: 100%;
+    padding: 0 20px;
+  }
+  
+  .search-wrapper {
+    width: 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  .dept-container {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .header-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .search-container {
+    margin-bottom: 15px;
+  }
+  
+  .nav-link-container {
+    justify-content: center;
+    padding-bottom: 10px;
+  }
 }

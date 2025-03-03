@@ -1,15 +1,17 @@
 <?php
 require 'db_agq.php';
+
+session_start();
 /*
+$role = isset($_SESSION['department']) ? $_SESSION['department'] : '';
+
 if (!isset($_SESSION['department'])) {
     header("Location: agq_login.php");
     exit();
 } elseif ($role == 'Export Brokerage' || $role == 'Export Forwarding' || $role == 'Import Brokerage' || $role == 'Import Forwarding') {
     header("Location: agq_dashCatcher.php");
     exit();
-} else {
-    return;
-}
+} 
 */
 
 // Handle form submission (Create User)
@@ -126,7 +128,7 @@ $result = $conn->query($query);
 </head>
 
 <body>
-
+<a href="agq_owndash.php" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 20px; top: 20px;">←</a>
     <div class="header">
         <h1>MEMBERS OF THE COMPANY</h1>
         <div class="top-bar">
@@ -306,7 +308,6 @@ $result = $conn->query($query);
                         }
                     } else {
                         modalErrors.style.display = "none"; // Hide previous errors
-                        addRowToTable(data.user);
                         closeModal();
                     }
                 })
