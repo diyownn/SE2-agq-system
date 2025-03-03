@@ -144,6 +144,10 @@ if (!empty($search_query)) {
 </body>
 
 <script>
+    history.pushState(null, "", location.href);
+    window.onpopstate = function() {
+        history.pushState(null, "", location.href);
+    };
     document.getElementById("search-input").addEventListener("input", function() {
         let query = this.value.trim();
 

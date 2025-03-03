@@ -3,8 +3,14 @@ require 'db_agq.php';
 
 session_start();
 
-$role = isset($_SESSION['dept']) ? $_SESSION['dept'] : '';
 
+$role = isset($_SESSION['department']) ? $_SESSION['department'] : '';
+
+header("Expires: Sat, 26 Jul 1997 05:00:00 GMT");
+header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
 
 if (!isset($_SESSION['department'])) {
     header("Location: agq_login.php");
@@ -16,13 +22,6 @@ if (!isset($_SESSION['department'])) {
     exit();
 }
 
-
-
-header("Expires: Sat, 26 Jul 1997 05:00:00 GMT");
-header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
-header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
-header("Cache-Control: post-check=0, pre-check=0", false);
-header("Pragma: no-cache");
 
 if (isset($_GET['logout']) && $_GET['logout'] == 'true') {
     session_unset();
@@ -134,6 +133,11 @@ if (!empty($search_query)) {
 
 </body>
 <script>
+    history.pushState(null, "", location.href);
+    window.onpopstate = function() {
+        history.pushState(null, "", location.href);
+    };
+
     document.getElementById("search-input").addEventListener("input", function() {
         let query = this.value.trim();
 
