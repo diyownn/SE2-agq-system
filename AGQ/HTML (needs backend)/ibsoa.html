@@ -155,7 +155,7 @@
                     "Documentation",
                     "Delivery Expense",
                     "MISC., Transpo, Tel. Card",
-                    "Notes",
+                    "Total",
                     "Additional Charges"
                 ];
                 generateFixedCharges(lclCharges, true); // true = LCL mode
@@ -180,7 +180,7 @@
                     "Early Gate In",
                     "Tabs",
                     "Docs Fee",
-                    "Notes",
+                    "Total",
                     "Additional Charges"
                 ];
                 generateFixedCharges(containerCharges, false);
@@ -207,7 +207,7 @@
                 } else {
                     row.innerHTML = `
                         <input type="text" value="${charge}" readonly>
-                        <input type="text" placeholder="Enter amount">
+                        <input type="number" placeholder="Enter amount">
                     `;
                 }
     
@@ -233,7 +233,7 @@
     
             newRow.innerHTML = `
                 <input type="text" value="${selectedCharge}" readonly>
-                <input type="text" placeholder="Enter amount">
+                <input type="number" placeholder="Enter amount">
                 <button onclick="removeCharge(this)">Remove</button>
             `;
     
@@ -251,7 +251,7 @@
         
         <div class="section">
             <input type="text" placeholder="To" style="width: 70%">
-            <input type="text" placeholder="Date" style="width: 28%">
+            <input type="date" placeholder="Date" style="width: 28%">
         </div>
         <div class="section">
             <input type="text" placeholder="Address" style="width: 100%">
@@ -288,7 +288,7 @@
             </label>
         </div>
         <div class="section" id="package-details">
-            <input type="text" placeholder="Enter package details" style="width: 100%">
+            <!-- <input type="text" placeholder="Enter package details" style="width: 100%"> -->
         </div>
         <div class="table-container">
             <div class="table-header">
@@ -298,7 +298,7 @@
             <div id="charges-table"></div>
         </div>
         <div class="section">
-            <input type="text" placeholder="Total" style="width: 100%">
+            <input type="text" placeholder="Notes" style="width: 100%">
         </div>
         <div class="section">
             <input type="text" placeholder="Prepared by" style="width: 48%">
@@ -308,7 +308,7 @@
             <input type="text" placeholder="Received by" style="width: 24%">
             <input type="text" placeholder="Signature" style="width: 24%">
             <input type="text" placeholder="Printed Name" style="width: 24%">
-            <input type="text" placeholder="Date" style="width: 24%">
+            <input type="date" placeholder="Date" style="width: 24%">
         </div>
         <div class="footer">
             <button class="save-btn">Save</button>

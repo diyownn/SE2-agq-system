@@ -149,7 +149,7 @@
                     "Advance Shipping Lines",
                     "Processing",
                     "Others",
-                    "Notes"
+                    "Total"
                 ];
                 generateFixedCharges(lclCharges);
             } else if (containerSelected) {
@@ -163,7 +163,7 @@
                     "E2M Lodgement",
                     "Handling",
                     "Others",
-                    "Notes"
+                    "Total"
                 ];
                 generateFixedCharges(containerCharges);
             }
@@ -287,14 +287,14 @@
         
         <!-- Total Section -->
         <div class="section">
-            <input type="number" placeholder="Total" style="width: 100%">
+            <input type="text" placeholder="Notes" style="width: 100%">
         </div>
         
         <!-- Additional Charges Section - Now positioned after the Total -->
         <div class="section">
             <select onchange="handleAdditionalChargeSelection(this)" style="width: 100%">
                 <option value="">Additional Charges</option>
-                <option value="Others">Other Charges</option>
+                <!-- <option value="Others">Other Charges</option> -->
                 <option value="PCCI">PCCI</option>
             </select>
         </div>
