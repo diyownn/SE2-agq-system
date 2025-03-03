@@ -124,7 +124,7 @@
                     "Brokerage Fee",
                     "12% VAT",
                     "Others",
-                    "Notes"   
+                    "Total"   
                 ];
                 generateFixedCharges(lclCharges);
             } else if (containerSelected) {
@@ -132,7 +132,7 @@
                     "Brokerage Fee",
                     "12% VAT",
                     "Others",
-                    "Notes"
+                    "Total"
                 ];
                 generateFixedCharges(containerCharges, true);
             }
@@ -140,16 +140,16 @@
     
         function generateFixedCharges(charges, isContainer = false) {
             const chargesTable = document.getElementById("charges-table");
-    
+
             charges.forEach(charge => {
                 const row = document.createElement("div");
                 row.className = "table-row";
-    
+
                 if (charge === "Additional Charges") {
                     row.innerHTML = `
                         <select onchange="handleChargeSelection(this)">
                             <option value="">Additional Charges</option>
-                            <option value="Others">Other Charges</option>
+                            <option value="Others">Others</option>
                             <option value="Trucking Service">Trucking Service</option>
                         </select>
                     `;
@@ -159,7 +159,7 @@
                         <input type="number" placeholder="Enter amount">
                     `;
                 }
-    
+
                 chargesTable.appendChild(row);
             });
         }
@@ -167,7 +167,7 @@
         function handleChargeSelection(selectElement) {
             const selectedCharge = selectElement.value;
             if (!selectedCharge) return; // Do nothing if default is selected
-    
+
             // Prevent duplicate entries
             const existingEntries = document.querySelectorAll(".added-charge");
             for (let entry of existingEntries) {
@@ -247,7 +247,7 @@
             <div id="charges-table"></div>
         </div>
         <div class="section">
-            <input type="number" placeholder="Total" style="width: 100%">
+            <input type="text" placeholder="Notes" style="width: 100%">
         </div>
         <div class="section">
             <input type="text" placeholder="Prepared by" style="width: 48%">

@@ -124,7 +124,7 @@
                     "Ocean Freight",
                     "Brokerage Fee",
                     "Others",
-                    "Notes"   
+                    "Total"   
                 ];
                 generateFixedCharges(lclCharges);
             } else if (containerSelected) {
@@ -132,7 +132,7 @@
                     "Ocean Freight",
                     "12% VAT",
                     "Others",
-                    "Notes"
+                    "Total"
                 ];
                 generateFixedCharges(containerCharges, true);
             }
@@ -247,7 +247,7 @@
             <div id="charges-table"></div>
         </div>
         <div class="section">
-            <input type="number" placeholder="Total" style="width: 100%">
+            <input type="text" placeholder="Notes" style="width: 100%">
         </div>
         <div class="section">
             <input type="text" placeholder="Prepared by" style="width: 48%">
