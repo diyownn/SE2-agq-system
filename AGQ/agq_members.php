@@ -128,7 +128,7 @@ $result = $conn->query($query);
 </head>
 
 <body>
-
+    <a href="agq_owndash.php" style="text-decoration: none; color: black; font-size: x-large">←</a>
     <div class="header">
         <h1>MEMBERS OF THE COMPANY</h1>
         <div class="top-bar">

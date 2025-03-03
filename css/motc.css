@@ -10,6 +10,7 @@ body {
     flex-direction: column;
 }
 
+
 /* Header Section */
 .header {
     display: flex;
@@ -256,7 +257,19 @@ button:hover {
     background-color: #dcdcdc; 
   }
   
-  
+  .back-button {
+    position: absolute;  /* Ensures it stays in the upper left */
+    top: 10px;  /* Adjusts distance from the top */
+    left: 20px; /* Moves it closer to the left side */
+    margin: 0; /* Ensures no extra margins */
+}
+
+.back-button a {
+    text-decoration: none;
+    color: black;
+    font-size: 24px;
+    font-weight: bold;
+}
   
   button:hover {
     background-color: #7c9b4e;
