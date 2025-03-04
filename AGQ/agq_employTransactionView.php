@@ -103,74 +103,26 @@ if (!empty($search_query)) {
             </button>
         </div>
         <div class="transactions mt-4">
-            <div class="transaction">
-                <div class="transaction-header">STATEMENT OF ACCOUNT <span class="icon">&#x25BC;</span></div>
-                <div class="transaction-content">
-                    <div class="transaction-item d-flex justify-content-between">
-                        <span>IB0007/01-26</span>
-                        <input type="checkbox">
-                    </div>
-                    <div class="transaction-item d-flex justify-content-between">
-                        <span>IB0007/01-25</span>
-                        <input type="checkbox">
-                    </div>
-                    <div class="transaction-item d-flex justify-content-between">
-                        <span>IB0009/01-28</span>
-                        <input type="checkbox">
-                    </div>
-                </div>
-            </div>
-            <div class="transaction">
-                <div class="transaction-header">INVOICE <span class="icon">&#x25BC;</span></div>
-                <div class="transaction-content">
-                    <div class="transaction-item d-flex justify-content-between">
-                        <span>IB0007/02-21</span>
-                        <input type="checkbox">
-                    </div>
-                    <div class="transaction-item d-flex justify-content-between">
-                        <span>IB0007/01-25</span>
-                        <input type="checkbox">
-                    </div>
-                    <div class="transaction-item d-flex justify-content-between">
-                        <span>IB0007/01-25</span>
-                        <input type="checkbox">
+            <?php
+            $docTypes = ['STATEMENT OF ACCOUNT', 'INVOICE', 'SUMMARY', 'OTHERS'];
+            foreach ($docTypes as $docType): ?>
+                <div class="transaction">
+                    <div class="transaction-header"><?php echo $docType; ?> <span class="icon">&#x25BC;</span></div>
+                    <div class="transaction-content">
+                        <?php if (isset($transactions[$docType])): ?>
+                            <?php foreach ($transactions[$docType] as $refNum): ?>
+                                <div class="transaction-item d-flex justify-content-between"
+                                    ondblclick="redirectToDocument('<?php echo htmlspecialchars($refNum); ?>')">
+                                    <span><?php echo htmlspecialchars($refNum); ?></span>
+                                    <input type="checkbox">
+                                </div>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <p>No records found.</p>
+                        <?php endif; ?>
                     </div>
                 </div>
-            </div>
-            <div class="transaction">
-                <div class="transaction-header">SUMMARY <span class="icon">&#x25BC;</span></div>
-                <div class="transaction-content">
-                    <div class="transaction-item d-flex justify-content-between">
-                        <span>IB0007/01-25</span>
-                        <input type="checkbox">
-                    </div>
-                    <div class="transaction-item d-flex justify-content-between">
-                        <span>IB0007/01-25</span>
-                        <input type="checkbox">
-                    </div>
-                    <div class="transaction-item d-flex justify-content-between">
-                        <span>IB0007/01-25</span>
-                        <input type="checkbox">
-                    </div>
-                </div>
-            </div>
-            <div class="transaction">
-                <div class="transaction-header">OTHERS <span class="icon">&#x25BC;</span></div>
-                <div class="transaction-content">
-                    <div class="transaction-item d-flex justify-content-between">
-                        <span>IB0007/01-25</span>
-                        <input type="checkbox">
-                    </div>
-                    <div class="transaction-item d-flex justify-content-between">
-                        <span>IB0007/01-25</span>
-                        <input type="checkbox">
-                    </div>
-                    <div class="transaction-item d-flex justify-content-between">
-                        <span>IB0007/01-25</span>
-                        <input type="checkbox">
-                    </div>
-                </div>
-            </div>
+            <?php endforeach; ?>
         </div>
     </div>
     <script>
