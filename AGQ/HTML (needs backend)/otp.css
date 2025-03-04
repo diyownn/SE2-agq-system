@@ -33,22 +33,40 @@ body {
 }
 
 .transactions {
-    max-width: 600px;
+    display: flex;
+    flex-direction: column;
+    max-width: 800px;
     margin: 0 auto;
-    border: 1px solid #000;
+    
 }
 
 .transaction {
-    border-bottom: 1px solid #000;
+    border: 1px;
+    border-style: solid;
+    border-color: black;
+    margin-bottom: 10px;
+
 }
 
 .transaction-header {
-    background-color: #c3d2a2;
-    padding: 15px;
-    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     cursor: pointer;
+    font-weight: bold;
+    padding: 15px;
+    background-color: #c3d2a2;
     border-bottom: 1px solid #000;
     transition: background-color 0.3s ease;
+}
+
+.transaction-header .icon {
+    display: inline-block;
+    transition: transform 0.3s ease-in-out;
+}
+
+.transaction-header.active .icon {
+    transform: rotate(180deg);
 }
 
 .transaction-header.active:hover {
@@ -87,11 +105,14 @@ input[type="checkbox"] {
     appearance: none;
     border: 2px solid #d0dcb3;
     border-radius: 4px;
+    margin-top: 5px;
     outline: none;
     cursor: pointer;
-    position: relative;
     background-color: #fff;
     transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 input[type="checkbox"]:checked {
@@ -104,9 +125,6 @@ input[type="checkbox"]::after {
     color: #000;
     font-size: 14px;
     font-weight: bold;
-    position: absolute;
-    left: 3px;
-    top: -1px;
     display: none;
 }
 
