@@ -60,7 +60,7 @@ if (!empty($search_query)) {
     <link rel="icon" type="image/x-icon" href="/AGQ/images/favicon.ico">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="../css/employdash.css">
+    <link rel="stylesheet" type="text/css" href="../css/EmployDash.css">
 
 </head>
 <link rel="icon" href="images/agq_logo.png" type="image/ico">
@@ -116,7 +116,7 @@ if (!empty($search_query)) {
                         }
 
                         echo '<div class="company-button">';
-                        echo '<button class="company-container" onclick="window.location.href=\'HTML (needs backend)/otp.html\'">';
+                        echo '<button class="company-container" onclick="window.location.href=\'agq_employTransactionView.php\'">';
                         echo '<img class="company-logo" src="' . $company_picture_src . '" alt="' . $company_name . '">';
                         echo '</button>';
                         echo '</div>';
@@ -265,7 +265,7 @@ if (!empty($search_query)) {
                             let companyButton = document.createElement("button");
                             companyButton.classList.add("company-container");
                             companyButton.onclick = function() {
-                                window.location.href = "login.php"; // Redirect
+                                window.location.href = "agq_employTransactionView.php"; // Redirect
                             };
 
                             // Create the company logo
@@ -318,7 +318,7 @@ if (!empty($search_query)) {
                         let companyButton = document.createElement("button");
                         companyButton.classList.add("company-container");
                         companyButton.onclick = function() {
-                            window.location.href = "login.php"; // Redirect
+                            window.location.href = "agq_employTransactionView.php"; // Redirect
                         };
 
                         // Create the company logo
