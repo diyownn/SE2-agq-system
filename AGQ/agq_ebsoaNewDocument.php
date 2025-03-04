@@ -3,7 +3,7 @@ require 'db_agq.php';
 
 // Handle form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    if (isset($_POST['insert'])) {
+    if (isset($_POST['save'])) {
         insertRecord($conn);
     } elseif (isset($_POST['select'])) {
         selectRecords($conn);
@@ -20,16 +20,16 @@ function insertRecord($conn)
     $companyName = isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : null;
 
     $sql = "INSERT INTO tbl_expbrk (
-        To:, Address, Tin, Attention, Date, Vessel, ETA, RefNum, DestinationOrigin, ER, BHNum,
-        NatureOfGoods, Packages, Weight, Measurement, PackageType, BrokerageFee, Discount50, Vat12,
-        Others, Notes, AdvanceShipping, Processing, Arrastre, Wharfage, FormsStamps, PhotocopyMatarial,
-        Documentation, E2MLodge, HaulStuffing, Handling, PCCI, Total, Prepared_by, Approved_by, DocType, 
+        `To:`, `Address`, Tin, Attention, `Date`, Vessel, ETA, RefNum, DestinationOrigin, ER, BHNum,
+        NatureOfGoods, Packages, `Weight`, Measurement, PackageType, Others, Notes, 
+        AdvanceShipping, Processing, Arrastre, Wharfage, FormsStamps, PhotocopyNotarial,
+        Documentation, E2MLodge, ManualStuffing, Handling, PCCI, Total, Prepared_by, Approved_by, DocType, 
         Company_name, Department
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     $stmt = $conn->prepare($sql);
     $stmt->bind_param(
-        "ssssssssssssssssiiiissiiiiiiiiiiiiisss",
+        "ssssssssssssssssisiiiiiiiiiiiisssss",
         $_POST['to'],
         $_POST['address'],
         $_POST['tin'],
@@ -46,20 +46,17 @@ function insertRecord($conn)
         $_POST['weight'],
         $_POST['measurement'],
         $_POST['packageType'],
-        $_POST['brokerageFee'],
-        $_POST['discount50'],
-        $_POST['vat12'],
         $_POST['others_amount'],
         $_POST['notes'],
-        $_POST['advanceShipping'],
+        $_POST['advanceshippinglines'],
         $_POST['processing'],
         $_POST['arrastre'],
         $_POST['wharfage'],
-        $_POST['formsStamps'],
-        $_POST['photocopyMaterial'],
+        $_POST['formsstamps'],
+        $_POST['photocopynotarial'],
         $_POST['documentation'],
-        $_POST['e2mLodge'],
-        $_POST['haulStuffing'],
+        $_POST['e2mlodgement'],
+        $_POST['stuffing'],
         $_POST['handling'],
         $_POST['pcci_amount'],
         $_POST['total'],
@@ -149,6 +146,7 @@ $conn->close();
                     "Photocopy/Notarial",
                     "Documentation",
                     "E2M Lodgement",
+                    "Stuffing",
                     "Handling",
                     "Notes"
                 ];
@@ -296,7 +294,7 @@ $conn->close();
                     <!-- Charges will be populated by JavaScript -->
                 </div>
                 <div class="section">
-                    <input type="number" id="total" name="total" placeholder="Total" style="width: 100%" readonly>
+                    <input type="number" id="total" name="total" placeholder="Total" style="width: 100%">
 
                    <!-- <button type="button" onclick="calculateTotal()" class="calc-btn">Calculate Total</button> -->
 
@@ -307,7 +305,7 @@ $conn->close();
                 </div>
                 <div class="footer">
                     <!-- <button type="submit" name="insert" class="save-btn">Save</button> -->
-                    <input type="submit" name="save" class="save-btn" onclick="window.location.href='agq_employTransactionView'" value="Save">
+                    <input type="submit" name="save" class="save-btn" onclick="window.location.href='agq_employTransactionView.php'" value="Save">
                 </div>
             </div>
         </form>

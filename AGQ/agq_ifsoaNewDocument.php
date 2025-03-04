@@ -315,7 +315,7 @@ $conn->close();
             </div>
             <div class="footer">
                 <!-- <button class="save-btn">Save</button> -->
-                <input type="submit" name="save" class="save-btn" onclick="window.location.href='agq_employTransactionView'" value="Save">
+                <input type="submit" name="save" class="save-btn" onclick="window.location.href='agq_employTransactionView.php'" value="Save">
             </div>
         </form>
     </div>
