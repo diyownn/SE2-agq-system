@@ -6,19 +6,13 @@ session_start();
 
 $role = isset($_SESSION['department']) ? $_SESSION['department'] : '';
 
-header("Expires: Sat, 26 Jul 1997 05:00:00 GMT");
-header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
-header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
-header("Cache-Control: post-check=0, pre-check=0", false);
-header("Pragma: no-cache");
 
 if (!isset($_SESSION['department'])) {
+    session_destroy();
     header("Location: agq_login.php");
-    session_destroy();
     exit();
-} elseif ($role == 'Export Brokerage' || $role == 'Export Forwarding' || $role == 'Import Brokerage' || $role == 'Import Forwarding') {
+} elseif ($role == 'admin' || $role == 'Admin' || $role == 'owner' || $role == 'Owner') {
     header("Location: agq_dashCatcher.php");
-    session_destroy();
     exit();
 }
 
@@ -29,6 +23,12 @@ if (isset($_GET['logout']) && $_GET['logout'] == 'true') {
     header("Location: agq_login.php");
     exit();
 }
+
+header("Expires: Sat, 26 Jul 1997 05:00:00 GMT");
+header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
 
 $search_query = isset($_GET['q']) ? trim($_GET['q']) : '';
 
@@ -92,44 +92,44 @@ if (!empty($search_query)) {
                 COMPANIES
             </div>
         </div>
-        <div class="company-container-row" id="company-container-row">
-            <?php
-            $companies = "SELECT Company_name, Company_picture FROM tbl_company";
-            $result = $conn->query($companies);
+        <div id="company-container-parent">
+            <div class="company-container-row">
+                <?php
+                $companies = "SELECT Company_name, Company_picture FROM tbl_company";
+                $result = $conn->query($companies);
 
-            if ($result->num_rows > 0) {
-                $index = 0;
+                if ($result->num_rows > 0) {
+                    $index = 0;
+                    while ($row = $result->fetch_assoc()) {
+                        $varName = 'Company' . $index;
+                        $$varName = $row['Company_name'];
 
-                while ($row = $result->fetch_assoc()) {
-                    $varName = 'Company' . $index;
-                    $$varName = $row['Company_name'];
+                        $company_name = $$varName;
+                        $company_picture = $row['Company_picture'];
 
-                    $company_name = $$varName;
-                    $company_picture = $row['Company_picture'];
-
-                    $company_picture_base64 = base64_encode($company_picture);
-                    $company_picture_src = 'data:image/jpeg;base64,' . $company_picture_base64;
+                        $company_picture_base64 = base64_encode($company_picture);
+                        $company_picture_src = 'data:image/jpeg;base64,' . $company_picture_base64;
 
 
-                    if ($index > 0 && $index % 5 === 0) {
-                        echo '</div><div class="company-container-row">';
+                        if ($index > 0 && $index % 5 === 0) {
+                            echo '</div><div class="company-container-row">';
+                        }
+
+                        echo '<div class="company-button">';
+                        echo '<button class="company-container" onclick="window.location.href=\'HTML (needs backend)/otp.html\'">';
+                        echo '<img class="company-logo" src="' . $company_picture_src . '" alt="' . $company_name . '">';
+                        echo '</button>';
+                        echo '</div>';
+
+                        $index++;
                     }
 
-                    echo '<div class="company-button">';
-                    echo '<button class="company-container" onclick="window.location.href=\'agq_choosedocument.php\'">';
-                    echo '<img class="company-logo" src="' . $company_picture_src . '" alt="' . $company_name . '">';
-                    echo '</button>';
                     echo '</div>';
-
-                    $index++;
+                } else {
+                    echo "No companies found in the database.";
                 }
-
-                echo '</div>';
-            } else {
-                echo "No companies found in the database.";
-            }
-            ?>
-
+                ?>
+            </div>
 
 </body>
 <script>
@@ -137,6 +137,8 @@ if (!empty($search_query)) {
     window.onpopstate = function() {
         history.pushState(null, "", location.href);
     };
+
+
 
     document.getElementById("search-input").addEventListener("input", function() {
         let query = this.value.trim();
@@ -177,18 +179,16 @@ if (!empty($search_query)) {
     document.addEventListener("DOMContentLoaded", function() {
         let searchInput = document.getElementById("search-input");
         let searchButton = document.getElementById("search-button");
-        let container = document.getElementById("company-container-row");
         let dropdown = document.getElementById("dropdown");
+        let companyContainerParent = document.getElementById("company-container-parent"); // New parent element for container rows
 
-        if (!searchInput || !searchButton || !dropdown) {
+        if (!searchInput || !searchButton || !dropdown || !companyContainerParent) {
             console.error("Error: One or more elements not found.");
             return;
         }
 
-
-        document.getElementById("search-input").addEventListener("input", function() {
+        searchInput.addEventListener("input", function() {
             let query = this.value.trim();
-            let dropdown = document.getElementById("dropdown");
 
             if (query.length === 0) {
                 dropdown.style.display = "none";
@@ -201,21 +201,19 @@ if (!empty($search_query)) {
                     console.log("API Response:", data);
                     dropdown.innerHTML = "";
 
+
                     if (!data || !Array.isArray(data.company)) {
                         console.error("Error: API response does not contain a valid 'company' array!", data);
                         return;
                     }
 
-                    const companies = data.company;
-                    dropdown.innerHTML = "";
-
-                    if (companies.length > 0) {
-                        companies.forEach(item => {
+                    if (data.company.length > 0) {
+                        data.company.forEach(item => {
                             let div = document.createElement("div");
                             div.classList.add("dropdown-item");
                             div.textContent = item.Company_name;
                             div.onclick = function() {
-                                document.getElementById("search-input").value = item.Company_name;
+                                searchInput.value = item.Company_name;
                                 dropdown.style.display = "none";
                             };
                             dropdown.appendChild(div);
@@ -223,12 +221,10 @@ if (!empty($search_query)) {
                         dropdown.style.display = "block";
                     } else {
                         dropdown.style.display = "none";
-                        console.log("Cannot handle ")
                     }
-                })
-                .catch(error => console.error("Error fetching search results:", error));
-        });
+                }).catch(error => console.error("Error fetching search results:", error));
 
+        });
 
         // Hide dropdown when clicking outside
         document.addEventListener("click", function(event) {
@@ -241,73 +237,116 @@ if (!empty($search_query)) {
         searchButton.addEventListener("click", function() {
             let query = searchInput.value.trim();
 
-            if (!container) {
-                console.error("Error: Element with ID 'company-container-row' not found.");
+            if (!companyContainerParent) {
+                console.error("Error: Parent container for 'company-container-row' not found.");
                 return;
             }
 
             if (query === "") {
-
                 fetch("FETCH_RESULTS.php")
                     .then(response => response.json())
                     .then(data => {
-                        container.innerHTML = "";
+                        companyContainerParent.innerHTML = ""; // Clear previous content
 
                         if (!data.company || data.company.length === 0) {
-                            container.innerHTML = "<p>No Companies found.</p>";
+                            companyContainerParent.innerHTML = "<p>No Companies found.</p>";
                             return;
                         }
 
-                        data.company.forEach(company => {
-                            let companyDiv = document.createElement("div");
-                            companyDiv.classList.add("company-container-row");
+                        let companyRowDiv = document.createElement("div");
+                        companyRowDiv.classList.add("company-container-row");
 
-                            companyDiv.innerHTML = `
-                        <div class="company-button">
-                            <button class="company-container" onclick="window.location.href='login.php'">
-                                <img class="company-logo" src="data:image/jpeg;base64,${company.Company_picture}" alt="${company.Company_name}">
-                            </button>
-                        </div>
-                    `;
+                        data.company.forEach((company, index) => {
+                            // Create the company button container
+                            let companyButtonDiv = document.createElement("div");
+                            companyButtonDiv.classList.add("company-button");
 
-                            container.appendChild(companyDiv);
+                            // Create the company button
+                            let companyButton = document.createElement("button");
+                            companyButton.classList.add("company-container");
+                            companyButton.onclick = function() {
+                                window.location.href = "login.php"; // Redirect
+                            };
+
+                            // Create the company logo
+                            let companyLogo = document.createElement("img");
+                            companyLogo.classList.add("company-logo");
+                            companyLogo.src = `data:image/jpeg;base64,${company.Company_picture}`;
+                            companyLogo.alt = company.Company_name;
+
+                            // Append the image to the button, and button to the container
+                            companyButton.appendChild(companyLogo);
+                            companyButtonDiv.appendChild(companyButton);
+                            companyRowDiv.appendChild(companyButtonDiv);
+
+                            // Every 5th item, start a new row
+                            if ((index + 1) % 5 === 0) {
+                                companyContainerParent.appendChild(companyRowDiv);
+                                companyRowDiv = document.createElement("div");
+                                companyRowDiv.classList.add("company-container-row");
+                            }
                         });
-                    })
-                    .catch(error => console.error("Error fetching companies:", error));
+
+                        // Append any remaining companies
+                        if (companyRowDiv.children.length > 0) {
+                            companyContainerParent.appendChild(companyRowDiv);
+                        }
+                    }).catch(error => console.error("Error fetching companies:", error));
 
                 return;
             }
 
-
             fetch("FILTER_RESULTS.php?query=" + encodeURIComponent(query))
-
                 .then(response => response.json())
                 .then(data => {
-                    let container = document.getElementById("company-container-row");
-                    container.innerHTML = "";
+                    companyContainerParent.innerHTML = ""; // Clear previous content
 
                     if (!data.company || data.company.length === 0) {
-                        container.innerHTML = "<p>No Companies found.</p>";
+                        companyContainerParent.innerHTML = "<p>No Companies found.</p>";
                         return;
                     }
 
-                    data.company.forEach(company => {
-                        let companyDiv = document.createElement("div");
-                        companyDiv.classList.add("company-container-row");
+                    let companyRowDiv = document.createElement("div");
+                    companyRowDiv.classList.add("company-container-row");
 
-                        companyDiv.innerHTML = `
-                        <div class="company-button">
-                            <button class="company-container" onclick="window.location.href='login.php'">
-                                <img class="company-logo" src="data:image/jpeg;base64,${company.Company_picture}" alt="${company.Company_name}">
-                            </button>
-                        </div>
-                    `;
+                    data.company.forEach((company, index) => {
+                        // Create the company button container
+                        let companyButtonDiv = document.createElement("div");
+                        companyButtonDiv.classList.add("company-button");
 
-                        container.appendChild(companyDiv);
+                        // Create the company button
+                        let companyButton = document.createElement("button");
+                        companyButton.classList.add("company-container");
+                        companyButton.onclick = function() {
+                            window.location.href = "login.php"; // Redirect
+                        };
+
+                        // Create the company logo
+                        let companyLogo = document.createElement("img");
+                        companyLogo.classList.add("company-logo");
+                        companyLogo.src = `data:image/jpeg;base64,${company.Company_picture}`;
+                        companyLogo.alt = company.Company_name;
+
+                        // Append the image to the button, and button to the container
+                        companyButton.appendChild(companyLogo);
+                        companyButtonDiv.appendChild(companyButton);
+                        companyRowDiv.appendChild(companyButtonDiv);
+
+                        // Every 5th item, start a new row
+                        if ((index + 1) % 5 === 0) {
+                            companyContainerParent.appendChild(companyRowDiv);
+                            companyRowDiv = document.createElement("div");
+                            companyRowDiv.classList.add("company-container-row");
+                        }
                     });
-                })
-                .catch(error => console.error("Error fetching companies:", error));
-        });
+
+                    // Append any remaining companies
+                    if (companyRowDiv.children.length > 0) {
+                        companyContainerParent.appendChild(companyRowDiv);
+                    }
+                }).catch(error => console.error("Error fetching companies:", error));
+        })
+
     });
 </script>
 
