@@ -2,7 +2,8 @@
 require "db_agq.php";
 
 session_start();
-$role = isset($_SESSION['dept']) ? $_SESSION['dept'] : '';
+$role = isset($_SESSION['department']) ? $_SESSION['department'] : '';
+$company = isset($_SESSION['selected_company']) ? $_SESSION['selected_company'] : '';
 
 /*
 
@@ -93,31 +94,55 @@ $conn->close();
             </span>
         </div>
         <div class="document-bars">
-            <button class="document-type-manifesto" id="manifesto" onclick="window.location.href='agq_manifestoForm.php'">
+            <button class="document-type-manifesto" id="manifesto" onclick="storeDocumentSession('Manifesto')">
                 MANIFESTO
             </button>
-            <button class="document-type-soa" onclick="window.location.href='agq_soaCatcher.php'">
+            <button class="document-type-soa" onclick="storeDocumentSession('SOA')">
                 STATEMENT OF ACCOUNT
             </button>
-            <button class="document-type-freight-invoice" onclick="window.location.href='agq_invoiceCatcher.php'">
+            <button class="document-type-freight-invoice" onclick="storeDocumentSession('Invoice')">
                 FREIGHT INVOICE
             </button>
-            <button class="document-type-summary" onclick="window.location.href='agq_summaryForm.php'">
+            <button class="document-type-summary" onclick="storeDocumentSession('Summary')">
                 SUMMARY
             </button>
-            <button class="document-type-others" onclick="window.location.href='agq_othersForm.php'">
+            <button class="document-type-others" onclick="storeDocumentSession('Others')">
                 OTHERS
             </button>
         </div>
     </div>
 
     <script>
+        function storeDocumentSession(documentName) {
+            fetch('STORE_SESSION.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: 'document_type=' + encodeURIComponent(documentName)
+                })
+                .then(response => response.text())
+                .then(data => {
+                    console.log("Session stored:", data);
+                    window.location.href = "agq_ifsoaNewDocument.php";
+                })
+                .catch(error => console.error("Error:", error));
+        }
+
         function disableInputField() {
             var manButton = document.getElementById("manifesto");
             manButton.disabled = true;
             manButton.classList.add("disabled");
 
-    }
+        }
+        
+        var doctype = "<?php echo isset($_SESSION['selected_documenttype']) ? $_SESSION['selected_documenttype'] : ''; ?>"
+        var role = "<?php echo isset($_SESSION['department']) ? $_SESSION['department'] : ''; ?>";
+        var company = "<?php echo isset($_SESSION['selected_company']) ? $_SESSION['selected_company'] : ''; ?>";
+
+        console.log("DocType:", doctype);
+        console.log("Role:", role);
+        console.log("Company:", company);
     </script>
 
     <?php
@@ -125,8 +150,8 @@ $conn->close();
         echo "<script>disableInputField();</script>";
     }
 
-    
+
     ?>
 </body>
-</html>
 
+</html>

@@ -1,6 +1,10 @@
 <?php
 require 'db_agq.php';
 
+session_start();
+
+
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_POST['save'])) {
         insertRecord($conn);
@@ -15,7 +19,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 function insertRecord($conn)
 {
     $docType = isset($_SESSION['DocType']) ? $_SESSION['DocType'] : null;
-    $department = isset($_SESSION['Department']) ? $_SESSION['Department'] : null;
+    $department = isset($_SESSION['department']) ? $_SESSION['department'] : null;
     $companyName = isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : null;
 
     $sql = "INSERT INTO tbl_impfwd (
@@ -229,6 +233,14 @@ $conn->close();
         function removeCharge(button) {
             button.parentElement.remove(); // Remove the selected charge row
         }
+
+        var doctype = "<?php echo isset($_SESSION['DocType']) ? $_SESSION['DocType'] : ''; ?>"
+        var role = "<?php echo isset($_SESSION['department']) ? $_SESSION['department'] : ''; ?>";
+        var company = "<?php echo isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : ''; ?>";
+
+        console.log("DocType:", doctype);
+        console.log("Role:", role);
+        console.log("Company:", company);
     </script>
 </head>
 
@@ -237,7 +249,7 @@ $conn->close();
         <div class="header">STATEMENT OF ACCOUNT</div>
         <form method="POST">
             <div class="section">
-                <input type="text" name= "To" placeholder="To" style="width: 70%">
+                <input type="text" name="To" placeholder="To" style="width: 70%">
                 <input type="date" name="Date" placeholder="Date" style="width: 28%">
             </div>
             <div class="section">
@@ -299,7 +311,7 @@ $conn->close();
             </div>
             <div class="footer">
                 <!-- <button class="save-btn">Save</button> -->
-                <input type="submit" name="save" class="save-btn" value="Save">
+                <input type="submit" name="save" class="save-btn" onclick="window.location.href='agq_employTransactionView'" value="Save">
             </div>
         </form>
     </div>

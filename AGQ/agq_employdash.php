@@ -60,7 +60,7 @@ if (!empty($search_query)) {
     <link rel="icon" type="image/x-icon" href="/AGQ/images/favicon.ico">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="../css/EmployDash.css">
+    <link rel="stylesheet" type="text/css" href="../css/employdash.css">
 
 </head>
 <link rel="icon" href="images/agq_logo.png" type="image/ico">
@@ -102,9 +102,9 @@ if (!empty($search_query)) {
                     $index = 0;
                     while ($row = $result->fetch_assoc()) {
                         $varName = 'Company' . $index;
-                        $$varName = $row['Company_name'];
+                        $varName = $row['Company_name'];
 
-                        $company_name = $$varName;
+                        $company_name = $row['Company_name'];
                         $company_picture = $row['Company_picture'];
 
                         $company_picture_base64 = base64_encode($company_picture);
@@ -116,7 +116,7 @@ if (!empty($search_query)) {
                         }
 
                         echo '<div class="company-button">';
-                        echo '<button class="company-container" onclick="window.location.href=\'agq_employTransactionView.php\'">';
+                        echo '<button class="company-container" onclick="storeCompanySession(\'' . htmlspecialchars($company_name, ENT_QUOTES) . '\')">';
                         echo '<img class="company-logo" src="' . $company_picture_src . '" alt="' . $company_name . '">';
                         echo '</button>';
                         echo '</div>';
@@ -133,13 +133,26 @@ if (!empty($search_query)) {
 
 </body>
 <script>
+    function storeCompanySession(companyName) {
+        fetch('STORE_SESSION.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'company_name=' + encodeURIComponent(companyName)
+            })
+            .then(response => response.text())
+            .then(data => {
+                console.log("Session stored:", data);
+                window.location.href = "agq_employTransactionView.php";
+            })
+            .catch(error => console.error("Error:", error));
+    }
+
     history.pushState(null, "", location.href);
     window.onpopstate = function() {
         history.pushState(null, "", location.href);
     };
-
-
-
     document.getElementById("search-input").addEventListener("input", function() {
         let query = this.value.trim();
 
@@ -171,8 +184,7 @@ if (!empty($search_query)) {
                 } else {
                     dropdown.style.display = "none";
                 }
-            })
-            .catch(error => console.error("Error fetching search results:", error));
+            }).catch(error => console.error("Error fetching search results:", error));
 
     });
 
@@ -223,7 +235,6 @@ if (!empty($search_query)) {
                         dropdown.style.display = "none";
                     }
                 }).catch(error => console.error("Error fetching search results:", error));
-
         });
 
         // Hide dropdown when clicking outside
@@ -265,7 +276,7 @@ if (!empty($search_query)) {
                             let companyButton = document.createElement("button");
                             companyButton.classList.add("company-container");
                             companyButton.onclick = function() {
-                                window.location.href = "agq_employTransactionView.php"; // Redirect
+                                storeCompanySession(''.htmlspecialchars($company_name, ENT_QUOTES));
                             };
 
                             // Create the company logo
@@ -318,7 +329,7 @@ if (!empty($search_query)) {
                         let companyButton = document.createElement("button");
                         companyButton.classList.add("company-container");
                         companyButton.onclick = function() {
-                            window.location.href = "agq_employTransactionView.php"; // Redirect
+                            storeCompanySession(''.htmlspecialchars($company_name, ENT_QUOTES));
                         };
 
                         // Create the company logo
@@ -346,7 +357,6 @@ if (!empty($search_query)) {
                     }
                 }).catch(error => console.error("Error fetching companies:", error));
         })
-
     });
 </script>
 
