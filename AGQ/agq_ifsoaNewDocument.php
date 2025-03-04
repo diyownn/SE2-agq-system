@@ -78,6 +78,9 @@ function insertRecord($conn)
 
     if ($stmt->execute()) {
         echo "New record inserted successfully!";
+        ?>
+        <script>window.location.href ='agq_employTransactionView.php';</script>
+        <?php
     } else {
         echo "Error: " . $stmt->error;
     }
@@ -315,7 +318,7 @@ $conn->close();
             </div>
             <div class="footer">
                 <!-- <button class="save-btn">Save</button> -->
-                <input type="submit" name="save" class="save-btn" onclick="window.location.href='agq_employTransactionView.php'" value="Save">
+                <input type="submit" name="save" class="save-btn" value="Save">
             </div>
         </form>
     </div>
