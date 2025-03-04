@@ -2,7 +2,7 @@
 require 'db_agq.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    if (isset($_POST['insert'])) {
+    if (isset($_POST['save'])) {
         insertRecord($conn);
     } elseif (isset($_POST['select'])) {
         selectRecords($conn);
@@ -18,59 +18,55 @@ function insertRecord($conn)
     $department = isset($_SESSION['Department']) ? $_SESSION['Department'] : null;
     $companyName = isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : null;
 
-    $sql = "INSERT INTO your_table (
-        To:, Address, Tin, Attention, `Date`, Vessel, ETA, RefNum, DestinationOrigin, ER, BHNum,
-        NatureOfGoods, Packages, Weight, Measurement, PackageType, OceanFreight, OceanFreight95, 
-        LCLCharge, DocsFee, Documentation, TurnOverFee, Handling, Others, Notes, Vat12, FCLCharge, 
+    $sql = "INSERT INTO tbl_impfwd (
+        `To:`, `Address`, Tin, Attention, `Date`, Vessel, ETA, RefNum, DestinationOrigin, ER, BHNum,
+        NatureOfGoods, Packages, `Weight`, Measurement, PackageType, OceanFreight95,
+        Documentation, TurnOverFee, Handling, Others, Notes, FCLCharge, 
         BLFee, ManifestFee, THC, CIC, ECRS, PSS, Origin, ShippingLine, ExWorkCharges, Total, 
         Prepared_by, Approved_by, Received_by, Printed_name, Creation_date, DocType, Company_name, Department
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
     $stmt = $conn->prepare($sql);
     $stmt->bind_param(
-        "ssssssssssssssssiiiiiiiiiiiiiiiiiiiissssssss",
-        $_POST['to'],
-        $_POST['address'],
-        $_POST['tin'],
-        $_POST['attention'],
-        $_POST['date'],
-        $_POST['vessel'],
-        $_POST['eta'],
-        $_POST['refNum'],
-        $_POST['destinationOrigin'],
-        $_POST['er'],
-        $_POST['bhNum'],
-        $_POST['natureOfGoods'],
-        $_POST['packages'],
-        $_POST['weight'],
-        $_POST['measurement'],
-        $_POST['packageType'],
-        $_POST['oceanFreight'],
-        $_POST['oceanFreight95'],
-        $_POST['lclCharge'],
-        $_POST['docsFee'],
-        $_POST['documentation'],
-        $_POST['turnOverFee'],
-        $_POST['handling'],
-        $_POST['others'],
-        $_POST['notes'],
-        $_POST['vat12'],
-        $_POST['fclCharge'],
-        $_POST['blFee'],
-        $_POST['manifestFee'],
-        $_POST['thc'],
-        $_POST['cic'],
-        $_POST['ecrs'],
-        $_POST['pss'],
-        $_POST['origin'],
-        $_POST['shippingLine'],
-        $_POST['exWorkCharges'],
-        $_POST['total'],
-        $_POST['prepared_by'],
-        $_POST['approved_by'],
-        $_POST['received_by'],
-        $_POST['printed_name'],
-        $_POST['creation_date'],
+        "ssssssssssssssssiiiiisiiiiiiiiiiissssssss",
+        $_POST['To'],
+        $_POST['Address'],
+        $_POST['TIN'],
+        $_POST['Attention'],
+        $_POST['Date'],
+        $_POST['Vessel'],
+        $_POST['ETDETA'],
+        $_POST['ReferenceNo'],
+        $_POST['DestinationOrigin'],
+        $_POST['ER'],
+        $_POST['BLHBLNo'],
+        $_POST['NatureofGoods'],
+        $_POST['Packages'],
+        $_POST['Weight'],
+        $_POST['Measurement'],
+        $_POST['package'],
+        $_POST['95_Ocean_Freight'],
+        $_POST['Documentation'],
+        $_POST['Turn_Over_Fee'],
+        $_POST['Handling'],
+        $_POST['Others'],
+        $_POST['Notes'],
+        $_POST['FCL_Charges'],
+        $_POST['BL_Fee'],
+        $_POST['Manifest_Fee'],
+        $_POST['THC'],
+        $_POST['CIC'],
+        $_POST['ECRS'],
+        $_POST['PSS'],
+        $_POST['Origin'],
+        $_POST['Shipping_Line_Charges'],
+        $_POST['Ex-Work_Charges'],
+        $_POST['Total'],
+        $_POST['Preparedby'],
+        $_POST['Approvedby'],
+        $_POST['Receivedby'],
+        $_POST['PrintedName'],
+        $_POST['Date1'],
         $docType,        // Session variable
         $companyName,    // Session variable
         $department      // Session variable
@@ -142,9 +138,9 @@ $conn->close();
 
             if (lclSelected) {
                 const lclCharges = [
-                    "95% Ocean Freight",
-                    "BL Fee",
-                    "Manifest Fee",
+                    "95_Ocean_Freight",
+                    "BL_Fee",
+                    "Manifest_Fee",
                     "THC",
                     "CIC",
                     "ECRS",
@@ -155,13 +151,13 @@ $conn->close();
                 generateFixedCharges(lclCharges, true); // true = LCL mode
             } else if (containerSelected) {
                 const containerCharges = [
-                    "95% Ocean Freight",
+                    "95_Ocean_Freight",
                     "Handling",
-                    "Turn Over Fee",
-                    "BL Fee",
-                    "FCL Charges",
+                    "Turn_Over_Fee",
+                    "BL_Fee",
+                    "FCL_Charges",
                     "Documentation",
-                    "Manifest Fee",
+                    "Manifest_Fee",
                     "Notes",
                     "Additional Charges" // Full container-specific
                 ];
@@ -181,15 +177,23 @@ $conn->close();
                         <select onchange="handleChargeSelection(this, ${isLCL})">
                             <option value="">Additional Charges</option>
                             ${isLCL 
-                                ? '<option value="Origin">Origin</option>' 
-                                : '<option value="Shipping Line Charges">Shipping Line Charges</option><option value="Ex-Work Charges">Ex-Work Charges</option>'
+                                ? '<option value="Others">Others</option><option value="Origin">Origin</option>' 
+                                : '<option value="Others">Others</option><option value="Shipping_Line_Charges">Shipping Line Charges</option><option value="Ex-Work_Charges">Ex-Work Charges</option>'
                             }
                         </select>
                     `;
                 } else {
                     row.innerHTML = `
                         <input type="text" value="${charge}" readonly>
-                        <input type="text" placeholder="Enter amount">
+                        <input type="number" name= "${charge}" placeholder="Enter amount">
+                    `;
+                }
+
+                if (charge === "Notes") {
+                    // Create a text input field for notes instead of number
+                    row.innerHTML = `
+                        <input type="text" value="Notes" readonly>
+                        <input type="text" name="Notes" placeholder="Enter notes">
                     `;
                 }
 
@@ -215,7 +219,7 @@ $conn->close();
 
             newRow.innerHTML = `
                 <input type="text" value="${selectedCharge}" readonly>
-                <input type="text" placeholder="Enter amount">
+                <input type="number" name="${selectedCharge}" placeholder="Enter amount">
                 <button onclick="removeCharge(this)">Remove</button>
             `;
 
@@ -233,33 +237,33 @@ $conn->close();
         <div class="header">STATEMENT OF ACCOUNT</div>
         <form method="POST">
             <div class="section">
-                <input type="text" placeholder="To" style="width: 70%">
-                <input type="text" placeholder="Date" style="width: 28%">
+                <input type="text" name= "To" placeholder="To" style="width: 70%">
+                <input type="date" name="Date" placeholder="Date" style="width: 28%">
             </div>
             <div class="section">
-                <input type="text" placeholder="Address" style="width: 100%">
+                <input type="text" name="Address" placeholder="Address" style="width: 100%">
             </div>
             <div class="section">
-                <input type="text" placeholder="TIN" style="width: 48%">
-                <input type="text" placeholder="Attention" style="width: 48%">
+                <input type="text" name="TIN" placeholder="TIN" style="width: 48%">
+                <input type="text" name="Attention" placeholder="Attention" style="width: 48%">
             </div>
             <div class="section">
-                <input type="text" placeholder="Vessel" style="width: 32%">
-                <input type="text" placeholder="ETD/ETA" style="width: 32%">
-                <input type="text" placeholder="Reference No" style="width: 32%">
+                <input type="text" name="Vessel" placeholder="Vessel" style="width: 32%">
+                <input type="text" name="ETDETA" placeholder="ETD/ETA" style="width: 32%">
+                <input type="text" name="ReferenceNo" placeholder="Reference No" style="width: 32%">
             </div>
             <div class="section">
-                <input type="text" placeholder="Destination/Origin" style="width: 48%">
-                <input type="text" placeholder="E.R" style="width: 22%">
-                <input type="text" placeholder="BL/HBL No" style="width: 22%">
+                <input type="text" name="DestinationOrigin" placeholder="Destination/Origin" style="width: 48%">
+                <input type="text" name="ER" placeholder="E.R" style="width: 22%">
+                <input type="text" name="BLHBLNo" placeholder="BL/HBL No" style="width: 22%">
             </div>
             <div class="section">
-                <input type="text" placeholder="Nature of Goods" style="width: 100%">
+                <input type="text" name="NatureofGoods" placeholder="Nature of Goods" style="width: 100%">
             </div>
             <div class="section">
-                <input type="text" placeholder="Packages" style="width: 32%">
-                <input type="text" placeholder="Weight" style="width: 32%">
-                <input type="text" placeholder="Measurement" style="width: 32%">
+                <input type="text" name="Packages" placeholder="Packages" style="width: 32%">
+                <input type="text" name="Weight" placeholder="Weight" style="width: 32%">
+                <input type="text" name="Measurement" placeholder="Measurement" style="width: 32%">
             </div>
             <div class="section radio-group">
                 <label>Package Type:</label>
@@ -271,7 +275,7 @@ $conn->close();
                 </label>
             </div>
             <div class="section" id="package-details">
-                <input type="text" placeholder="Enter package details" style="width: 100%">
+                <!-- <input type="text" placeholder="Enter package details" style="width: 100%"> -->
             </div>
             <div class="table-container">
                 <div class="table-header">
@@ -281,20 +285,21 @@ $conn->close();
                 <div id="charges-table"></div>
             </div>
             <div class="section">
-                <input type="text" placeholder="Total" style="width: 100%">
+                <input type="number" name="Total" placeholder="Total" style="width: 100%">
             </div>
             <div class="section">
-                <input type="text" placeholder="Prepared by" style="width: 48%">
-                <input type="text" placeholder="Approved by" style="width: 48%">
+                <input type="text" name="Preparedby" placeholder="Prepared by" style="width: 48%">
+                <input type="text" name="Approvedby" placeholder="Approved by" style="width: 48%">
             </div>
             <div class="section">
-                <input type="text" placeholder="Received by" style="width: 24%">
-                <input type="text" placeholder="Signature" style="width: 24%">
-                <input type="text" placeholder="Printed Name" style="width: 24%">
-                <input type="text" placeholder="Date" style="width: 24%">
+                <input type="text" name="Receivedby" placeholder="Received by" style="width: 24%">
+                <input type="text" name="Signature" placeholder="Signature" style="width: 24%">
+                <input type="text" name="PrintedName" placeholder="Printed Name" style="width: 24%">
+                <input type="date" name="Date1" placeholder="Date" style="width: 24%">
             </div>
             <div class="footer">
-                <button class="save-btn">Save</button>
+                <!-- <button class="save-btn">Save</button> -->
+                <input type="submit" name="save" class="save-btn" value="Save">
             </div>
         </form>
     </div>

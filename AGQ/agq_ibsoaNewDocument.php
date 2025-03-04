@@ -1,5 +1,7 @@
 <?php
 
+require_once "db_agq.php";
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_POST['insert'])) {
         insertRecord($conn);
@@ -134,7 +136,6 @@ function deleteRecord($conn, $RefNum)
 
 $conn->close();
 ?>
-?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -224,6 +225,14 @@ $conn->close();
                     row.innerHTML = `
                         <input type="text" value="${charge}" readonly>
                         <input type="text" placeholder="Enter amount">
+                    `;
+                }
+
+                if (charge === "Notes") {
+                    // Create a text input field for notes instead of number
+                    row.innerHTML = `
+                        <input type="text" name="charge_type[]" value="Notes" readonly>
+                        <input type="text" name="notes" placeholder="Enter notes">
                     `;
                 }
 
