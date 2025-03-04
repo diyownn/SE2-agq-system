@@ -35,7 +35,7 @@ if ($role == 'admin' || $role == 'Admin' || $role == 'owner' || $role == 'Owner'
         unset($_SESSION['redirected']);
     }
     exit();
-} else if ($role == 'Export Forwarding' || $role == 'Import Forwarding' || $role == 'Export Brokerage' || $role == 'Import Brokerage' && $pword != 'agqLogistics') {
+} else if ($role == 'Export Forwarding' || $role == 'Import Forwarding' || $role == 'Export Brokerage' || $role == 'Import Brokerage' && $pword != 'agqFreight') {
     header("location:agq_employdash.php");
     if (!isset($_SESSION['redirected'])) {
         $_SESSION['redirected'] = true;
