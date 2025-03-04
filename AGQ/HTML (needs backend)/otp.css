@@ -10,6 +10,29 @@ body {
     margin: 0 auto 20px;
 }
 
+.add-company {
+    display: flex;
+    align-items: center;
+    background-color: #94ae5e;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 50px;
+    font-family: 'IBM Plex Sans', Arial, sans-serif;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s ease;      
+}
+  
+.add-company:hover {
+    background-color: #63852e;
+}
+  
+  .add-company span {
+    color: black;
+    margin-right: 10px;
+  }
+
 .search-bar {
     flex: 1;
     padding: 12px;
@@ -131,3 +154,6 @@ input[type="checkbox"]::after {
 input[type="checkbox"]:checked::after {
     display: block;
 }
+
+
+    
