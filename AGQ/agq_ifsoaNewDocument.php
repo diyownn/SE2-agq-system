@@ -33,44 +33,44 @@ function insertRecord($conn)
     $stmt = $conn->prepare($sql);
     $stmt->bind_param(
         "ssssssssssssssssiiiiisiiiiiiiiiiissssssss",
-        $_POST['To'],
-        $_POST['Address'],
-        $_POST['TIN'],
-        $_POST['Attention'],
-        $_POST['Date'],
-        $_POST['Vessel'],
-        $_POST['ETDETA'],
-        $_POST['ReferenceNo'],
-        $_POST['DestinationOrigin'],
-        $_POST['ER'],
-        $_POST['BLHBLNo'],
-        $_POST['NatureofGoods'],
-        $_POST['Packages'],
-        $_POST['Weight'],
-        $_POST['Measurement'],
+        $_POST['to'],
+        $_POST['address'],
+        $_POST['tin'],
+        $_POST['attention'],
+        $_POST['date'],
+        $_POST['vessel'],
+        $_POST['eta'],
+        $_POST['referenceNo'],
+        $_POST['destinationOrigin'],
+        $_POST['er'],
+        $_POST['bhNo'],
+        $_POST['natureofGoods'],
+        $_POST['packages'],
+        $_POST['weight'],
+        $_POST['measurement'],
         $_POST['package'],
-        $_POST['95_Ocean_Freight'],
-        $_POST['Documentation'],
-        $_POST['Turn_Over_Fee'],
-        $_POST['Handling'],
-        $_POST['Others'],
-        $_POST['Notes'],
-        $_POST['FCL_Charges'],
-        $_POST['BL_Fee'],
-        $_POST['Manifest_Fee'],
-        $_POST['THC'],
-        $_POST['CIC'],
-        $_POST['ECRS'],
-        $_POST['PSS'],
-        $_POST['Origin'],
-        $_POST['Shipping_Line_Charges'],
-        $_POST['Ex-Work_Charges'],
-        $_POST['Total'],
-        $_POST['Preparedby'],
-        $_POST['Approvedby'],
-        $_POST['Receivedby'],
-        $_POST['PrintedName'],
-        $_POST['Date1'],
+        $_POST['95oceanfreight'],
+        $_POST['documentation'],
+        $_POST['turnoverfee'],
+        $_POST['handling'],
+        $_POST['others_amount'],
+        $_POST['notes'],
+        $_POST['fclcharges'],
+        $_POST['blfee'],
+        $_POST['manifestfee'],
+        $_POST['thc'],
+        $_POST['cic'],
+        $_POST['ecrs'],
+        $_POST['pss'],
+        $_POST['origin_amount'],
+        $_POST['shippinglinecharges_amount'],
+        $_POST['ex-workcharges_amount'],
+        $_POST['total'],
+        $_POST['preparedBy'],
+        $_POST['approvedBy'],
+        $_POST['receivedBy'],
+        $_POST['printedName'],
+        $_POST['date1'],
         $docType,        // Session variable
         $companyName,    // Session variable
         $department      // Session variable
@@ -142,9 +142,9 @@ $conn->close();
 
             if (lclSelected) {
                 const lclCharges = [
-                    "95_Ocean_Freight",
-                    "BL_Fee",
-                    "Manifest_Fee",
+                    "95 Ocean Freight",
+                    "BL Fee",
+                    "Manifest Fee",
                     "THC",
                     "CIC",
                     "ECRS",
@@ -155,13 +155,13 @@ $conn->close();
                 generateFixedCharges(lclCharges, true); // true = LCL mode
             } else if (containerSelected) {
                 const containerCharges = [
-                    "95_Ocean_Freight",
+                    "95 Ocean Freight",
                     "Handling",
-                    "Turn_Over_Fee",
-                    "BL_Fee",
-                    "FCL_Charges",
+                    "Turn Over Fee",
+                    "BL Fee",
+                    "FCL Charges",
                     "Documentation",
-                    "Manifest_Fee",
+                    "Manifest Fee",
                     "Notes",
                     "Additional Charges" // Full container-specific
                 ];
@@ -182,14 +182,16 @@ $conn->close();
                             <option value="">Additional Charges</option>
                             ${isLCL 
                                 ? '<option value="Others">Others</option><option value="Origin">Origin</option>' 
-                                : '<option value="Others">Others</option><option value="Shipping_Line_Charges">Shipping Line Charges</option><option value="Ex-Work_Charges">Ex-Work Charges</option>'
+                                : '<option value="Others">Others</option><option value="ShippingLineCharges">Shipping Line Charges</option><option value="Ex-WorkCharges">Ex-Work Charges</option>'
                             }
                         </select>
                     `;
                 } else {
+
+                    const inputName = charge.toLowerCase().replace(/\s+/g, '').replace('/', '');
                     row.innerHTML = `
-                        <input type="text" value="${charge}" readonly>
-                        <input type="number" name= "${charge}" placeholder="Enter amount">
+                        <input type="text" name="charge_type[]" value="${charge}" readonly>
+                        <input type="number" name="${inputName}" placeholder="Enter amount">
                     `;
                 }
 
@@ -197,7 +199,7 @@ $conn->close();
                     // Create a text input field for notes instead of number
                     row.innerHTML = `
                         <input type="text" value="Notes" readonly>
-                        <input type="text" name="Notes" placeholder="Enter notes">
+                        <input type="text" name="notes" placeholder="Enter notes">
                     `;
                 }
 
@@ -221,10 +223,12 @@ $conn->close();
             newRow.className = "table-row added-charge";
             newRow.dataset.charge = selectedCharge; // Store charge type
 
+            let inputName = selectedCharge.toLowerCase() + "_amount";
+
             newRow.innerHTML = `
                 <input type="text" value="${selectedCharge}" readonly>
-                <input type="number" name="${selectedCharge}" placeholder="Enter amount">
-                <button onclick="removeCharge(this)">Remove</button>
+                <input type="number" name="${inputName}" placeholder="Enter amount">
+                <button type="button" onclick="removeCharge(this)">Remove</button>
             `;
 
             chargesTable.appendChild(newRow);
@@ -249,33 +253,33 @@ $conn->close();
         <div class="header">STATEMENT OF ACCOUNT</div>
         <form method="POST">
             <div class="section">
-                <input type="text" name="To" placeholder="To" style="width: 70%">
-                <input type="date" name="Date" placeholder="Date" style="width: 28%">
+                <input type="text" name="to" placeholder="To" style="width: 70%">
+                <input type="date" name="date" placeholder="Date" style="width: 28%">
             </div>
             <div class="section">
-                <input type="text" name="Address" placeholder="Address" style="width: 100%">
+                <input type="text" name="address" placeholder="Address" style="width: 100%">
             </div>
             <div class="section">
-                <input type="text" name="TIN" placeholder="TIN" style="width: 48%">
-                <input type="text" name="Attention" placeholder="Attention" style="width: 48%">
+                <input type="text" name="tin" placeholder="TIN" style="width: 48%">
+                <input type="text" name="attention" placeholder="Attention" style="width: 48%">
             </div>
             <div class="section">
-                <input type="text" name="Vessel" placeholder="Vessel" style="width: 32%">
-                <input type="text" name="ETDETA" placeholder="ETD/ETA" style="width: 32%">
-                <input type="text" name="ReferenceNo" placeholder="Reference No" style="width: 32%">
+                <input type="text" name="vessel" placeholder="Vessel" style="width: 32%">
+                <input type="text" name="eta" placeholder="ETD/ETA" style="width: 32%">
+                <input type="text" name="referenceNo" placeholder="Reference No" style="width: 32%">
             </div>
             <div class="section">
-                <input type="text" name="DestinationOrigin" placeholder="Destination/Origin" style="width: 48%">
-                <input type="text" name="ER" placeholder="E.R" style="width: 22%">
-                <input type="text" name="BLHBLNo" placeholder="BL/HBL No" style="width: 22%">
+                <input type="text" name="destinationOrigin" placeholder="Destination/Origin" style="width: 48%">
+                <input type="text" name="er" placeholder="E.R" style="width: 22%">
+                <input type="text" name="bhNo" placeholder="BL/HBL No" style="width: 22%">
             </div>
             <div class="section">
-                <input type="text" name="NatureofGoods" placeholder="Nature of Goods" style="width: 100%">
+                <input type="text" name="natureofGoods" placeholder="Nature of Goods" style="width: 100%">
             </div>
             <div class="section">
-                <input type="text" name="Packages" placeholder="Packages" style="width: 32%">
-                <input type="text" name="Weight" placeholder="Weight" style="width: 32%">
-                <input type="text" name="Measurement" placeholder="Measurement" style="width: 32%">
+                <input type="text" name="packages" placeholder="Packages" style="width: 32%">
+                <input type="text" name="weight" placeholder="Weight" style="width: 32%">
+                <input type="text" name="measurement" placeholder="Measurement" style="width: 32%">
             </div>
             <div class="section radio-group">
                 <label>Package Type:</label>
@@ -297,17 +301,17 @@ $conn->close();
                 <div id="charges-table"></div>
             </div>
             <div class="section">
-                <input type="number" name="Total" placeholder="Total" style="width: 100%">
+                <input type="number" name="total" placeholder="Total" style="width: 100%">
             </div>
             <div class="section">
-                <input type="text" name="Preparedby" placeholder="Prepared by" style="width: 48%">
-                <input type="text" name="Approvedby" placeholder="Approved by" style="width: 48%">
+                <input type="text" name="preparedBy" placeholder="Prepared by" style="width: 48%">
+                <input type="text" name="approvedBy" placeholder="Approved by" style="width: 48%">
             </div>
             <div class="section">
-                <input type="text" name="Receivedby" placeholder="Received by" style="width: 24%">
-                <input type="text" name="Signature" placeholder="Signature" style="width: 24%">
-                <input type="text" name="PrintedName" placeholder="Printed Name" style="width: 24%">
-                <input type="date" name="Date1" placeholder="Date" style="width: 24%">
+                <input type="text" name="receivedBy" placeholder="Received by" style="width: 24%">
+                <input type="text" name="signature" placeholder="Signature" style="width: 24%">
+                <input type="text" name="printedName" placeholder="Printed Name" style="width: 24%">
+                <input type="date" name="date1" placeholder="Date" style="width: 24%">
             </div>
             <div class="footer">
                 <!-- <button class="save-btn">Save</button> -->

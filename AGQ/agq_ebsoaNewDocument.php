@@ -306,7 +306,8 @@ $conn->close();
                     <input type="text" name="approved_by" placeholder="Approved by" style="width: 48%">
                 </div>
                 <div class="footer">
-                    <button type="submit" name="insert" class="save-btn">Save</button>
+                    <!-- <button type="submit" name="insert" class="save-btn">Save</button> -->
+                    <input type="submit" name="save" class="save-btn" onclick="window.location.href='agq_employTransactionView'" value="Save">
                 </div>
             </div>
         </form>
