@@ -1,0 +1,159 @@
+body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    background-color: #fff;
+    margin: 0;
+    padding: 40px;
+}
+.search-container {
+    display: flex;
+    max-width: 600px;
+    margin: 0 auto 20px;
+}
+
+.add-company {
+    display: flex;
+    align-items: center;
+    background-color: #94ae5e;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 50px;
+    font-family: 'IBM Plex Sans', Arial, sans-serif;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s ease;      
+}
+  
+.add-company:hover {
+    background-color: #63852e;
+}
+  
+  .add-company span {
+    color: black;
+    margin-right: 10px;
+  }
+
+.search-bar {
+    flex: 1;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-right: none;
+    border-radius: 50px 0 0 50px;
+    font-size: 16px;
+    background-color: #d1d1d1;
+    font-weight: bold;
+}
+
+.search-button {
+    padding: 12px 25px;
+    border: none;
+    background-color: #8da66d;
+    color: white;
+    font-size: 16px;
+    font-family: 'IBM Plex Sans';
+    border-radius: 0 50px 50px 0;
+    cursor: pointer;
+}
+
+.transactions {
+    display: flex;
+    flex-direction: column;
+    max-width: 800px;
+    margin: 0 auto;
+    
+}
+
+.transaction {
+    border: 1px;
+    border-style: solid;
+    border-color: black;
+    margin-bottom: 10px;
+
+}
+
+.transaction-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    font-weight: bold;
+    padding: 15px;
+    background-color: #c3d2a2;
+    border-bottom: 1px solid #000;
+    transition: background-color 0.3s ease;
+}
+
+.transaction-header .icon {
+    display: inline-block;
+    transition: transform 0.3s ease-in-out;
+}
+
+.transaction-header.active .icon {
+    transform: rotate(180deg);
+}
+
+.transaction-header.active:hover {
+    background-color: #b0c494;
+}
+
+/* drop down effect kumpuru */
+.transaction-content {
+    max-height: 0;
+    overflow: hidden;
+    background-color: #fff;
+    transition: max-height 0.5s ease-in-out, padding 0.3s ease;
+    padding: 0 15px;
+}
+
+.transaction-content.open {
+    max-height: 200px;
+    padding: 15px;
+}
+
+.transaction-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    font-weight: 500;
+    border-bottom: 1px solid #000;
+}
+
+.transaction-item:last-child {
+    border-bottom: none;
+}
+
+input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    appearance: none;
+    border: 2px solid #d0dcb3;
+    border-radius: 4px;
+    margin-top: 5px;
+    outline: none;
+    cursor: pointer;
+    background-color: #fff;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+input[type="checkbox"]:checked {
+    background-color: #d0dcb3;
+    border-color: #a6b07f;
+}
+
+input[type="checkbox"]::after {
+    content: '✔';
+    color: #000;
+    font-size: 14px;
+    font-weight: bold;
+    display: none;
+}
+
+input[type="checkbox"]:checked::after {
+    display: block;
+}
+
+
+    
