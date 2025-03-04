@@ -23,13 +23,13 @@ function insertRecord($conn)
         To:, Address, Tin, Attention, Date, Vessel, ETA, RefNum, DestinationOrigin, ER, BHNum,
         NatureOfGoods, Packages, Weight, Measurement, PackageType, BrokerageFee, Discount50, Vat12,
         Others, Notes, AdvanceShipping, Processing, Arrastre, Wharfage, FormsStamps, PhotocopyMatarial,
-        Documentation, E2MLodge, HaulStuffing, Handling, PCCI, Total, Prepared_by, Approved_by, Received_by,
-        Printed_name, Creation_date, DocType, Company_name, Department
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        Documentation, E2MLodge, HaulStuffing, Handling, PCCI, Total, Prepared_by, Approved_by, DocType, 
+        Company_name, Department
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     $stmt = $conn->prepare($sql);
     $stmt->bind_param(
-        "ssssssssssssssssiiiiiiiiiiiiiiiiiiiisssssss",
+        "ssssssssssssssssiiiissiiiiiiiiiiiiisss",
         $_POST['to'],
         $_POST['address'],
         $_POST['tin'],
@@ -65,9 +65,6 @@ function insertRecord($conn)
         $_POST['total'],
         $_POST['prepared_by'],
         $_POST['approved_by'],
-        $_POST['received_by'],
-        $_POST['printed_name'],
-        $_POST['creation_date'],
         $docType,        // Session variable
         $companyName,    // Session variable
         $department      // Session variable
@@ -140,7 +137,6 @@ $conn->close();
                 const lclCharges = [
                     "Advance Shipping Lines",
                     "Processing",
-                    "Others",
                     "Notes"
                 ];
                 generateFixedCharges(lclCharges);
@@ -154,9 +150,7 @@ $conn->close();
                     "Documentation",
                     "E2M Lodgement",
                     "Handling",
-                    "Others",
-                    "Notes",
-                    "Additional Charges"
+                    "Notes"
                 ];
                 generateFixedCharges(containerCharges, true);
             }
@@ -169,23 +163,36 @@ $conn->close();
                 const row = document.createElement("div");
                 row.className = "table-row";
 
-                if (charge === "Additional Charges") {
+                if (charge === "Notes") {
+                    // Create a text input field for notes instead of number
                     row.innerHTML = `
-                <select onchange="handleChargeSelection(this)">
-                    <option disabled selected>Additional Charges</option>
-                    <option value="Others">Other Charges</option>
-                    <option value="PCCI">PCCI</option>
-                </select>
-            `;
+                        <input type="text" name="charge_type[]" value="Notes" readonly>
+                        <input type="text" name="notes" placeholder="Enter notes">
+                    `;
                 } else {
+                    // Number input for all other charges
+                    const inputName = charge.toLowerCase().replace(/\s+/g, '').replace('/', '');
                     row.innerHTML = `
-                <input type="text" name="charge_type[]" value="${charge}" readonly>
-                <input type="number" name="charge[]" placeholder="Enter amount">
-            `;
+                        <input type="text" name="charge_type[]" value="${charge}" readonly>
+                        <input type="number" name="${inputName}" placeholder="Enter amount">
+                    `;
                 }
 
                 chargesTable.appendChild(row);
             });
+
+            // Add the Additional Charges dropdown after all fixed charges
+            const additionalRow = document.createElement("div");
+            additionalRow.className = "table-row";
+            additionalRow.innerHTML = `
+                <select onchange="handleChargeSelection(this)">
+                    <option disabled selected>Additional Charges</option>
+                    <option value="Others">Others</option>
+                    <option value="PCCI">PCCI</option>
+                </select>
+                <div></div>
+            `;
+            chargesTable.appendChild(additionalRow);
         }
 
         function handleChargeSelection(selectElement) {
@@ -204,18 +211,35 @@ $conn->close();
             newRow.dataset.charge = selectedCharge; // Store charge type
 
             // Set input name correctly
-            let inputName = selectedCharge === "others" ? "others_amount" : "pcci_amount";
+            let inputName = selectedCharge.toLowerCase() + "_amount";
 
             newRow.innerHTML = `
-        <input type="text" value="${selectedCharge}" readonly>
-        <input type="number" name="${inputName}" placeholder="Enter amount">
-        <button type="button" onclick="removeCharge(this)">Remove</button>
-    `;
+                <input type="text" value="${selectedCharge}" readonly>
+                <input type="number" name="${inputName}" placeholder="Enter amount">
+                <button type="button" onclick="removeCharge(this)">Remove</button>
+            `;
 
             chargesTable.appendChild(newRow);
         }
-    </script>
 
+        function removeCharge(button) {
+            const row = button.parentNode;
+            row.parentNode.removeChild(row);
+        }
+
+        function calculateTotal() {
+            let total = 0;
+            const numberInputs = document.querySelectorAll('#charges-table input[type="number"]');
+            
+            numberInputs.forEach(input => {
+                if (input.value && !isNaN(input.value)) {
+                    total += parseFloat(input.value);
+                }
+            });
+            
+            document.getElementById("total").value = total.toFixed(2);
+        }
+    </script>
 </head>
 
 <body>
@@ -239,12 +263,12 @@ $conn->close();
                 <input type="text" name="refNum" placeholder="Reference No" style="width: 32%" required>
             </div>
             <div class="section">
-                <input type="text" name="destination_origin" placeholder="Destination/Origin" style="width: 48%">
+                <input type="text" name="destinationOrigin" placeholder="Destination/Origin" style="width: 48%">
                 <input type="text" name="er" placeholder="E.R" style="width: 22%">
                 <input type="text" name="bhNum" placeholder="BL/HBL No" style="width: 22%">
             </div>
             <div class="section">
-                <input type="text" name="nature_of_goods" placeholder="Nature of Goods" style="width: 100%">
+                <input type="text" name="natureOfGoods" placeholder="Nature of Goods" style="width: 100%">
             </div>
             <div class="section">
                 <input type="text" name="packages" placeholder="Packages" style="width: 32%">
@@ -254,40 +278,37 @@ $conn->close();
             <div class="section radio-group">
                 <label>Package Type:</label>
                 <label>
-                    <input type="radio" id="lcl" name="package_type" value="LCL" onclick="togglePackageField()"> LCL
+                    <input type="radio" id="lcl" name="packageType" value="LCL" onclick="togglePackageField()"> LCL
                 </label>
                 <label>
-                    <input type="radio" id="container" name="package_type" value="Full Container" onclick="togglePackageField()"> Full Container
+                    <input type="radio" id="container" name="packageType" value="Full Container" onclick="togglePackageField()"> Full Container
                 </label>
             </div>
-            <div class="section" id="package-details">
-                <!-- <input type="text" placeholder="Enter package details" style="width: 100%"> -->
+            <div class="section" id="package-details" style="display: none;">
+                <!-- Package details will be populated by JavaScript -->
             </div>
             <div class="table-container">
                 <div class="table-header">
                     <span>Reimbursable Charges</span>
                     <span>Amount</span>
                 </div>
-                <div id="charges-table"></div>
+                <div id="charges-table">
+                    <!-- Charges will be populated by JavaScript -->
+                </div>
                 <div class="section">
-                    <input type="number" name="total" placeholder="Total" style="width: 100%">
+                    <input type="number" id="total" name="total" placeholder="Total" style="width: 100%" readonly>
+
+                   <!-- <button type="button" onclick="calculateTotal()" class="calc-btn">Calculate Total</button> -->
+
                 </div>
                 <div class="section">
                     <input type="text" name="prepared_by" placeholder="Prepared by" style="width: 48%">
                     <input type="text" name="approved_by" placeholder="Approved by" style="width: 48%">
                 </div>
-                <div class="section">
-                    <input type="text" name="received_by" placeholder="Received by" style="width: 24%">
-                    <input type="text" name="printed_name" placeholder="Printed Name" style="width: 24%">
-                    <input type="date" name="creation_date" placeholder="Date" style="width: 24%">
-                </div>
-                <div class="section">
-                    <input type="text" name="doc_type" placeholder="Document Type" style="width: 48%">
-                    <input type="text" name="company_name" placeholder="Company Name" style="width: 48%">
-                </div>
                 <div class="footer">
                     <button type="submit" name="insert" class="save-btn">Save</button>
                 </div>
+            </div>
         </form>
     </div>
 </body>
