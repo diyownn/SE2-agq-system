@@ -129,7 +129,7 @@ if (!empty($search_query)) {
                         }
 
                         echo '<div class="company-button">';
-                        echo '<button class="company-container" onclick="window.location.href=\'HTML (needs backend)/otp.html\'">';
+                        echo '<button class="company-container" onclick="window.location.href=\'agq_ownTransactionView.php\'">';
                         echo '<img class="company-logo" src="' . $company_picture_src . '" alt="' . $company_name . '">';
                         echo '</button>';
                         echo '</div>';
@@ -243,68 +243,15 @@ if (!empty($search_query)) {
 
         // Perform search when search button is clicked
         searchButton.addEventListener("click", function() {
-                let query = searchInput.value.trim();
+            let query = searchInput.value.trim();
 
-                if (!companyContainerParent) {
-                    console.error("Error: Parent container for 'company-container-row' not found.");
-                    return;
-                }
+            if (!companyContainerParent) {
+                console.error("Error: Parent container for 'company-container-row' not found.");
+                return;
+            }
 
-                if (query === "") {
-                    fetch("FETCH_RESULTS.php")
-                        .then(response => response.json())
-                        .then(data => {
-                            companyContainerParent.innerHTML = ""; // Clear previous content
-
-                            if (!data.company || data.company.length === 0) {
-                                companyContainerParent.innerHTML = "<p>No Companies found.</p>";
-                                return;
-                            }
-
-                            let companyRowDiv = document.createElement("div");
-                            companyRowDiv.classList.add("company-container-row");
-
-                            data.company.forEach((company, index) => {
-                                // Create the company button container
-                                let companyButtonDiv = document.createElement("div");
-                                companyButtonDiv.classList.add("company-button");
-
-                                // Create the company button
-                                let companyButton = document.createElement("button");
-                                companyButton.classList.add("company-container");
-                                companyButton.onclick = function() {
-                                    window.location.href = "login.php"; // Redirect
-                                };
-
-                                // Create the company logo
-                                let companyLogo = document.createElement("img");
-                                companyLogo.classList.add("company-logo");
-                                companyLogo.src = `data:image/jpeg;base64,${company.Company_picture}`;
-                                companyLogo.alt = company.Company_name;
-
-                                // Append the image to the button, and button to the container
-                                companyButton.appendChild(companyLogo);
-                                companyButtonDiv.appendChild(companyButton);
-                                companyRowDiv.appendChild(companyButtonDiv);
-
-                                // Every 5th item, start a new row
-                                if ((index + 1) % 5 === 0) {
-                                    companyContainerParent.appendChild(companyRowDiv);
-                                    companyRowDiv = document.createElement("div");
-                                    companyRowDiv.classList.add("company-container-row");
-                                }
-                            });
-
-                            // Append any remaining companies
-                            if (companyRowDiv.children.length > 0) {
-                                companyContainerParent.appendChild(companyRowDiv);
-                            }
-                        }).catch(error => console.error("Error fetching companies:", error));
-
-                    return;
-                }
-
-                fetch("FILTER_RESULTS.php?query=" + encodeURIComponent(query))
+            if (query === "") {
+                fetch("FETCH_RESULTS.php")
                     .then(response => response.json())
                     .then(data => {
                         companyContainerParent.innerHTML = ""; // Clear previous content
@@ -326,7 +273,7 @@ if (!empty($search_query)) {
                             let companyButton = document.createElement("button");
                             companyButton.classList.add("company-container");
                             companyButton.onclick = function() {
-                                window.location.href = "login.php"; // Redirect
+                                window.location.href = "agq_ownTransactionView.php"; // Redirect
                             };
 
                             // Create the company logo
@@ -353,7 +300,60 @@ if (!empty($search_query)) {
                             companyContainerParent.appendChild(companyRowDiv);
                         }
                     }).catch(error => console.error("Error fetching companies:", error));
-            })
+
+                return;
+            }
+
+            fetch("FILTER_RESULTS.php?query=" + encodeURIComponent(query))
+                .then(response => response.json())
+                .then(data => {
+                    companyContainerParent.innerHTML = ""; // Clear previous content
+
+                    if (!data.company || data.company.length === 0) {
+                        companyContainerParent.innerHTML = "<p>No Companies found.</p>";
+                        return;
+                    }
+
+                    let companyRowDiv = document.createElement("div");
+                    companyRowDiv.classList.add("company-container-row");
+
+                    data.company.forEach((company, index) => {
+                        // Create the company button container
+                        let companyButtonDiv = document.createElement("div");
+                        companyButtonDiv.classList.add("company-button");
+
+                        // Create the company button
+                        let companyButton = document.createElement("button");
+                        companyButton.classList.add("company-container");
+                        companyButton.onclick = function() {
+                            window.location.href = "agq_ownTransactionView.php"; // Redirect
+                        };
+
+                        // Create the company logo
+                        let companyLogo = document.createElement("img");
+                        companyLogo.classList.add("company-logo");
+                        companyLogo.src = `data:image/jpeg;base64,${company.Company_picture}`;
+                        companyLogo.alt = company.Company_name;
+
+                        // Append the image to the button, and button to the container
+                        companyButton.appendChild(companyLogo); 
+                        companyButtonDiv.appendChild(companyButton);
+                        companyRowDiv.appendChild(companyButtonDiv);
+
+                        // Every 5th item, start a new row
+                        if ((index + 1) % 5 === 0) {
+                            companyContainerParent.appendChild(companyRowDiv);
+                            companyRowDiv = document.createElement("div");
+                            companyRowDiv.classList.add("company-container-row");
+                        }
+                    });
+
+                    // Append any remaining companies
+                    if (companyRowDiv.children.length > 0) {
+                        companyContainerParent.appendChild(companyRowDiv);
+                    }
+                }).catch(error => console.error("Error fetching companies:", error));
+        })
     });
 </script>
 
