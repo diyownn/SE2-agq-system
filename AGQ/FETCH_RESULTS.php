@@ -4,16 +4,15 @@ require 'db_agq.php';
 
 header("Content-Type: application/json");
 
-// Validate session
 $role = $_SESSION['department'] ?? '';
 
-// Retrieve query parameter
+
 $query = $_GET['query'] ?? '';
 
-// Initialize response array
-$response = ["company" => [], "expbrk" => [], "expfwd" => [], "impbrk" => [], "impfwd" => []];
 
-// Fetch company details
+$response = [];
+
+
 if ($stmt = $conn->prepare("SELECT Company_name, Company_picture FROM tbl_company WHERE Company_name LIKE ?")) {
     $like_query = "%{$query}%";
     $stmt->bind_param("s", $like_query);
@@ -29,7 +28,13 @@ if ($stmt = $conn->prepare("SELECT Company_name, Company_picture FROM tbl_compan
     $stmt->close();
 }
 
-// Define department-specific queries
+
+if (!empty($response["company"])) {
+    echo json_encode($response);
+    exit;
+}
+
+
 $tables = [
     "Export Brokerage"  => "tbl_expbrk",
     "Export Forwarding" => "tbl_expfwd",
@@ -52,5 +57,4 @@ if (isset($tables[$role])) {
     }
 }
 
-// Output JSON response
 echo json_encode($response);
