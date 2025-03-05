@@ -21,6 +21,7 @@ h1 {
     grid-template-columns: repeat(2, 200px);
     grid-gap: 20px;
     justify-content: center;
+    margin-left: 12%;
 }
 
 .box {
