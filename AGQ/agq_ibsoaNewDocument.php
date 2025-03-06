@@ -94,24 +94,11 @@ function insertRecord($conn)
 
     if ($stmt->execute()) {
         // echo "New record inserted successfully!";
-        echo '<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>';
-        echo '<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>';
-        echo '<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>';
-
-        ?>
-            <script>
-                Swal.fire({
-                    icon: "success",
-                    title: "Document Successfully Created!",
-                    confirmButtonText: "View"
-                    }).then((result) => {
-                    
-                        if (result.isConfirmed) {
-                           window.location.href = "agq_employTransactionView.php";
-                        }
-                    });
-            </script>
-        <?php
+        echo '<script>
+        if (confirm("Document Successfully Created!\\nDo you want to view it?")) {
+            window.location.href = "agq_employTransactionView.php";
+        }
+        </script>';
     } else {
         echo "Error: " . $stmt->error;
     }
