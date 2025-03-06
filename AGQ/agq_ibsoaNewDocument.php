@@ -3,7 +3,7 @@
 require_once "db_agq.php";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    if (isset($_POST['insert'])) {
+    if (isset($_POST['save'])) {
         insertRecord($conn);
     } elseif (isset($_POST['select'])) {
         selectRecords($conn);
@@ -21,83 +21,97 @@ function insertRecord($conn)
     $companyName = isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : null;
 
     $sql = "INSERT INTO tbl_impbrk (
-        `To`, Address, Tin, Attention, Date, Vessel, ETA, RefNum, DestinationOrigin, ER, BHNum,
-        NatureOfGoods, Packages, Weight, Measurement, PackageType, BrokerageFee, Vat12,
-        Others, Notes, TruckingService, Forwarder, WarehouseCharge, E lodge, Processing, FormsStamps, 
-        PhotocopyNotarial, Documentation, DeliveryExpense, Miscellaneous, Door2Door, ArrastreWharf, THC, 
-        AISL, GOFast, AdditionalProcessing, ExtraHandlingFee, ClearanceExpenses, HaulingTrucking, 
-        AdditionalContainer, Handling, StuffingPlant, IED, EarlyLayGateIn, TABS, DocsFee, DetentionCharges, 
-        ContainerDeposit, LateCollection, LateCharge, Demurrage, Total, Prepared_by, Approved_by, 
+        `To:`, `Address`, Tin, Attention, `Date`, Vessel, ETA, RefNum, DestinationOrigin, ER, BHNum,
+        NatureOfGoods, Packages, `Weight`, Measurement, PackageType, Others, Notes, Forwarder, WarehouseCharge, 
+        ELodge, Processing, FormsStamps, PhotocopyNotarial, Documentation, DeliveryExpense, Miscellaneous, 
+        Door2Door, ArrastreWharf, THC, AISL, GOFast, AdditionalProcessing, ExtraHandlingFee, ClearanceExpenses, 
+        HaulingTrucking, AdditionalContainer, Handling, StuffingPlant, IED, EarlyGateIn, TABS, DocsFee, 
+        DetentionCharges, ContainerDeposit, LateCollection, LateCharge, Demurrage, Total, Prepared_by, Approved_by, 
         Received_by, Printed_name, Creation_date, DocType, Company_name, Department
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     $stmt = $conn->prepare($sql);
     $stmt->bind_param(
-        "ssssssssssssssssiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiisssssss",
-        $_POST['To'],
-        $_POST['Address'],
-        $_POST['Tin'],
-        $_POST['Attention'],
-        $_POST['Date'],
-        $_POST['Vessel'],
-        $_POST['ETA'],
-        $_POST['RefNum'],
-        $_POST['DestinationOrigin'],
-        $_POST['ER'],
-        $_POST['BHNum'],
-        $_POST['NatureOfGoods'],
-        $_POST['Packages'],
-        $_POST['Weight'],
-        $_POST['Measurement'],
-        $_POST['PackageType'],
-        $_POST['BrokerageFee'],
-        $_POST['Vat12'],
-        $_POST['Others'],
-        $_POST['Notes'],
-        $_POST['TruckingService'],
-        $_POST['Forwarder'],
-        $_POST['WarehouseCharge'],
-        $_POST['Elodge'],
-        $_POST['Processing'],
-        $_POST['FormsStamps'],
-        $_POST['PhotocopyNotarial'],
-        $_POST['Documentation'],
-        $_POST['DeliveryExpense'],
-        $_POST['Miscellaneous'],
-        $_POST['Door2Door'],
-        $_POST['ArrastreWharf'],
-        $_POST['THC'],
-        $_POST['AISL'],
-        $_POST['GOFast'],
-        $_POST['AdditionalProcessing'],
-        $_POST['ExtraHandlingFee'],
-        $_POST['ClearanceExpenses'],
-        $_POST['HaulingTrucking'],
-        $_POST['AdditionalContainer'],
-        $_POST['Handling'],
-        $_POST['StuffingPlant'],
-        $_POST['IED'],
-        $_POST['EarlyLayGateIn'],
-        $_POST['TABS'],
+        "ssssssssssssssssisiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiissssssss",
+        $_POST['to'],
+        $_POST['address'],
+        $_POST['tin'],
+        $_POST['attention'],
+        $_POST['date'],
+        $_POST['vessel'],
+        $_POST['eta'],
+        $_POST['refNum'],
+        $_POST['destinationOrigin'],
+        $_POST['er'],
+        $_POST['bhNum'],
+        $_POST['natureofGoods'],
+        $_POST['packages'],
+        $_POST['weight'],
+        $_POST['measurement'],
+        $_POST['package'],
+        $_POST['others'],
+        $_POST['notes'],
+        $_POST['forwarder'],
+        $_POST['warehousecharges'],
+        $_POST['e-lodgement'],
+        $_POST['processing'],
+        $_POST['customsformsstamps'],
+        $_POST['photocopynotarial'],
+        $_POST['documentation'],
+        $_POST['deliveryexpense'],
+        $_POST['misc.transpo.tel.card'],
+        $_POST['doortodoorbacolod'],
+        $_POST['arrastrewharfagestorage'],
+        $_POST['thc-shippingline'],
+        $_POST['aisl'],
+        $_POST['gofast'],
+        $_POST['additionalprocessing'],
+        $_POST['extrahandlingfee'],
+        $_POST['clearanceexpenses'],
+        $_POST['haulingandtrucking'],
+        $_POST['additionalcontainer'],
+        $_POST['handling'],
+        $_POST['stuffingplant'],
+        $_POST['iedentryencoding'],
+        $_POST['earlygatein'],
+        $_POST['tabs'],
         $_POST['DocsFee'],
-        $_POST['DetentionCharges'],
-        $_POST['ContainerDeposit'],
-        $_POST['LateCollection'],
-        $_POST['LateCharge'],
-        $_POST['Demurrage'],
-        $_POST['Total'],
-        $_POST['Prepared_by'],
-        $_POST['Approved_by'],
-        $_POST['Received_by'],
-        $_POST['Printed_name'],
-        $_POST['Creation_date'],
+        $_POST['detentioncharges'],
+        $_POST['containerdeposit'],
+        $_POST['latecollection'],
+        $_POST['latecharge'],
+        $_POST['demurragecosco'],
+        $_POST['total'],
+        $_POST['prepared'],
+        $_POST['approved'],
+        $_POST['received'],
+        $_POST['printed'],
+        $_POST['date1'],
         $docType,        // Session variable
         $companyName,    // Session variable
         $department      // Session variable
     );
 
     if ($stmt->execute()) {
-        echo "New record inserted successfully!";
+        // echo "New record inserted successfully!";
+        echo '<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>';
+        echo '<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>';
+        echo '<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>';
+
+        ?>
+            <script>
+                Swal.fire({
+                    icon: "success",
+                    title: "Document Successfully Created!",
+                    confirmButtonText: "View"
+                    }).then((result) => {
+                    
+                        if (result.isConfirmed) {
+                           window.location.href = "agq_employTransactionView.php";
+                        }
+                    });
+            </script>
+        <?php
     } else {
         echo "Error: " . $stmt->error;
     }
@@ -171,14 +185,14 @@ $conn->close();
                     "Photocopy/Notarial",
                     "Documentation",
                     "Delivery Expense",
-                    "MISC., Transpo, Tel. Card",
+                    "MISC. Transpo. Tel. Card",
                     "Notes",
                     "Additional Charges"
                 ];
                 generateFixedCharges(lclCharges, true); // true = LCL mode
             } else if (containerSelected) {
                 const containerCharges = [
-                    "Arrastre / Wharfage / Storage",
+                    "Arrastre / Wharfage Storage",
                     "THC - Shipping Line",
                     "AISL",
                     "GO fast",
@@ -186,8 +200,7 @@ $conn->close();
                     "Additional Processing",
                     "Customs Forms/Stamps",
                     "Extra Handling Fee",
-                    "Notarial Fee",
-                    "Xerox Expenses",
+                    "Photocopy/Notarial",
                     "Clearance Expenses",
                     "Hauling and Trucking",
                     "Additional Container",
@@ -216,15 +229,16 @@ $conn->close();
                         <select onchange="handleChargeSelection(this, ${isLCL})">
                             <option value="">Additional Charges</option>
                             ${isLCL 
-                                ? '<option value="Door to Door Bacolod">Door to Door Bacolod</option>' 
-                                : '<option value="Container Deposit">Container Deposit</option><option value="Late Collection">Late Collection</option><option value="Late Charge">Late Charge</option><option value="Demurrage COSCO">Demurrage Cosco</option>'
+                                ? '<option value="Others">Others</option><option value="Door to Door Bacolod">Door to Door Bacolod</option>' 
+                                : '<option value="Others">Others</option><option value="Container Deposit">Container Deposit</option><option value="Late Collection">Late Collection</option><option value="Late Charge">Late Charge</option><option value="Demurrage COSCO">Demurrage Cosco</option><option value="Detention Charges">Detention Charges</option>'
                             }
                         </select>
                     `;
                 } else {
+                    const inputName = charge.toLowerCase().replace(/\s+/g, '').replace('/', '');
                     row.innerHTML = `
                         <input type="text" value="${charge}" readonly>
-                        <input type="text" placeholder="Enter amount">
+                        <input type="number" name="${inputName}" placeholder="Enter amount">
                     `;
                 }
 
@@ -256,9 +270,11 @@ $conn->close();
             newRow.className = "table-row added-charge";
             newRow.dataset.charge = selectedCharge;
 
+            const inputName = selectedCharge.toLowerCase().replace(/\s+/g, '').replace('/', '');
+
             newRow.innerHTML = `
                 <input type="text" value="${selectedCharge}" readonly>
-                <input type="text" placeholder="Enter amount">
+                <input type="number" name="${inputName}" placeholder="Enter amount">
                 <button onclick="removeCharge(this)">Remove</button>
             `;
 
@@ -268,6 +284,19 @@ $conn->close();
         function removeCharge(button) {
             button.parentElement.remove();
         }
+
+        function calculateTotal() {
+            let total = 0;
+            const numberInputs = document.querySelectorAll('#charges-table input[type="number"]');
+            
+            numberInputs.forEach(input => {
+                if (input.value && !isNaN(input.value)) {
+                    total += parseFloat(input.value);
+                }
+            });
+            
+            document.getElementById("total").value = total.toFixed(2);
+        }
     </script>
     </head>
 
@@ -276,33 +305,33 @@ $conn->close();
             <div class="header">STATEMENT OF ACCOUNT</div>
             <form method="POST">
                 <div class="section">
-                    <input type="text" placeholder="To" style="width: 70%">
-                    <input type="text" placeholder="Date" style="width: 28%">
+                    <input type="text" name="to" placeholder="To" style="width: 70%">
+                    <input type="date" name="date" placeholder="Date" style="width: 28%">
                 </div>
                 <div class="section">
-                    <input type="text" placeholder="Address" style="width: 100%">
+                    <input type="text" name="address" placeholder="Address" style="width: 100%">
                 </div>
                 <div class="section">
-                    <input type="text" placeholder="TIN" style="width: 48%">
-                    <input type="text" placeholder="Attention" style="width: 48%">
+                    <input type="text" name="tin" placeholder="TIN" style="width: 48%">
+                    <input type="text" name="attention" placeholder="Attention" style="width: 48%">
                 </div>
                 <div class="section">
-                    <input type="text" placeholder="Vessel" style="width: 32%">
-                    <input type="text" placeholder="ETD/ETA" style="width: 32%">
-                    <input type="text" placeholder="Reference No" style="width: 32%">
+                    <input type="text" name="vessel" placeholder="Vessel" style="width: 32%">
+                    <input type="text" name="eta" placeholder="ETD/ETA" style="width: 32%">
+                    <input type="text" name="refNum" placeholder="Reference No" style="width: 32%">
                 </div>
                 <div class="section">
-                    <input type="text" placeholder="Destination/Origin" style="width: 48%">
-                    <input type="text" placeholder="E.R" style="width: 22%">
-                    <input type="text" placeholder="BL/HBL No" style="width: 22%">
+                    <input type="text" name="destinationOrigin" placeholder="Destination/Origin" style="width: 48%">
+                    <input type="text" name="er" placeholder="E.R" style="width: 22%">
+                    <input type="text" name="bhNum" placeholder="BL/HBL No" style="width: 22%">
                 </div>
                 <div class="section">
-                    <input type="text" placeholder="Nature of Goods" style="width: 100%">
+                    <input type="text" name="natureofGoods" placeholder="Nature of Goods" style="width: 100%">
                 </div>
                 <div class="section">
-                    <input type="text" placeholder="Packages" style="width: 32%">
-                    <input type="text" placeholder="Weight" style="width: 32%">
-                    <input type="text" placeholder="Measurement" style="width: 32%">
+                    <input type="text" name="packages" placeholder="Packages" style="width: 32%">
+                    <input type="text" name="weight" placeholder="Weight" style="width: 32%">
+                    <input type="text" name="measurement" placeholder="Measurement" style="width: 32%">
                 </div>
                 <div class="section radio-group">
                     <label>Package Type:</label>
@@ -314,7 +343,7 @@ $conn->close();
                     </label>
                 </div>
                 <div class="section" id="package-details">
-                    <input type="text" placeholder="Enter package details" style="width: 100%">
+                    <!-- <input type="text" placeholder="Enter package details" style="width: 100%"> -->
                 </div>
                 <div class="table-container">
                     <div class="table-header">
@@ -324,20 +353,21 @@ $conn->close();
                     <div id="charges-table"></div>
                 </div>
                 <div class="section">
-                    <input type="text" placeholder="Total" style="width: 100%">
+                    <input type="text" id="total" name="total" placeholder="Total" style="width: 100%" readonly>
+                    <button type="button" onclick="calculateTotal()" class="calc-btn">Calculate</button>
                 </div>
                 <div class="section">
-                    <input type="text" placeholder="Prepared by" style="width: 48%">
-                    <input type="text" placeholder="Approved by" style="width: 48%">
+                    <input type="text" name="prepared" placeholder="Prepared by" style="width: 48%">
+                    <input type="text" name="approved" placeholder="Approved by" style="width: 48%">
                 </div>
                 <div class="section">
-                    <input type="text" placeholder="Received by" style="width: 24%">
-                    <input type="text" placeholder="Signature" style="width: 24%">
-                    <input type="text" placeholder="Printed Name" style="width: 24%">
-                    <input type="text" placeholder="Date" style="width: 24%">
+                    <input type="text" name="received" placeholder="Received by" style="width: 24%">
+                    <!-- <input type="text" name="sig" placeholder="Signature" style="width: 24%"> -->
+                    <input type="text" name="print" placeholder="Printed Name" style="width: 24%">
+                    <input type="date" name="date1" placeholder="Date" style="width: 24%">
                 </div>
                 <div class="footer">
-                    <button class="save-btn">Save</button>
+                    <input type="submit" name="save" class="save-btn" value="Save">
                 </div>
             </form>
         </div>
