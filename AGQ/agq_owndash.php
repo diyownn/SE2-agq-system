@@ -17,7 +17,7 @@ if (!isset($_SESSION['department'])) {
 
 if (isset($_SESSION['selected_company'])) {
     $companyName = $_SESSION['selected_company'];
-} 
+}
 
 header("Expires: Sat, 26 Jul 1997 05:00:00 GMT");
 header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
@@ -148,27 +148,28 @@ if (!empty($search_query)) {
 </body>
 
 <script>
-
-function storeCompanySession(companyName) {
-    fetch('STORE_SESSION.php', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: 'company_name=' + encodeURIComponent(companyName)
-    })
-    .then(response => response.text())
-    .then(data => {
-        console.log("Session stored:", data);
-        window.location.href = "agq_chooseDepartment.php";
-    })
-    .catch(error => console.error("Error:", error));
-}
+    function storeCompanySession(companyName) {
+        fetch('STORE_SESSION.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'company_name=' + encodeURIComponent(companyName)
+            })
+            .then(response => response.text())
+            .then(data => {
+                console.log("Session stored:", data);
+                window.location.href = "agq_chooseDepartment.php";
+            })
+            .catch(error => console.error("Error:", error));
+    }
 
     history.pushState(null, "", location.href);
     window.onpopstate = function() {
         history.pushState(null, "", location.href);
     };
+
+
     document.getElementById("search-input").addEventListener("input", function() {
         let query = this.value.trim();
 
@@ -177,7 +178,7 @@ function storeCompanySession(companyName) {
             return;
         }
 
-        fetch("FETCH_RESULTS.php?query=" + encodeURIComponent(query))
+        fetch("FETCH_COMPANY.php?query=" + encodeURIComponent(query))
             .then(response => response.json())
             .then(data => {
                 console.log("API Response:", data);
@@ -223,7 +224,7 @@ function storeCompanySession(companyName) {
                 return;
             }
 
-            fetch("FETCH_RESULTS.php?query=" + encodeURIComponent(query))
+            fetch("FETCH_COMPANY.php?query=" + encodeURIComponent(query))
                 .then(response => response.json())
                 .then(data => {
                     console.log("API Response:", data);
@@ -270,7 +271,7 @@ function storeCompanySession(companyName) {
             }
 
             if (query === "") {
-                fetch("FETCH_RESULTS.php")
+                fetch("FETCH_COMPANY.php")
                     .then(response => response.json())
                     .then(data => {
                         companyContainerParent.innerHTML = ""; // Clear previous content
@@ -292,7 +293,7 @@ function storeCompanySession(companyName) {
                             let companyButton = document.createElement("button");
                             companyButton.classList.add("company-container");
                             companyButton.onclick = function() {
-                                storeCompanySession(''. htmlspecialchars($company_name, ENT_QUOTES));
+                                storeCompanySession(''.htmlspecialchars($company_name, ENT_QUOTES));
                             };
 
                             // Create the company logo
@@ -355,7 +356,7 @@ function storeCompanySession(companyName) {
                         companyLogo.alt = company.Company_name;
 
                         // Append the image to the button, and button to the container
-                        companyButton.appendChild(companyLogo); 
+                        companyButton.appendChild(companyLogo);
                         companyButtonDiv.appendChild(companyButton);
                         companyRowDiv.appendChild(companyButtonDiv);
 

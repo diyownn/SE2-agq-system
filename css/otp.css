@@ -2,12 +2,159 @@ body {
     font-family: 'IBM Plex Sans', sans-serif;
     background-color: #fff;
     margin: 0;
-    padding: 40px;
 }
 .search-container {
     display: flex;
+    position: relative; /* Needed for absolute positioning of dropdown */
     max-width: 600px;
     margin: 0 auto 20px;
+}
+
+.search-bar {
+    flex: 1; /* Ensures input expands properly */
+    min-width: 300px; /* Prevents shrinking too much */
+    border-radius: 8px; /* Smooth corners */
+}
+
+.search-button {
+    padding: 12px 25px;
+    border: none;
+    background-color: rgb(144, 174, 94);
+    color: white;
+    font-size: 16px;
+    font-family: 'IBM Plex Sans', 'Arial';
+    border-radius: 0 50px 50px 0;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  
+  .search-button:hover {
+    opacity: 1;
+    background-color: rgb(99, 133, 46);
+  }
+  
+
+#dropdown {
+    position: absolute;
+    top: 100%; /* Moves it below the search bar */
+    left: 0;
+    width:82%; /* Matches search bar width */
+    background: white;
+    border: 1px solid #ccc;
+    border-top: none; /* Remove top border to visually connect with input */
+    border-radius: 0 0 8px 8px; /* Round only bottom corners */
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: none;
+}
+
+.dropdown-item {
+    padding: 10px 15px;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+    transition: background-color 0.2s ease;
+}
+
+.dropdown-item:last-child {
+    border-bottom: none;
+}
+
+.dropdown-item:hover {
+    background-color: #f0f0f0;
+}
+
+  
+  .dept-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 120px;
+    width: 100%;
+  }
+  
+  .dept-label {
+    background-color: rgb(144, 174, 94);
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+    text-align: start;
+    padding: 10px 1px;
+    width: auto;
+    min-width: 150px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    border-radius: 0 25px  25px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0px -1px 7px 0px rgba(0,0,0,0.19);
+-webkit-box-shadow: 0px -1px 7px 0px rgba(0,0,0,0.19);
+-moz-box-shadow: 0px -1px 7px 0px rgba(0,0,0,0.19);
+    z-index: 99;
+  }
+
+  .company-label {
+    background-color: rgb(160, 184, 117);
+    color: white;
+    font-size: 14px;
+    text-align: start;
+    padding: 10px 1px;
+    width: auto;
+    min-width: 150px;
+    position: absolute;
+    top: 0;
+    left: 120px;
+    border-radius: 0 25px  25px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0px -1px 7px 0px rgba(0,0,0,0.19);
+-webkit-box-shadow: 0px -1px 7px 0px rgba(0,0,0,0.19);
+-moz-box-shadow: 0px -1px 7px 0px rgba(0,0,0,0.19);
+    z-index: 98;
+  }
+
+  .selected-dept-label {
+    background-color: rgb(174, 197, 160);
+    color: white;
+    font-size: 14px;
+    text-align: start;
+    padding: 10px 1px;
+    width: auto;
+    min-width: 200px;
+    position: absolute;
+    padding-left: 20px;
+    top: 0;
+    left: 240px;
+    border-radius: 0 25px  25px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0px -1px 7px 0px rgba(0,0,0,0.19);
+-webkit-box-shadow: 0px -1px 7px 0px rgba(0,0,0,0.19);
+-moz-box-shadow: 0px -1px 7px 0px rgba(0,0,0,0.19);
+    z-index: 97;
+  }
+  
+  .header-container {
+    margin-top: auto; /* Push the search and logout to the bottom */
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 40px;
+  }
+
+.container {
+    margin: 50px auto;
+    padding: 40px;
+    max-width: 900px;
+    background: white;
+    border-radius: 10px;
 }
 
 .add-company {

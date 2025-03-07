@@ -4,6 +4,20 @@ session_start();
 $role = isset($_SESSION['department']) ? $_SESSION['department'] : '';
 $company = isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : '';
 
+if (!$role) {
+    echo "<html><head><style>
+    body { font-family: Arial, sans-serif; text-align: center; background-color: #f8d7da; }
+    .container { margin-top: 50px; padding: 20px; background: white; border-radius: 10px; display: inline-block; }
+    h1 { color: #721c24; }
+    p { color: #721c24; }
+  </style></head><body>
+  <div class='container'>
+    <h1>Unauthorized Access</h1>
+    <p>You do not have permission to view this page.</p>
+  </div>
+  </body></html>";
+    exit;
+}
 
 if (!$company) {
 
@@ -23,6 +37,20 @@ if (!$company) {
 </head>
 
 <body>
+
+    <div class="top-container">
+        <div class="dept-container">
+            <div class="header-container">
+                <div class="dept-label">
+                    <?php echo htmlspecialchars($role); ?>
+                </div>
+                <div class="company-label">
+                    <?php echo htmlspecialchars($company); ?>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="container">
         <h1>Company Departments</h1>
         <div class="grid">
@@ -48,7 +76,7 @@ if (!$company) {
             .then(response => response.text())
             .then(data => {
                 console.log("Session stored:", data);
-                window.location.href = "agq_ownTransactionView.php"; 
+                window.location.href = "agq_ownTransactionView.php";
             })
             .catch(error => console.error("Error:", error));
     }

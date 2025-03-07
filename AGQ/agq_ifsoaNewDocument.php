@@ -77,10 +77,12 @@ function insertRecord($conn)
     );
 
     if ($stmt->execute()) {
-        echo "New record inserted successfully!";
-        ?>
-        <script>window.location.href ='agq_employTransactionView.php';</script>
-        <?php
+        // echo "New record inserted successfully!";
+        echo '<script>
+        if (confirm("Document Successfully Created!\\nDo you want to view it?")) {
+            window.location.href = "agq_employTransactionView.php";
+        }
+            </script>';
     } else {
         echo "Error: " . $stmt->error;
     }
@@ -241,13 +243,26 @@ $conn->close();
             button.parentElement.remove(); // Remove the selected charge row
         }
 
-        var doctype = "<?php echo isset($_SESSION['DocType']) ? $_SESSION['DocType'] : ''; ?>"
-        var role = "<?php echo isset($_SESSION['department']) ? $_SESSION['department'] : ''; ?>";
-        var company = "<?php echo isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : ''; ?>";
+        // var doctype = "<?php echo isset($_SESSION['DocType']) ? $_SESSION['DocType'] : ''; ?>"
+        // var role = "<?php echo isset($_SESSION['department']) ? $_SESSION['department'] : ''; ?>";
+        // var company = "<?php echo isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : ''; ?>";
 
-        console.log("DocType:", doctype);
-        console.log("Role:", role);
-        console.log("Company:", company);
+        // console.log("DocType:", doctype);
+        // console.log("Role:", role);
+        // console.log("Company:", company);
+
+        function calculateTotal() {
+            let total = 0;
+            const numberInputs = document.querySelectorAll('#charges-table input[type="number"]');
+            
+            numberInputs.forEach(input => {
+                if (input.value && !isNaN(input.value)) {
+                    total += parseFloat(input.value);
+                }
+            });
+            
+            document.getElementById("total").value = total.toFixed(2);
+        }
     </script>
 </head>
 
@@ -304,7 +319,9 @@ $conn->close();
                 <div id="charges-table"></div>
             </div>
             <div class="section">
-                <input type="number" name="total" placeholder="Total" style="width: 100%">
+                <input type="number" id="total" name="total" placeholder="Total" style="width: 100%" readonly>
+                <button type="button" onclick="calculateTotal()" class="calc-btn">Calculate</button>
+
             </div>
             <div class="section">
                 <input type="text" name="preparedBy" placeholder="Prepared by" style="width: 48%">

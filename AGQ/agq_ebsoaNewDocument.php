@@ -68,10 +68,12 @@ function insertRecord($conn)
     );
 
     if ($stmt->execute()) {
-        echo "New record inserted successfully!";
-        ?>
-        <script>window.location.href ='agq_employTransactionView.php';</script>
-        <?php
+        // echo "New record inserted successfully!";
+        echo '<script>
+        if (confirm("Document Successfully Created!\\nDo you want to view it?")) {
+            window.location.href = "agq_employTransactionView.php";
+        }
+            </script>';
     } else {
         echo "Error: " . $stmt->error;
     }
@@ -137,7 +139,8 @@ $conn->close();
                 const lclCharges = [
                     "Advance Shipping Lines",
                     "Processing",
-                    "Notes"
+                    "Notes",
+                    "Additional Charges"
                 ];
                 generateFixedCharges(lclCharges);
             } else if (containerSelected) {
@@ -151,27 +154,32 @@ $conn->close();
                     "E2M Lodgement",
                     "Stuffing",
                     "Handling",
-                    "Notes"
+                    "Notes",
+                    "Additional Charges"
                 ];
                 generateFixedCharges(containerCharges, true);
             }
         }
 
-        function generateFixedCharges(charges, isContainer = false) {
+        function generateFixedCharges(charges, isLCL) {
             const chargesTable = document.getElementById("charges-table");
 
             charges.forEach(charge => {
                 const row = document.createElement("div");
                 row.className = "table-row";
 
-                if (charge === "Notes") {
-                    // Create a text input field for notes instead of number
+                if (charge === "Additional Charges") {
                     row.innerHTML = `
-                        <input type="text" name="charge_type[]" value="Notes" readonly>
-                        <input type="text" name="notes" placeholder="Enter notes">
+                        <select onchange="handleChargeSelection(this, ${isLCL})">
+                            <option value="">Additional Charges</option>
+                            ${isLCL 
+                                ? '<option value="Others">Others</option><option value="PCCI">PCCI</option>' 
+                                : '<option value="Others">Others</option>'
+                            }
+                        </select>
                     `;
                 } else {
-                    // Number input for all other charges
+
                     const inputName = charge.toLowerCase().replace(/\s+/g, '').replace('/', '');
                     row.innerHTML = `
                         <input type="text" name="charge_type[]" value="${charge}" readonly>
@@ -179,21 +187,16 @@ $conn->close();
                     `;
                 }
 
+                if (charge === "Notes") {
+                    // Create a text input field for notes instead of number
+                    row.innerHTML = `
+                        <input type="text" value="Notes" readonly>
+                        <input type="text" name="notes" placeholder="Enter notes">
+                    `;
+                }
+
                 chargesTable.appendChild(row);
             });
-
-            // Add the Additional Charges dropdown after all fixed charges
-            const additionalRow = document.createElement("div");
-            additionalRow.className = "table-row";
-            additionalRow.innerHTML = `
-                <select onchange="handleChargeSelection(this)">
-                    <option disabled selected>Additional Charges</option>
-                    <option value="Others">Others</option>
-                    <option value="PCCI">PCCI</option>
-                </select>
-                <div></div>
-            `;
-            chargesTable.appendChild(additionalRow);
         }
 
         function handleChargeSelection(selectElement) {
@@ -297,9 +300,8 @@ $conn->close();
                     <!-- Charges will be populated by JavaScript -->
                 </div>
                 <div class="section">
-                    <input type="number" id="total" name="total" placeholder="Total" style="width: 100%">
-
-                   <!-- <button type="button" onclick="calculateTotal()" class="calc-btn">Calculate Total</button> -->
+                    <input type="number" id="total" name="total" placeholder="Total" style="width: 100%" readonly>
+                    <button type="button" onclick="calculateTotal()" class="calc-btn">Calculate</button>
 
                 </div>
                 <div class="section">

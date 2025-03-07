@@ -6,6 +6,35 @@ session_start();
 
 $role = isset($_SESSION['department']) ? $_SESSION['department'] : '';
 
+if (!$role) {
+    echo "<html><head><style>
+    body { font-family: Arial, sans-serif; text-align: center; background-color: #f8d7da; }
+    .container { margin-top: 50px; padding: 20px; background: white; border-radius: 10px; display: inline-block; }
+    h1 { color: #721c24; }
+    p { color: #721c24; }
+  </style></head><body>
+  <div class='container'>
+    <h1>Unauthorized Access</h1>
+    <p>You do not have permission to view this page. (ERR: R)</p>
+  </div>
+  </body></html>";
+    exit;
+}
+
+if (!$company) {
+    echo "<html><head><style>
+    body { font-family: Arial, sans-serif; text-align: center; background-color: #f8d7da; }
+    .container { margin-top: 50px; padding: 20px; background: white; border-radius: 10px; display: inline-block; }
+    h1 { color: #721c24; }
+    p { color: #721c24; }
+  </style></head><body>
+  <div class='container'>
+    <h1>Unauthorized Access</h1>
+    <p>You do not have permission to view this page. (ERR: C)</p>
+  </div>
+  </body></html>";
+    exit;
+}
 
 if (!isset($_SESSION['department'])) {
     session_destroy();
@@ -161,7 +190,7 @@ if (!empty($search_query)) {
             return;
         }
 
-        fetch("FETCH_RESULTS.php?query=" + encodeURIComponent(query))
+        fetch("FETCH_COMPANY.php?query=" + encodeURIComponent(query))
             .then(response => response.json())
             .then(data => {
                 console.log("API Response:", data);
@@ -207,7 +236,7 @@ if (!empty($search_query)) {
                 return;
             }
 
-            fetch("FETCH_RESULTS.php?query=" + encodeURIComponent(query))
+            fetch("FETCH_COMPANY.php?query=" + encodeURIComponent(query))
                 .then(response => response.json())
                 .then(data => {
                     console.log("API Response:", data);
@@ -254,7 +283,7 @@ if (!empty($search_query)) {
             }
 
             if (query === "") {
-                fetch("FETCH_RESULTS.php")
+                fetch("FETCH_COMPANY.php")
                     .then(response => response.json())
                     .then(data => {
                         companyContainerParent.innerHTML = ""; // Clear previous content
@@ -307,7 +336,7 @@ if (!empty($search_query)) {
                 return;
             }
 
-            fetch("FILTER_RESULTS.php?query=" + encodeURIComponent(query))
+            fetch("FILTER_COMPANY.php?query=" + encodeURIComponent(query))
                 .then(response => response.json())
                 .then(data => {
                     companyContainerParent.innerHTML = ""; // Clear previous content

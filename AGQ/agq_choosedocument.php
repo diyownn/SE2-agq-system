@@ -5,6 +5,21 @@ session_start();
 $role = isset($_SESSION['department']) ? $_SESSION['department'] : '';
 $company = isset($_SESSION['selected_company']) ? $_SESSION['selected_company'] : '';
 
+if (!$role) {
+    echo "<html><head><style>
+    body { font-family: Arial, sans-serif; text-align: center; background-color: #f8d7da; }
+    .container { margin-top: 50px; padding: 20px; background: white; border-radius: 10px; display: inline-block; }
+    h1 { color: #721c24; }
+    p { color: #721c24; }
+  </style></head><body>
+  <div class='container'>
+    <h1>Unauthorized Access</h1>
+    <p>You do not have permission to view this page.</p>
+  </div>
+  </body></html>";
+    exit;
+}
+
 /*
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -135,7 +150,7 @@ $conn->close();
             manButton.classList.add("disabled");
 
         }
-        
+
         var doctype = "<?php echo isset($_SESSION['selected_documenttype']) ? $_SESSION['selected_documenttype'] : ''; ?>"
         var role = "<?php echo isset($_SESSION['department']) ? $_SESSION['department'] : ''; ?>";
         var company = "<?php echo isset($_SESSION['selected_company']) ? $_SESSION['selected_company'] : ''; ?>";
