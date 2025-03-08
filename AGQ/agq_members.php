@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $UserID = (string) random_int(10000000, 99999999);
     $name = trim($_POST['name']);
     $email = filter_var(trim($_POST['email']), FILTER_SANITIZE_EMAIL);
-    $password = "agqLogistics";
+    $password = "AGQ@2006";
     $department = htmlspecialchars(trim($_POST['department']));
     $otp = null;
 

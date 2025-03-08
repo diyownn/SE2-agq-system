@@ -3,7 +3,7 @@ session_start();
 $role = isset($_SESSION['department']) ? $_SESSION['department'] : '';
 
 
-if ($role == 'admin' || $role == 'Admin' || $role == 'owner' || $role == 'Owner' && $pword != 'agqLogistics') {
+if ($role == 'admin' || $role == 'Admin' || $role == 'owner' || $role == 'Owner' && $pword != 'AGQ@2006') {
     header("location:agq_owndash.php");
 
     if (!isset($_SESSION['redirected'])) {
@@ -35,7 +35,7 @@ if ($role == 'admin' || $role == 'Admin' || $role == 'owner' || $role == 'Owner'
         unset($_SESSION['redirected']);
     }
     exit();
-} else if ($role == 'Export Forwarding' || $role == 'Import Forwarding' || $role == 'Export Brokerage' || $role == 'Import Brokerage' && $pword != 'agqFreight') {
+} else if ($role == 'Export Forwarding' || $role == 'Import Forwarding' || $role == 'Export Brokerage' || $role == 'Import Brokerage' && $pword != 'AGQ@2006') {
     header("location:agq_employdash.php");
     if (!isset($_SESSION['redirected'])) {
         $_SESSION['redirected'] = true;
