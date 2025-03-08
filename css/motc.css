@@ -10,13 +10,13 @@ body {
     flex-direction: column;
 }
 
-
 /* Header Section */
 .header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 80%;
+    width: 90%;
+    max-width: 1400px;
     margin-top: 50px;
     margin-bottom: 20px;
 }
@@ -33,7 +33,7 @@ h1 {
 .top-bar {
     display: flex;
     align-items: center;
-    gap: 0px;
+    gap: 10px;
 }
 
 /* Search Bar Styling */
@@ -45,8 +45,6 @@ h1 {
     background-color: #d0d0d0;
     outline: none;
     font-size: 14px;
-    margin-top: 25px;
-
 }
 
 /* Search Button Styling */
@@ -70,13 +68,11 @@ h1 {
     color: black;
     border: none;
     border-radius: 20px;
-    margin-left: 20px;
     cursor: pointer;
     font-weight: bold;
     text-transform: uppercase;
     display: flex;
     align-items: center;
-    position: relative;
     font-size: 12px;
     height: 38px;
 }
@@ -95,7 +91,8 @@ h1 {
 
 /* Green Container */
 .container {
-    width: 80%;
+    width: 90%;
+    max-width: 1400px;
     background-color: #d6deb1;
     padding: 30px;
     border-radius: 30px;
@@ -104,164 +101,136 @@ h1 {
     margin-bottom: 50px;
 }
 
-/* Table Styling */
+/* Table Container Styling */
 .table-container {
-    background-color: #d6deb1;
-    padding: 20px;
+    width: 100%;
+    overflow-x: auto;
+    padding: 0;
     border-radius: 20px;
 }
 
+/* Table Styling */
 table {
     width: 100%;
-    border-collapse: collapse;
+    border-collapse: separate;
+    border-spacing: 0;
+    table-layout: fixed;
 }
 
-th, td {
-    padding: 13px;
-    text-align: center;
-    border: 2px solid #8ea75e;
-}
-
+/* Table Header */
 th {
-    background-color: white;
-    font-weight: bold;
-    color: black;
-    text-transform: uppercase;
-    font-size: 14px;
-}
-
-td {
-    background-color: white;
-    height: 25px;
-}
-
-/* MODAL POPUP STYLING */
-.modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    justify-content: center;
-    align-items: center;
-}
-
-.modal-content {
-    background-color: white;
-    padding: 20px;
-    border-radius: 15px;
-    width: 350px;
+    background-color: #d6deb1;
+    border: 2px solid #8ea75e;
+    padding: 10px;
     text-align: center;
-    position: relative;
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+    font-size: 14px;
+    white-space: nowrap;
 }
 
-/* Close Button */
-.close {
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    font-size: 20px;
+/* Table Cells */
+td {
+    border: 2px solid #8ea75e;
+    padding: 10px;
+    text-align: center;
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Column Specific Widths */
+table tr td:nth-child(1), /* User ID */
+table tr th:nth-child(1) {
+    width: 13%;
+    min-width: 100px;
+}
+
+table tr td:nth-child(2), /* Name */
+table tr th:nth-child(2) {
+    width: 15%;
+    min-width: 100px;
+}
+
+table tr td:nth-child(3), /* Email */
+table tr th:nth-child(3) {
+    width: 35%;
+    min-width: 200px;
+}
+
+table tr td:nth-child(4), /* Department */
+table tr th:nth-child(4) {
+    width: 22%;
+    min-width: 150px;
+}
+
+table tr td:nth-child(5), /* Delete */
+table tr th:nth-child(5) {
+    width: 15%;
+    min-width: 100px;
+}
+
+/* Delete Button Styling */
+.delete-btn {
+    display: inline-block;
+    padding: 8px 15px;
+    background-color: #8ea75e;
+    color: black;
+    border: none;
+    border-radius: 15px;
     cursor: pointer;
     font-weight: bold;
-}
-
-/* Form Styling */
-form {
-    display: flex;
-    flex-direction: column;
-}
-
-label {
-    text-align: left;
+    transition: background 0.3s ease;
+    white-space: nowrap;
     font-size: 12px;
-    font-weight: bold;
-    margin-top: 10px;
 }
 
-input {
-    padding: 10px;
-    margin-bottom: 10px;
-    border: 1px solid black;
-    background-color: #d3d3d3;
-    font-size: 14px;
-    width: 92%;
-    margin-top: 5px;
+.delete-btn:hover {
+    background-color: #7a994e;
 }
 
-button {
-    display: block !important; 
-    margin: 0 auto !important;
-    background-color: #8fae5b !important; /* Green button */
-    color: black !important;
-    border: none !important;
-    padding: 10px 20px !important;
-    border-radius: 15px !important;
-    font-weight: bold !important;
-    cursor: pointer !important;
-    text-align: center !important;
+/* Responsive Design */
+@media screen and (max-width: 1200px) {
+    .header, .container {
+        width: 95%;
+    }
+
+    table {
+        font-size: 12px;
+    }
 }
 
-button:hover {
-    background-color: #7c9b4e !important;
-  }
-
-/* Responsive */
 @media screen and (max-width: 768px) {
     .header, .container {
-        width: 90%;
+        width: 98%;
+        padding: 15px;
     }
 
-    .search-bar {
-        width: 150px;
+    .table-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    table {
+        min-width: 600px;
+    }
+
+    th, td {
+        font-size: 11px;
+        padding: 6px;
+    }
+
+    .delete-btn {
+        padding: 6px 12px;
+        font-size: 12px;
     }
 }
 
-.container {
-    background-color: #ffffff;
-    border: 3px solid black;
-    padding: 30px;
-    width: 60%;
-    border-radius: 15px;
-    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
-  }
-  
-  h3 {
-    text-align: center;
-    font-weight: bold;
-  }
-  
-  .form-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .form-box {
-    width: 100%;
-  }
-  
-  .row {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 15px;
-  }
-  
-  input, select {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: #dcdcdc; 
-  }
-  
-  .back-button {
-    position: absolute;  /* Ensures it stays in the upper left */
-    top: 10px;  /* Adjusts distance from the top */
-    left: 20px; /* Moves it closer to the left side */
-    margin: 0; /* Ensures no extra margins */
+/* Back Button */
+.back-button {
+    position: absolute;
+    top: 10px;
+    left: 20px;
+    margin: 0;
 }
 
 .back-button a {
@@ -270,7 +239,3 @@ button:hover {
     font-size: 24px;
     font-weight: bold;
 }
-  
-  button:hover {
-    background-color: #7c9b4e;
-  }

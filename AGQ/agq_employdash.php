@@ -22,7 +22,6 @@ if (!$role) {
 }
 
 
-
 if (!isset($_SESSION['department'])) {
     session_destroy();
     header("Location: agq_login.php");
