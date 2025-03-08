@@ -31,7 +31,7 @@
 
                     <img src="" class="d-block mx-auto" id="imgholder" alt="">
 
-                    <input type="text" name=" compName" id="input3" class="form-control" placeholder="Company Name">
+                    <input type="text" name=" compName" id="input3" class="form-control" placeholder="Company Name" onchange="return validate_compName()">
                     <div id="name-error" style="margin-left: 16%; margin-top: 1%"></div>
 
                     <div class="d-flex justify-content-center">

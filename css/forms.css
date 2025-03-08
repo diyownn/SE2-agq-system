@@ -123,3 +123,13 @@ body {
         width: 100%;
     }
 }
+
+.is-invalid {
+    border: 1px solid red !important;
+}
+.invalid-feedback {
+    font-size: 10px !important;
+    margin-top: 12px !important;
+    color: red;
+    font-size: 0.9em;
+}

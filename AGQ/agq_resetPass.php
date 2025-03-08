@@ -33,7 +33,7 @@
                     
                     <label for="newPass" class="form-label" id="labels">Enter New Password</label>
                     <div class="input-group mb-3">
-                        <input type="password" name="newPword" id="newPass" class="form-control">
+                        <input type="password" name="newPword" id="newPass" class="form-control" onchange="return validate_newPassword()">
                         <span class="input-group-text" id="toggle-password" style="cursor: pointer;">
                             <i class="bi bi-eye-fill" id="toggle-password-icon"></i> 
                         </span>
@@ -42,7 +42,7 @@
 
                     <label for="rePass" class="form-label" id="labels">Re-enter Password</label>
                     <div class="input-group mb-3">
-                        <input type="password" name="rePword" id="rePass" class="form-control"> 
+                        <input type="password" name="rePword" id="rePass" class="form-control" onchange="return validate_newPassword()"> 
                         <span class="input-group-text" id="toggle-password1" style="cursor: pointer;">
                             <i class="bi bi-eye-fill" id="toggle-password-icon1"></i> 
                         </span>
