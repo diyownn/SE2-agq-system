@@ -21,17 +21,14 @@ function insertRecord($conn)
 
     $sql = "INSERT INTO tbl_impbrk (
         `To:`, `Address`, Tin, Attention, `Date`, Vessel, ETA, RefNum, DestinationOrigin, ER, BHNum,
-        NatureOfGoods, Packages, `Weight`, Measurement, PackageType, Others, Notes, OceanFreight95, Forwarder, WarehouseCharge, 
-        ELodge, Processing, FormsStamps, PhotocopyNotarial, Documentation, DeliveryExpense, Miscellaneous, 
-        Door2Door, ArrastreWharf, THC, AISL, GOFast, AdditionalProcessing, ExtraHandlingFee, ClearanceExpenses, 
-        HaulingTrucking, AdditionalContainer, Handling, StuffingPlant, IED, EarlyGateIn, TABS, DocsFee, 
-        DetentionCharges, ContainerDeposit, LateCollection, LateCharge, Demurrage, Total, Prepared_by, Approved_by, 
-        Edited_by, EditDate, DocType, Company_name, Department
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        NatureOfGoods, Packages, `Weight`, Volume, PackageType, Others, Notes, OceanFreight5,
+        BrokerageFee, Vat12, TruckingService,Total, Prepared_by, Approved_by, Edited_by, EditDate, 
+        DocType, Company_name, Department
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     $stmt = $conn->prepare($sql);
     $stmt->bind_param(
-        "ssssssssssssssssisiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiisssssss",
+        "ssssssssssssssssisiiiiisssssss",
         $_POST['to'],
         $_POST['address'],
         $_POST['tin'],
@@ -43,48 +40,21 @@ function insertRecord($conn)
         $_POST['destinationOrigin'],
         $_POST['er'],
         $_POST['bhNum'],
-        $_POST['natureofGoods'],
+        $_POST['natureOfGoods'],
         $_POST['packages'],
         $_POST['weight'],
-        $_POST['measurement'],
+        $_POST['volume'],
         $_POST['package'],
-        $_POST['others'],
+        $_POST['others_amount'],
         $_POST['notes'],
-        $_POST['95oceanfreight'],
-        $_POST['forwarder'],
-        $_POST['warehousecharges'],
-        $_POST['e-lodgement'],
-        $_POST['processing'],
-        $_POST['customsformsstamps'],
-        $_POST['photocopynotarial'],
-        $_POST['documentation'],
-        $_POST['deliveryexpense'],
-        $_POST['misc.transpo.tel.card'],
-        $_POST['doortodoorbacolod'],
-        $_POST['arrastrewharfagestorage'],
-        $_POST['thc-shippingline'],
-        $_POST['aisl'],
-        $_POST['gofast'],
-        $_POST['additionalprocessing'],
-        $_POST['extrahandlingfee'],
-        $_POST['clearanceexpenses'],
-        $_POST['haulingandtrucking'],
-        $_POST['additionalcontainer'],
-        $_POST['handling'],
-        $_POST['stuffingplant'],
-        $_POST['iedentryencoding'],
-        $_POST['earlygatein'],
-        $_POST['tabs'],
-        $_POST['DocsFee'],
-        $_POST['detentioncharges'],
-        $_POST['containerdeposit'],
-        $_POST['latecollection'],
-        $_POST['latecharge'],
-        $_POST['demurragecosco'],
+        $_POST['5oceanfreight'],
+        $_POST['brokeragefee'],
+        $_POST['12vat'],
+	    $_POST['truckingservice_amount'],
         $_POST['total'],
-        $_POST['prepared'],
-        $_POST['approved'],
-        $_POST['edited'],
+        $_POST['prepared_by'],
+        $_POST['approved_by'],
+        $_POST['edited_by'],
         $editDate = date('Y-m-d'),
         $docType,        // Session variable
         $companyName,    // Session variable
@@ -144,7 +114,7 @@ $conn->close();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/x-icon" href="../AGQ/images/favicon.ico">
     <link rel="stylesheet" type="text/css" href="../css/forms.css">
-    <title>IB Sales Invoice </title>
+    <title>Sales Invoice </title>
 
     <script>
         function togglePackageField() {
@@ -160,24 +130,26 @@ $conn->close();
     
             if (lclSelected) {
                 const lclCharges = [
+                    "5 Ocean Freight",
                     "Brokerage Fee",
-                    "12% VAT",
-                    "Others",
-                    "Total"   
+                    "12 VAT",
+                    "Notes",
+                    "Additional Charges"   
                 ];
                 generateFixedCharges(lclCharges);
             } else if (containerSelected) {
                 const containerCharges = [
+                    "5 Ocean Freight",
                     "Brokerage Fee",
-                    "12% VAT",
-                    "Others",
-                    "Total"
+                    "12 VAT",
+                    "Notes",
+                    "Additional Charges"
                 ];
                 generateFixedCharges(containerCharges, true);
             }
         }
     
-        function generateFixedCharges(charges, isContainer = false) {
+        function generateFixedCharges(charges, isLCL) {
             const chargesTable = document.getElementById("charges-table");
 
             charges.forEach(charge => {
@@ -186,19 +158,30 @@ $conn->close();
 
                 if (charge === "Additional Charges") {
                     row.innerHTML = `
-                        <select onchange="handleChargeSelection(this)">
+                        <select onchange="handleChargeSelection(this, ${isLCL})">
                             <option value="">Additional Charges</option>
-                            <option value="Others">Others</option>
-                            <option value="Trucking Service">Trucking Service</option>
+                            ${isLCL 
+                                ? '<option value="Others">Others</option>' 
+                                : '<option value="Others">Others</option><option value="Trucking Service">Trucking Service</option>'
+                            }
                         </select>
                     `;
                 } else {
+                    const inputName = charge.toLowerCase().replace(/\s+/g, '').replace('/', '');
                     row.innerHTML = `
                         <input type="text" value="${charge}" readonly>
-                        <input type="number" placeholder="Enter amount">
+                        <input type="number" name="${inputName}" placeholder="Enter amount">
                     `;
                 }
 
+                if (charge === "Notes") {
+                    // Create a text input field for notes instead of number
+                    row.innerHTML = `
+                        <input type="text" value="Notes" readonly>
+                        <input type="text" name="notes" placeholder="Enter notes">
+                    `;
+                }
+    
                 chargesTable.appendChild(row);
             });
         }
@@ -206,7 +189,7 @@ $conn->close();
         function handleChargeSelection(selectElement) {
             const selectedCharge = selectElement.value;
             if (!selectedCharge) return; // Do nothing if default is selected
-
+    
             // Prevent duplicate entries
             const existingEntries = document.querySelectorAll(".added-charge");
             for (let entry of existingEntries) {
@@ -219,9 +202,11 @@ $conn->close();
             newRow.className = "table-row added-charge";
             newRow.dataset.charge = selectedCharge; // Store charge type
     
+            let inputName = selectedCharge.toLowerCase() + "_amount";
+
             newRow.innerHTML = `
                 <input type="text" value="${selectedCharge}" readonly>
-                <input type="number" placeholder="Enter amount">
+                <input type="number" name="${inputName}" placeholder="Enter amount">
                 <button onclick="removeCharge(this)">Remove</button>
             `;
     
@@ -229,6 +214,19 @@ $conn->close();
         }
         function removeCharge(button) {
             button.parentElement.remove(); // Remove the selected charge row
+        }
+
+        function calculateTotal() {
+            let total = 0;
+            const numberInputs = document.querySelectorAll('#charges-table input[type="number"]');
+            
+            numberInputs.forEach(input => {
+                if (input.value && !isNaN(input.value)) {
+                    total += parseFloat(input.value);
+                }
+            });
+            
+            document.getElementById("total").value = total.toFixed(2);
         }
     </script>
     
@@ -238,33 +236,33 @@ $conn->close();
         <div class="header">SALES INVOICE</div>
         
         <div class="section">
-            <input type="text" placeholder="To" style="width: 70%">
-            <input type="date" placeholder="Date" style="width: 28%">
+            <input type="text" name="to" placeholder="To" style="width: 70%">
+            <input type="date" name="date" placeholder="Date" style="width: 28%">
         </div>
         <div class="section">
-            <input type="text" placeholder="Address" style="width: 100%">
+            <input type="text" name="address" placeholder="Address" style="width: 100%">
         </div>
         <div class="section">
-            <input type="text" placeholder="TIN" style="width: 48%">
-            <input type="text" placeholder="Attention" style="width: 48%">
+            <input type="text" name="tin" placeholder="TIN" style="width: 48%">
+            <input type="text" name="attention" placeholder="Attention" style="width: 48%">
         </div>
         <div class="section">
-            <input type="text" placeholder="Vessel" style="width: 32%">
-            <input type="text" placeholder="ETD/ETA" style="width: 32%">
-            <input type="text" placeholder="Reference No" style="width: 32%">
+            <input type="text" name="vessel" placeholder="Vessel" style="width: 32%">
+            <input type="date" name="eta" placeholder="ETD/ETA" style="width: 32%">
+            <input type="text" name="refNum" placeholder="Reference No" style="width: 32%">
         </div>
         <div class="section">
-            <input type="text" placeholder="Destination/Origin" style="width: 48%">
-            <input type="text" placeholder="E.R" style="width: 22%">
-            <input type="text" placeholder="BL/HBL No" style="width: 22%">
+            <input type="text" name="destinationOrigin" placeholder="Destination/Origin" style="width: 48%">
+            <input type="text" name="er" placeholder="E.R" style="width: 22%">
+            <input type="text" name="bhNum" placeholder="BL/HBL No" style="width: 22%">
         </div>
         <div class="section">
-            <input type="text" placeholder="Nature of Goods" style="width: 100%">
+            <input type="text" name="natureOfGoods" placeholder="Nature of Goods" style="width: 100%">
         </div>
         <div class="section">
-            <input type="text" placeholder="Packages" style="width: 32%">
-            <input type="text" placeholder="Weight" style="width: 32%">
-            <input type="text" placeholder="Measurement" style="width: 32%">
+            <input type="text" name="packages" placeholder="Packages" style="width: 32%">
+            <input type="text" name="weight" placeholder="Weight/Measurement" style="width: 32%">
+            <input type="text" name="volume" placeholder="Volume" style="width: 32%">
         </div>
         <div class="section radio-group">
             <label>Package Type:</label>
@@ -286,20 +284,17 @@ $conn->close();
             <div id="charges-table"></div>
         </div>
         <div class="section">
-            <input type="text" placeholder="Notes" style="width: 100%">
+            <input type="number" name="total" placeholder="Total" style="width: 100%">
+            <button type="button" onclick="calculateTotal()" class="calc-btn">Calculate</button>
         </div>
         <div class="section">
-            <input type="text" placeholder="Prepared by" style="width: 48%">
-            <input type="text" placeholder="Approved by" style="width: 48%">
-        </div>
-        <div class="section">
-            <input type="text" placeholder="Received by" style="width: 24%">
-            <input type="text" placeholder="Signature" style="width: 24%">
-            <!-- <input type="text" placeholder="Printed Name" style="width: 24%"> -->
-            <input type="date" placeholder="Date" style="width: 24%">
+            <input type="text" name="prepared_by" placeholder="Prepared by" style="width: 48%">
+            <input type="text" name="approved_by" placeholder="Approved by" style="width: 48%">
+            <input type="text" name="edited_by" placeholder="Edited by" style="width: 48%">
         </div>
         <div class="footer">
-            <button class="save-btn">Save</button>
+            <!-- <button class="save-btn">Save</button> -->
+            <input type="submit" name="save" class="save-btn" value="Save">
         </div>
     </div>
 </body>

@@ -22,15 +22,14 @@ function insertRecord($conn)
 
     $sql = "INSERT INTO tbl_expbrk (
         `To:`, `Address`, Tin, Attention, `Date`, Vessel, ETA, RefNum, DestinationOrigin, ER, BHNum,
-        NatureOfGoods, Packages, `Weight`, Volume, PackageType, Others, Notes, OceanFreight95,
-        AdvanceShipping, Processing, Arrastre, Wharfage, FormsStamps, PhotocopyNotarial,
-        Documentation, E2MLodge, ManualStuffing, Handling, PCCI, Total, Prepared_by, Approved_by, 
-        Edited_by, EditDate, DocType, Company_name, Department
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        NatureOfGoods, Packages, `Weight`, Volume, PackageType, Others, Notes, OceanFreight5,
+        BrokerageFee, Discount50, Vat12, Total, Prepared_by, Approved_by, Edited_by, EditDate, 
+        DocType, Company_name, Department
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     $stmt = $conn->prepare($sql);
     $stmt->bind_param(
-        "ssssssssssssssssisiiiiiiiiiiiiisssssss",
+        "ssssssssssssssssisiiiiisssssss",
         $_POST['to'],
         $_POST['address'],
         $_POST['tin'],
@@ -46,21 +45,13 @@ function insertRecord($conn)
         $_POST['packages'],
         $_POST['weight'],
         $_POST['volume'],
-        $_POST['packageType'],
+        $_POST['package'],
         $_POST['others_amount'],
         $_POST['notes'],
-        $_POST['95oceanfreight'],
-        $_POST['advanceshippinglines'],
-        $_POST['processing'],
-        $_POST['arrastre'],
-        $_POST['wharfage'],
-        $_POST['formsstamps'],
-        $_POST['photocopynotarial'],
-        $_POST['documentation'],
-        $_POST['e2mlodgement'],
-        $_POST['stuffing'],
-        $_POST['handling'],
-        $_POST['pcci_amount'],
+        $_POST['5oceanfreight'],
+        $_POST['brokeragefee'],
+        $_POST['50discount'],
+        $_POST['12vat'],
         $_POST['total'],
         $_POST['prepared_by'],
         $_POST['approved_by'],
@@ -145,7 +136,6 @@ $conn->close();
                     "50 discount",
                     "12 VAT",
                     "Notes",
-                    "Total", 
                     "Additional Charges" 
                 ];
                 generateFixedCharges(lclCharges);
@@ -156,7 +146,6 @@ $conn->close();
                     "50 discount",
                     "12 VAT",
                     "Notes",
-                    "Total",
                     "Additional Charges"
                 ];
                 generateFixedCharges(containerCharges, true);
