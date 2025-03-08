@@ -228,107 +228,67 @@ if ($result) {
         document.addEventListener("DOMContentLoaded", function() {
             let searchInput = document.getElementById("search-input");
             let searchButton = document.getElementById("search-button");
-            let dropdown = document.getElementById("dropdown");
             let transactionsContainer = document.querySelector(".transactions"); // Main container
 
-            if (!searchInput || !searchButton || !dropdown || !transactionsContainer) {
+            if (!searchInput || !searchButton || !transactionsContainer) {
                 console.error("Error: One or more elements not found.");
                 return;
             }
 
-            let debounceTimer;
-
-
-            function fetchResults(search) {
-                if (search.length === 0) {
-                    dropdown.style.display = "none";
-                    return;
-                }
-
-                fetch("FETCH_TRANSACTIONS.php?search=" + encodeURIComponent(search))
+            function fetchAllTransactions() {
+                fetch("FETCH_TRANSACTIONS.php")
                     .then(response => response.json())
                     .then(data => {
+                        console.log("All Transactions:", data);
 
-                        dropdown.innerHTML = "";
-
-                        let transactions = data.company || [];
-                        console.log("API Response:", data);
-                        console.log("API Response:", transactions);
-                        if (!Array.isArray(transactions)) {
-                            console.error("Error: API response does not contain a valid transactions array!", data);
+                        if (!data || Object.keys(data).length === 0 || data.error) {
+                            transactionsContainer.innerHTML = "<p>No transactions found.</p>";
                             return;
                         }
 
-                        if (transactions.length > 0) {
-                            transactions.forEach(item => {
-                                let company = (item.Company_name || "").toLowerCase();
-                                let refNum = (item.RefNum || "").toLowerCase();
-                                let department = (item.Department || "").toLowerCase();
-                                let docType = (item.DocType || "").toLowerCase();
-                                let queryLower = search.toLowerCase();
+                        let structuredTransactions = {};
 
-                                let div = document.createElement("div");
-                                div.classList.add("dropdown-item");
+                        // Process API response
+                        Object.entries(data).forEach(([department, records]) => {
+                            if (!structuredTransactions[department]) {
+                                structuredTransactions[department] = {};
+                            }
 
-                                // Display multiple details instead of just the company name
-                                div.innerHTML = `
-                                    <strong>${item.Company_name || "Unknown Company"}</strong><br>
-                                    <small>RefNum: ${item.RefNum || "N/A"} | Dept: ${item.Department || "N/A"} | DocType: ${item.DocType || "N/A"}</small>
-                                `;
+                            records.forEach(record => {
+                                let docType = record.DocType ? record.DocType.toUpperCase().trim() : "UNKNOWN";
+                                let refNum = record.RefNum || "No RefNum";
 
-                                div.onclick = function() {
-                                    // Set the search input value with more details
-                                    searchInput.value = `${item.Company_name || ""} - ${item.RefNum || ""} - ${item.Department || ""} - ${item.DocType || ""}`;
-                                    dropdown.style.display = "none";
+                                if (!structuredTransactions[department][docType]) {
+                                    structuredTransactions[department][docType] = [];
                                 }
-                            });
 
-                            dropdown.style.display = dropdown.children.length > 0 ? "block" : "none";
-                        } else {
-                            dropdown.style.display = "none";
-                        }
+                                structuredTransactions[department][docType].push(refNum);
+                            });
+                        });
+
+                        // Ensure Summary and Others exist in all departments
+                        Object.keys(structuredTransactions).forEach(department => {
+                            if (!structuredTransactions[department]["SUMMARY"]) {
+                                structuredTransactions[department]["SUMMARY"] = [];
+                            }
+                            if (!structuredTransactions[department]["OTHERS"]) {
+                                structuredTransactions[department]["OTHERS"] = [];
+                            }
+                        });
+
+                        generateTransactionHTML(structuredTransactions, transactionsContainer);
                     })
-                    .catch(error => console.error("Error fetching search results:", error));
+                    .catch(error => console.error("Error fetching all transactions:", error));
             }
 
 
-            searchButton.addEventListener("click", function() {
-                let query = searchInput.value.trim();
 
-                if (query === "") {
-                    let allTransactions = [];
 
-                    document.addEventListener("DOMContentLoaded", () => {
-                        fetch("FETCH_TRANSACTIONS.php?")
-                            .then(response => response.json())
-                            .then(data => {
-                                allTransactions = data;
-                                generateTransactions(data);
-                            })
-                            .catch(error => console.error("Error fetching all transactions:", error));
-                    });
-
-                    function searchTransactions(query) {
-                        if (query === "") {
-                            generateTransactions(allTransactions);
-                            return;
-                        }
-
-                        fetch(`FETCH_TRANSACTIONS.php?search=${encodeURIComponent(query)}`)
-                            .then(response => response.json())
-                            .then(data => {
-                                generateTransactions(data);
-                            })
-                            .catch(error => console.error("Error fetching transactions:", error));
-                    }
-
-                    return;
-                }
-
+            function fetchFilteredTransactions(query) {
                 fetch("FILTER_TRANSACTIONS.php?search=" + encodeURIComponent(query))
                     .then(response => response.json())
                     .then(data => {
-                        console.log("Full API Response:", data);
+                        console.log("Filtered API Response:", data);
 
                         transactionsContainer.innerHTML = "";
 
@@ -336,7 +296,6 @@ if ($result) {
                             transactionsContainer.innerHTML = "<p>No transactions found.</p>";
                             return;
                         }
-
 
                         let structuredTransactions = {};
 
@@ -350,19 +309,16 @@ if ($result) {
                                     structuredTransactions[department][normalizedDocType] = [];
                                 }
 
-
                                 refArray.forEach(item => {
                                     structuredTransactions[department][normalizedDocType].push(item.RefNum);
                                 });
                             });
                         });
 
-                        console.log("Structured Transactions:", structuredTransactions);
                         generateTransactionHTML(structuredTransactions, transactionsContainer);
                     })
                     .catch(error => console.error("Error fetching filtered transactions:", error));
-            });
-
+            }
 
             function generateTransactionHTML(transactions, container) {
                 container.innerHTML = "";
@@ -371,7 +327,23 @@ if ($result) {
                     let departmentSection = document.createElement("div");
                     departmentSection.classList.add("department-section");
 
-                    Object.entries(docTypes).forEach(([docType, refs]) => {
+                    // Define the order of document types
+                    const order = ["SOA", "INVOICE", "SUMMARY", "OTHERS"];
+
+                    // Sort document types based on the defined order
+                    let sortedDocTypes = Object.keys(docTypes).sort((a, b) => {
+                        let indexA = order.indexOf(a.toUpperCase());
+                        let indexB = order.indexOf(b.toUpperCase());
+
+                        if (indexA === -1) indexA = order.length; // Put unknown types at the end
+                        if (indexB === -1) indexB = order.length;
+
+                        return indexA - indexB;
+                    });
+
+                    sortedDocTypes.forEach(docType => {
+                        let refs = docTypes[docType];
+
                         let transactionSection = document.createElement("div");
                         transactionSection.classList.add("transaction");
 
@@ -410,7 +382,22 @@ if ($result) {
                     container.appendChild(departmentSection);
                 });
             }
+
+
+
+
+
+            searchButton.addEventListener("click", function() {
+                let query = searchInput.value.trim();
+
+                if (query === "") {
+                    fetchAllTransactions();
+                } else {
+                    fetchFilteredTransactions(query);
+                }
+            });
         });
+
 
 
 

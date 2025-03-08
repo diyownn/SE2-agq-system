@@ -112,6 +112,19 @@ if (!empty($search_query)) {
 
 <body>
 
+    <div class="top-container">
+        <div class="dept-container">
+            <div class="header-container">
+                <div class="dept-label">
+                    <?php echo htmlspecialchars($role); ?>
+                </div>
+                <div class="company-label">
+                    <?php echo htmlspecialchars($company); ?>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="container py-3">
         <div class="search-container d-flex flex-wrap justify-content-center">
             <input type="text" class="search-bar form-control" id="search-input" placeholder="Search Transaction Details...">
@@ -164,137 +177,61 @@ if (!empty($search_query)) {
         </div>
     </div>
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            document.body.addEventListener("click", function(event) {
-                if (event.target.classList.contains("transaction-header") || event.target.classList.contains("icon")) {
-                    const content = event.target.nextElementSibling;
+        document.body.addEventListener("click", function(event) {
+            let header = event.target.closest(".transaction-header");
+            if (header) {
+                const content = header.nextElementSibling;
+                if (content) {
                     content.classList.toggle("open");
-                    event.target.classList.toggle("active");
+                    header.classList.toggle("active");
                 }
-            });
-        });
-
-
-        document.getElementById("search-input").addEventListener("input", function() {
-            let query = this.value.trim().toLowerCase();
-
-            if (query.length === 0) {
-                document.getElementById("dropdown").style.display = "none";
-                return;
             }
-
-            fetch("FETCH_Transactions.php?search=" + encodeURIComponent(query))
-                .then(response => response.json())
-                .then(data => {
-                    console.log("API Response:", JSON.stringify(data, null, 2));
-
-                    let dropdown = document.getElementById("dropdown");
-                    dropdown.innerHTML = "";
-
-                    // Identify the correct department key dynamically
-                    let departmentKey = Object.keys(data).find(key => Array.isArray(data[key]));
-                    let transactions = departmentKey ? data[departmentKey] : [];
-
-
-                    if (transactions.length > 0) {
-                        transactions.forEach(item => {
-                            let company = (item.Company_name || "").toLowerCase();
-                            let refNum = (item.RefNum || "").toLowerCase();
-                            let department = (item.Department || "").toLowerCase();
-                            let docType = (item.DocType || "").toLowerCase(); // Fix variable naming
-
-                            if (company.includes(query) || refNum.includes(query) || department.includes(query) || docType.includes(query)) {
-                                let div = document.createElement("div");
-                                div.classList.add("dropdown-item");
-
-                                div.innerHTML = `
-                <strong>${item.RefNum || "Unknown Company"}</strong> - ${item.DocType || "No DocType"}
-            `;
-
-                                div.onclick = function() {
-                                    if (!refNum) { // Fix variable name
-                                        document.getElementById("search-input").value = item.DocType || "";
-                                    } else {
-                                        document.getElementById("search-input").value = item.RefNum || "";
-                                    }
-                                    document.getElementById("dropdown").style.display = "none";
-                                };
-
-                                dropdown.appendChild(div);
-                            }
-                        });
-
-                        // Show dropdown only if there are matching results
-                        dropdown.style.display = dropdown.children.length > 0 ? "block" : "none";
-                    } else {
-                        dropdown.style.display = "none";
-                    }
-                })
-                .catch(error => {
-                    console.error("Error fetching search results:", error);
-                    document.getElementById("dropdown").style.display = "none";
-                });
         });
 
 
 
+        let searchInput = document.getElementById("search-input");
+        if (searchInput) {
+            searchInput.addEventListener("input", function() {
+                let query = this.value.trim().toLowerCase();
+                let dropdown = document.getElementById("dropdown");
 
-
-        document.addEventListener("DOMContentLoaded", function() {
-            let searchInput = document.getElementById("search-input");
-            let searchButton = document.getElementById("search-button");
-            let dropdown = document.getElementById("dropdown");
-            let transactionsContainer = document.querySelector(".transactions"); // Main container
-
-            if (!searchInput || !searchButton || !dropdown || !transactionsContainer) {
-                console.error("Error: One or more elements not found.");
-                return;
-            }
-
-            let debounceTimer;
-
-
-            function fetchResults(search) {
-                if (search.length === 0) {
+                if (query.length === 0) {
                     dropdown.style.display = "none";
                     return;
                 }
 
-                fetch("FETCH_TRANSACTIONS.php?search=" + encodeURIComponent(search))
+                fetch("FETCH_Transactions.php?search=" + encodeURIComponent(query))
                     .then(response => response.json())
                     .then(data => {
+                        console.log("API Response:", JSON.stringify(data, null, 2));
 
                         dropdown.innerHTML = "";
 
-                        let transactions = data.company || [];
-                        console.log("API Response:", data);
-                        console.log("API Response:", transactions);
-                        if (!Array.isArray(transactions)) {
-                            console.error("Error: API response does not contain a valid transactions array!", data);
-                            return;
-                        }
+                        // Extract transactions properly (nested inside departments and document types)
+                        let transactions = [];
+                        Object.values(data).forEach(department => { // Iterate through departments
+                            Object.values(department).forEach(docType => { // Iterate through document types
+                                transactions = transactions.concat(docType); // Collect all transactions
+                            });
+                        });
+
+                        console.log("Extracted Transactions:", transactions); // Debugging
 
                         if (transactions.length > 0) {
                             transactions.forEach(item => {
-                                let company = (item.Company_name || "").toLowerCase();
                                 let refNum = (item.RefNum || "").toLowerCase();
-                                let department = (item.Department || "").toLowerCase();
                                 let docType = (item.DocType || "").toLowerCase();
-                                let queryLower = search.toLowerCase();
 
-                                let div = document.createElement("div");
-                                div.classList.add("dropdown-item");
-
-                                // Display multiple details instead of just the company name
-                                div.innerHTML = `
-                                    <strong>${item.Company_name || "Unknown Company"}</strong><br>
-                                    <small>RefNum: ${item.RefNum || "N/A"} | Dept: ${item.Department || "N/A"} | DocType: ${item.DocType || "N/A"}</small>
-                                `;
-
-                                div.onclick = function() {
-                                    // Set the search input value with more details
-                                    searchInput.value = `${item.Company_name || ""} - ${item.RefNum || ""} - ${item.Department || ""} - ${item.DocType || ""}`;
-                                    dropdown.style.display = "none";
+                                if (refNum.includes(query) || docType.includes(query)) {
+                                    let div = document.createElement("div");
+                                    div.classList.add("dropdown-item");
+                                    div.innerHTML = `<strong>${item.RefNum || "Unknown RefNum"}</strong> - ${item.DocType || "No DocType"}`;
+                                    div.onclick = function() {
+                                        searchInput.value = item.RefNum || item.DocType || "";
+                                        dropdown.style.display = "none";
+                                    };
+                                    dropdown.appendChild(div);
                                 }
                             });
 
@@ -303,47 +240,91 @@ if (!empty($search_query)) {
                             dropdown.style.display = "none";
                         }
                     })
-                    .catch(error => console.error("Error fetching search results:", error));
+                    .catch(error => {
+                        console.error("Error fetching search results:", error);
+                        dropdown.style.display = "none";
+                    });
+            });
+        }
+
+
+
+
+
+        document.addEventListener("DOMContentLoaded", function() {
+            let searchInput = document.getElementById("search-input");
+            let searchButton = document.getElementById("search-button");
+            let transactionsContainer = document.querySelector(".transactions"); // Main container
+
+            if (!searchInput || !searchButton || !transactionsContainer) {
+                console.error("Error: One or more elements not found.");
+                return;
+            }
+
+            function fetchAllTransactions() {
+                fetch("FETCH_TRANSACTIONS.php")
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log("All Transactions:", data);
+
+                        if (!data || Object.keys(data).length === 0 || data.error) {
+                            transactionsContainer.innerHTML = "<p>No transactions found.</p>";
+                            return;
+                        }
+                        console.log("All Transactions:", data);
+
+                        let structuredTransactions = {};
+
+                        // Process API response
+                        Object.entries(data).forEach(([department, docTypes]) => {
+                            if (!structuredTransactions[department]) {
+                                structuredTransactions[department] = {};
+                            }
+
+                            // Loop through document types (e.g., INVOICE, SOA)
+                            Object.entries(docTypes).forEach(([docType, records]) => {
+                                if (!Array.isArray(records)) {
+                                    console.warn(`Skipping non-array records for ${docType}:`, records);
+                                    return;
+                                }
+
+                                let normalizedDocType = docType.toUpperCase().trim();
+
+                                if (!structuredTransactions[department][normalizedDocType]) {
+                                    structuredTransactions[department][normalizedDocType] = [];
+                                }
+
+                                records.forEach(record => {
+                                    let refNum = record.RefNum || "No RefNum";
+                                    structuredTransactions[department][normalizedDocType].push(refNum);
+                                });
+                            });
+                        });
+
+
+                        // Ensure Summary and Others exist in all departments
+                        Object.keys(structuredTransactions).forEach(department => {
+                            if (!structuredTransactions[department]["SUMMARY"]) {
+                                structuredTransactions[department]["SUMMARY"] = [];
+                            }
+                            if (!structuredTransactions[department]["OTHERS"]) {
+                                structuredTransactions[department]["OTHERS"] = [];
+                            }
+                        });
+
+                        generateTransactionHTML(structuredTransactions, transactionsContainer);
+                    })
+                    .catch(error => console.error("Error fetching all transactions:", error));
             }
 
 
-            searchButton.addEventListener("click", function() {
-                let query = searchInput.value.trim();
 
-                if (query === "") {
-                    let allTransactions = [];
 
-                    document.addEventListener("DOMContentLoaded", () => {
-                        fetch("FETCH_TRANSACTIONS.php?")
-                            .then(response => response.json())
-                            .then(data => {
-                                allTransactions = data;
-                                generateTransactions(data);
-                            })
-                            .catch(error => console.error("Error fetching all transactions:", error));
-                    });
-
-                    function searchTransactions(query) {
-                        if (query === "") {
-                            generateTransactions(allTransactions);
-                            return;
-                        }
-
-                        fetch(`FETCH_TRANSACTIONS.php?search=${encodeURIComponent(query)}`)
-                            .then(response => response.json())
-                            .then(data => {
-                                generateTransactions(data);
-                            })
-                            .catch(error => console.error("Error fetching transactions:", error));
-                    }
-
-                    return;
-                }
-
+            function fetchFilteredTransactions(query) {
                 fetch("FILTER_TRANSACTIONS.php?search=" + encodeURIComponent(query))
                     .then(response => response.json())
                     .then(data => {
-                        console.log("Full API Response:", data);
+                        console.log("Filtered API Response:", data);
 
                         transactionsContainer.innerHTML = "";
 
@@ -351,7 +332,7 @@ if (!empty($search_query)) {
                             transactionsContainer.innerHTML = "<p>No transactions found.</p>";
                             return;
                         }
-
+                        console.log("All Transactions:", data);
 
                         let structuredTransactions = {};
 
@@ -365,19 +346,16 @@ if (!empty($search_query)) {
                                     structuredTransactions[department][normalizedDocType] = [];
                                 }
 
-
                                 refArray.forEach(item => {
                                     structuredTransactions[department][normalizedDocType].push(item.RefNum);
                                 });
                             });
                         });
 
-                        console.log("Structured Transactions:", structuredTransactions);
                         generateTransactionHTML(structuredTransactions, transactionsContainer);
                     })
                     .catch(error => console.error("Error fetching filtered transactions:", error));
-            });
-
+            }
 
             function generateTransactionHTML(transactions, container) {
                 container.innerHTML = "";
@@ -386,7 +364,20 @@ if (!empty($search_query)) {
                     let departmentSection = document.createElement("div");
                     departmentSection.classList.add("department-section");
 
-                    Object.entries(docTypes).forEach(([docType, refs]) => {
+                    // Define the order of document types
+                    const order = ["SOA", "INVOICE", "SUMMARY", "OTHERS"];
+
+                    // Sort document types based on the defined order
+                    let sortedDocTypes = Object.keys(docTypes).sort((a, b) => {
+                        let indexA = order.indexOf(a.toUpperCase());
+                        let indexB = order.indexOf(b.toUpperCase());
+
+                        return (indexA !== -1 ? indexA : order.length) - (indexB !== -1 ? indexB : order.length);
+                    });
+
+                    sortedDocTypes.forEach(docType => {
+                        let refs = docTypes[docType];
+
                         let transactionSection = document.createElement("div");
                         transactionSection.classList.add("transaction");
 
@@ -425,7 +416,22 @@ if (!empty($search_query)) {
                     container.appendChild(departmentSection);
                 });
             }
+
+
+
+
+
+            searchButton.addEventListener("click", function() {
+                let query = searchInput.value.trim();
+
+                if (query === "") {
+                    fetchAllTransactions();
+                } else {
+                    fetchFilteredTransactions(query);
+                }
+            });
         });
+
 
         var doctype = "<?php echo isset($_SESSION['selected_documenttype']) ? $_SESSION['selected_documenttype'] : ''; ?>"
         var role = "<?php echo isset($_SESSION['department']) ? $_SESSION['department'] : ''; ?>";
