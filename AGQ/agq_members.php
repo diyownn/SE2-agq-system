@@ -2,7 +2,7 @@
 require 'db_agq.php';
 
 session_start();
-/*
+
 $role = isset($_SESSION['department']) ? $_SESSION['department'] : '';
 
 if (!isset($_SESSION['department'])) {
@@ -12,7 +12,7 @@ if (!isset($_SESSION['department'])) {
     header("Location: agq_dashCatcher.php");
     exit();
 } 
-*/
+
 
 if (!$role) {
     echo "<html><head><style>
