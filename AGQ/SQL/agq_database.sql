@@ -73,10 +73,10 @@ DROP TABLE IF EXISTS `tbl_document`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tbl_document` (
   `DocumentID` int(11) NOT NULL,
-  `Document_type` varchar(20) NOT NULL,
+  `Document_type` varchar(20) DEFAULT NULL,
   `Document_picture` longblob NOT NULL,
-  `Edited_by` varchar(25) DEFAULT NULL,
-  `EditDate` date DEFAULT NULL,
+  `Edited_by` varchar(25) NOT NULL,
+  `EditDate` date NOT NULL,
   `Company_name` varchar(50) DEFAULT NULL,
   `Department` varchar(25) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -88,7 +88,7 @@ CREATE TABLE `tbl_document` (
 
 LOCK TABLES `tbl_document` WRITE;
 /*!40000 ALTER TABLE `tbl_document` DISABLE KEYS */;
-INSERT INTO `tbl_document` VALUES (2147483647,'Manifesto','',NULL,NULL,NULL,NULL),(2147483647,'Summary','',NULL,NULL,NULL,NULL),(1254582232,'Manifesto','',NULL,NULL,NULL,NULL);
+INSERT INTO `tbl_document` VALUES (2147483647,'Manifesto','','','0000-00-00',NULL,NULL),(2147483647,'Summary','','','0000-00-00',NULL,NULL),(1254582232,'Manifesto','','','0000-00-00',NULL,NULL),(2147483647,NULL,'','me','2025-03-09',NULL,NULL);
 /*!40000 ALTER TABLE `tbl_document` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -152,7 +152,7 @@ CREATE TABLE `tbl_expbrk` (
 
 LOCK TABLES `tbl_expbrk` WRITE;
 /*!40000 ALTER TABLE `tbl_expbrk` DISABLE KEYS */;
-INSERT INTO `tbl_expbrk` VALUES ('beh','beh','beh','beh','2025-03-09','beh','2025-03-15','','beh','beh','beh','beh','beh','beh','beh','LCL',NULL,1020,1020,1020,1020,1000,'HEH',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,5080,'beh','beh','beh','2025-03-08',NULL,NULL,NULL),('bye','bye','bye','bye','2025-03-06','bye','0000-00-00','EB0002/09-10','bye','bye','bye','bye','bye','bye','bye','Full Container',NULL,NULL,NULL,NULL,NULL,2000,'bye',NULL,2000,2000,2000,2000,2000,2000,2000,2000,2000,2000,22000,'bye','bye',NULL,NULL,NULL,NULL,NULL),('NICE','123 bub zone','','','2025-03-07','','0000-00-00','EB0002/09-11','','','','','','','','LCL',NULL,NULL,NULL,NULL,NULL,NULL,'',20,0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,20,'','',NULL,NULL,NULL,NULL,NULL),('NICE','123 bub zone','','','2025-03-07','','0000-00-00','EB0002/09-12','','','','','','','','LCL',NULL,NULL,NULL,NULL,NULL,NULL,'',30,0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,30,'','',NULL,NULL,NULL,NULL,NULL),('pls','hi','','','2025-03-21','','0000-00-00','EB0002/09-20','','','','','','','','LCL',NULL,NULL,NULL,NULL,NULL,NULL,'',300,0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,300,'','',NULL,NULL,NULL,NULL,NULL),('nako','nako','nako','nako','2025-02-27','nako','0000-00-00','EB11111','nako','nako','nako','nako','nako','nako','nako','Full Container',NULL,NULL,NULL,NULL,NULL,NULL,'',NULL,0,10,10,0,0,0,0,0,0,NULL,20,'NAKO','NAKO',NULL,NULL,NULL,NULL,NULL),('nye','weh','','','2025-03-07','','0000-00-00','EB11119','','','','','','','','LCL',NULL,NULL,NULL,NULL,NULL,NULL,'',10,0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,10,'','',NULL,NULL,NULL,NULL,NULL),('hi','hi','hi','hi','2025-03-05','hi','0000-00-00','hello','hi','hi','hi','hi','hi','hi','hi','LCL',NULL,NULL,NULL,NULL,NULL,NULL,'hi',1000,1000,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,1000,3000,'hi','hi',NULL,NULL,NULL,NULL,NULL),('hi','hi','hi','hi','2025-03-05','hi','0000-00-00','hey','hi','hi','hi','hi','hi','hi','hi','LCL',NULL,NULL,NULL,NULL,NULL,NULL,'hi',1000,1000,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,1000,3000,'hi','hi',NULL,NULL,NULL,NULL,NULL);
+INSERT INTO `tbl_expbrk` VALUES ('beh','beh','beh','beh','2025-03-09','beh','2025-03-15','','beh','beh','beh','beh','beh','beh','beh','LCL',NULL,1020,1020,1020,1020,1000,'HEH',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,5080,'beh','beh','beh','2025-03-08',NULL,NULL,NULL),('','','','','0000-00-00','','0000-00-00','eb','','','','','','','','Full Container',0,NULL,NULL,NULL,NULL,8388607,'',NULL,0,0,0,0,0,0,0,0,0,NULL,0,'','','','2025-03-09',NULL,NULL,NULL),('bye','bye','bye','bye','2025-03-06','bye','0000-00-00','EB0002/09-10','bye','bye','bye','bye','bye','bye','bye','Full Container',NULL,NULL,NULL,NULL,NULL,2000,'bye',NULL,2000,2000,2000,2000,2000,2000,2000,2000,2000,2000,22000,'bye','bye',NULL,NULL,NULL,NULL,NULL),('NICE','123 bub zone','','','2025-03-07','','0000-00-00','EB0002/09-11','','','','','','','','LCL',NULL,NULL,NULL,NULL,NULL,NULL,'',20,0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,20,'','',NULL,NULL,NULL,NULL,NULL),('NICE','123 bub zone','','','2025-03-07','','0000-00-00','EB0002/09-12','','','','','','','','LCL',NULL,NULL,NULL,NULL,NULL,NULL,'',30,0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,30,'','',NULL,NULL,NULL,NULL,NULL),('pls','hi','','','2025-03-21','','0000-00-00','EB0002/09-20','','','','','','','','LCL',NULL,NULL,NULL,NULL,NULL,NULL,'',300,0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,300,'','',NULL,NULL,NULL,NULL,NULL),('nako','nako','nako','nako','2025-02-27','nako','0000-00-00','EB11111','nako','nako','nako','nako','nako','nako','nako','Full Container',NULL,NULL,NULL,NULL,NULL,NULL,'',NULL,0,10,10,0,0,0,0,0,0,NULL,20,'NAKO','NAKO',NULL,NULL,NULL,NULL,NULL),('nye','weh','','','2025-03-07','','0000-00-00','EB11119','','','','','','','','LCL',NULL,NULL,NULL,NULL,NULL,NULL,'',10,0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,10,'','',NULL,NULL,NULL,NULL,NULL),('heynow','heynow','heynow','heynow','2025-03-09','heynow','2025-03-09','EBheynow/03','heynow','heynow','heynow','heynow','heynow','heynow','heynow','LCL',20,NULL,NULL,NULL,NULL,20,'heynow',20,20,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,80,'heynow','heynow','heynow','2025-03-09',NULL,NULL,NULL),('hi','hi','hi','hi','2025-03-05','hi','0000-00-00','hello','hi','hi','hi','hi','hi','hi','hi','LCL',NULL,NULL,NULL,NULL,NULL,NULL,'hi',1000,1000,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,1000,3000,'hi','hi',NULL,NULL,NULL,NULL,NULL),('hi','hi','hi','hi','2025-03-05','hi','0000-00-00','hey','hi','hi','hi','hi','hi','hi','hi','LCL',NULL,NULL,NULL,NULL,NULL,NULL,'hi',1000,1000,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,1000,3000,'hi','hi',NULL,NULL,NULL,NULL,NULL);
 /*!40000 ALTER TABLE `tbl_expbrk` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -404,4 +404,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-03-09  3:40:32
+-- Dump completed on 2025-03-09  6:26:23
