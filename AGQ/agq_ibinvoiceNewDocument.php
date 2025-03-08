@@ -18,6 +18,7 @@ function insertRecord($conn)
     $docType = isset($_SESSION['DocType']) ? $_SESSION['DocType'] : null;
     $department = isset($_SESSION['Department']) ? $_SESSION['Department'] : null;
     $companyName = isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : null;
+    $editDate = date('Y-m-d');
 
     $sql = "INSERT INTO tbl_impbrk (
         `To:`, `Address`, Tin, Attention, `Date`, Vessel, ETA, RefNum, DestinationOrigin, ER, BHNum,
@@ -55,7 +56,7 @@ function insertRecord($conn)
         $_POST['prepared_by'],
         $_POST['approved_by'],
         $_POST['edited_by'],
-        $editDate = date('Y-m-d'),
+        $editDate,
         $docType,        // Session variable
         $companyName,    // Session variable
         $department      // Session variable
@@ -232,70 +233,72 @@ $conn->close();
     
 </head>
 <body>
-    <div class="container">
+<div class="container">
         <div class="header">SALES INVOICE</div>
-        
-        <div class="section">
-            <input type="text" name="to" placeholder="To" style="width: 70%">
-            <input type="date" name="date" placeholder="Date" style="width: 28%">
-        </div>
-        <div class="section">
-            <input type="text" name="address" placeholder="Address" style="width: 100%">
-        </div>
-        <div class="section">
-            <input type="text" name="tin" placeholder="TIN" style="width: 48%">
-            <input type="text" name="attention" placeholder="Attention" style="width: 48%">
-        </div>
-        <div class="section">
-            <input type="text" name="vessel" placeholder="Vessel" style="width: 32%">
-            <input type="date" name="eta" placeholder="ETD/ETA" style="width: 32%">
-            <input type="text" name="refNum" placeholder="Reference No" style="width: 32%">
-        </div>
-        <div class="section">
-            <input type="text" name="destinationOrigin" placeholder="Destination/Origin" style="width: 48%">
-            <input type="text" name="er" placeholder="E.R" style="width: 22%">
-            <input type="text" name="bhNum" placeholder="BL/HBL No" style="width: 22%">
-        </div>
-        <div class="section">
-            <input type="text" name="natureOfGoods" placeholder="Nature of Goods" style="width: 100%">
-        </div>
-        <div class="section">
-            <input type="text" name="packages" placeholder="Packages" style="width: 32%">
-            <input type="text" name="weight" placeholder="Weight/Measurement" style="width: 32%">
-            <input type="text" name="volume" placeholder="Volume" style="width: 32%">
-        </div>
-        <div class="section radio-group">
-            <label>Package Type:</label>
-            <label>
-                <input type="radio" id="lcl" name="package" value="LCL" onclick="togglePackageField()"> LCL
-            </label>
-            <label>
-                <input type="radio" id="container" name="package" value="Full Container" onclick="togglePackageField()"> Full Container
-            </label>
-        </div>
-        <div class="section" id="package-details">
-            <!-- <input type="text" placeholder="Enter package details" style="width: 100%"> -->
-        </div>
-        <div class="table-container">
-            <div class="table-header">
-                <span>Reimbursable Charges</span>
-                <span>Amount</span>
+        <form method="POST">
+            <div class="section">
+                <input type="text" name="to" placeholder="To" style="width: 70%">
+                <input type="date" name="date" placeholder="Date" style="width: 28%">
             </div>
-            <div id="charges-table"></div>
-        </div>
-        <div class="section">
-            <input type="number" name="total" placeholder="Total" style="width: 100%">
-            <button type="button" onclick="calculateTotal()" class="calc-btn">Calculate</button>
-        </div>
-        <div class="section">
-            <input type="text" name="prepared_by" placeholder="Prepared by" style="width: 48%">
-            <input type="text" name="approved_by" placeholder="Approved by" style="width: 48%">
-            <input type="text" name="edited_by" placeholder="Edited by" style="width: 48%">
-        </div>
-        <div class="footer">
-            <!-- <button class="save-btn">Save</button> -->
-            <input type="submit" name="save" class="save-btn" value="Save">
-        </div>
+            <div class="section">
+                <input type="text" name="address" placeholder="Address" style="width: 100%">
+            </div>
+            <div class="section">
+                <input type="text" name="tin" placeholder="TIN" style="width: 48%">
+                <input type="text" name="attention" placeholder="Attention" style="width: 48%">
+            </div>
+            <div class="section">
+                <input type="text" name="vessel" placeholder="Vessel" style="width: 32%">
+                <input type="date" name="eta" placeholder="ETD/ETA" style="width: 32%">
+                <input type="text" name="refNum" placeholder="Reference No" style="width: 32%">
+            </div>
+            <div class="section">
+                <input type="text" name="destinationOrigin" placeholder="Destination/Origin" style="width: 48%">
+                <input type="text" name="er" placeholder="E.R" style="width: 22%">
+                <input type="text" name="bhNum" placeholder="BL/HBL No" style="width: 22%">
+            </div>
+            <div class="section">
+                <input type="text" name="natureOfGoods" placeholder="Nature of Goods" style="width: 100%">
+            </div>
+            <div class="section">
+                <input type="text" name="packages" placeholder="Packages" style="width: 32%">
+                <input type="text" name="weight" placeholder="Weight/Measurement" style="width: 32%">
+                <input type="text" name="volume" placeholder="Volume" style="width: 32%">
+            </div>
+            <div class="section radio-group">
+                <label>Package Type:</label>
+                <label>
+                    <input type="radio" id="lcl" name="package" value="LCL" onclick="togglePackageField()"> LCL
+                </label>
+                <label>
+                    <input type="radio" id="container" name="package" value="Full Container" onclick="togglePackageField()"> Full Container
+                </label>
+            </div>
+            <div class="section" id="package-details">
+                <!-- <input type="text" placeholder="Enter package details" style="width: 100%"> -->
+            </div>
+            <div class="table-container">
+                <div class="table-header">
+                    <span>Reimbursable Charges</span>
+                    <span>Amount</span>
+                </div>
+                <div id="charges-table"></div>
+            </div>
+            <div class="section">
+                <input type="number" id="total" name="total" placeholder="Total" style="width: 100%" readonly>
+                <button type="button" onclick="calculateTotal()" class="calc-btn">Calculate</button>
+            </div>
+            <div class="section">
+                <input type="text" name="prepared_by" placeholder="Prepared by" style="width: 48%">
+                <input type="text" name="approved_by" placeholder="Approved by" style="width: 48%">
+                <input type="text" name="edited_by" placeholder="Edited by" style="width: 48%">
+            </div>
+            <div class="footer">
+                <!-- <button class="save-btn">Save</button> -->
+                <input type="submit" name="save" class="save-btn" value="Save">
+            </div>
+                
+        </form>
     </div>
 </body>
 </html>
