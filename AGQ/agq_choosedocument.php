@@ -3,7 +3,8 @@ require "db_agq.php";
 
 session_start();
 $role = isset($_SESSION['department']) ? $_SESSION['department'] : '';
-$company = isset($_SESSION['selected_company']) ? $_SESSION['selected_company'] : '';
+$company = isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : '';
+
 
 if (!$role) {
     echo "<html><head><style>
@@ -95,13 +96,26 @@ $conn->close();
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="documenttype.css">
+    <link rel="stylesheet" type="text/css" href="../css/documenttype.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 
 <link rel="icon" href="images/agq_logo.png" type="image/ico">
 
 <body>
+    <div class="top-container">
+        <div class="dept-container">
+            <div class="header-container">
+                <div class="dept-label">
+                    <?php echo htmlspecialchars($role); ?>
+                </div>
+                <div class="company-label">
+                    <?php echo htmlspecialchars($company); ?>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="document-type-body">
         <div class="title-heading">
             <span class="title">
@@ -112,16 +126,16 @@ $conn->close();
             <button class="document-type-manifesto" id="manifesto" onclick="storeDocumentSession('Manifesto')">
                 MANIFESTO
             </button>
-            <button class="document-type-soa" onclick="storeDocumentSession('SOA')">
+            <button class="document-type-soa" id="soa" onclick="storeDocumentSession('SOA')">
                 STATEMENT OF ACCOUNT
             </button>
-            <button class="document-type-freight-invoice" onclick="storeDocumentSession('Invoice')">
+            <button class="document-type-freight-invoice" id="invoice" onclick="storeDocumentSession('Invoice')">
                 FREIGHT INVOICE
             </button>
-            <button class="document-type-summary" onclick="storeDocumentSession('Summary')">
+            <button class="document-type-summary" id="summary" onclick="storeDocumentSession('Summary')">
                 SUMMARY
             </button>
-            <button class="document-type-others" onclick="storeDocumentSession('Others')">
+            <button class="document-type-others" id="others" onclick="storeDocumentSession('Others')">
                 OTHERS
             </button>
         </div>
@@ -139,7 +153,22 @@ $conn->close();
                 .then(response => response.text())
                 .then(data => {
                     console.log("Session stored:", data);
-                    window.location.href = "agq_ifsoaNewDocument.php";
+
+                    if (documentName == "Manifesto") {
+                        window.location.href = "agq_manifestoForm.php";
+
+                    } else if (documentName == "SOA") {
+                        window.location.href = "agq_soaCatcher.php";
+
+                    } else if (documentName == "Invoice") {
+                        window.location.href = "agq_invoiceCatcher.php";
+
+                    } else if (documentName == "Summary") {
+                        window.location.href = "agq_summaryForm.php";
+
+                    } else {
+                        window.location.href = "agq_othersForm.php";
+                    }
                 })
                 .catch(error => console.error("Error:", error));
         }
