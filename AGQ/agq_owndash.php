@@ -4,6 +4,20 @@ session_start();
 
 $role = isset($_SESSION['department']) ? $_SESSION['department'] : '';
 
+if (!$role) {
+    echo "<html><head><style>
+    body { font-family: Arial, sans-serif; text-align: center; background-color: #f8d7da; }
+    .container { margin-top: 50px; padding: 20px; background: white; border-radius: 10px; display: inline-block; }
+    h1 { color: #721c24; }
+    p { color: #721c24; }
+  </style></head><body>
+  <div class='container'>
+    <h1>Unauthorized Access</h1>
+    <p>You do not have permission to view this page. (ERR: R)</p>
+  </div>
+  </body></html>";
+    exit;
+}
 
 if (!isset($_SESSION['department'])) {
     header("Location: agq_login.php");
