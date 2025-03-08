@@ -24,15 +24,15 @@ function insertRecord($conn)
 
     $sql = "INSERT INTO tbl_impfwd (
         `To:`, `Address`, Tin, Attention, `Date`, Vessel, ETA, RefNum, DestinationOrigin, ER, BHNum,
-        NatureOfGoods, Packages, `Weight`, Measurement, PackageType, OceanFreight95,
+        NatureOfGoods, Packages, `Weight`, Volume, PackageType, OceanFreight95,
         Documentation, TurnOverFee, Handling, Others, Notes, FCLCharge, 
         BLFee, ManifestFee, THC, CIC, ECRS, PSS, Origin, ShippingLine, ExWorkCharges, Total, 
-        Prepared_by, Approved_by, Received_by, Printed_name, Creation_date, DocType, Company_name, Department
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+        Prepared_by, Approved_by, Edited_by, EditDate, DocType, Company_name, Department
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
     $stmt = $conn->prepare($sql);
     $stmt->bind_param(
-        "ssssssssssssssssiiiiisiiiiiiiiiiissssssss",
+        "ssssssssssssssssiiiiisiiiiiiiiiiisssssss",
         $_POST['to'],
         $_POST['address'],
         $_POST['tin'],
@@ -47,7 +47,7 @@ function insertRecord($conn)
         $_POST['natureofGoods'],
         $_POST['packages'],
         $_POST['weight'],
-        $_POST['measurement'],
+        $_POST['volume'],
         $_POST['package'],
         $_POST['95oceanfreight'],
         $_POST['documentation'],
@@ -68,19 +68,20 @@ function insertRecord($conn)
         $_POST['total'],
         $_POST['preparedBy'],
         $_POST['approvedBy'],
-        $_POST['receivedBy'],
-        $_POST['printedName'],
-        $_POST['date1'],
+        $_POST['editedBy'],
+        $editDate = date('Y-m-d'),
         $docType,        // Session variable
         $companyName,    // Session variable
         $department      // Session variable
     );
 
     if ($stmt->execute()) {
-        echo "New record inserted successfully!";
-        ?>
-        <script>window.location.href ='agq_employTransactionView.php';</script>
-        <?php
+        // echo "New record inserted successfully!";
+        echo '<script>
+        if (confirm("Document Successfully Created!\\nDo you want to view it?")) {
+            window.location.href = "agq_employTransactionView.php";
+        }
+            </script>';
     } else {
         echo "Error: " . $stmt->error;
     }
@@ -241,13 +242,26 @@ $conn->close();
             button.parentElement.remove(); // Remove the selected charge row
         }
 
-        var doctype = "<?php echo isset($_SESSION['DocType']) ? $_SESSION['DocType'] : ''; ?>"
-        var role = "<?php echo isset($_SESSION['department']) ? $_SESSION['department'] : ''; ?>";
-        var company = "<?php echo isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : ''; ?>";
+        // var doctype = "<?php echo isset($_SESSION['DocType']) ? $_SESSION['DocType'] : ''; ?>"
+        // var role = "<?php echo isset($_SESSION['department']) ? $_SESSION['department'] : ''; ?>";
+        // var company = "<?php echo isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : ''; ?>";
 
-        console.log("DocType:", doctype);
-        console.log("Role:", role);
-        console.log("Company:", company);
+        // console.log("DocType:", doctype);
+        // console.log("Role:", role);
+        // console.log("Company:", company);
+
+        function calculateTotal() {
+            let total = 0;
+            const numberInputs = document.querySelectorAll('#charges-table input[type="number"]');
+            
+            numberInputs.forEach(input => {
+                if (input.value && !isNaN(input.value)) {
+                    total += parseFloat(input.value);
+                }
+            });
+            
+            document.getElementById("total").value = total.toFixed(2);
+        }
     </script>
 </head>
 
@@ -268,7 +282,7 @@ $conn->close();
             </div>
             <div class="section">
                 <input type="text" name="vessel" placeholder="Vessel" style="width: 32%">
-                <input type="text" name="eta" placeholder="ETD/ETA" style="width: 32%">
+                <input type="date" name="eta" placeholder="ETD/ETA" style="width: 32%">
                 <input type="text" name="referenceNo" placeholder="Reference No" style="width: 32%">
             </div>
             <div class="section">
@@ -281,8 +295,8 @@ $conn->close();
             </div>
             <div class="section">
                 <input type="text" name="packages" placeholder="Packages" style="width: 32%">
-                <input type="text" name="weight" placeholder="Weight" style="width: 32%">
-                <input type="text" name="measurement" placeholder="Measurement" style="width: 32%">
+                <input type="text" name="weight" placeholder="Weight/Measurement" style="width: 32%">
+                <input type="text" name="volume" placeholder="Volume" style="width: 32%">
             </div>
             <div class="section radio-group">
                 <label>Package Type:</label>
@@ -304,17 +318,14 @@ $conn->close();
                 <div id="charges-table"></div>
             </div>
             <div class="section">
-                <input type="number" name="total" placeholder="Total" style="width: 100%">
+                <input type="number" id="total" name="total" placeholder="Total" style="width: 100%" readonly>
+                <button type="button" onclick="calculateTotal()" class="calc-btn">Calculate</button>
+
             </div>
             <div class="section">
                 <input type="text" name="preparedBy" placeholder="Prepared by" style="width: 48%">
                 <input type="text" name="approvedBy" placeholder="Approved by" style="width: 48%">
-            </div>
-            <div class="section">
-                <input type="text" name="receivedBy" placeholder="Received by" style="width: 24%">
-                <input type="text" name="signature" placeholder="Signature" style="width: 24%">
-                <input type="text" name="printedName" placeholder="Printed Name" style="width: 24%">
-                <input type="date" name="date1" placeholder="Date" style="width: 24%">
+                <input type="text" name="editedBy" placeholder="Edited by" style="width: 24%">
             </div>
             <div class="footer">
                 <!-- <button class="save-btn">Save</button> -->

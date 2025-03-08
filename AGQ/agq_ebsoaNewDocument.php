@@ -21,15 +21,15 @@ function insertRecord($conn)
 
     $sql = "INSERT INTO tbl_expbrk (
         `To:`, `Address`, Tin, Attention, `Date`, Vessel, ETA, RefNum, DestinationOrigin, ER, BHNum,
-        NatureOfGoods, Packages, `Weight`, Measurement, PackageType, Others, Notes, 
+        NatureOfGoods, Packages, `Weight`, Volume, PackageType, Others, Notes, OceanFreight95,
         AdvanceShipping, Processing, Arrastre, Wharfage, FormsStamps, PhotocopyNotarial,
-        Documentation, E2MLodge, ManualStuffing, Handling, PCCI, Total, Prepared_by, Approved_by, DocType, 
-        Company_name, Department
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        Documentation, E2MLodge, ManualStuffing, Handling, PCCI, Total, Prepared_by, Approved_by, 
+        Edited_by, EditDate, DocType, Company_name, Department
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     $stmt = $conn->prepare($sql);
     $stmt->bind_param(
-        "ssssssssssssssssisiiiiiiiiiiiisssss",
+        "ssssssssssssssssisiiiiiiiiiiiiisssssss",
         $_POST['to'],
         $_POST['address'],
         $_POST['tin'],
@@ -44,10 +44,11 @@ function insertRecord($conn)
         $_POST['natureOfGoods'],
         $_POST['packages'],
         $_POST['weight'],
-        $_POST['measurement'],
+        $_POST['volume'],
         $_POST['packageType'],
         $_POST['others_amount'],
         $_POST['notes'],
+        $_POST['95oceanfreight'],
         $_POST['advanceshippinglines'],
         $_POST['processing'],
         $_POST['arrastre'],
@@ -62,16 +63,20 @@ function insertRecord($conn)
         $_POST['total'],
         $_POST['prepared_by'],
         $_POST['approved_by'],
+        $_POST['edited_by'],
+        $editDate = date('Y-m-d'),
         $docType,        // Session variable
         $companyName,    // Session variable
         $department      // Session variable
     );
 
     if ($stmt->execute()) {
-        echo "New record inserted successfully!";
-        ?>
-        <script>window.location.href ='agq_employTransactionView.php';</script>
-        <?php
+        // echo "New record inserted successfully!";
+        echo '<script>
+        if (confirm("Document Successfully Created!\\nDo you want to view it?")) {
+            window.location.href = "agq_employTransactionView.php";
+        }
+            </script>';
     } else {
         echo "Error: " . $stmt->error;
     }
@@ -135,13 +140,16 @@ $conn->close();
 
             if (lclSelected) {
                 const lclCharges = [
+                    "95 Ocean Freight",
                     "Advance Shipping Lines",
                     "Processing",
-                    "Notes"
+                    "Notes",
+                    "Additional Charges"
                 ];
                 generateFixedCharges(lclCharges);
             } else if (containerSelected) {
                 const containerCharges = [
+                    "95 Ocean Freight",
                     "Arrastre",
                     "Wharfage",
                     "Processing",
@@ -151,27 +159,32 @@ $conn->close();
                     "E2M Lodgement",
                     "Stuffing",
                     "Handling",
-                    "Notes"
+                    "Notes",
+                    "Additional Charges"
                 ];
                 generateFixedCharges(containerCharges, true);
             }
         }
 
-        function generateFixedCharges(charges, isContainer = false) {
+        function generateFixedCharges(charges, isLCL) {
             const chargesTable = document.getElementById("charges-table");
 
             charges.forEach(charge => {
                 const row = document.createElement("div");
                 row.className = "table-row";
 
-                if (charge === "Notes") {
-                    // Create a text input field for notes instead of number
+                if (charge === "Additional Charges") {
                     row.innerHTML = `
-                        <input type="text" name="charge_type[]" value="Notes" readonly>
-                        <input type="text" name="notes" placeholder="Enter notes">
+                        <select onchange="handleChargeSelection(this, ${isLCL})">
+                            <option value="">Additional Charges</option>
+                            ${isLCL 
+                                ? '<option value="Others">Others</option><option value="PCCI">PCCI</option>' 
+                                : '<option value="Others">Others</option>'
+                            }
+                        </select>
                     `;
                 } else {
-                    // Number input for all other charges
+
                     const inputName = charge.toLowerCase().replace(/\s+/g, '').replace('/', '');
                     row.innerHTML = `
                         <input type="text" name="charge_type[]" value="${charge}" readonly>
@@ -179,21 +192,16 @@ $conn->close();
                     `;
                 }
 
+                if (charge === "Notes") {
+                    // Create a text input field for notes instead of number
+                    row.innerHTML = `
+                        <input type="text" value="Notes" readonly>
+                        <input type="text" name="notes" placeholder="Enter notes">
+                    `;
+                }
+
                 chargesTable.appendChild(row);
             });
-
-            // Add the Additional Charges dropdown after all fixed charges
-            const additionalRow = document.createElement("div");
-            additionalRow.className = "table-row";
-            additionalRow.innerHTML = `
-                <select onchange="handleChargeSelection(this)">
-                    <option disabled selected>Additional Charges</option>
-                    <option value="Others">Others</option>
-                    <option value="PCCI">PCCI</option>
-                </select>
-                <div></div>
-            `;
-            chargesTable.appendChild(additionalRow);
         }
 
         function handleChargeSelection(selectElement) {
@@ -260,7 +268,7 @@ $conn->close();
             </div>
             <div class="section">
                 <input type="text" name="vessel" placeholder="Vessel" style="width: 32%">
-                <input type="text" name="eta" placeholder="ETD/ETA" style="width: 32%">
+                <input type="date" name="eta" placeholder="ETD/ETA" style="width: 32%">
                 <input type="text" name="refNum" placeholder="Reference No" style="width: 32%" required>
             </div>
             <div class="section">
@@ -273,8 +281,8 @@ $conn->close();
             </div>
             <div class="section">
                 <input type="text" name="packages" placeholder="Packages" style="width: 32%">
-                <input type="text" name="weight" placeholder="Weight" style="width: 32%">
-                <input type="text" name="measurement" placeholder="Measurement" style="width: 32%">
+                <input type="text" name="weight" placeholder="Weight/Measurement" style="width: 32%">
+                <input type="text" name="volume" placeholder="Volume" style="width: 32%">
             </div>
             <div class="section radio-group">
                 <label>Package Type:</label>
@@ -297,14 +305,14 @@ $conn->close();
                     <!-- Charges will be populated by JavaScript -->
                 </div>
                 <div class="section">
-                    <input type="number" id="total" name="total" placeholder="Total" style="width: 100%">
-
-                   <!-- <button type="button" onclick="calculateTotal()" class="calc-btn">Calculate Total</button> -->
+                    <input type="number" id="total" name="total" placeholder="Total" style="width: 100%" readonly>
+                    <button type="button" onclick="calculateTotal()" class="calc-btn">Calculate</button>
 
                 </div>
                 <div class="section">
                     <input type="text" name="prepared_by" placeholder="Prepared by" style="width: 48%">
                     <input type="text" name="approved_by" placeholder="Approved by" style="width: 48%">
+                    <input type="text" name="edited_by" placeholder="Edited by" style="width: 48%">
                 </div>
                 <div class="footer">
                     <!-- <button type="submit" name="insert" class="save-btn">Save</button> -->

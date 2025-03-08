@@ -14,12 +14,27 @@ if (!isset($_SESSION['department'])) {
 } 
 */
 
+if (!$role) {
+    echo "<html><head><style>
+    body { font-family: Arial, sans-serif; text-align: center; background-color: #f8d7da; }
+    .container { margin-top: 50px; padding: 20px; background: white; border-radius: 10px; display: inline-block; }
+    h1 { color: #721c24; }
+    p { color: #721c24; }
+  </style></head><body>
+  <div class='container'>
+    <h1>Unauthorized Access</h1>
+    <p>You do not have permission to view this page. (ERR: R)</p>
+  </div>
+  </body></html>";
+    exit;
+}
+
 // Handle form submission (Create User)
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $UserID = (string) random_int(10000000, 99999999);
     $name = trim($_POST['name']);
     $email = filter_var(trim($_POST['email']), FILTER_SANITIZE_EMAIL);
-    $password = "agqLogistics";
+    $password = "AGQ@2006";
     $department = htmlspecialchars(trim($_POST['department']));
     $otp = null;
 
@@ -128,7 +143,7 @@ $result = $conn->query($query);
 </head>
 
 <body>
-<a href="agq_owndash.php" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 20px; top: 20px;">←</a>
+    <a href="agq_owndash.php" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 20px; top: 20px;">←</a>
     <div class="header">
         <h1>MEMBERS OF THE COMPANY</h1>
         <div class="top-bar">
