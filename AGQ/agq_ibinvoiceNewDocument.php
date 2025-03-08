@@ -18,6 +18,7 @@ function insertRecord($conn)
     $docType = isset($_SESSION['DocType']) ? $_SESSION['DocType'] : null;
     $department = isset($_SESSION['Department']) ? $_SESSION['Department'] : null;
     $companyName = isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : null;
+    date_default_timezone_set('Asia/Manila');
     $editDate = date('Y-m-d');
 
     $sql = "INSERT INTO tbl_impbrk (

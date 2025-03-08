@@ -19,6 +19,8 @@ function insertRecord($conn)
     $docType = isset($_SESSION['DocType']) ? $_SESSION['DocType'] : null;
     $department = isset($_SESSION['Department']) ? $_SESSION['Department'] : null;
     $companyName = isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : null;
+    date_default_timezone_set('Asia/Manila');
+    $editDate = date('Y-m-d');
 
     $sql = "INSERT INTO tbl_impbrk (
         `To:`, `Address`, Tin, Attention, `Date`, Vessel, ETA, RefNum, DestinationOrigin, ER, BHNum,
@@ -86,7 +88,7 @@ function insertRecord($conn)
         $_POST['prepared'],
         $_POST['approved'],
         $_POST['edited'],
-        $editDate = date('Y-m-d'),
+        $editDate,
         $docType,        // Session variable
         $companyName,    // Session variable
         $department      // Session variable
