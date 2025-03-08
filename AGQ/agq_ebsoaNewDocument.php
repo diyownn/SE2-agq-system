@@ -21,15 +21,15 @@ function insertRecord($conn)
 
     $sql = "INSERT INTO tbl_expbrk (
         `To:`, `Address`, Tin, Attention, `Date`, Vessel, ETA, RefNum, DestinationOrigin, ER, BHNum,
-        NatureOfGoods, Packages, `Weight`, Measurement, PackageType, Others, Notes, 
+        NatureOfGoods, Packages, `Weight`, Volume, PackageType, Others, Notes, OceanFreight95,
         AdvanceShipping, Processing, Arrastre, Wharfage, FormsStamps, PhotocopyNotarial,
-        Documentation, E2MLodge, ManualStuffing, Handling, PCCI, Total, Prepared_by, Approved_by, DocType, 
-        Company_name, Department
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        Documentation, E2MLodge, ManualStuffing, Handling, PCCI, Total, Prepared_by, Approved_by, 
+        Edited_by, EditDate, DocType, Company_name, Department
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     $stmt = $conn->prepare($sql);
     $stmt->bind_param(
-        "ssssssssssssssssisiiiiiiiiiiiisssss",
+        "ssssssssssssssssisiiiiiiiiiiiiisssssss",
         $_POST['to'],
         $_POST['address'],
         $_POST['tin'],
@@ -44,10 +44,11 @@ function insertRecord($conn)
         $_POST['natureOfGoods'],
         $_POST['packages'],
         $_POST['weight'],
-        $_POST['measurement'],
+        $_POST['volume'],
         $_POST['packageType'],
         $_POST['others_amount'],
         $_POST['notes'],
+        $_POST['95oceanfreight'],
         $_POST['advanceshippinglines'],
         $_POST['processing'],
         $_POST['arrastre'],
@@ -62,6 +63,8 @@ function insertRecord($conn)
         $_POST['total'],
         $_POST['prepared_by'],
         $_POST['approved_by'],
+        $_POST['edited_by'],
+        $editDate = date('Y-m-d'),
         $docType,        // Session variable
         $companyName,    // Session variable
         $department      // Session variable
@@ -137,6 +140,7 @@ $conn->close();
 
             if (lclSelected) {
                 const lclCharges = [
+                    "95 Ocean Freight",
                     "Advance Shipping Lines",
                     "Processing",
                     "Notes",
@@ -145,6 +149,7 @@ $conn->close();
                 generateFixedCharges(lclCharges);
             } else if (containerSelected) {
                 const containerCharges = [
+                    "95 Ocean Freight",
                     "Arrastre",
                     "Wharfage",
                     "Processing",
@@ -263,7 +268,7 @@ $conn->close();
             </div>
             <div class="section">
                 <input type="text" name="vessel" placeholder="Vessel" style="width: 32%">
-                <input type="text" name="eta" placeholder="ETD/ETA" style="width: 32%">
+                <input type="date" name="eta" placeholder="ETD/ETA" style="width: 32%">
                 <input type="text" name="refNum" placeholder="Reference No" style="width: 32%" required>
             </div>
             <div class="section">
@@ -276,8 +281,8 @@ $conn->close();
             </div>
             <div class="section">
                 <input type="text" name="packages" placeholder="Packages" style="width: 32%">
-                <input type="text" name="weight" placeholder="Weight" style="width: 32%">
-                <input type="text" name="measurement" placeholder="Measurement" style="width: 32%">
+                <input type="text" name="weight" placeholder="Weight/Measurement" style="width: 32%">
+                <input type="text" name="volume" placeholder="Volume" style="width: 32%">
             </div>
             <div class="section radio-group">
                 <label>Package Type:</label>
@@ -307,6 +312,7 @@ $conn->close();
                 <div class="section">
                     <input type="text" name="prepared_by" placeholder="Prepared by" style="width: 48%">
                     <input type="text" name="approved_by" placeholder="Approved by" style="width: 48%">
+                    <input type="text" name="edited_by" placeholder="Edited by" style="width: 48%">
                 </div>
                 <div class="footer">
                     <!-- <button type="submit" name="insert" class="save-btn">Save</button> -->

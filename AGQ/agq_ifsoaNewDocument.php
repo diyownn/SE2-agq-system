@@ -24,15 +24,15 @@ function insertRecord($conn)
 
     $sql = "INSERT INTO tbl_impfwd (
         `To:`, `Address`, Tin, Attention, `Date`, Vessel, ETA, RefNum, DestinationOrigin, ER, BHNum,
-        NatureOfGoods, Packages, `Weight`, Measurement, PackageType, OceanFreight95,
+        NatureOfGoods, Packages, `Weight`, Volume, PackageType, OceanFreight95,
         Documentation, TurnOverFee, Handling, Others, Notes, FCLCharge, 
         BLFee, ManifestFee, THC, CIC, ECRS, PSS, Origin, ShippingLine, ExWorkCharges, Total, 
-        Prepared_by, Approved_by, Received_by, Printed_name, Creation_date, DocType, Company_name, Department
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+        Prepared_by, Approved_by, Edited_by, EditDate, DocType, Company_name, Department
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
     $stmt = $conn->prepare($sql);
     $stmt->bind_param(
-        "ssssssssssssssssiiiiisiiiiiiiiiiissssssss",
+        "ssssssssssssssssiiiiisiiiiiiiiiiisssssss",
         $_POST['to'],
         $_POST['address'],
         $_POST['tin'],
@@ -47,7 +47,7 @@ function insertRecord($conn)
         $_POST['natureofGoods'],
         $_POST['packages'],
         $_POST['weight'],
-        $_POST['measurement'],
+        $_POST['volume'],
         $_POST['package'],
         $_POST['95oceanfreight'],
         $_POST['documentation'],
@@ -68,9 +68,8 @@ function insertRecord($conn)
         $_POST['total'],
         $_POST['preparedBy'],
         $_POST['approvedBy'],
-        $_POST['receivedBy'],
-        $_POST['printedName'],
-        $_POST['date1'],
+        $_POST['editedBy'],
+        $editDate = date('Y-m-d'),
         $docType,        // Session variable
         $companyName,    // Session variable
         $department      // Session variable
@@ -283,7 +282,7 @@ $conn->close();
             </div>
             <div class="section">
                 <input type="text" name="vessel" placeholder="Vessel" style="width: 32%">
-                <input type="text" name="eta" placeholder="ETD/ETA" style="width: 32%">
+                <input type="date" name="eta" placeholder="ETD/ETA" style="width: 32%">
                 <input type="text" name="referenceNo" placeholder="Reference No" style="width: 32%">
             </div>
             <div class="section">
@@ -296,8 +295,8 @@ $conn->close();
             </div>
             <div class="section">
                 <input type="text" name="packages" placeholder="Packages" style="width: 32%">
-                <input type="text" name="weight" placeholder="Weight" style="width: 32%">
-                <input type="text" name="measurement" placeholder="Measurement" style="width: 32%">
+                <input type="text" name="weight" placeholder="Weight/Measurement" style="width: 32%">
+                <input type="text" name="volume" placeholder="Volume" style="width: 32%">
             </div>
             <div class="section radio-group">
                 <label>Package Type:</label>
@@ -326,12 +325,7 @@ $conn->close();
             <div class="section">
                 <input type="text" name="preparedBy" placeholder="Prepared by" style="width: 48%">
                 <input type="text" name="approvedBy" placeholder="Approved by" style="width: 48%">
-            </div>
-            <div class="section">
-                <input type="text" name="receivedBy" placeholder="Received by" style="width: 24%">
-                <input type="text" name="signature" placeholder="Signature" style="width: 24%">
-                <input type="text" name="printedName" placeholder="Printed Name" style="width: 24%">
-                <input type="date" name="date1" placeholder="Date" style="width: 24%">
+                <input type="text" name="editedBy" placeholder="Edited by" style="width: 24%">
             </div>
             <div class="footer">
                 <!-- <button class="save-btn">Save</button> -->

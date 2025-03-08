@@ -20,14 +20,14 @@ function insertRecord($conn)
 
     $sql = "INSERT INTO tbl_expfwd (
         `To:`, `Address`, Tin, Attention, `Date`, Vessel, ETA, RefNum, DestinationOrigin, ER, BHNum,
-        NatureOfGoods, Packages, `Weight`, Measurement, PackageType, OceanFreight95, Others, Notes,
+        NatureOfGoods, Packages, `Weight`, Volume, PackageType, OceanFreight95, Others, Notes,
         DocsFee, LCLCharge, ExportProcessing, FormsStamps, ArrastreWharf, E2MLodge, THC, FAF, SealFee, Storage, Telex,
-        Total, Prepared_by, Approved_by, Received_by, Printed_name, Creation_date, DocType, Company_name, Department
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        Total, Prepared_by, Approved_by, Edited_by, EditDate, DocType, Company_name, Department
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     $stmt = $conn->prepare($sql);
     $stmt->bind_param(
-        "ssssssssssssssssiisiiiiiiiiiiiissssssss",
+        "ssssssssssssssssiisiiiiiiiiiiiisssssss",
         $_POST['to'],
         $_POST['address'],
         $_POST['tin'],
@@ -61,9 +61,8 @@ function insertRecord($conn)
         $_POST['total'],
         $_POST['prepared'],
         $_POST['approved'],
-        $_POST['received'],
-        $_POST['print'],
-        $_POST['date1'],
+        $_POST['edited'],
+        $editDate = date('Y-m-d'),
         $docType,        // Session variable
         $companyName,    // Session variable
         $department      // Session variable
@@ -150,6 +149,7 @@ $conn->close();
                 generateFixedCharges(lclCharges, true);
             } else if (containerSelected) {
                 const containerCharges = [
+                    "95 Ocean Freight",
                     "THC",
                     "Docs Fee",
                     "FAF",
@@ -266,7 +266,7 @@ $conn->close();
             </div>
             <div class="section">
                 <input type="text" name="vessel" placeholder="Vessel" style="width: 32%">
-                <input type="text" name="eta" placeholder="ETD/ETA" style="width: 32%">
+                <input type="date" name="eta" placeholder="ETD/ETA" style="width: 32%">
                 <input type="text" name="refNum" placeholder="Reference No" style="width: 32%">
             </div>
             <div class="section">
@@ -279,8 +279,8 @@ $conn->close();
             </div>
             <div class="section">
                 <input type="text" name="packages" placeholder="Packages" style="width: 32%">
-                <input type="text" name="weight" placeholder="Weight" style="width: 32%">
-                <input type="text" name="measurement" placeholder="Measurement" style="width: 32%">
+                <input type="text" name="weight" placeholder="Weight/Measurement" style="width: 32%">
+                <input type="text" name="volume" placeholder="Volume" style="width: 32%">
             </div>
             <div class="section radio-group">
                 <label>Package Type:</label>
@@ -308,12 +308,7 @@ $conn->close();
             <div class="section">
                 <input type="text" name="prepared" placeholder="Prepared by" style="width: 48%">
                 <input type="text" name="approve" placeholder="Approved by" style="width: 48%">
-            </div>
-            <div class="section">
-                <input type="text" name="receive" placeholder="Received by" style="width: 24%">
-                <!-- <input type="text" name="sig" placeholder="Signature" style="width: 24%"> -->
-                <input type="text" name="printName" placeholder="Printed Name" style="width: 24%">
-                <input type="date" name="date1" placeholder="Date" style="width: 24%">
+                <input type="text" name="edited" placeholder="Edited by" style="width: 48%">
             </div>
             <div class="footer">
                 <input type="submit" name="save" class="save-btn" value="Save">
