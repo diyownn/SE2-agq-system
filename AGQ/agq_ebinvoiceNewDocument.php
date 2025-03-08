@@ -1,6 +1,8 @@
 <?php
+
 require 'db_agq.php';
 
+// Handle form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_POST['save'])) {
         insertRecord($conn);
@@ -18,16 +20,17 @@ function insertRecord($conn)
     $department = isset($_SESSION['Department']) ? $_SESSION['Department'] : null;
     $companyName = isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : null;
 
-    $sql = "INSERT INTO tbl_expfwd (
+    $sql = "INSERT INTO tbl_expbrk (
         `To:`, `Address`, Tin, Attention, `Date`, Vessel, ETA, RefNum, DestinationOrigin, ER, BHNum,
-        NatureOfGoods, Packages, `Weight`, Volume, PackageType, OceanFreight95, Others, Notes,
-        DocsFee, LCLCharge, ExportProcessing, FormsStamps, ArrastreWharf, E2MLodge, THC, FAF, SealFee, Storage, Telex,
-        Total, Prepared_by, Approved_by, Edited_by, EditDate, DocType, Company_name, Department
+        NatureOfGoods, Packages, `Weight`, Volume, PackageType, Others, Notes, OceanFreight95,
+        AdvanceShipping, Processing, Arrastre, Wharfage, FormsStamps, PhotocopyNotarial,
+        Documentation, E2MLodge, ManualStuffing, Handling, PCCI, Total, Prepared_by, Approved_by, 
+        Edited_by, EditDate, DocType, Company_name, Department
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     $stmt = $conn->prepare($sql);
     $stmt->bind_param(
-        "ssssssssssssssssiisiiiiiiiiiiiisssssss",
+        "ssssssssssssssssisiiiiiiiiiiiiisssssss",
         $_POST['to'],
         $_POST['address'],
         $_POST['tin'],
@@ -42,26 +45,26 @@ function insertRecord($conn)
         $_POST['natureOfGoods'],
         $_POST['packages'],
         $_POST['weight'],
-        $_POST['measurement'],
-        $_POST['package'],
-        $_POST['95oceanfreight'],
+        $_POST['volume'],
+        $_POST['packageType'],
         $_POST['others_amount'],
         $_POST['notes'],
-        $_POST['docsfee'],
-        $_POST['lclcharge'],
-        $_POST['exportprocessing'],
-        $_POST['customsformsstamps'],
-        $_POST['arrastrewharfage'],
-        $_POST['e2mfee'],
-        $_POST['thc'],
-        $_POST['faf'],
-        $_POST['sealfee'],
-        $_POST['storage'],
-        $_POST['telexfee'],
+        $_POST['95oceanfreight'],
+        $_POST['advanceshippinglines'],
+        $_POST['processing'],
+        $_POST['arrastre'],
+        $_POST['wharfage'],
+        $_POST['formsstamps'],
+        $_POST['photocopynotarial'],
+        $_POST['documentation'],
+        $_POST['e2mlodgement'],
+        $_POST['stuffing'],
+        $_POST['handling'],
+        $_POST['pcci_amount'],
         $_POST['total'],
-        $_POST['prepared'],
-        $_POST['approved'],
-        $_POST['edited'],
+        $_POST['prepared_by'],
+        $_POST['approved_by'],
+        $_POST['edited_by'],
         $editDate = date('Y-m-d'),
         $docType,        // Session variable
         $companyName,    // Session variable
@@ -69,6 +72,7 @@ function insertRecord($conn)
     );
 
     if ($stmt->execute()) {
+        // echo "New record inserted successfully!";
         echo '<script>
         if (confirm("Document Successfully Created!\\nDo you want to view it?")) {
             window.location.href = "agq_employTransactionView.php";
@@ -83,7 +87,7 @@ function insertRecord($conn)
 // Function to select all records
 function selectRecords($conn)
 {
-    $sql = "SELECT * FROM tbl_expfwd";
+    $sql = "SELECT * FROM your_table";
     $stmt = $conn->prepare($sql);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -98,7 +102,7 @@ function selectRecords($conn)
 // Function to delete a record by RefNum
 function deleteRecord($conn, $refNum)
 {
-    $sql = "DELETE FROM tbl_expfwd WHERE RefNum = ?";
+    $sql = "DELETE FROM your_table WHERE RefNum = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("s", $refNum);
 
@@ -111,80 +115,72 @@ function deleteRecord($conn, $refNum)
 }
 
 $conn->close();
+
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/x-icon" href="../AGQ/images/favicon.ico">
     <link rel="stylesheet" type="text/css" href="../css/forms.css">
-    <title>Statement of Account</title>
+    <title>Sales Invoice </title>
     <script>
         function togglePackageField() {
             document.getElementById("package-details").style.display = "block";
             updateReimbursableCharges();
         }
-
+    
         function updateReimbursableCharges() {
             const lclSelected = document.getElementById("lcl").checked;
             const containerSelected = document.getElementById("container").checked;
             const chargesTable = document.getElementById("charges-table");
             chargesTable.innerHTML = ""; // Clear existing charges
-
+    
             if (lclSelected) {
                 const lclCharges = [
-                    "95 Ocean Freight",
-                    "Docs Fee",
-                    "LCL Charge",
-                    "Export Processing",
-                    "Customs Forms/Stamps",
-                    "Arrastre/Wharfage",
-                    "E2M Fee",
+                    "5 Ocean Freight",
+                    "Brokerage Fee",
+                    "50 discount",
+                    "12 VAT",
                     "Notes",
-                    "Additional Charges"
+                    "Total", 
+                    "Additional Charges" 
                 ];
-                generateFixedCharges(lclCharges, true);
+                generateFixedCharges(lclCharges);
             } else if (containerSelected) {
                 const containerCharges = [
-                    "95 Ocean Freight",
-                    "THC",
-                    "Docs Fee",
-                    "FAF",
-                    "Seal Fee",
-                    "Storage",
-                    "Telex Fee",
+                    "5 Ocean Freight",
+                    "Brokerage Fee",
+                    "50 discount",
+                    "12 VAT",
                     "Notes",
+                    "Total",
                     "Additional Charges"
                 ];
-                generateFixedCharges(containerCharges, false);
+                generateFixedCharges(containerCharges, true);
             }
         }
-
-        function generateFixedCharges(charges, isLCL) {
+    
+        function generateFixedCharges(charges) {
             const chargesTable = document.getElementById("charges-table");
-
+    
             charges.forEach(charge => {
                 const row = document.createElement("div");
                 row.className = "table-row";
-
+    
                 if (charge === "Additional Charges") {
                     row.innerHTML = `
-                        <select onchange="handleChargeSelection(this, ${isLCL})">
+                        <select onchange="handleChargeSelection(this)">
                             <option value="">Additional Charges</option>
-                            ${isLCL 
-                                ? '<option value="Others">Others</option>' 
-                                : '<option value="Others">Others</option>'
-                            }
+                            <option value="Others">Others</option>
                         </select>
                     `;
                 } else {
-
                     const inputName = charge.toLowerCase().replace(/\s+/g, '').replace('/', '');
                     row.innerHTML = `
-                        <input type="text" name="charge_type[]" value="${charge}" readonly>
+                        <input type="text" value="${charge}" readonly>
                         <input type="number" name="${inputName}" placeholder="Enter amount">
                     `;
                 }
@@ -196,38 +192,37 @@ $conn->close();
                         <input type="text" name="notes" placeholder="Enter notes">
                     `;
                 }
-
+    
                 chargesTable.appendChild(row);
             });
         }
-
-        function handleChargeSelection(selectElement, isLCL) {
+    
+        function handleChargeSelection(selectElement) {
             const selectedCharge = selectElement.value;
-            if (!selectedCharge) return; // Do nothing if no valid selection
-
-            // Check if charge already exists
-            if (document.querySelector(`.added-charge[data-charge="${selectedCharge}"]`)) {
-                return; // Prevent duplicates
+            if (!selectedCharge) return; // Do nothing if default is selected
+    
+            // Prevent duplicate entries
+            const existingEntries = document.querySelectorAll(".added-charge");
+            for (let entry of existingEntries) {
+                if (entry.dataset.charge === selectedCharge) return;
             }
-
-            // Create new charge row
+    
+            // Add new charge field
             const chargesTable = document.getElementById("charges-table");
             const newRow = document.createElement("div");
             newRow.className = "table-row added-charge";
             newRow.dataset.charge = selectedCharge; // Store charge type
-
-            // Set input name correctly
+    
             let inputName = selectedCharge.toLowerCase() + "_amount";
 
             newRow.innerHTML = `
                 <input type="text" value="${selectedCharge}" readonly>
                 <input type="number" name="${inputName}" placeholder="Enter amount">
-                <button type="button" onclick="removeCharge(this)">Remove</button>
+                <button onclick="removeCharge(this)">Remove</button>
             `;
-
+    
             chargesTable.appendChild(newRow);
         }
-
         function removeCharge(button) {
             button.parentElement.remove(); // Remove the selected charge row
         }
@@ -244,77 +239,74 @@ $conn->close();
             
             document.getElementById("total").value = total.toFixed(2);
         }
-
     </script>
-
+    
 </head>
-
 <body>
     <div class="container">
-        <div class="header">STATEMENT OF ACCOUNT</div>
-        <form method="POST">
-            <div class="section">
-                <input type="text" name="to" placeholder="To" style="width: 70%">
-                <input type="date" name="date" placeholder="Date" style="width: 28%">
+        <div class="header">SALES INVOICE</div>
+        
+        <div class="section">
+            <input type="text" name="to" placeholder="To" style="width: 70%">
+            <input type="date" name="date" placeholder="Date" style="width: 28%">
+        </div>
+        <div class="section">
+            <input type="text" name="address" placeholder="Address" style="width: 100%">
+        </div>
+        <div class="section">
+            <input type="text" name="tin" placeholder="TIN" style="width: 48%">
+            <input type="text" name="attention" placeholder="Attention" style="width: 48%">
+        </div>
+        <div class="section">
+            <input type="text" name="vessel" placeholder="Vessel" style="width: 32%">
+            <input type="date" name="eta" placeholder="ETD/ETA" style="width: 32%">
+            <input type="text" name="refNum" placeholder="Reference No" style="width: 32%">
+        </div>
+        <div class="section">
+            <input type="text" name="destinationOrigin" placeholder="Destination/Origin" style="width: 48%">
+            <input type="text" name="er" placeholder="E.R" style="width: 22%">
+            <input type="text" name="bhNum" placeholder="BL/HBL No" style="width: 22%">
+        </div>
+        <div class="section">
+            <input type="text" name="natureOfGoods" placeholder="Nature of Goods" style="width: 100%">
+        </div>
+        <div class="section">
+            <input type="text" name="packages" placeholder="Packages" style="width: 32%">
+            <input type="text" name="weight" placeholder="Weight/Measurement" style="width: 32%">
+            <input type="text" name="volume" placeholder="Volume" style="width: 32%">
+        </div>
+        <div class="section radio-group">
+            <label>Package Type:</label>
+            <label>
+                <input type="radio" id="lcl" name="package" value="LCL" onclick="togglePackageField()"> LCL
+            </label>
+            <label>
+                <input type="radio" id="container" name="package" value="Full Container" onclick="togglePackageField()"> Full Container
+            </label>
+        </div>
+        <div class="section" id="package-details">
+            <!-- <input type="text" placeholder="Enter package details" style="width: 100%"> -->
+        </div>
+        <div class="table-container">
+            <div class="table-header">
+                <span>Reimbursable Charges</span>
+                <span>Amount</span>
             </div>
-            <div class="section">
-                <input type="text" name="address" placeholder="Address" style="width: 100%">
-            </div>
-            <div class="section">
-                <input type="text" name="tin" placeholder="TIN" style="width: 48%">
-                <input type="text" name="attention" placeholder="Attention" style="width: 48%">
-            </div>
-            <div class="section">
-                <input type="text" name="vessel" placeholder="Vessel" style="width: 32%">
-                <input type="date" name="eta" placeholder="ETD/ETA" style="width: 32%">
-                <input type="text" name="refNum" placeholder="Reference No" style="width: 32%">
-            </div>
-            <div class="section">
-                <input type="text" name="destinationOrigin" placeholder="Destination/Origin" style="width: 48%">
-                <input type="text" name="er" placeholder="E.R" style="width: 22%">
-                <input type="text" name="bhNum" placeholder="BL/HBL No" style="width: 22%">
-            </div>
-            <div class="section">
-                <input type="text" name="natureOfGoods" placeholder="Nature of Goods" style="width: 100%">
-            </div>
-            <div class="section">
-                <input type="text" name="packages" placeholder="Packages" style="width: 32%">
-                <input type="text" name="weight" placeholder="Weight/Measurement" style="width: 32%">
-                <input type="text" name="volume" placeholder="Volume" style="width: 32%">
-            </div>
-            <div class="section radio-group">
-                <label>Package Type:</label>
-                <label>
-                    <input type="radio" id="lcl" name="package" value="LCL" onclick="togglePackageField()"> LCL
-                </label>
-                <label>
-                    <input type="radio" id="container" name="package" value="Full Container" onclick="togglePackageField()"> Full Container
-                </label>
-            </div>
-            <div class="section" id="package-details">
-                <!-- <input type="text" placeholder="Enter package details" style="width: 100%"> -->
-            </div>
-            <div class="table-container">
-                <div class="table-header">
-                    <span>Reimbursable Charges</span>
-                    <span>Amount</span>
-                </div>
-                <div id="charges-table"></div>
-            </div>
-            <div class="section">
-                <input type="text" id="total" name="total" placeholder="Total" style="width: 100%">
-                <button type="button" onclick="calculateTotal()" class="calc-btn">Calculate</button>
-            </div>
-            <div class="section">
-                <input type="text" name="prepared" placeholder="Prepared by" style="width: 48%">
-                <input type="text" name="approve" placeholder="Approved by" style="width: 48%">
-                <input type="text" name="edited" placeholder="Edited by" style="width: 48%">
-            </div>
-            <div class="footer">
-                <input type="submit" name="save" class="save-btn" value="Save">
-            </div>
-        </form>
+            <div id="charges-table"></div>
+        </div>
+        <div class="section">
+            <input type="number" name="total" placeholder="Total" style="width: 100%">
+            <button type="button" onclick="calculateTotal()" class="calc-btn">Calculate</button>
+        </div>
+        <div class="section">
+            <input type="text" name="prepared_by" placeholder="Prepared by" style="width: 48%">
+            <input type="text" name="approved_by" placeholder="Approved by" style="width: 48%">
+            <input type="text" name="edited_by" placeholder="Edited by" style="width: 48%">
+        </div>
+        <div class="footer">
+            <!-- <button class="save-btn">Save</button> -->
+            <input type="submit" name="save" class="save-btn" value="Save">
+        </div>
     </div>
 </body>
-
 </html>
