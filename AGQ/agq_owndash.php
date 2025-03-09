@@ -67,7 +67,6 @@ if (!empty($search_query)) {
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="../css/owndash.css">
     <style>
-        
         .hamburger-menu {
             display: none;
             flex-direction: column;
@@ -199,6 +198,9 @@ if (!empty($search_query)) {
             
             .company-container-row {
                 gap: 50px;
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
             }
         }
 
@@ -225,13 +227,22 @@ if (!empty($search_query)) {
             }
 
             .company-button {
-                flex: 1 1 calc(33.333% - 10px);
+                flex: 0 0 calc(33.333% - 34px);
                 max-width: 180px;
+                margin: 0;
             }
             
             .company-logo {
                 width: 150px;
                 height: 150px;
+            }
+            
+            .company-container-row {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 50px;
+                width: 100%;
             }
         }
 
@@ -250,7 +261,7 @@ if (!empty($search_query)) {
             }
             
             .company-button {
-                flex: 1 1 calc(50% - 10px);
+                flex: 0 0 calc(50% - 10px);
                 max-width: none;
             }
             
