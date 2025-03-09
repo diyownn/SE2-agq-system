@@ -31,7 +31,6 @@
           border-width: 20px;
           border-color: #73894e;
           border-style: solid;
-          
         }
 
         .document-view {
@@ -40,6 +39,7 @@
           width: 600px;
           padding: 50px 100px 50px 100px;
           margin: 10px;
+          border-radius: 10px;
         }
 
         .info-view {
@@ -52,12 +52,12 @@
         }
 
         .docu-information {
-          margin-bottom: 250px;
-          padding-top: 50px;
+          margin-bottom: 225px;
+          padding-top: 0px;
         }
 
         .ref-number {
-          font-size: 30px;
+          font-size: 50px;
           font-weight: bold;
           margin-bottom: 10px;
         }
@@ -67,8 +67,12 @@
         }
 
         .document-type {
-          font-size: 25px;
+          font-size: 22px;
+        }
 
+        .comment-title {
+          font-size: 17px;
+          font-weight: bold;
         }
         
         textarea {
@@ -78,7 +82,8 @@
           font-size: 16px;
           resize: none;
           box-sizing: border-box;
-          margin-bottom: 15px;
+          margin-bottom: 0px;
+          border-radius: 15px;
         }
         
         .counter {
@@ -86,16 +91,15 @@
           font-size: 14px;
           color: black;
           margin-left: 5px;
-          
           margin-bottom: 15px;
           display: inline-block; 
-          float: left;
+ 
         }
 
 
-        
         .save-button {
           background-color: #62851b;
+          
           padding: 10px 15px;
           border: none;
           border-radius: 50px;
@@ -111,7 +115,6 @@
         }
         
         .button-container {
-            display: inline-block; 
             float: right; 
             margin-top: 5px; 
         }
@@ -169,6 +172,7 @@
         <p class="date"><strong>Date:</strong> 01/01/2025</p>
         <p class="document-type">Statement of Account</p>
       </div>
+      <span class = "comment-title"> Comments: </span>
       <div class="comment-box">
         <textarea id="textbox" maxlength="250" oninput="updateCounter()"></textarea>
         <div class="counter" id="counter">0/250</div>
@@ -189,7 +193,7 @@
      function saveComment() {
           let comment = document.getElementById("textbox").value;
           alert("Comment saved: " + comment);
-          // In a real application, you would send this to your server
+          
      }
   </script>
 </body>

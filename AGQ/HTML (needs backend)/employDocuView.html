@@ -31,7 +31,7 @@
           border-width: 20px;
           border-color: #73894e;
           border-style: solid;
-          
+
         }
 
         .document-view {
@@ -86,15 +86,24 @@
           font-size: 14px;
           color: black;
           margin-left: 5px;
-          
           margin-bottom: 15px;
           display: inline-block; 
-          float: left; 
         }
 
+       
+        .edit-button {
+          background-color: #62851b;
+          padding: 10px 15px;
+          border: none;
+          border-radius: 50px;
+          font-family: 'IBM Plex Sans', Arial, sans-serif;
+          font-weight: bold;
+          cursor: pointer;
+          box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+          transition: background-color 0.3s ease;  
+        }
 
-        
-        .save-button {
+        .download-button {
           background-color: #62851b;
           padding: 10px 15px;
           border: none;
@@ -111,7 +120,6 @@
         }
         
         .button-container {
-            display: inline-block; 
             float: right; 
             margin-top: 5px; 
         }
@@ -137,7 +145,7 @@
         @media (max-width: 992px) {
             .container {
                 flex-direction: column;
-                height: auto;
+                height: auto; 
                 gap: 20px;
             }
             
@@ -171,9 +179,9 @@
       </div>
       <div class="comment-box">
         <textarea id="textbox" maxlength="250" oninput="updateCounter()"></textarea>
-        <div class="counter" id="counter">0/250</div>
         <div class="button-container">
-          <button class="save-button" onclick="saveComment()">Save</button>
+          <button class="edit-button" onclick="saveComment()">Edit</button>
+          <button class="download-button" onclick="saveComment()">Download</button>
         </div>
       </div>
     </div>   
@@ -189,7 +197,7 @@
      function saveComment() {
           let comment = document.getElementById("textbox").value;
           alert("Comment saved: " + comment);
-          // In a real application, you would send this to your server
+          
      }
   </script>
 </body>
