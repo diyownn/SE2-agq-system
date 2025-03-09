@@ -364,6 +364,8 @@ body {
   height: 200px;
 }
 
+
+
 /* Hamburger Menu Styles */
 .hamburger-menu {
   display: none;
@@ -460,113 +462,112 @@ body {
 
 /* Responsive Styles */
 /* Adjust existing media queries */
-        @media screen and (max-width: 1024px) {
-            .dashboard-body {
-                margin: 30px 40px 10px 40px;
-            }
-            
-            #company-container-parent {
-                padding-left: 20px;
-                padding-right: 20px;
-            }
-            
-            .company-container-row {
-                gap: 50px;
-            }
-        }
+/* Adjust existing media queries */
+@media screen and (max-width: 1024px) {
+  .dashboard-body {
+      margin: 30px 40px 10px 40px;
+  }
+  
+  #company-container-parent {
+      padding-left: 20px;
+      padding-right: 20px;
+  }
+  
+  .company-container-row {
+      gap: 50px;
+  }
+}
 
-        @media screen and (max-width: 768px) {
-            .hamburger-menu {
-                display: flex;
-                position: absolute;
-                top: 40px;
-                right: 20px;
-            }
+@media screen and (max-width: 768px) {
+  .hamburger-menu {
+      display: flex;
+      position: absolute;
+      top: 40px;
+      right: 20px;
+  }
 
-            .mobile-menu {
-                display: block;
-            }
+  .mobile-menu {
+      display: block;
+  }
 
-            .search-container, .nav-link-container {
-                display: none;
-            }
-            
-            .header-container {
-                justify-content: center;
-                margin-top: 60px;
-                padding-bottom: 20px;
-            }
+  .search-container, .nav-link-container {
+      display: none;
+  }
+  
+  .header-container {
+      justify-content: center;
+      margin-top: 60px;
+      padding-bottom: 20px;
+  }
 
-            .company-button {
-                flex: 1 1 calc(33.333% - 10px);
-                max-width: 180px;
-            }
-            
-            .company-logo {
-                width: 150px;
-                height: 150px;
-            }
-        }
+  .company-button {
+      flex: 1 1 calc(33.333% - 10px);
+      max-width: 180px;
+  }
+  
+  .company-logo {
+      width: 150px;
+      height: 150px;
+  }
+}
 
-        @media screen and (max-width: 480px) {
-            .dept-label {
-                width: 100%;
-                border-radius: 0;
-                position: relative;
-                text-align: center;
-                min-width: unset;
-            }
-            
-            .hamburger-menu {
-                top: 40px;
-                right: 20px;
-            }
-            
-            .company-button {
-                flex: 1 1 calc(50% - 10px);
-                max-width: none;
-            }
-            
-            .company-logo {
-                width: 120px;
-                height: 120px;
-            }
-            
-            .company-title {
-                font-size: 28px;
-            }
-            
-            .company-container-row {
-                gap: 20px;
-                justify-content: center;
-            }
-            
-            .dashboard-body {
-                margin: 20px 10px 10px 10px;
-            }
-            
-            .company-head {
-                flex-direction: column;
-                align-items: flex-start;
-                margin-bottom: 20px;
-            }
-            
-            .add-company {
-                width: 100%;
-                justify-content: center;
-                margin-top: 10px;
-            }
-        }
+@media screen and (max-width: 480px) {
+  .dept-label {
+      width: 100%;
+      border-radius: 0;
+      position: relative;
+      text-align: center;
+      min-width: unset;
+  }
+  
+  .hamburger-menu {
+      top: 40px;
+      right: 20px;
+  }
+  
+  .company-button {
+      flex: 1 1 calc(50% - 10px);
+      max-width: none;
+  }
+  
+  .company-logo {
+      width: 120px;
+      height: 120px;
+  }
+  
+  .company-title {
+      font-size: 28px;
+  }
+  
+  .company-container-row {
+      gap: 20px;
+      justify-content: center;
+  }
+  
+  .dashboard-body {
+      margin: 20px 10px 10px 10px;
+  }
+  
+  .company-head {
+      flex-direction: column;
+      align-items: flex-start;
+      margin-bottom: 20px;
+  }
+  
+  .add-company {
+      width: 100%;
+      justify-content: center;
+      margin-top: 10px;
+  }
+}
 
-        @media screen and (max-width: 320px) {
-            .company-button {
-                flex: 1 1 100%;
-            }
-            
-            .company-logo {
-                width: 100px;
-                height: 100px;
-            }
-        }
-
-        
+@media screen and (max-width: 320px) {
+  .company-button {
+      flex: 1 1 100%;
+  }
+  
+  .company-logo {
+      width: 100px;
+      height: 100px;
+  }
+}
