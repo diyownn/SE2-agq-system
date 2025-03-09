@@ -17,17 +17,19 @@ function insertRecord($conn)
     $docType = isset($_SESSION['DocType']) ? $_SESSION['DocType'] : null;
     $department = isset($_SESSION['Department']) ? $_SESSION['Department'] : null;
     $companyName = isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : null;
+    date_default_timezone_set('Asia/Manila');
+    $editDate = date('Y-m-d');
 
     $sql = "INSERT INTO tbl_expfwd (
         `To:`, `Address`, Tin, Attention, `Date`, Vessel, ETA, RefNum, DestinationOrigin, ER, BHNum,
-        NatureOfGoods, Packages, `Weight`, Measurement, PackageType, OceanFreight95, Others, Notes,
+        NatureOfGoods, Packages, `Weight`, Volume, PackageType, OceanFreight95, Others, Notes,
         DocsFee, LCLCharge, ExportProcessing, FormsStamps, ArrastreWharf, E2MLodge, THC, FAF, SealFee, Storage, Telex,
-        Total, Prepared_by, Approved_by, Received_by, Printed_name, Creation_date, DocType, Company_name, Department
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        Total, Prepared_by, Approved_by, Edited_by, EditDate, DocType, Company_name, Department
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     $stmt = $conn->prepare($sql);
     $stmt->bind_param(
-        "ssssssssssssssssiisiiiiiiiiiiiissssssss",
+        "ssssssssssssssssiisiiiiiiiiiiiisssssss",
         $_POST['to'],
         $_POST['address'],
         $_POST['tin'],
@@ -61,9 +63,8 @@ function insertRecord($conn)
         $_POST['total'],
         $_POST['prepared'],
         $_POST['approved'],
-        $_POST['received'],
-        $_POST['print'],
-        $_POST['date1'],
+        $_POST['edited'],
+        $editDate,
         $docType,        // Session variable
         $companyName,    // Session variable
         $department      // Session variable
@@ -121,7 +122,7 @@ $conn->close();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/x-icon" href="../AGQ/images/favicon.ico">
-    <link rel="stylesheet" type="text/css" href="../css/efsoa.css">
+    <link rel="stylesheet" type="text/css" href="../css/forms.css">
     <title>Statement of Account</title>
     <script>
         function togglePackageField() {
@@ -150,6 +151,7 @@ $conn->close();
                 generateFixedCharges(lclCharges, true);
             } else if (containerSelected) {
                 const containerCharges = [
+                    "95 Ocean Freight",
                     "THC",
                     "Docs Fee",
                     "FAF",
@@ -232,6 +234,169 @@ $conn->close();
             button.parentElement.remove(); // Remove the selected charge row
         }
 
+        function validateChargeAmount() {
+            const inputs = document.querySelectorAll('input[type="number"]'); // Select all number inputs
+            const maxAmount = 16500000;
+            let isValid = true; // Track overall validity
+
+            inputs.forEach(input => {
+            const errorElementId = input.name + "-error"; // Unique error element ID
+            let errorElement = document.getElementById(errorElementId);
+
+                if (!errorElement) {
+            // Create an error element if it doesn't exist
+                    errorElement = document.createElement("div");
+                    errorElement.id = errorElementId;
+                    errorElement.className = "invalid-feedback";
+                    input.parentNode.appendChild(errorElement);
+                }
+
+            // Check if the value exceeds the maxAmount
+                const value = parseFloat(input.value);
+                if (value > maxAmount) {
+                    input.classList.add("is-invalid"); // Add invalid class to input
+                    const errorText = `*Value cannot exceed ${maxAmount.toLocaleString()}`;
+                    errorElement.innerHTML = errorText; // Set error message
+                    errorElement.style.display = "block"; // Show error element
+                    isValid = false; // Mark form as invalid
+                } else {
+                    input.classList.remove("is-invalid"); // Remove invalid class
+                    errorElement.style.display = "none"; // Hide error element
+                }
+                });
+
+                return isValid; // Return validity status
+        }
+
+        function validateTextFields() {
+            const inputs = document.querySelectorAll('input[type="text"]'); // Select all text inputs
+            const allowedSymbols = /^[a-zA-Z0-9!@$%^&()_+\-:/|,~ ]+$/; // Allow letters, numbers, and symbols
+            let isValid = true; // Track overall validity
+
+            inputs.forEach(input => {
+                // Exclude the readonly input and the one named "notes"
+                if (input.readOnly || input.name === "notes") {
+                    return; // Skip validation for these inputs
+                }
+
+                const errorElementId = input.name + "-error"; // Unique error element ID
+                let errorElement = document.getElementById(errorElementId);
+
+                if (!errorElement) {
+                // Create an error element if it doesn't exist
+                errorElement = document.createElement("div");
+                errorElement.id = errorElementId;
+                errorElement.className = "invalid-feedback";
+                input.parentNode.appendChild(errorElement);
+                }
+
+                // Check if the field is empty
+                if (input.value.trim() === "") {
+                input.classList.add("is-invalid"); // Add invalid class to input
+                errorElement.innerHTML = "*This field is required"; // Set error message
+                errorElement.style.display = "block"; // Show error element
+                isValid = false; // Mark form as invalid
+                }
+                // Check if the input contains only allowed symbols, letters, or numbers
+                else if (!allowedSymbols.test(input.value)) {
+                    input.classList.add("is-invalid"); // Add invalid class
+                    const errorText = "*Only letters, numbers, and these symbols are allowed: ! @ $ % ^ & ( ) _ + / - : | , ~";
+                    errorElement.innerHTML = errorText; // Set error message
+                    errorElement.style.display = "block"; // Show error element
+                    isValid = false; // Mark form as invalid
+                } else {
+                    input.classList.remove("is-invalid"); // Remove invalid class
+                    errorElement.style.display = "none"; // Hide error element
+                }
+            });
+
+            return isValid; // Return validity status
+        }
+
+
+        function validateNotesField() {
+            const notesInput = document.querySelector('input[name="notes"]'); // Select the notes input field
+            const allowedSymbols = /^[a-zA-Z0-9!@$%^&()_+\-:/|,~ ]*$/; // Allow letters, numbers, and symbols
+            const maxLength = 255; // Maximum character limit
+            let isValid = true; // Track overall validity
+
+            // Check if the input exists
+            if (notesInput) {
+                const errorElementId = "notes-error"; // Unique error element ID
+                let errorElement = document.getElementById(errorElementId);
+
+                if (!errorElement) {
+                // Create an error element if it doesn't exist
+                    errorElement = document.createElement("div");
+                    errorElement.id = errorElementId;
+                    errorElement.className = "invalid-feedback";
+                    notesInput.parentNode.appendChild(errorElement);
+                }
+
+                // Check the length of the input
+                if (notesInput.value.length > maxLength) {
+                    notesInput.classList.add("is-invalid"); // Add invalid class
+                    errorElement.innerHTML = `*Notes cannot exceed ${maxLength} characters`; // Set error message
+                    errorElement.style.display = "block"; // Show error message
+                    isValid = false; // Mark as invalid
+                }
+                // Check if the input contains only allowed symbols, letters, or numbers
+                else if (!allowedSymbols.test(notesInput.value)) {
+                    notesInput.classList.add("is-invalid"); // Add invalid class
+                    errorElement.innerHTML = "*Only letters, numbers, and these symbols are allowed: ! @ $ % ^ & ( ) _ + / - : | , ~"; // Error message
+                    errorElement.style.display = "block"; // Show error message
+                    isValid = false; // Mark as invalid
+                } else {
+                    notesInput.classList.remove("is-invalid"); // Remove invalid class
+                    errorElement.style.display = "none"; // Hide error element
+                }
+            }
+
+            return isValid; // Return validity status
+        }
+
+
+        function validateDateFields() {
+            const dateInputs = document.querySelectorAll('input[type="date"]'); // Select all date inputs
+            let isValid = true; // Track overall validity
+
+            dateInputs.forEach(input => {
+                const errorElementId = input.name + "-error"; // Unique error element ID
+                let errorElement = document.getElementById(errorElementId);
+
+                if (!errorElement) {
+                // Create an error element if it doesn't exist
+                errorElement = document.createElement("div");
+                errorElement.id = errorElementId;
+                errorElement.className = "invalid-feedback";
+                input.parentNode.appendChild(errorElement);
+            }
+
+            // Check if the field is empty
+            if (input.value.trim() === "") {
+                input.classList.add("is-invalid"); // Add invalid class to input
+                errorElement.innerHTML = "*This field is required"; // Set error message
+                errorElement.style.display = "block"; // Show error element
+                isValid = false; // Mark as invalid
+            } else {
+                input.classList.remove("is-invalid"); // Remove invalid class
+                errorElement.style.display = "none"; // Hide error element
+            }
+            });
+
+            return isValid; // Return validity status
+        }
+
+
+        function validateForm() {
+            const numberFieldsValid = validateChargeAmount();
+            const textFieldsValid = validateTextFields();
+            const notesFieldValid = validateNotesField();
+            const dateFieldValid = validateDateFields();
+
+            return numberFieldsValid && textFieldsValid && notesFieldValid && dateFieldValid;
+        }
+
         function calculateTotal() {
             let total = 0;
             const numberInputs = document.querySelectorAll('#charges-table input[type="number"]');
@@ -252,7 +417,7 @@ $conn->close();
 <body>
     <div class="container">
         <div class="header">STATEMENT OF ACCOUNT</div>
-        <form method="POST">
+        <form method="POST" onsubmit="return validateForm();">
             <div class="section">
                 <input type="text" name="to" placeholder="To" style="width: 70%">
                 <input type="date" name="date" placeholder="Date" style="width: 28%">
@@ -266,7 +431,7 @@ $conn->close();
             </div>
             <div class="section">
                 <input type="text" name="vessel" placeholder="Vessel" style="width: 32%">
-                <input type="text" name="eta" placeholder="ETD/ETA" style="width: 32%">
+                <input type="date" name="eta" placeholder="ETD/ETA" style="width: 32%">
                 <input type="text" name="refNum" placeholder="Reference No" style="width: 32%">
             </div>
             <div class="section">
@@ -279,8 +444,8 @@ $conn->close();
             </div>
             <div class="section">
                 <input type="text" name="packages" placeholder="Packages" style="width: 32%">
-                <input type="text" name="weight" placeholder="Weight" style="width: 32%">
-                <input type="text" name="measurement" placeholder="Measurement" style="width: 32%">
+                <input type="text" name="weight" placeholder="Weight/Measurement" style="width: 32%">
+                <input type="text" name="volume" placeholder="Volume" style="width: 32%">
             </div>
             <div class="section radio-group">
                 <label>Package Type:</label>
@@ -308,12 +473,7 @@ $conn->close();
             <div class="section">
                 <input type="text" name="prepared" placeholder="Prepared by" style="width: 48%">
                 <input type="text" name="approve" placeholder="Approved by" style="width: 48%">
-            </div>
-            <div class="section">
-                <input type="text" name="receive" placeholder="Received by" style="width: 24%">
-                <!-- <input type="text" name="sig" placeholder="Signature" style="width: 24%"> -->
-                <input type="text" name="printName" placeholder="Printed Name" style="width: 24%">
-                <input type="date" name="date1" placeholder="Date" style="width: 24%">
+                <input type="text" name="edited" placeholder="Edited by" style="width: 48%">
             </div>
             <div class="footer">
                 <input type="submit" name="save" class="save-btn" value="Save">

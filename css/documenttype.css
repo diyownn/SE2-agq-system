@@ -1,0 +1,183 @@
+body {
+  background-color: rgb(253, 253, 251);
+  font-family: IBM Plex Sans;
+  margin: 0;
+}
+
+
+#dropdown {
+  position: absolute;
+  top: 100%; /* Moves it below the search bar */
+  left: 0;
+  width:82%; /* Matches search bar width */
+  background: white;
+  border: 1px solid #ccc;
+  border-top: none; /* Remove top border to visually connect with input */
+  border-radius: 0 0 8px 8px; /* Round only bottom corners */
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 1000;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: none;
+}
+
+.dropdown-item {
+  padding: 10px 15px;
+  cursor: pointer;
+  border-bottom: 1px solid #eee;
+  transition: background-color 0.2s ease;
+}
+
+.dropdown-item:last-child {
+  border-bottom: none;
+}
+
+.dropdown-item:hover {
+  background-color: #f0f0f0;
+}
+
+
+.dept-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 120px;
+  width: 100%;
+}
+
+.dept-label {
+  background-color: rgb(144, 174, 94);
+  color: white;
+  font-weight: bold;
+  font-size: 14px;
+  text-align: start;
+  padding: 10px 1px;
+  width: auto;
+  min-width: 150px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-radius: 0 25px  25px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0px -1px 7px 0px rgba(0,0,0,0.19);
+-webkit-box-shadow: 0px -1px 7px 0px rgba(0,0,0,0.19);
+-moz-box-shadow: 0px -1px 7px 0px rgba(0,0,0,0.19);
+  z-index: 99;
+}
+
+.company-label {
+  background-color: rgb(160, 184, 117);
+  color: white;
+  font-size: 14px;
+  text-align: start;
+  padding: 10px 1px;
+  width: auto;
+  min-width: 150px;
+  position: absolute;
+  top: 0;
+  left: 120px;
+  border-radius: 0 25px  25px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0px -1px 7px 0px rgba(0,0,0,0.19);
+-webkit-box-shadow: 0px -1px 7px 0px rgba(0,0,0,0.19);
+-moz-box-shadow: 0px -1px 7px 0px rgba(0,0,0,0.19);
+  z-index: 98;
+}
+
+.selected-dept-label {
+  background-color: rgb(174, 197, 160);
+  color: white;
+  font-size: 14px;
+  text-align: start;
+  padding: 10px 1px;
+  width: auto;
+  min-width: 200px;
+  position: absolute;
+  padding-left: 20px;
+  top: 0;
+  left: 240px;
+  border-radius: 0 25px  25px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0px -1px 7px 0px rgba(0,0,0,0.19);
+-webkit-box-shadow: 0px -1px 7px 0px rgba(0,0,0,0.19);
+-moz-box-shadow: 0px -1px 7px 0px rgba(0,0,0,0.19);
+  z-index: 97;
+}
+
+
+.document-type-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 110px 110px 110px 110px;
+}
+
+.title {
+  font-size: 38px;
+  font-family: 'IBM Plex Sans', 'Arial', 'Helvetica';
+  font-weight: bold;
+}
+
+.title-heading {
+  margin-bottom: 40px;
+}
+
+.document-bars {
+  display: flex;
+  flex-direction: column;
+}
+
+button {
+  max-width: 500px;
+  padding: 30px 100px 30px 100px;
+  border-style: solid;
+  border-color: rgb(0, 0, 0);
+  font-size: 19px;
+  font-family: 'IBM Plex Sans', 'Arial', 'Helvetica';
+  font-weight: bold;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+button:hover {
+  opacity: 0.8;
+  box-shadow: 0 0 20px rgb(85, 114, 39);
+}
+
+button.disabled:hover {
+  opacity: 1;
+  box-shadow: none;
+  cursor: not-allowed; 
+}
+
+.document-type-manifesto {
+  background-color: rgb(144, 174, 94);
+  border-width: 2px 2px 1px 2px;
+}
+
+.document-type-soa {
+  background-color: hwb(78 70% 14%);
+  border-width: 1px 2px 1px 2px;
+}
+
+.document-type-freight-invoice {
+  background-color: rgb(144, 174, 94);
+  border-width: 2px 2px 1px 2px;
+}
+
+.document-type-summary {
+  background-color: rgb(207, 219, 179);
+  border-width: 1px 2px 2px 2px;
+}
+
+.document-type-others{
+  background-color: rgb(144, 174, 94);
+  border-width: 2px 2px 1px 2px;
+}

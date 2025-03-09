@@ -18,18 +18,20 @@ function insertRecord($conn)
     $docType = isset($_SESSION['DocType']) ? $_SESSION['DocType'] : null;
     $department = isset($_SESSION['Department']) ? $_SESSION['Department'] : null;
     $companyName = isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : null;
+    date_default_timezone_set('Asia/Manila');
+    $editDate = date('Y-m-d');
 
     $sql = "INSERT INTO tbl_expbrk (
         `To:`, `Address`, Tin, Attention, `Date`, Vessel, ETA, RefNum, DestinationOrigin, ER, BHNum,
-        NatureOfGoods, Packages, `Weight`, Measurement, PackageType, Others, Notes, 
+        NatureOfGoods, Packages, `Weight`, Volume, PackageType, Others, Notes, OceanFreight95,
         AdvanceShipping, Processing, Arrastre, Wharfage, FormsStamps, PhotocopyNotarial,
-        Documentation, E2MLodge, ManualStuffing, Handling, PCCI, Total, Prepared_by, Approved_by, DocType, 
-        Company_name, Department
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        Documentation, E2MLodge, ManualStuffing, Handling, PCCI, Total, Prepared_by, Approved_by, 
+        Edited_by, EditDate, DocType, Company_name, Department
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     $stmt = $conn->prepare($sql);
     $stmt->bind_param(
-        "ssssssssssssssssisiiiiiiiiiiiisssss",
+        "ssssssssssssssssisiiiiiiiiiiiiisssssss",
         $_POST['to'],
         $_POST['address'],
         $_POST['tin'],
@@ -44,10 +46,11 @@ function insertRecord($conn)
         $_POST['natureOfGoods'],
         $_POST['packages'],
         $_POST['weight'],
-        $_POST['measurement'],
+        $_POST['volume'],
         $_POST['packageType'],
         $_POST['others_amount'],
         $_POST['notes'],
+        $_POST['95oceanfreight'],
         $_POST['advanceshippinglines'],
         $_POST['processing'],
         $_POST['arrastre'],
@@ -62,6 +65,8 @@ function insertRecord($conn)
         $_POST['total'],
         $_POST['prepared_by'],
         $_POST['approved_by'],
+        $_POST['edited_by'],
+        $editDate,
         $docType,        // Session variable
         $companyName,    // Session variable
         $department      // Session variable
@@ -121,7 +126,7 @@ $conn->close();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/x-icon" href="../AGQ/images/favicon.ico">
-    <link rel="stylesheet" type="text/css" href="../css/ebsoa.css">
+    <link rel="stylesheet" type="text/css" href="../css/forms.css">
     <title>Statement of Account</title>
     <script>
         function togglePackageField() {
@@ -137,6 +142,7 @@ $conn->close();
 
             if (lclSelected) {
                 const lclCharges = [
+                    "95 Ocean Freight",
                     "Advance Shipping Lines",
                     "Processing",
                     "Notes",
@@ -145,6 +151,7 @@ $conn->close();
                 generateFixedCharges(lclCharges);
             } else if (containerSelected) {
                 const containerCharges = [
+                    "95 Ocean Freight",
                     "Arrastre",
                     "Wharfage",
                     "Processing",
@@ -191,7 +198,7 @@ $conn->close();
                     // Create a text input field for notes instead of number
                     row.innerHTML = `
                         <input type="text" value="Notes" readonly>
-                        <input type="text" name="notes" placeholder="Enter notes">
+                        <input type="text" name="notes" placeholder="Enter notes" onchange="validateNotesField(this)">
                     `;
                 }
 
@@ -231,6 +238,169 @@ $conn->close();
             row.parentNode.removeChild(row);
         }
 
+        function validateChargeAmount() {
+            const inputs = document.querySelectorAll('input[type="number"]'); // Select all number inputs
+            const maxAmount = 16500000;
+            let isValid = true; // Track overall validity
+
+            inputs.forEach(input => {
+            const errorElementId = input.name + "-error"; // Unique error element ID
+            let errorElement = document.getElementById(errorElementId);
+
+                if (!errorElement) {
+            // Create an error element if it doesn't exist
+                    errorElement = document.createElement("div");
+                    errorElement.id = errorElementId;
+                    errorElement.className = "invalid-feedback";
+                    input.parentNode.appendChild(errorElement);
+                }
+
+            // Check if the value exceeds the maxAmount
+                const value = parseFloat(input.value);
+                if (value > maxAmount) {
+                    input.classList.add("is-invalid"); // Add invalid class to input
+                    const errorText = `*Value cannot exceed ${maxAmount.toLocaleString()}`;
+                    errorElement.innerHTML = errorText; // Set error message
+                    errorElement.style.display = "block"; // Show error element
+                    isValid = false; // Mark form as invalid
+                } else {
+                    input.classList.remove("is-invalid"); // Remove invalid class
+                    errorElement.style.display = "none"; // Hide error element
+                }
+                });
+
+                return isValid; // Return validity status
+        }
+
+        function validateTextFields() {
+            const inputs = document.querySelectorAll('input[type="text"]'); // Select all text inputs
+            const allowedSymbols = /^[a-zA-Z0-9!@$%^&()_+\-:/|,~ ]+$/; // Allow letters, numbers, and symbols
+            let isValid = true; // Track overall validity
+
+            inputs.forEach(input => {
+                // Exclude the readonly input and the one named "notes"
+                if (input.readOnly || input.name === "notes") {
+                    return; // Skip validation for these inputs
+                }
+
+                const errorElementId = input.name + "-error"; // Unique error element ID
+                let errorElement = document.getElementById(errorElementId);
+
+                if (!errorElement) {
+                // Create an error element if it doesn't exist
+                errorElement = document.createElement("div");
+                errorElement.id = errorElementId;
+                errorElement.className = "invalid-feedback";
+                input.parentNode.appendChild(errorElement);
+                }
+
+                // Check if the field is empty
+                if (input.value.trim() === "") {
+                input.classList.add("is-invalid"); // Add invalid class to input
+                errorElement.innerHTML = "*This field is required"; // Set error message
+                errorElement.style.display = "block"; // Show error element
+                isValid = false; // Mark form as invalid
+                }
+                // Check if the input contains only allowed symbols, letters, or numbers
+                else if (!allowedSymbols.test(input.value)) {
+                    input.classList.add("is-invalid"); // Add invalid class
+                    const errorText = "*Only letters, numbers, and these symbols are allowed: ! @ $ % ^ & ( ) _ + / - : | , ~";
+                    errorElement.innerHTML = errorText; // Set error message
+                    errorElement.style.display = "block"; // Show error element
+                    isValid = false; // Mark form as invalid
+                } else {
+                    input.classList.remove("is-invalid"); // Remove invalid class
+                    errorElement.style.display = "none"; // Hide error element
+                }
+            });
+
+            return isValid; // Return validity status
+        }
+
+
+        function validateNotesField() {
+            const notesInput = document.querySelector('input[name="notes"]'); // Select the notes input field
+            const allowedSymbols = /^[a-zA-Z0-9!@$%^&()_+\-:/|,~ ]*$/; // Allow letters, numbers, and symbols
+            const maxLength = 255; // Maximum character limit
+            let isValid = true; // Track overall validity
+
+            // Check if the input exists
+            if (notesInput) {
+                const errorElementId = "notes-error"; // Unique error element ID
+                let errorElement = document.getElementById(errorElementId);
+
+                if (!errorElement) {
+                // Create an error element if it doesn't exist
+                    errorElement = document.createElement("div");
+                    errorElement.id = errorElementId;
+                    errorElement.className = "invalid-feedback";
+                    notesInput.parentNode.appendChild(errorElement);
+                }
+
+                // Check the length of the input
+                if (notesInput.value.length > maxLength) {
+                    notesInput.classList.add("is-invalid"); // Add invalid class
+                    errorElement.innerHTML = `*Notes cannot exceed ${maxLength} characters`; // Set error message
+                    errorElement.style.display = "block"; // Show error message
+                    isValid = false; // Mark as invalid
+                }
+                // Check if the input contains only allowed symbols, letters, or numbers
+                else if (!allowedSymbols.test(notesInput.value)) {
+                    notesInput.classList.add("is-invalid"); // Add invalid class
+                    errorElement.innerHTML = "*Only letters, numbers, and these symbols are allowed: ! @ $ % ^ & ( ) _ + / - : | , ~"; // Error message
+                    errorElement.style.display = "block"; // Show error message
+                    isValid = false; // Mark as invalid
+                } else {
+                    notesInput.classList.remove("is-invalid"); // Remove invalid class
+                    errorElement.style.display = "none"; // Hide error element
+                }
+            }
+
+            return isValid; // Return validity status
+        }
+
+
+        function validateDateFields() {
+            const dateInputs = document.querySelectorAll('input[type="date"]'); // Select all date inputs
+            let isValid = true; // Track overall validity
+
+            dateInputs.forEach(input => {
+                const errorElementId = input.name + "-error"; // Unique error element ID
+                let errorElement = document.getElementById(errorElementId);
+
+                if (!errorElement) {
+                // Create an error element if it doesn't exist
+                errorElement = document.createElement("div");
+                errorElement.id = errorElementId;
+                errorElement.className = "invalid-feedback";
+                input.parentNode.appendChild(errorElement);
+            }
+
+            // Check if the field is empty
+            if (input.value.trim() === "") {
+                input.classList.add("is-invalid"); // Add invalid class to input
+                errorElement.innerHTML = "*This field is required"; // Set error message
+                errorElement.style.display = "block"; // Show error element
+                isValid = false; // Mark as invalid
+            } else {
+                input.classList.remove("is-invalid"); // Remove invalid class
+                errorElement.style.display = "none"; // Hide error element
+            }
+            });
+
+            return isValid; // Return validity status
+        }
+
+
+        function validateForm() {
+            const numberFieldsValid = validateChargeAmount();
+            const textFieldsValid = validateTextFields();
+            const notesFieldValid = validateNotesField();
+            const dateFieldValid = validateDateFields();
+
+            return numberFieldsValid && textFieldsValid && notesFieldValid && dateFieldValid;
+        }
+
         function calculateTotal() {
             let total = 0;
             const numberInputs = document.querySelectorAll('#charges-table input[type="number"]');
@@ -249,13 +419,13 @@ $conn->close();
 <body>
     <div class="container">
         <div class="header">STATEMENT OF ACCOUNT</div>
-        <form method="POST">
+        <form method="POST" onsubmit="return validateForm();">
             <div class="section">
-                <input type="text" name="to" placeholder="To" style="width: 70%" required>
-                <input type="date" name="date" placeholder="Date" style="width: 28%" required>
+                <input type="text" name="to" placeholder="To" style="width: 70%">
+                <input type="date" name="date" placeholder="Date" style="width: 28%">
             </div>
             <div class="section">
-                <input type="text" name="address" placeholder="Address" style="width: 100%" required>
+                <input type="text" name="address" placeholder="Address" style="width: 100%">
             </div>
             <div class="section">
                 <input type="text" name="tin" placeholder="TIN" style="width: 48%">
@@ -263,8 +433,8 @@ $conn->close();
             </div>
             <div class="section">
                 <input type="text" name="vessel" placeholder="Vessel" style="width: 32%">
-                <input type="text" name="eta" placeholder="ETD/ETA" style="width: 32%">
-                <input type="text" name="refNum" placeholder="Reference No" style="width: 32%" required>
+                <input type="date" name="eta" placeholder="ETD/ETA" style="width: 32%">
+                <input type="text" name="refNum" placeholder="Reference No" style="width: 32%">
             </div>
             <div class="section">
                 <input type="text" name="destinationOrigin" placeholder="Destination/Origin" style="width: 48%">
@@ -276,8 +446,8 @@ $conn->close();
             </div>
             <div class="section">
                 <input type="text" name="packages" placeholder="Packages" style="width: 32%">
-                <input type="text" name="weight" placeholder="Weight" style="width: 32%">
-                <input type="text" name="measurement" placeholder="Measurement" style="width: 32%">
+                <input type="text" name="weight" placeholder="Weight/Measurement" style="width: 32%">
+                <input type="text" name="volume" placeholder="Volume" style="width: 32%">
             </div>
             <div class="section radio-group">
                 <label>Package Type:</label>
@@ -307,6 +477,7 @@ $conn->close();
                 <div class="section">
                     <input type="text" name="prepared_by" placeholder="Prepared by" style="width: 48%">
                     <input type="text" name="approved_by" placeholder="Approved by" style="width: 48%">
+                    <input type="text" name="edited_by" placeholder="Edited by" style="width: 48%">
                 </div>
                 <div class="footer">
                     <!-- <button type="submit" name="insert" class="save-btn">Save</button> -->

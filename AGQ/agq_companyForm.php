@@ -31,7 +31,7 @@
 
                     <img src="" class="d-block mx-auto" id="imgholder" alt="">
 
-                    <input type="text" name=" compName" id="input3" class="form-control" placeholder="Company Name">
+                    <input type="text" name=" compName" id="input3" class="form-control" placeholder="Company Name" onchange="return validate_compName()">
                     <div id="name-error" style="margin-left: 16%; margin-top: 1%"></div>
 
                     <div class="d-flex justify-content-center">
@@ -57,6 +57,42 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <?php
+    require_once "db_agq.php";
+
+    if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['compPic']['tmp_name']) && isset($_POST['compName'])) {
+        $company_picture = file_get_contents($_FILES['compPic']['tmp_name']);
+        $company_name = $_POST['compName'];
+        $companyid = (string)random_int(1000000000, 9999999999); 
+
+        $stmt = $conn->prepare("INSERT INTO tbl_company (CompanyID, Company_name, Company_picture) VALUES (?, ?, ?)");
+        if (!$stmt) {
+            die("Preparation failed: " . $conn->error);
+        }
+
+        $stmt->bind_param("ssb", $companyid, $company_name, $company_picture);
+        $stmt->send_long_data(2, $company_picture);
+
+        if ($stmt->execute()) {
+    ?>
+            <script>
+                Swal.fire({
+                    icon: "success",
+                    title: "Company Added!",
+                });
+            </script>
+    <?php
+        } else {
+            echo "Error uploading company: " . $stmt->error;
+        }
+
+
+        $stmt->close();
+        $conn->close();
+    }
+
+    ?>
 
     <script>
         function previewImage(event) {
@@ -157,39 +193,3 @@
 </body>
 
 </html>
-
-<?php
-require_once "db_agq.php";
-
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['compPic']['tmp_name']) && isset($_POST['compName'])) {
-    $company_picture = file_get_contents($_FILES['compPic']['tmp_name']);
-    $company_name = $_POST['compName'];
-    $companyid = (string)random_int(1000000000, 9999999999); 
-
-    $stmt = $conn->prepare("INSERT INTO tbl_company (CompanyID, Company_name, Company_picture) VALUES (?, ?, ?)");
-    if (!$stmt) {
-        die("Preparation failed: " . $conn->error);
-    }
-
-    $stmt->bind_param("ssb", $companyid, $company_name, $company_picture);
-    $stmt->send_long_data(2, $company_picture);
-
-    if ($stmt->execute()) {
-?>
-        <script>
-            Swal.fire({
-                icon: "success",
-                title: "Company Added!",
-            });
-        </script>
-<?php
-    } else {
-        echo "Error uploading company: " . $stmt->error;
-    }
-
-
-    $stmt->close();
-    $conn->close();
-}
-
-?>

@@ -37,12 +37,12 @@
 
                 <form action="agq_login.php" method="post" class="form-content" onsubmit="return validate_form()">
                     <label for="inputs" class="form-label" id="labels">Email</label>
-                    <input type="text" name="email" id="inputs" class="form-control">
+                    <input type="text" name="email" id="inputs" class="form-control" onchange="return validate_email()">
                     <div id="email-error"></div>
 
                     <label for="inputs0" class="form-label" id="labels">Password</label>
                     <div class="input-group mb-3">
-                        <input type="password" name="password" id="inputs0" class="form-control">
+                        <input type="password" name="password" id="inputs0" class="form-control" onchange="return validate_password()">
                         <span class="input-group-text" id="toggle-password" style="cursor: pointer;">
                             <i class="bi bi-eye-fill" id="toggle-password-icon"></i>
                         </span>

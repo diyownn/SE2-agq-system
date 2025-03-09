@@ -1,9 +1,5 @@
 <?php
-require 'db_agq.php';
-
-session_start();
-
-
+require_once "db_agq.php";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_POST['save'])) {
@@ -11,30 +7,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } elseif (isset($_POST['select'])) {
         selectRecords($conn);
     } elseif (isset($_POST['delete'])) {
-        deleteRecord($conn, $_POST['refNum']);
+        deleteRecord($conn, $_POST['RefNum']);
     }
 }
 
 // Function to insert a record
 function insertRecord($conn)
 {
+
     $docType = isset($_SESSION['DocType']) ? $_SESSION['DocType'] : null;
-    $department = isset($_SESSION['department']) ? $_SESSION['department'] : null;
+    $department = isset($_SESSION['Department']) ? $_SESSION['Department'] : null;
     $companyName = isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : null;
     date_default_timezone_set('Asia/Manila');
     $editDate = date('Y-m-d');
 
-    $sql = "INSERT INTO tbl_impfwd (
+    $sql = "INSERT INTO tbl_impbrk (
         `To:`, `Address`, Tin, Attention, `Date`, Vessel, ETA, RefNum, DestinationOrigin, ER, BHNum,
-        NatureOfGoods, Packages, `Weight`, Volume, PackageType, OceanFreight95,
-        Documentation, TurnOverFee, Handling, Others, Notes, FCLCharge, 
-        BLFee, ManifestFee, THC, CIC, ECRS, PSS, Origin, ShippingLine, ExWorkCharges, Total, 
-        Prepared_by, Approved_by, Edited_by, EditDate, DocType, Company_name, Department
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+        NatureOfGoods, Packages, `Weight`, Volume, PackageType, Others, Notes, OceanFreight5,
+        BrokerageFee, Vat12, TruckingService,Total, Prepared_by, Approved_by, Edited_by, EditDate, 
+        DocType, Company_name, Department
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     $stmt = $conn->prepare($sql);
     $stmt->bind_param(
-        "ssssssssssssssssiiiiisiiiiiiiiiiisssssss",
+        "ssssssssssssssssisiiiiisssssss",
         $_POST['to'],
         $_POST['address'],
         $_POST['tin'],
@@ -42,35 +38,25 @@ function insertRecord($conn)
         $_POST['date'],
         $_POST['vessel'],
         $_POST['eta'],
-        $_POST['referenceNo'],
+        $_POST['refNum'],
         $_POST['destinationOrigin'],
         $_POST['er'],
-        $_POST['bhNo'],
-        $_POST['natureofGoods'],
+        $_POST['bhNum'],
+        $_POST['natureOfGoods'],
         $_POST['packages'],
         $_POST['weight'],
         $_POST['volume'],
         $_POST['package'],
-        $_POST['95oceanfreight'],
-        $_POST['documentation'],
-        $_POST['turnoverfee'],
-        $_POST['handling'],
         $_POST['others_amount'],
         $_POST['notes'],
-        $_POST['fclcharges'],
-        $_POST['blfee'],
-        $_POST['manifestfee'],
-        $_POST['thc'],
-        $_POST['cic'],
-        $_POST['ecrs'],
-        $_POST['pss'],
-        $_POST['origin_amount'],
-        $_POST['shippinglinecharges_amount'],
-        $_POST['ex-workcharges_amount'],
+        $_POST['5oceanfreight'],
+        $_POST['brokeragefee'],
+        $_POST['12vat'],
+	    $_POST['truckingservice_amount'],
         $_POST['total'],
-        $_POST['preparedBy'],
-        $_POST['approvedBy'],
-        $_POST['editedBy'],
+        $_POST['prepared_by'],
+        $_POST['approved_by'],
+        $_POST['edited_by'],
         $editDate,
         $docType,        // Session variable
         $companyName,    // Session variable
@@ -83,7 +69,7 @@ function insertRecord($conn)
         if (confirm("Document Successfully Created!\\nDo you want to view it?")) {
             window.location.href = "agq_employTransactionView.php";
         }
-            </script>';
+        </script>';
     } else {
         echo "Error: " . $stmt->error;
     }
@@ -93,85 +79,78 @@ function insertRecord($conn)
 // Function to select records
 function selectRecords($conn)
 {
-    $sql = "SELECT * FROM your_table";
-    $result = $conn->query($sql);
+    $sql = "SELECT * FROM tbl_impbrk";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
-    if ($result->num_rows > 0) {
-        while ($row = $result->fetch_assoc()) {
-            echo "RefNum: " . $row["RefNum"] . " - To: " . $row["To"] . " - Address: " . $row["Address"] . "<br>";
-        }
-    } else {
-        echo "0 results";
+    echo "<h2>Database Records:</h2>";
+    while ($row = $result->fetch_assoc()) {
+        echo "<pre>" . print_r($row, true) . "</pre>";
     }
+    $stmt->close();
 }
 
 // Function to delete a record
-function deleteRecord($conn, $refNum)
+function deleteRecord($conn, $RefNum)
 {
-    $sql = "DELETE FROM your_table WHERE RefNum = ?";
+    $sql = "DELETE FROM tbl_impbrk WHERE RefNum = ?";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("s", $refNum);
+    $stmt->bind_param("s", $RefNum);
 
     if ($stmt->execute()) {
         echo "Record deleted successfully!";
     } else {
-        echo "Error: " . $stmt->error;
+        echo "Error deleting record: " . $stmt->error;
     }
     $stmt->close();
 }
 
 $conn->close();
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/x-icon" href="../AGQ/images/favicon.ico">
     <link rel="stylesheet" type="text/css" href="../css/forms.css">
-    <title>Statement of Account</title>
+    <title>Sales Invoice </title>
+
     <script>
         function togglePackageField() {
             document.getElementById("package-details").style.display = "block";
             updateReimbursableCharges();
         }
-
+    
         function updateReimbursableCharges() {
             const lclSelected = document.getElementById("lcl").checked;
             const containerSelected = document.getElementById("container").checked;
             const chargesTable = document.getElementById("charges-table");
             chargesTable.innerHTML = ""; // Clear existing charges
-
+    
             if (lclSelected) {
                 const lclCharges = [
-                    "95 Ocean Freight",
-                    "BL Fee",
-                    "Manifest Fee",
-                    "THC",
-                    "CIC",
-                    "ECRS",
-                    "PSS",
+                    "5 Ocean Freight",
+                    "Brokerage Fee",
+                    "12 VAT",
                     "Notes",
-                    "Additional Charges" // LCL-specific
+                    "Additional Charges"   
                 ];
-                generateFixedCharges(lclCharges, true); // true = LCL mode
+                generateFixedCharges(lclCharges);
             } else if (containerSelected) {
                 const containerCharges = [
-                    "95 Ocean Freight",
-                    "Handling",
-                    "Turn Over Fee",
-                    "BL Fee",
-                    "FCL Charges",
-                    "Documentation",
-                    "Manifest Fee",
+                    "5 Ocean Freight",
+                    "Brokerage Fee",
+                    "12 VAT",
                     "Notes",
-                    "Additional Charges" // Full container-specific
+                    "Additional Charges"
                 ];
-                generateFixedCharges(containerCharges, false);
+                generateFixedCharges(containerCharges, true);
             }
         }
-
+    
         function generateFixedCharges(charges, isLCL) {
             const chargesTable = document.getElementById("charges-table");
 
@@ -184,16 +163,15 @@ $conn->close();
                         <select onchange="handleChargeSelection(this, ${isLCL})">
                             <option value="">Additional Charges</option>
                             ${isLCL 
-                                ? '<option value="Others">Others</option><option value="Origin">Origin</option>' 
-                                : '<option value="Others">Others</option><option value="ShippingLineCharges">Shipping Line Charges</option><option value="Ex-WorkCharges">Ex-Work Charges</option>'
+                                ? '<option value="Others">Others</option>' 
+                                : '<option value="Others">Others</option><option value="Trucking Service">Trucking Service</option>'
                             }
                         </select>
                     `;
                 } else {
-
                     const inputName = charge.toLowerCase().replace(/\s+/g, '').replace('/', '');
                     row.innerHTML = `
-                        <input type="text" name="charge_type[]" value="${charge}" readonly>
+                        <input type="text" value="${charge}" readonly>
                         <input type="number" name="${inputName}" placeholder="Enter amount">
                     `;
                 }
@@ -205,38 +183,37 @@ $conn->close();
                         <input type="text" name="notes" placeholder="Enter notes">
                     `;
                 }
-
+    
                 chargesTable.appendChild(row);
             });
         }
-
-        function handleChargeSelection(selectElement, isLCL) {
+    
+        function handleChargeSelection(selectElement) {
             const selectedCharge = selectElement.value;
-            if (!selectedCharge) return; // Do nothing if no valid selection
-
+            if (!selectedCharge) return; // Do nothing if default is selected
+    
             // Prevent duplicate entries
             const existingEntries = document.querySelectorAll(".added-charge");
             for (let entry of existingEntries) {
                 if (entry.dataset.charge === selectedCharge) return;
             }
-
+    
             // Add new charge field
             const chargesTable = document.getElementById("charges-table");
             const newRow = document.createElement("div");
             newRow.className = "table-row added-charge";
             newRow.dataset.charge = selectedCharge; // Store charge type
-
+    
             let inputName = selectedCharge.toLowerCase() + "_amount";
 
             newRow.innerHTML = `
                 <input type="text" value="${selectedCharge}" readonly>
                 <input type="number" name="${inputName}" placeholder="Enter amount">
-                <button type="button" onclick="removeCharge(this)">Remove</button>
+                <button onclick="removeCharge(this)">Remove</button>
             `;
-
+    
             chargesTable.appendChild(newRow);
         }
-
         function removeCharge(button) {
             button.parentElement.remove(); // Remove the selected charge row
         }
@@ -417,11 +394,11 @@ $conn->close();
             document.getElementById("total").value = total.toFixed(2);
         }
     </script>
+    
 </head>
-
 <body>
-    <div class="container">
-        <div class="header">STATEMENT OF ACCOUNT</div>
+<div class="container">
+        <div class="header">SALES INVOICE</div>
         <form method="POST" onsubmit="return validateForm();">
             <div class="section">
                 <input type="text" name="to" placeholder="To" style="width: 70%">
@@ -437,15 +414,15 @@ $conn->close();
             <div class="section">
                 <input type="text" name="vessel" placeholder="Vessel" style="width: 32%">
                 <input type="date" name="eta" placeholder="ETD/ETA" style="width: 32%">
-                <input type="text" name="referenceNo" placeholder="Reference No" style="width: 32%">
+                <input type="text" name="refNum" placeholder="Reference No" style="width: 32%">
             </div>
             <div class="section">
                 <input type="text" name="destinationOrigin" placeholder="Destination/Origin" style="width: 48%">
                 <input type="text" name="er" placeholder="E.R" style="width: 22%">
-                <input type="text" name="bhNo" placeholder="BL/HBL No" style="width: 22%">
+                <input type="text" name="bhNum" placeholder="BL/HBL No" style="width: 22%">
             </div>
             <div class="section">
-                <input type="text" name="natureofGoods" placeholder="Nature of Goods" style="width: 100%">
+                <input type="text" name="natureOfGoods" placeholder="Nature of Goods" style="width: 100%">
             </div>
             <div class="section">
                 <input type="text" name="packages" placeholder="Packages" style="width: 32%">
@@ -474,19 +451,18 @@ $conn->close();
             <div class="section">
                 <input type="number" id="total" name="total" placeholder="Total" style="width: 100%" readonly>
                 <button type="button" onclick="calculateTotal()" class="calc-btn">Calculate</button>
-
             </div>
             <div class="section">
-                <input type="text" name="preparedBy" placeholder="Prepared by" style="width: 48%">
-                <input type="text" name="approvedBy" placeholder="Approved by" style="width: 48%">
-                <input type="text" name="editedBy" placeholder="Edited by" style="width: 24%">
+                <input type="text" name="prepared_by" placeholder="Prepared by" style="width: 48%">
+                <input type="text" name="approved_by" placeholder="Approved by" style="width: 48%">
+                <input type="text" name="edited_by" placeholder="Edited by" style="width: 48%">
             </div>
             <div class="footer">
                 <!-- <button class="save-btn">Save</button> -->
                 <input type="submit" name="save" class="save-btn" value="Save">
             </div>
+                
         </form>
     </div>
 </body>
-
 </html>

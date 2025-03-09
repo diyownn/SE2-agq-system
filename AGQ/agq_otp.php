@@ -29,7 +29,7 @@
 
                 <form id="otpForm" action="agq_otp.php" method="post" class="form-content" onsubmit="return validate_otp()">
                     <div class="d-flex justify-content-center flex-column align-items-center" style="margin-top: 5%;">
-                        <input type="number" name="otp" id="inputs" class="form-control" style="width: 160px;">
+                        <input type="number" name="otp" id="inputs" class="form-control" style="width: 160px;" onchange="return validate_otp()">
                         <div id="otp-error" class="text-center mt-2"></div>
                     </div>
 
