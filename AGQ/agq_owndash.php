@@ -66,17 +66,21 @@ if (!empty($search_query)) {
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="../css/owndash.css">
+    <style>
+        
+        
+
+        
+    </style>
 </head>
 
 <body>
     <div class="top-container">
         <div class="dept-container">
-
-
+            <div class="dept-label">
+                <?php echo htmlspecialchars($role); ?>
+            </div>
             <div class="header-container">
-                <div class="dept-label">
-                    <?php echo htmlspecialchars($role); ?>
-                </div>
                 <div class="search-container">
                     <input type="text" class="search-bar" id="search-input" placeholder="Search Companies..." autocomplete="off">
                     <div id="dropdown" class="dropdown" style="display: none;"></div>
@@ -86,12 +90,42 @@ if (!empty($search_query)) {
                     <a href="agq_members.php">Members</a>
                     <a href="?logout=true">Logout</a>
                 </div>
+                
+                <!-- Hamburger Menu Button -->
+                <div class="hamburger-menu" id="hamburger-button">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
             </div>
         </div>
     </div>
 
+    <!-- Mobile Menu -->
+<div class="menu-overlay" id="menu-overlay"></div>
+<div class="mobile-menu" id="mobile-menu">
+    <!-- Add close icon at the top -->
+    
+    <div class="mobile-search-container">
+        <div class="mobile-search-input-wrapper">
+            <input type="text" class="search-bar" id="mobile-search-input" placeholder="Search Companies..." autocomplete="off">
+            <button class="mobile-search-icon" id="mobile-search-button">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94ae5e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+            </button>
+        </div>
+        <div id="mobile-dropdown" class="dropdown" style="display: none;"></div>
+    </div>
+    
+    <div class="mobile-nav-links">
+        <a href="agq_members.php">Members</a>
+        <a href="?logout=true">Logout</a>
+    </div>
+</div>
 
-    <div class=" dashboard-body">
+    <div class="dashboard-body">
         <div class="company-head">
             <div class="company-title">
                 COMPANIES
@@ -145,7 +179,8 @@ if (!empty($search_query)) {
                 }
                 ?>
             </div>
-</body>
+        </div>
+    </div>
 
 <script>
     function storeCompanySession(companyName) {
@@ -169,50 +204,37 @@ if (!empty($search_query)) {
         history.pushState(null, "", location.href);
     };
 
+    // Hamburger menu functionality
+    document.addEventListener("DOMContentLoaded", function() {
+        const hamburgerButton = document.getElementById("hamburger-button");
+        const mobileMenu = document.getElementById("mobile-menu");
+        const menuOverlay = document.getElementById("menu-overlay");
 
-    document.getElementById("search-input").addEventListener("input", function() {
-        let query = this.value.trim();
+        hamburgerButton.addEventListener("click", function() {
+            mobileMenu.classList.toggle("active");
+            hamburgerButton.classList.toggle("active"); // Add this line to toggle active class for hamburger
+            menuOverlay.style.display = mobileMenu.classList.contains("active") ? "block" : "none";
+        });
 
-        if (query.length === 0) {
-            document.getElementById("dropdown").style.display = "none";
-            return;
-        }
+        menuOverlay.addEventListener("click", function() {
+            mobileMenu.classList.remove("active");
+            hamburgerButton.classList.remove("active"); // Add this line to remove active class
+            menuOverlay.style.display = "none";
+        });
 
-        fetch("FETCH_COMPANY.php?query=" + encodeURIComponent(query))
-            .then(response => response.json())
-            .then(data => {
-                console.log("API Response:", data);
-                let dropdown = document.getElementById("dropdown");
-                dropdown.innerHTML = "";
-
-                if (data.length > 0 && !data.error) {
-                    data.forEach(item => {
-                        let div = document.createElement("div");
-                        div.classList.add("dropdown-item");
-                        div.textContent = item.Company_name;
-                        div.onclick = function() {
-                            document.getElementById("search-input").value = item.Company_name;
-                            dropdown.style.display = "none";
-                        };
-                        dropdown.appendChild(div);
-                    });
-
-                    dropdown.style.display = "block";
-                } else {
-                    dropdown.style.display = "none";
-                }
-            }).catch(error => console.error("Error fetching search results:", error));
-
+        // Setup dropdown functionality for both desktop and mobile
+        setupSearchDropdown("search-input", "dropdown", "search-button");
+        setupSearchDropdown("mobile-search-input", "mobile-dropdown", "mobile-search-button");
     });
 
-    document.addEventListener("DOMContentLoaded", function() {
-        let searchInput = document.getElementById("search-input");
-        let searchButton = document.getElementById("search-button");
-        let dropdown = document.getElementById("dropdown");
-        let companyContainerParent = document.getElementById("company-container-parent"); // New parent element for container rows
+    function setupSearchDropdown(inputId, dropdownId, buttonId) {
+        let searchInput = document.getElementById(inputId);
+        let searchButton = document.getElementById(buttonId);
+        let dropdown = document.getElementById(dropdownId);
+        let companyContainerParent = document.getElementById("company-container-parent");
 
         if (!searchInput || !searchButton || !dropdown || !companyContainerParent) {
-            console.error("Error: One or more elements not found.");
+            console.error("Error: One or more elements not found for " + inputId);
             return;
         }
 
@@ -229,7 +251,6 @@ if (!empty($search_query)) {
                 .then(data => {
                     console.log("API Response:", data);
                     dropdown.innerHTML = "";
-
 
                     if (!data || !Array.isArray(data.company)) {
                         console.error("Error: API response does not contain a valid 'company' array!", data);
@@ -261,7 +282,7 @@ if (!empty($search_query)) {
             }
         });
 
-        // Perform search when search button is clicked
+        // Perform search
         searchButton.addEventListener("click", function() {
             let query = searchInput.value.trim();
 
@@ -293,7 +314,7 @@ if (!empty($search_query)) {
                             let companyButton = document.createElement("button");
                             companyButton.classList.add("company-container");
                             companyButton.onclick = function() {
-                                storeCompanySession(''.htmlspecialchars($company_name, ENT_QUOTES));
+                                storeCompanySession(company.Company_name);
                             };
 
                             // Create the company logo
@@ -346,7 +367,7 @@ if (!empty($search_query)) {
                         let companyButton = document.createElement("button");
                         companyButton.classList.add("company-container");
                         companyButton.onclick = function() {
-                            storeCompanySession('<?php echo htmlspecialchars($company_name, ENT_QUOTES); ?>');
+                            storeCompanySession(company.Company_name);
                         };
 
                         // Create the company logo
@@ -373,8 +394,9 @@ if (!empty($search_query)) {
                         companyContainerParent.appendChild(companyRowDiv);
                     }
                 }).catch(error => console.error("Error fetching companies:", error));
-        })
-    });
+        });
+    }
 </script>
 
+</body>
 </html>
