@@ -580,7 +580,7 @@ if (!empty($search_query)) {
                 return;
             }
 
-            fetch("FILTER_RESULTS.php?query=" + encodeURIComponent(query))
+            fetch("FILTER_COMPANY.php?query=" + encodeURIComponent(query))
                 .then(response => response.json())
                 .then(data => {
                     companyContainerParent.innerHTML = ""; // Clear previous content
