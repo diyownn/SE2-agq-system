@@ -115,6 +115,7 @@ $conn->close();
             </div>
         </div>
     </div>
+    <a href="agq_employTransactionView.php" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 20px; top: 50px;">←</a>
 
     <div class="document-type-body">
         <div class="title-heading">

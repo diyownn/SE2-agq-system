@@ -50,6 +50,7 @@ if (!$company) {
             </div>
         </div>
     </div>
+    <a href="agq_owndash.php" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 20px; top: 50px;">←</a>
 
     <div class="container">
         <h1>Company Departments</h1>

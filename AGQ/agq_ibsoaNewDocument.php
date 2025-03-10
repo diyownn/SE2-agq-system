@@ -152,6 +152,8 @@ $conn->close();
 </head>
 
 <body>
+<a href="agq_choosedocument.php" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 20px; top: 20px;">←</a>
+
     <script>
         function togglePackageField() {
             document.getElementById("package-details").style.display = "block";

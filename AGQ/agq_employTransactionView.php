@@ -111,7 +111,6 @@ if (!empty($search_query)) {
 </head>
 
 <body>
-
     <div class="top-container">
         <div class="dept-container">
             <div class="header-container">
@@ -124,6 +123,7 @@ if (!empty($search_query)) {
             </div>
         </div>
     </div>
+    <a href="agq_employdash.php" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 20px; top: 50px;">←</a>
 
     <div class="container py-3">
         <div class="search-container d-flex flex-wrap justify-content-center">

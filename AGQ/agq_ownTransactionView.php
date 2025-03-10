@@ -103,6 +103,7 @@ if ($result) {
             </div>
         </div>
     </div>
+    <a href="agq_chooseDepartment.php" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 20px; top: 50px;">←</a>
 
     <!--<pre><?php print_r($transactions); ?></pre>-->
 

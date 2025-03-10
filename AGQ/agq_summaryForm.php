@@ -20,9 +20,12 @@
      <link rel="icon" href="images/agq_logo.png" type="image/ico">
 
 <body style="background-color: white; background-image:none">
+<a href="agq_choosedocument.php" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 39%; top: 55px;">←</a>
+
     <div class="container">
         <div class="row d-flex justify-content-center">
-            <div class="col-sm-offset-4 col-sm-4" id="border1">
+            <div class="col-sm-offset-4 col-sm-4" id="border1" style="display: flexbox; flex-direction: row;">
+                
                 <p id="title" class="text-center" style="text-decoration: none; margin-top:0%">SUMMARY</p>
 
                 <form action="agq_summaryForm.php" method="POST" class="form-content" enctype="multipart/form-data" onsubmit="return validate_sumImg()">
