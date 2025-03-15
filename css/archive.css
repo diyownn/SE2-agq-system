@@ -1,0 +1,203 @@
+     * {
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "IBM Plex Sans", Arial, Helvetica;
+        margin: 0;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-height: 100vh;
+      }
+
+      .search-container {
+        width: 100%;
+        max-width: 600px;
+        margin: 20px 0 30px 0;
+        display: flex;
+        position: relative;
+      }
+
+      .search-input {
+        width: 100%;
+        padding: 15px;
+        border: none;
+        border-radius: 25px;
+        background-color: #d9d9d9;
+        font-size: 16px;
+      }
+
+      .search-button {
+        position: absolute;
+        right: 0;
+        height: 100%;
+        width: 120px;
+        background-color: #a5c76f;
+        color: black;
+        font-weight: bold;
+        border: none;
+        border-radius: 0 25px 25px 0;
+        cursor: pointer;
+        font-size: 16px;
+      }
+
+      .header-container {
+        width: 100%;
+        max-width: 1200px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        position: relative;
+      }
+
+      .table-title {
+        position: absolute;
+        left: 0;
+        right: 0;
+        text-align: center;
+        pointer-events: none; /* Allows clicking through the title */
+      }
+
+      h1 {
+        font-size: 36px;
+        font-weight: bold;
+        margin: 0;
+      }
+
+      .undo-button {
+        background-color: #a5c76f;
+        border: none;
+        color: black;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        cursor: pointer;
+        border-radius: 25px;
+        z-index: 2;
+      }
+
+      .undo-button:hover {
+        background-color: #a4c76f;
+        border: none;
+        color: black;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        cursor: pointer;
+        border-radius: 25px;
+        z-index: 2;
+      }
+
+      .spacer {
+        width: 120px;
+      }
+
+      .container {
+        width: 100%;
+        max-width: 1200px;
+        background-color: #d8e4c2;
+        border-radius: 25px;
+        padding: 20px;
+        border: 15px solid #8baa5a;
+        margin-bottom: 50px;
+        overflow-x: auto;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        background-color: #e8f0da;
+        min-width: 600px;
+      }
+
+      th {
+        background-color: #fff;
+        padding: 15px 10px;
+        text-align: center;
+        font-weight: bold;
+        border: 2px solid #8baa5a;
+      }
+
+      tr {
+        background-color: #fff;
+      }
+
+      td {
+        padding: 15px 10px;
+        border: 2px solid #8baa5a;
+        height: 30px;
+        text-align: center;
+      }
+
+      /* Responsive styling */
+      @media screen and (max-width: 768px) {
+        body {
+          padding: 15px;
+        }
+
+        .header-container {
+          flex-direction: column;
+          gap: 20px;
+        }
+
+        .table-title {
+          position: static;
+          order: 1;
+        }
+
+        h1 {
+          font-size: 28px;
+        }
+
+        .undo-button-container {
+          order: 2;
+          align-self: center;
+        }
+
+        .spacer {
+          display: none;
+        }
+
+        .search-button {
+          width: 90px;
+          font-size: 14px;
+        }
+
+        .search-input {
+          padding: 12px;
+          font-size: 14px;
+        }
+
+        .container {
+          padding: 15px;
+          border-width: 10px;
+        }
+      }
+
+      @media screen and (max-width: 480px) {
+        h1 {
+          font-size: 24px;
+        }
+
+        .search-button {
+          width: 80px;
+          font-size: 12px;
+        }
+
+        .undo-button {
+          padding: 8px 16px;
+          font-size: 14px;
+        }
+
+        .container {
+          padding: 10px;
+          border-width: 8px;
+        }
+      }
