@@ -1,203 +1,275 @@
-     * {
-        box-sizing: border-box;
-      }
+* {
+  box-sizing: border-box;
+}
 
-      body {
-        font-family: "IBM Plex Sans", Arial, Helvetica;
-        margin: 0;
-        padding: 20px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        min-height: 100vh;
-      }
+body {
+  font-family: "IBM Plex Sans", Arial, Helvetica;
+  margin: 0;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+}
 
-      .search-container {
-        width: 100%;
-        max-width: 600px;
-        margin: 20px 0 30px 0;
-        display: flex;
-        position: relative;
-      }
+.search-container {
+  width: 100%;
+  max-width: 600px;
+  margin: 20px 0 30px 0;
+  display: flex;
+  position: relative;
+}
 
-      .search-input {
-        width: 100%;
-        padding: 15px;
-        border: none;
-        border-radius: 25px;
-        background-color: #d9d9d9;
-        font-size: 16px;
-      }
+.search-input {
+  width: 100%;
+  padding: 15px;
+  border: none;
+  border-radius: 25px;
+  background-color: #d9d9d9;
+  font-size: 16px;
+}
 
-      .search-button {
-        position: absolute;
-        right: 0;
-        height: 100%;
-        width: 120px;
-        background-color: #a5c76f;
-        color: black;
-        font-weight: bold;
-        border: none;
-        border-radius: 0 25px 25px 0;
-        cursor: pointer;
-        font-size: 16px;
-      }
+.search-button {
+  position: absolute;
+  right: 0;
+  height: 100%;
+  width: 120px;
+  background-color: #a5c76f;
+  color: black;
+  font-weight: bold;
+  border: none;
+  border-radius: 0 25px 25px 0;
+  cursor: pointer;
+  font-size: 16px;
+}
 
-      .header-container {
-        width: 100%;
-        max-width: 1200px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 30px;
-        position: relative;
-      }
+.header-container {
+  width: 100%;
+  max-width: 1200px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  position: relative;
+}
 
-      .table-title {
-        position: absolute;
-        left: 0;
-        right: 0;
-        text-align: center;
-        pointer-events: none; /* Allows clicking through the title */
-      }
+.table-title {
+  position: absolute;
+  left: 0;
+  right: 0;
+  text-align: center;
+  pointer-events: none; /* Allows clicking through the title */
+}
 
-      h1 {
-        font-size: 36px;
-        font-weight: bold;
-        margin: 0;
-      }
+h1 {
+  font-size: 36px;
+  font-weight: bold;
+  margin: 0;
+}
 
-      .undo-button {
-        background-color: #a5c76f;
-        border: none;
-        color: black;
-        padding: 10px 20px;
-        text-align: center;
-        text-decoration: none;
-        display: inline-block;
-        font-size: 16px;
-        cursor: pointer;
-        border-radius: 25px;
-        z-index: 2;
-      }
+.undo-button {
+  background-color: #a5c76f;
+  border: none;
+  color: black;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 25px;
+  z-index: 2;
+}
 
-      .undo-button:hover {
-        background-color: #a4c76f;
-        border: none;
-        color: black;
-        padding: 10px 20px;
-        text-align: center;
-        text-decoration: none;
-        display: inline-block;
-        font-size: 16px;
-        cursor: pointer;
-        border-radius: 25px;
-        z-index: 2;
-      }
+button {
+  background-color: #8b9e62;
+  color: white;
+  border: none;
+  padding: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 5px;
+}
 
-      .spacer {
-        width: 120px;
-      }
+.restore-button, .delete-button{
+  background-color: #8b9e62;
+  color: white;
+  border: none;
+  padding: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 15px ;
+  border-radius: 5px;
+}
 
-      .container {
-        width: 100%;
-        max-width: 1200px;
-        background-color: #d8e4c2;
-        border-radius: 25px;
-        padding: 20px;
-        border: 15px solid #8baa5a;
-        margin-bottom: 50px;
-        overflow-x: auto;
-      }
+button:hover {
+  background-color: #798c54;
+}
 
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        background-color: #e8f0da;
-        min-width: 600px;
-      }
+.undo-button:hover {
+  background-color: #a4c76f;
+  border: none;
+  color: black;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 25px;
+  z-index: 2;
+}
 
-      th {
-        background-color: #fff;
-        padding: 15px 10px;
-        text-align: center;
-        font-weight: bold;
-        border: 2px solid #8baa5a;
-      }
+.spacer {
+  width: 120px;
+}
 
-      tr {
-        background-color: #fff;
-      }
+.container {
+  width: 100%;
+  max-width: 1200px;
+  background-color: #d8e4c2;
+  border-radius: 25px;
+  padding: 20px;
+  border: 15px solid #8baa5a;
+  margin-bottom: 50px;
+  overflow-x: auto;
+}
 
-      td {
-        padding: 15px 10px;
-        border: 2px solid #8baa5a;
-        height: 30px;
-        text-align: center;
-      }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #e8f0da;
+  min-width: 600px;
+}
 
-      /* Responsive styling */
-      @media screen and (max-width: 768px) {
-        body {
-          padding: 15px;
-        }
+th {
+  background-color: #fff;
+  padding: 15px 10px;
+  text-align: center;
+  font-weight: bold;
+  border: 2px solid #8baa5a;
+}
 
-        .header-container {
-          flex-direction: column;
-          gap: 20px;
-        }
+tr {
+  background-color: #fff;
+}
 
-        .table-title {
-          position: static;
-          order: 1;
-        }
+td {
+  padding: 15px 10px;
+  border: 2px solid #8baa5a;
+  height: 30px;
+  text-align: center;
+}
 
-        h1 {
-          font-size: 28px;
-        }
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  justify-content: center;
+  align-items: center;
+}
 
-        .undo-button-container {
-          order: 2;
-          align-self: center;
-        }
+.modal-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 15px;
+  width: 350px;
+  text-align: center;
+  position: relative;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+}
 
-        .spacer {
-          display: none;
-        }
+/* Close Button */
+.close {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 20px;
+  cursor: pointer;
+  font-weight: bold;
+}
 
-        .search-button {
-          width: 90px;
-          font-size: 14px;
-        }
+/* Form Styling */
+form {
+  display: flex;
+  flex-direction: column;
+}
 
-        .search-input {
-          padding: 12px;
-          font-size: 14px;
-        }
+label {
+  text-align: left;
+  font-size: 12px;
+  font-weight: bold;
+  margin-top: 10px;
+}
 
-        .container {
-          padding: 15px;
-          border-width: 10px;
-        }
-      }
+/* Responsive styling */
+@media screen and (max-width: 768px) {
+  body {
+    padding: 15px;
+  }
 
-      @media screen and (max-width: 480px) {
-        h1 {
-          font-size: 24px;
-        }
+  .header-container {
+    flex-direction: column;
+    gap: 20px;
+  }
 
-        .search-button {
-          width: 80px;
-          font-size: 12px;
-        }
+  .table-title {
+    position: static;
+    order: 1;
+  }
 
-        .undo-button {
-          padding: 8px 16px;
-          font-size: 14px;
-        }
+  h1 {
+    font-size: 28px;
+  }
 
-        .container {
-          padding: 10px;
-          border-width: 8px;
-        }
-      }
+  .undo-button-container {
+    order: 2;
+    align-self: center;
+  }
+
+  .spacer {
+    display: none;
+  }
+
+  .search-button {
+    width: 90px;
+    font-size: 14px;
+  }
+
+  .search-input {
+    padding: 12px;
+    font-size: 14px;
+  }
+
+  .container {
+    padding: 15px;
+    border-width: 10px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  h1 {
+    font-size: 24px;
+  }
+
+  .search-button {
+    width: 80px;
+    font-size: 12px;
+  }
+
+  .undo-button {
+    padding: 8px 16px;
+    font-size: 14px;
+  }
+
+  .container {
+    padding: 10px;
+    border-width: 8px;
+  }
+}
