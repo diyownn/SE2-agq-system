@@ -5,11 +5,46 @@
 body {
   font-family: "IBM Plex Sans", Arial, Helvetica;
   margin: 0;
-  padding: 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
   min-height: 100vh;
+}
+
+
+.top-container{
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start; 
+  width: 100%;
+  padding-bottom: 10px;
+  align-items: flex-start;
+}
+
+.dept-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 120px;
+  width: 100%;
+}
+
+.dept-label {
+  background-color: rgb(144, 174, 94);
+  color: white;
+  font-size: 14px;
+  text-align: start;
+  padding: 10px 1px;
+  width: fit-content;
+  min-width: 140px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-radius: 0 25px  25px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .search-container {
@@ -109,7 +144,7 @@ button:hover {
 }
 
 .undo-button:hover {
-  background-color: #a4c76f;
+background-color: #798c54;
   border: none;
   color: black;
   padding: 10px 20px;
@@ -251,6 +286,25 @@ label {
     padding: 15px;
     border-width: 10px;
   }
+  
+  .dept-container {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .header-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .search-container {
+    margin-bottom: 15px;
+  }
+  
+  .nav-link-container {
+    justify-content: center;
+    padding-bottom: 10px;
+  }
 }
 
 @media screen and (max-width: 480px) {
@@ -271,5 +325,24 @@ label {
   .container {
     padding: 10px;
     border-width: 8px;
+  }
+
+  .dept-container {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .header-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .search-container {
+    margin-bottom: 15px;
+  }
+  
+  .nav-link-container {
+    justify-content: center;
+    padding-bottom: 10px;
   }
 }
