@@ -201,6 +201,7 @@ td {
 .modal {
   display: none;
   position: fixed;
+ 
   top: 0;
   left: 0;
   width: 100%;
@@ -210,8 +211,15 @@ td {
   align-items: center;
 }
 
+input{
+
+margin-top: 10px;
+}
+
 .modal-content {
   background-color: white;
+  display: flex;
+  flex-direction: column;
   padding: 20px;
   border-radius: 15px;
   width: 350px;
