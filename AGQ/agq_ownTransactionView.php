@@ -5,7 +5,7 @@ session_start();
 $role = isset($_SESSION['department']) ? $_SESSION['department'] : '';
 $dept = isset($_SESSION['SelectedDepartment']) ? $_SESSION['SelectedDepartment'] : '';
 $company = isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : '';
-
+/*
 if (!$role) {
     echo "<html><head><style>
     body { font-family: Arial, sans-serif; text-align: center; background-color: #f8d7da; }
@@ -35,6 +35,7 @@ if (!$company) {
   </body></html>";
     exit;
 }
+*/
 
 $query = "
 SELECT i.RefNum, i.DocType, c.Company_name

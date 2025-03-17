@@ -6,6 +6,7 @@ $docType = isset($_SESSION['DocType']) ? $_SESSION['DocType'] : '';
 $role = isset($_SESSION['department']) ? $_SESSION['department'] : '';
 $company = isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : '';
 
+/*
 if (!$role) {
     echo "<html><head><style>
     body { font-family: Arial, sans-serif; text-align: center; background-color: #f8d7da; }
@@ -35,6 +36,7 @@ if (!$company) {
   </body></html>";
     exit;
 }
+    */
 /*
 if (!isset($_SESSION['department'])) {
     header("Location: agq_login.php");

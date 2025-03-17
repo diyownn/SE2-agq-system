@@ -5,7 +5,7 @@ session_start();
 
 
 $role = isset($_SESSION['department']) ? $_SESSION['department'] : '';
-
+/*
 if (!$role) {
     echo "<html><head><style>
     body { font-family: Arial, sans-serif; text-align: center; background-color: #f8d7da; }
@@ -21,7 +21,7 @@ if (!$role) {
     exit;
 }
 
-
+*/
 if (!isset($_SESSION['department'])) {
     session_destroy();
     header("Location: agq_login.php");
