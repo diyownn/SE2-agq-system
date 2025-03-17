@@ -401,6 +401,20 @@ if ($result) {
         });
 
 
+        function downloadDocument(refNum, department) {
+            const encodedRefNum = encodeURIComponent(refNum);
+            const encodedDepartment = encodeURIComponent(department);
+
+            // Open the download link in a new tab
+            const newWindow = window.open(`/Download/GENERATE_EXCEL.php?request=${encodedRefNum}&user=${encodedDepartment}`, '_blank');
+
+            // Close the tab after 3 seconds (give time for the download to start)
+            setTimeout(() => {
+                if (newWindow) {
+                    newWindow.close();
+                }
+            }, 3000);
+        }
 
 
 

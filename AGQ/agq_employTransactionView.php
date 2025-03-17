@@ -434,6 +434,21 @@ if (!empty($search_query)) {
             });
         });
 
+        function downloadDocument(refNum, department) {
+            const encodedRefNum = encodeURIComponent(refNum);
+            const encodedDepartment = encodeURIComponent(department);
+
+            // Open the download link in a new tab
+            const newWindow = window.open(`/Download/GENERATE_EXCEL.php?request=${encodedRefNum}&user=${encodedDepartment}`, '_blank');
+
+            // Close the tab after 3 seconds (give time for the download to start)
+            setTimeout(() => {
+                if (newWindow) {
+                    newWindow.close();
+                }
+            }, 3000);
+        }
+
 
         var doctype = "<?php echo isset($_SESSION['selected_documenttype']) ? $_SESSION['selected_documenttype'] : ''; ?>"
         var role = "<?php echo isset($_SESSION['department']) ? $_SESSION['department'] : ''; ?>";
