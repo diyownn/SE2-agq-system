@@ -189,8 +189,11 @@ $conn->close();
 
                     const inputName = charge.toLowerCase().replace(/\s+/g, '').replace('/', '');
                     row.innerHTML = `
-                        <input type="text" name="charge_type[]" value="${charge}" readonly>
-                        <input type="number" name="${inputName}" placeholder="Enter amount">
+                        <div class="charges">
+                            <input type="text" name="charge_type[]" value="${charge}" readonly>
+                            <input type="number" name="${inputName}" placeholder="Enter amount">
+                            <div id="error">tingin nga</div>
+                        <div>
                     `;
                 }
 

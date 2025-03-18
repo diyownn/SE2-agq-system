@@ -60,6 +60,7 @@ body {
     border-radius: 5px;
     margin-top: 10px;
 }
+
 .table-header {
     font-weight: bold;
     display: flex;
@@ -99,6 +100,12 @@ body {
 }
 .hidden {
     display: none;
+}
+
+.charges {
+    display: flex;
+    flex-direction: column;
+
 }
 
 @media (max-width: 600px) {
