@@ -5,7 +5,7 @@ session_start();
 $role = isset($_SESSION['department']) ? $_SESSION['department'] : '';
 $dept = isset($_SESSION['SelectedDepartment']) ? $_SESSION['SelectedDepartment'] : '';
 $company = isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : '';
-/*
+
 if (!$role) {
     echo "<html><head><style>
     body { font-family: Arial, sans-serif; text-align: center; background-color: #f8d7da; }
@@ -35,7 +35,6 @@ if (!$company) {
   </body></html>";
     exit;
 }
-*/
 
 $query = "
 SELECT i.RefNum, i.DocType, c.Company_name
@@ -104,7 +103,6 @@ if ($result) {
             </div>
         </div>
     </div>
-    <a href="agq_chooseDepartment.php" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 20px; top: 50px;">←</a>
 
     <!--<pre><?php print_r($transactions); ?></pre>-->
 
@@ -251,25 +249,39 @@ if ($result) {
                         let structuredTransactions = {};
 
                         // Process API response
-                        Object.entries(data).forEach(([department, records]) => {
+                        Object.entries(data).forEach(([department, docTypes]) => {
                             if (!structuredTransactions[department]) {
                                 structuredTransactions[department] = {};
                             }
 
-                            records.forEach(record => {
-                                let docType = record.DocType ? record.DocType.toUpperCase().trim() : "UNKNOWN";
-                                let refNum = record.RefNum || "No RefNum";
-
-                                if (!structuredTransactions[department][docType]) {
-                                    structuredTransactions[department][docType] = [];
+                            // Loop through document types (e.g., INVOICE, SOA)
+                            Object.entries(docTypes).forEach(([docType, records]) => {
+                                if (!Array.isArray(records)) {
+                                    console.warn(`Skipping non-array records for ${docType}:`, records);
+                                    return;
                                 }
 
-                                structuredTransactions[department][docType].push(refNum);
+                                let normalizedDocType = docType.toUpperCase().trim();
+
+                                if (!structuredTransactions[department][normalizedDocType]) {
+                                    structuredTransactions[department][normalizedDocType] = [];
+                                }
+
+                                records.forEach(record => {
+                                    let refNum = record.RefNum || "No RefNum";
+                                    structuredTransactions[department][normalizedDocType].push(refNum);
+                                });
                             });
                         });
 
-                        // Ensure Summary and Others exist in all departments
+                        // **Ensure SOA, Summary, and Others exist in all departments**
                         Object.keys(structuredTransactions).forEach(department => {
+                            if (!structuredTransactions[department]["SOA"]) {
+                                structuredTransactions[department]["SOA"] = []; 
+                            }
+                            if (!structuredTransactions[department]["INVOICE"]) {
+                                structuredTransactions[department]["INVOICE"] = []; 
+                            }
                             if (!structuredTransactions[department]["SUMMARY"]) {
                                 structuredTransactions[department]["SUMMARY"] = [];
                             }
@@ -282,6 +294,7 @@ if ($result) {
                     })
                     .catch(error => console.error("Error fetching all transactions:", error));
             }
+
 
 
 
@@ -415,7 +428,6 @@ if ($result) {
                 }
             }, 3000);
         }
-
 
 
         var role = "<?php echo isset($_SESSION['department']) ? $_SESSION['department'] : ''; ?>";

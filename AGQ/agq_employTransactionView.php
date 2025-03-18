@@ -6,7 +6,6 @@ $docType = isset($_SESSION['DocType']) ? $_SESSION['DocType'] : '';
 $role = isset($_SESSION['department']) ? $_SESSION['department'] : '';
 $company = isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : '';
 
-/*
 if (!$role) {
     echo "<html><head><style>
     body { font-family: Arial, sans-serif; text-align: center; background-color: #f8d7da; }
@@ -36,7 +35,6 @@ if (!$company) {
   </body></html>";
     exit;
 }
-    */
 /*
 if (!isset($_SESSION['department'])) {
     header("Location: agq_login.php");
@@ -113,6 +111,7 @@ if (!empty($search_query)) {
 </head>
 
 <body>
+
     <div class="top-container">
         <div class="dept-container">
             <div class="header-container">
@@ -125,7 +124,6 @@ if (!empty($search_query)) {
             </div>
         </div>
     </div>
-    <a href="agq_employdash.php" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 20px; top: 50px;">←</a>
 
     <div class="container py-3">
         <div class="search-container d-flex flex-wrap justify-content-center">
@@ -273,7 +271,6 @@ if (!empty($search_query)) {
                             transactionsContainer.innerHTML = "<p>No transactions found.</p>";
                             return;
                         }
-                        console.log("All Transactions:", data);
 
                         let structuredTransactions = {};
 
@@ -303,9 +300,11 @@ if (!empty($search_query)) {
                             });
                         });
 
-
-                        // Ensure Summary and Others exist in all departments
+                        // **Ensure SOA, Summary, and Others exist in all departments**
                         Object.keys(structuredTransactions).forEach(department => {
+                            if (!structuredTransactions[department]["SOA"]) {
+                                structuredTransactions[department]["SOA"] = ["No transactions available"]; // Always show SOA
+                            }
                             if (!structuredTransactions[department]["SUMMARY"]) {
                                 structuredTransactions[department]["SUMMARY"] = [];
                             }
@@ -318,6 +317,7 @@ if (!empty($search_query)) {
                     })
                     .catch(error => console.error("Error fetching all transactions:", error));
             }
+
 
 
 
@@ -418,10 +418,6 @@ if (!empty($search_query)) {
                     container.appendChild(departmentSection);
                 });
             }
-
-
-
-
 
             searchButton.addEventListener("click", function() {
                 let query = searchInput.value.trim();
