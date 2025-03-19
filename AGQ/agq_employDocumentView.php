@@ -2,10 +2,15 @@
 
 require 'db_agq.php';
 
+$docType = isset($_SESSION['DocType']) ? $_SESSION['DocType'] : '';
+$role = isset($_SESSION['department']) ? $_SESSION['department'] : '';
+$company = isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : '';
+
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -37,6 +42,7 @@ require 'db_agq.php';
           border-width: 20px;
           border-color: #73894e;
           border-style: solid;
+
         }
 
         .document-view {
@@ -57,32 +63,26 @@ require 'db_agq.php';
         }
 
         .docu-information {
-          margin-bottom: 110px;
-
+          margin-bottom: 250px;
+          padding-top: 50px;
         }
 
         .ref-number {
-          font-size: 60px;
+          font-size: 30px;
           font-weight: bold;
-          margin-bottom: 0px;
+          margin-bottom: 10px;
         }
         
         .date {
-          font-size: 17px;
+          font-size: 20px;
         }
 
         .document-type {
           font-size: 25px;
-        }
 
-        .comment-header {
-          font-size: 18px;
-          font-weight: bold;
-          margin-bottom: 5px;
         }
         
         textarea {
-          background-color: ;
           width: 100%;
           height: 150px;
           padding: 10px;
@@ -178,6 +178,7 @@ require 'db_agq.php';
         }
     </style>
 </head>
+
 <body>
   <div class="container">
     <div class="document-view">
@@ -200,7 +201,22 @@ require 'db_agq.php';
           <button class="download-button" onclick="saveComment()">Download</button>
         </div>
       </div>
-    </div>   
+    </div>
   </div>
+  <script>
+     function updateCounter() {
+          let textbox = document.getElementById("textbox");
+          let counter = document.getElementById("counter");
+          let used = textbox.value.length;
+          counter.textContent = used + "/250";
+      }
+      
+     function saveComment() {
+          let comment = document.getElementById("textbox").value;
+          alert("Comment saved: " + comment);
+          
+     }
+  </script>
 </body>
+
 </html>
