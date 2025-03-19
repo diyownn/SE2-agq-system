@@ -100,6 +100,8 @@ if ($result) {
         </div>
     </div>
 
+    <a href="agq_choosedepartment.php" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 20px; top: 50px;">←</a>
+
     <!--<pre><?php print_r($transactions); ?></pre>-->
 
     <div class="container py-3">

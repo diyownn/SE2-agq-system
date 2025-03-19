@@ -125,6 +125,8 @@ if (!empty($search_query)) {
         </div>
     </div>
 
+    <a href="agq_employdash.php" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 20px; top: 50px;">←</a>
+
     <div class="container py-3">
         <div class="search-container d-flex flex-wrap justify-content-center">
             <input type="text" class="search-bar form-control" id="search-input" placeholder="Search Transaction Details...">
