@@ -37,7 +37,6 @@ require 'db_agq.php';
           border-width: 20px;
           border-color: #73894e;
           border-style: solid;
-
         }
 
         .document-view {
@@ -58,26 +57,32 @@ require 'db_agq.php';
         }
 
         .docu-information {
-          margin-bottom: 250px;
-          padding-top: 50px;
+          margin-bottom: 110px;
+
         }
 
         .ref-number {
-          font-size: 30px;
+          font-size: 60px;
           font-weight: bold;
-          margin-bottom: 10px;
+          margin-bottom: 0px;
         }
         
         .date {
-          font-size: 20px;
+          font-size: 17px;
         }
 
         .document-type {
           font-size: 25px;
+        }
 
+        .comment-header {
+          font-size: 18px;
+          font-weight: bold;
+          margin-bottom: 5px;
         }
         
         textarea {
+          background-color: ;
           width: 100%;
           height: 150px;
           padding: 10px;
@@ -180,11 +185,16 @@ require 'db_agq.php';
     <div class="info-view">
       <div class="docu-information">
         <p class="ref-number">IB-0000</p>
-        <p class="date"><strong>Date:</strong> 01/01/2025</p>
         <p class="document-type">Statement of Account</p>
+        <p class="date"><strong>Date Created:</strong> 01/01/2025</p>
+        <p class="date"><strong>Created By:</strong> John Smith</p>
+        <p class="date"><strong>Date Modified:</strong> 01/01/2025</p>
+        <p class="date"><strong>Modified By:</strong> Mary Russell</p>
       </div>
+
+      <p class = "comment-header"> Comments:
       <div class="comment-box">
-        <textarea id="textbox" maxlength="250" oninput="updateCounter()"></textarea>
+        <textarea id="textbox" maxlength="250" oninput="updateCounter()" readonly></textarea>
         <div class="button-container">
           <button class="edit-button" onclick="saveComment()">Edit</button>
           <button class="download-button" onclick="saveComment()">Download</button>
@@ -192,19 +202,5 @@ require 'db_agq.php';
       </div>
     </div>   
   </div>
-  <script>
-     function updateCounter() {
-          let textbox = document.getElementById("textbox");
-          let counter = document.getElementById("counter");
-          let used = textbox.value.length;
-          counter.textContent = used + "/250";
-      }
-      
-     function saveComment() {
-          let comment = document.getElementById("textbox").value;
-          alert("Comment saved: " + comment);
-          
-     }
-  </script>
 </body>
 </html>
