@@ -80,7 +80,7 @@ if (!empty($search_query)) {
 </head>
 <link rel="icon" href="images/agq_logo.png" type="image/ico">
 
-<body>
+<body style="background-image: url('employbg.png'); background-repeat: no-repeat; background-size: cover;">
     <div class="top-container">
         <div class="dept-container">
             <div class="dept-label">

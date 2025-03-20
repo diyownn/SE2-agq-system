@@ -309,7 +309,7 @@ if (!empty($search_query)) {
     </style>
 </head>
 
-<body>
+<body style="background-image: url('ownbg.png'); background-repeat: no-repeat; background-size: cover;">
     <div class="top-container">
         <div class="dept-container">
             <div class="dept-label">
