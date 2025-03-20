@@ -79,11 +79,7 @@ if ($result) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../css/otp.css">
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script>
-        function redirectToDocument(refNum) {
-            window.location.href = 'agq_documentCatcher.php';
-        }
-    </script>
+
 </head>
 
 <body>
@@ -103,6 +99,7 @@ if ($result) {
             </div>
         </div>
     </div>
+
     <a href="agq_choosedepartment.php" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 20px; top: 50px;">←</a>
 
     <!--<pre><?php print_r($transactions); ?></pre>-->
@@ -150,6 +147,15 @@ if ($result) {
     </div>
 
     <script>
+        function redirectToDocument(refnum) {
+            if (!refnum) {
+                return;
+            } else {
+                window.location.href = "agq_documentCatcher.php?refnum=" + encodeURIComponent(refnum);
+            }
+
+        }
+
         document.addEventListener("DOMContentLoaded", function() {
             document.body.addEventListener("click", function(event) {
                 if (event.target.classList.contains("transaction-header") || event.target.classList.contains("icon")) {
@@ -278,10 +284,10 @@ if ($result) {
                         // **Ensure SOA, Summary, and Others exist in all departments**
                         Object.keys(structuredTransactions).forEach(department => {
                             if (!structuredTransactions[department]["SOA"]) {
-                                structuredTransactions[department]["SOA"] = []; 
+                                structuredTransactions[department]["SOA"] = [];
                             }
                             if (!structuredTransactions[department]["INVOICE"]) {
-                                structuredTransactions[department]["INVOICE"] = []; 
+                                structuredTransactions[department]["INVOICE"] = [];
                             }
                             if (!structuredTransactions[department]["SUMMARY"]) {
                                 structuredTransactions[department]["SUMMARY"] = [];

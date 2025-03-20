@@ -70,8 +70,7 @@
 
     if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['manPic']['tmp_name'])) {
         $man_docs = file_get_contents($_FILES['manPic']['tmp_name']);
-        $refNum = (string)random_int(1000000000, 9999999999);  // We are going to make this into an input. Random int for now
-        //sample insert into 1 department, conditions will be applied once departments are complete to specify tbl to insert
+        $refNum = (string)random_int(1000000000, 9999999999);  
         $stmt = $conn->prepare("INSERT INTO tbl_document (DocumentID, Document_type, Document_picture, Edited_by, EditDate, Company_name, Department) VALUES (?, ?, ?, ?, ?, ?, ?)");
         if (!$stmt) {
             die("Preparation failed: " . $conn->error);

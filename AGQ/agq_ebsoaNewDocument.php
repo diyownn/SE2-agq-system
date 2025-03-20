@@ -190,26 +190,62 @@ $conn->close();
                     const inputName = charge.toLowerCase().replace(/\s+/g, '').replace('/', '');
                     row.innerHTML = `
                         <div class="charges">
-                            <input type="text" name="charge_type[]" value="${charge}" readonly>
-                            <input type="number" name="${inputName}" placeholder="Enter amount">
-                            <div id="error">tingin nga</div>
-                        <div>
+                            <div class = "col">
+                                <input type="text" name="charge_type[]" value="${charge}" readonly style="width:360px; flex-direction: column">
+                                <input type="number" name="${inputName}" placeholder="Enter amount" style="width:360px; flex-direction: column">
+                            </div>
+                        </div>
+                        
                     `;
+
+                    const chargesContainer = row.querySelector(".charges");
+                    const colContainer = chargesContainer.querySelector(".col");
+
+                    // Create the error message div
+                    const errorDiv = document.createElement("div");
+                    errorDiv.id = `${inputName}-error`; // Unique error element ID
+                    errorDiv.className = "invalid-feedback"; // Styling for the error div
+                    errorDiv.style.marginTop = "5px"; // Add spacing between .col and error message
+                    errorDiv.style.display = "none"; // Initially hidden
+                    errorDiv.innerHTML = `*Error message placeholder for ${charge}`; // Example error message
+
+                    // Insert the error div after .col
+                    colContainer.insertAdjacentElement("afterend", errorDiv);
+
                 }
 
                 if (charge === "Notes") {
-                    // Create a text input field for notes instead of number
+                    // Create a text area for notes instead of a single-line input
                     row.innerHTML = `
-                        <input type="text" value="Notes" readonly>
-                        <input type="text" name="notes" placeholder="Enter notes" onchange="validateNotesField(this)">
+                        <div class="charges">
+                            <div class="col">
+                                <input type="text" value="Notes" readonly style="width:360px; flex-direction: column">
+                                <textarea name="notes" placeholder="Enter notes" onchange="validateNotesField(this)" style="width:360px; height:100px; flex-direction: column; resize: none;"></textarea>
+                            </div>
+                        </div>
                     `;
-                }
+
+                    const chargesContainer = row.querySelector(".charges");
+                    const colContainer = chargesContainer.querySelector(".col");
+
+                    // Create the error message div
+                    const errorDiv = document.createElement("div");
+                    errorDiv.id = "notes-error"; // Unique ID for the error element
+                    errorDiv.className = "invalid-feedback"; // Styling for the error div
+                    errorDiv.style.marginTop = "5px"; // Add spacing between .col and error message
+                    errorDiv.style.display = "none"; // Initially hidden
+                    errorDiv.innerHTML = `*Notes input has a validation error`; // Example error message
+
+                    // Insert the error div after the .col container
+                    colContainer.insertAdjacentElement("afterend", errorDiv);
+            }
+
 
                 chargesTable.appendChild(row);
             });
         }
 
-        function handleChargeSelection(selectElement) {
+        function handleChargeSelection(selectElement, isLCL) {
             const selectedCharge = selectElement.value;
             if (!selectedCharge) return; // Do nothing if no valid selection
 
@@ -225,54 +261,98 @@ $conn->close();
             newRow.dataset.charge = selectedCharge; // Store charge type
 
             // Set input name correctly
-            let inputName = selectedCharge.toLowerCase() + "_amount";
+            let inputName = selectedCharge.toLowerCase().replace(/\s+/g, '').replace('/', '') + "_amount";
 
+            // Add row HTML
             newRow.innerHTML = `
-                <input type="text" value="${selectedCharge}" readonly>
-                <input type="number" name="${inputName}" placeholder="Enter amount">
-                <button type="button" onclick="removeCharge(this)">Remove</button>
+                <div class="charges">
+                    <div class="col">
+                        <input type="text" value="${selectedCharge}" readonly style="width:360px; flex-direction: column">
+                        <input type="number" name="${inputName}" placeholder="Enter amount" style="width:288px; flex-direction: column" onchange="validateChargeInput(this)">
+                        <button type="button" onclick="removeCharge(this)">Remove</button>
+                    </div>
+                </div>
             `;
 
-            chargesTable.appendChild(newRow);
+            chargesTable.appendChild(newRow); // Append the new row to the table
+
+            // Reset the dropdown value to allow reselecting the same charge
+            selectElement.value = ""; // Clears the dropdown selection after adding a charge
         }
 
         function removeCharge(button) {
-            const row = button.parentNode;
-            row.parentNode.removeChild(row);
+            const row = button.closest(".table-row");
+            if (row) {
+                row.remove(); // Remove the entire charge row
+            }
+        }
+
+
+        function validateChargeInput(inputElement) {
+            const maxAmount = 16500000; // Set a max allowable amount
+            const colContainer = inputElement.closest(".col");
+            const errorElementId = `${inputElement.name}-error`; // Unique error element ID
+            let errorElement = colContainer.nextElementSibling;
+
+            // Create the error element if it doesn't exist
+            if (!errorElement) {
+                errorElement = document.createElement("div");
+                errorElement.id = errorElementId;
+                errorElement.className = "invalid-feedback";
+                errorElement.style.marginTop = "5px";
+                errorElement.style.display = "none";
+                colContainer.insertAdjacentElement("afterend", errorElement);
+            }
+
+            // Validate input value
+            const value = parseFloat(inputElement.value) || 0; // Default to 0 if empty
+            if (value > maxAmount) {
+                inputElement.classList.add("is-invalid");
+                errorElement.innerHTML = `*Value cannot exceed ${maxAmount.toLocaleString()}`;
+                errorElement.style.display = "block"; // Show error message
+            } else {
+                inputElement.classList.remove("is-invalid");
+                errorElement.style.display = "none"; // Hide error message
+            }
         }
 
         function validateChargeAmount() {
-            const inputs = document.querySelectorAll('input[type="number"]'); // Select all number inputs
+            const inputs = document.querySelectorAll('input[type="number"]');
             const maxAmount = 16500000;
-            let isValid = true; // Track overall validity
+            let isValid = true;
 
             inputs.forEach(input => {
-            const errorElementId = input.name + "-error"; // Unique error element ID
-            let errorElement = document.getElementById(errorElementId);
-
-                if (!errorElement) {
-            // Create an error element if it doesn't exist
-                    errorElement = document.createElement("div");
-                    errorElement.id = errorElementId;
-                    errorElement.className = "invalid-feedback";
-                    input.parentNode.appendChild(errorElement);
+                const colContainer = input.closest(".col");
+                if (!colContainer) {
+                    console.error("Error: .col container not found for input", input);
+                    return;
                 }
 
-            // Check if the value exceeds the maxAmount
-                const value = parseFloat(input.value);
+                // Check for error div or create it dynamically
+                let errorDiv = colContainer.nextElementSibling;
+                if (!errorDiv) {
+                    errorDiv = document.createElement("div");
+                    errorDiv.id = `${input.name}-error`;
+                    errorDiv.className = "invalid-feedback";
+                    errorDiv.style.marginTop = "5px";
+                    errorDiv.style.display = "none";
+                    colContainer.insertAdjacentElement("afterend", errorDiv);
+                }
+
+                // Perform validation
+                const value = parseFloat(input.value) || 0; // Default to 0 if input is empty
                 if (value > maxAmount) {
-                    input.classList.add("is-invalid"); // Add invalid class to input
-                    const errorText = `*Value cannot exceed ${maxAmount.toLocaleString()}`;
-                    errorElement.innerHTML = errorText; // Set error message
-                    errorElement.style.display = "block"; // Show error element
-                    isValid = false; // Mark form as invalid
+                    input.classList.add("is-invalid");
+                    errorDiv.innerHTML = `*Value cannot exceed ${maxAmount.toLocaleString()}`;
+                    errorDiv.style.display = "block";
+                    isValid = false;
                 } else {
-                    input.classList.remove("is-invalid"); // Remove invalid class
-                    errorElement.style.display = "none"; // Hide error element
+                    input.classList.remove("is-invalid");
+                    errorDiv.style.display = "none";
                 }
-                });
+            });
 
-                return isValid; // Return validity status
+            return isValid;
         }
 
         function validateTextFields() {
@@ -287,23 +367,23 @@ $conn->close();
                 }
 
                 const errorElementId = input.name + "-error"; // Unique error element ID
-                let errorElement = document.getElementById(errorElementId);
+                let errorElement = input.nextElementSibling; // Locate the error element directly below the input
 
-                if (!errorElement) {
-                // Create an error element if it doesn't exist
-                errorElement = document.createElement("div");
-                errorElement.id = errorElementId;
-                errorElement.className = "invalid-feedback";
-                input.parentNode.appendChild(errorElement);
+                // Create an error element dynamically if it doesn't exist
+                if (!errorElement || errorElement.className !== "invalid-feedback") {
+                    errorElement = document.createElement("div");
+                    errorElement.id = errorElementId;
+                    errorElement.className = "invalid-feedback";
+                    input.insertAdjacentElement("afterend", errorElement); // Place the error element below the input
                 }
 
                 // Check if the field is empty
                 if (input.value.trim() === "") {
-                input.classList.add("is-invalid"); // Add invalid class to input
-                errorElement.innerHTML = "*This field is required"; // Set error message
-                errorElement.style.display = "block"; // Show error element
-                isValid = false; // Mark form as invalid
-                }
+                    input.classList.add("is-invalid"); // Add invalid class to input
+                    errorElement.innerHTML = "*This field is required"; // Set error message
+                    errorElement.style.display = "block"; // Show error element
+                    isValid = false; // Mark form as invalid
+                } 
                 // Check if the input contains only allowed symbols, letters, or numbers
                 else if (!allowedSymbols.test(input.value)) {
                     input.classList.add("is-invalid"); // Add invalid class
@@ -321,41 +401,40 @@ $conn->close();
         }
 
 
-        function validateNotesField() {
-            const notesInput = document.querySelector('input[name="notes"]'); // Select the notes input field
-            const allowedSymbols = /^[a-zA-Z0-9!@$%^&()_+\-:/|,~ ]*$/; // Allow letters, numbers, and symbols
+        function validateNotesField(notesInput) {
+            const allowedSymbols = /^[a-zA-Z0-9!@$%^&()_+\-:/|,~ \r\n]*$/; // Allow letters, numbers, symbols, and line breaks
             const maxLength = 255; // Maximum character limit
             let isValid = true; // Track overall validity
 
-            // Check if the input exists
             if (notesInput) {
-                const errorElementId = "notes-error"; // Unique error element ID
-                let errorElement = document.getElementById(errorElementId);
-
-                if (!errorElement) {
-                // Create an error element if it doesn't exist
-                    errorElement = document.createElement("div");
-                    errorElement.id = errorElementId;
-                    errorElement.className = "invalid-feedback";
-                    notesInput.parentNode.appendChild(errorElement);
+                const colContainer = notesInput.closest(".col"); // Locate the .col container
+                if (!colContainer) {
+                    console.error("Error: .col container not found for notes input");
+                    return false;
                 }
 
-                // Check the length of the input
+                const errorDiv = colContainer.nextElementSibling; // Locate the error div
+                if (!errorDiv) {
+                    console.error("Error: Error div not found for notes input");
+                    return false;
+                }
+
+                // Validate the length
                 if (notesInput.value.length > maxLength) {
                     notesInput.classList.add("is-invalid"); // Add invalid class
-                    errorElement.innerHTML = `*Notes cannot exceed ${maxLength} characters`; // Set error message
-                    errorElement.style.display = "block"; // Show error message
+                    errorDiv.innerHTML = `*Notes cannot exceed ${maxLength} characters`; // Set error message
+                    errorDiv.style.display = "block"; // Show error message
                     isValid = false; // Mark as invalid
-                }
-                // Check if the input contains only allowed symbols, letters, or numbers
+                } 
+                // Validate allowed symbols (including line breaks)
                 else if (!allowedSymbols.test(notesInput.value)) {
-                    notesInput.classList.add("is-invalid"); // Add invalid class
-                    errorElement.innerHTML = "*Only letters, numbers, and these symbols are allowed: ! @ $ % ^ & ( ) _ + / - : | , ~"; // Error message
-                    errorElement.style.display = "block"; // Show error message
-                    isValid = false; // Mark as invalid
+                    notesInput.classList.add("is-invalid");
+                    errorDiv.innerHTML = "*Only letters, numbers, and these symbols are allowed: ! @ $ % ^ & ( ) _ + / - : | , ~"; // Error message
+                    errorDiv.style.display = "block";
+                    isValid = false;
                 } else {
                     notesInput.classList.remove("is-invalid"); // Remove invalid class
-                    errorElement.style.display = "none"; // Hide error element
+                    errorDiv.style.display = "none"; // Hide error message
                 }
             }
 
@@ -364,19 +443,19 @@ $conn->close();
 
 
         function validateDateFields() {
-            const dateInputs = document.querySelectorAll('input[type="date"]'); // Select all date inputs
-            let isValid = true; // Track overall validity
+        const dateInputs = document.querySelectorAll('input[type="date"]'); // Select all date inputs
+        let isValid = true; // Track overall validity
 
-            dateInputs.forEach(input => {
-                const errorElementId = input.name + "-error"; // Unique error element ID
-                let errorElement = document.getElementById(errorElementId);
+        dateInputs.forEach(input => {
+            const errorElementId = input.name + "-error"; // Unique error element ID
+            let errorElement = input.nextElementSibling; // Locate the error element directly below the input
 
-                if (!errorElement) {
-                // Create an error element if it doesn't exist
+            // Create an error element dynamically if it doesn't exist
+            if (!errorElement || errorElement.className !== "invalid-feedback") {
                 errorElement = document.createElement("div");
                 errorElement.id = errorElementId;
                 errorElement.className = "invalid-feedback";
-                input.parentNode.appendChild(errorElement);
+                input.insertAdjacentElement("afterend", errorElement); // Place the error element below the input
             }
 
             // Check if the field is empty
@@ -389,10 +468,10 @@ $conn->close();
                 input.classList.remove("is-invalid"); // Remove invalid class
                 errorElement.style.display = "none"; // Hide error element
             }
-            });
+        });
 
-            return isValid; // Return validity status
-        }
+        return isValid; // Return validity status
+    }
 
 
         function validateForm() {

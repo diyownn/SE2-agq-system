@@ -115,13 +115,15 @@ body {
         border-width: 8px;
     }
     .section {
-        flex-direction: column;
-        gap: 5px;
+        display: flex;
+        flex-direction: column; /* Stack items vertically */
+        gap: 10px; /* Optional spacing between input and error message */
     }
     .table-row {
         flex-direction: column;
         gap: 5px;
     }
+
     .table-header {
         flex-direction: column;
         text-align: left;
@@ -138,5 +140,14 @@ body {
     font-size: 10px !important;
     margin-top: 12px !important;
     color: red;
-    font-size: 0.9em;
+}
+
+textarea {
+    height: 100px !important; /* Height for multi-line text */
+    font-size: 1em;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 8px;
+    width: 360px; /* Match input width */
+    resize: none; /* Disable manual resizing */
 }
