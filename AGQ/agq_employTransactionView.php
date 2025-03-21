@@ -125,7 +125,7 @@ if (!empty($search_query)) {
             </div>
         </div>
     </div>
-
+    <a href="agq_employdash.php" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 20px; top: 50px;">←</a>
     <div class="container py-3">
         <div class="search-container d-flex flex-wrap justify-content-center">
             <input type="text" class="search-bar form-control" id="search-input" placeholder="Search Transaction Details...">
@@ -159,9 +159,10 @@ if (!empty($search_query)) {
                         <?php $normalizedDocType = strtoupper(trim($docType)); ?>
                         <?php if (!empty($transactions[$normalizedDocType])): ?>
                             <?php foreach ($transactions[$normalizedDocType] as $refNum): ?>
-                                <div class="transaction-item d-flex justify-content-between"
-                                    ondblclick="redirectToDocument('<?php echo htmlspecialchars($refNum); ?>', '<?php echo $normalizedDocType; ?>')">
-                                    <span><?php echo htmlspecialchars($refNum); ?> - <?php echo $normalizedDocType; ?></span>
+                                <div class="transaction-item d-flex justify-content-between">
+                                    <span ondblclick="redirectToDocument('<?php echo htmlspecialchars($refNum); ?>', '<?php echo $normalizedDocType; ?>')">
+                                        <?php echo htmlspecialchars($refNum); ?> - <?php echo $normalizedDocType; ?>
+                                    </span>
                                     <input type="checkbox">
                                 </div>
                             <?php endforeach; ?>
@@ -393,10 +394,12 @@ if (!empty($search_query)) {
                             refs.forEach(refNum => {
                                 let transactionItem = document.createElement("div");
                                 transactionItem.classList.add("transaction-item", "d-flex", "justify-content-between");
-                                transactionItem.setAttribute("ondblclick", `redirectToDocument('${refNum}', '${docType}')`);
 
                                 let transactionText = document.createElement("span");
                                 transactionText.textContent = `${refNum} - ${docType}`;
+                                transactionText.ondblclick = function() {
+                                    redirectToDocument(refNum, docType);
+                                };
 
                                 let transactionCheckbox = document.createElement("input");
                                 transactionCheckbox.type = "checkbox";
@@ -427,6 +430,7 @@ if (!empty($search_query)) {
                     fetchFilteredTransactions(query);
                 }
             });
+
         });
 
         function downloadDocument(refNum, department) {

@@ -102,7 +102,7 @@ if ($result) {
     </div>
 
     <!--<pre><?php print_r($transactions); ?></pre>-->
-
+    <a href="agq_owndash.php" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 20px; top: 50px;">←</a>
     <div class="container py-3">
         <div class="search-container d-flex flex-wrap justify-content-center">
             <input type="text" class="search-bar form-control" id="search-input" placeholder="Search Transaction Details...">
@@ -126,9 +126,10 @@ if ($result) {
                         <?php $normalizedDocType = strtoupper(trim($docType)); ?>
                         <?php if (!empty($transactions[$normalizedDocType])): ?>
                             <?php foreach ($transactions[$normalizedDocType] as $refNum): ?>
-                                <div class="transaction-item d-flex justify-content-between"
-                                    ondblclick="redirectToDocument('<?php echo htmlspecialchars($refNum); ?>', '<?php echo $normalizedDocType; ?>')">
-                                    <span><?php echo htmlspecialchars($refNum); ?> - <?php echo $normalizedDocType; ?></span>
+                                <div class="transaction-item d-flex justify-content-between">
+                                    <span ondblclick="redirectToDocument('<?php echo htmlspecialchars($refNum); ?>', '<?php echo $normalizedDocType; ?>')">
+                                        <?php echo htmlspecialchars($refNum); ?> - <?php echo $normalizedDocType; ?>
+                                    </span>
                                     <input type="checkbox">
                                 </div>
                             <?php endforeach; ?>
