@@ -6,22 +6,9 @@ session_start();
 
 $role = isset($_SESSION['department']) ? $_SESSION['department'] : '';
 
-/*
 if (!$role) {
-    echo "<html><head><style>
-    body { font-family: Arial, sans-serif; text-align: center; background-color: #f8d7da; }
-    .container { margin-top: 50px; padding: 20px; background: white; border-radius: 10px; display: inline-block; }
-    h1 { color: #721c24; }
-    p { color: #721c24; }
-  </style></head><body>
-  <div class='container'>
-    <h1>Unauthorized Access</h1>
-    <p>You do not have permission to view this page. (ERR: R)</p>
-  </div>
-  </body></html>";
-    exit;
+    header("Location: UNAUTHORIZED.php?error=401r");
 }
-*/
 
 
 if (!isset($_SESSION['department'])) {
@@ -82,7 +69,7 @@ if (!empty($search_query)) {
 </head>
 <link rel="icon" href="images/agq_logo.png" type="image/ico">
 
-<body style="background-image: url('employbg.png'); background-repeat: no-repeat; background-size: cover;">
+<body>
     <div class="top-container">
         <div class="dept-container">
             <div class="dept-label">

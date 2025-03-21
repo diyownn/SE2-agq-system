@@ -3,22 +3,10 @@ require 'db_agq.php';
 session_start();
 
 $role = isset($_SESSION['department']) ? $_SESSION['department'] : '';
-/*
+
 if (!$role) {
-    echo "<html><head><style>
-    body { font-family: Arial, sans-serif; text-align: center; background-color: #f8d7da; }
-    .container { margin-top: 50px; padding: 20px; background: white; border-radius: 10px; display: inline-block; }
-    h1 { color: #721c24; }
-    p { color: #721c24; }
-  </style></head><body>
-  <div class='container'>
-    <h1>Unauthorized Access</h1>
-    <p>You do not have permission to view this page. (ERR: R)</p>
-  </div>
-  </body></html>";
-    exit;
+    header("Location: UNAUTHORIZED.php?error=401r");
 }
-*/
 
 if (!isset($_SESSION['department'])) {
     header("Location: agq_login.php");
@@ -83,7 +71,7 @@ if (!empty($search_query)) {
     <link rel="stylesheet" type="text/css" href="../css/owndash.css">
 </head>
 
-<body style="background-image: url('ownbg.png'); background-repeat: no-repeat; background-size: cover;">
+<body>
     <div class="top-container">
         <div class="dept-container">
             <div class="dept-label">
@@ -157,20 +145,31 @@ if (!empty($search_query)) {
                 $result = $conn->query($companies);
 
                 if ($result->num_rows > 0) {
-                    echo '<div class="company-container-row">';
+                    $index = 0;
                     while ($row = $result->fetch_assoc()) {
+                        $varName = 'Company' . $index;
+                        $varName = $row['Company_name'];
+
                         $company_name = $row['Company_name'];
                         $company_picture = $row['Company_picture'];
-                
+
                         $company_picture_base64 = base64_encode($company_picture);
                         $company_picture_src = 'data:image/jpeg;base64,' . $company_picture_base64;
-                
+
+
+                        if ($index > 0 && $index % 5 === 0) {
+                            echo '</div><div class="company-container-row">';
+                        }
+
                         echo '<div class="company-button">';
                         echo '<button class="company-container" onclick="storeCompanySession(\'' . htmlspecialchars($company_name, ENT_QUOTES) . '\')">';
                         echo '<img class="company-logo" src="' . $company_picture_src . '" alt="' . $company_name . '">';
                         echo '</button>';
                         echo '</div>';
+
+                        $index++;
                     }
+
                     echo '</div>';
                 } else {
                     echo "No companies found in the database.";
