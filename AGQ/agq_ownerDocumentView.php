@@ -22,6 +22,21 @@ $dept = isset($_SESSION['SelectedDepartment']) ? $_SESSION['SelectedDepartment']
 
 
 <body>
+<div class="top-container">
+        <div class="dept-container">
+            <div class="header-container">
+                <div class="dept-label">
+                    <?php echo htmlspecialchars($role); ?>
+                </div>
+                <div class="company-label">
+                    <?php echo htmlspecialchars($company); ?>
+                </div>
+                <div class="selected-dept-label">
+                    <?php echo htmlspecialchars($dept); ?>
+                </div>
+            </div>
+        </div>
+    </div>
   <div class="container">
     <div class="document-view">
     </div>

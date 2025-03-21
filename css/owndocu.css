@@ -23,6 +23,79 @@ body {
     border-style: solid;
 
 }
+dept-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 120px;
+    width: 100%;
+  }
+  
+  .dept-label {
+    background-color: rgb(144, 174, 94);
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+    text-align: start;
+    padding: 10px 1px;
+    width: auto;
+    min-width: 150px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    border-radius: 0 25px  25px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0px -1px 7px 0px rgba(0,0,0,0.19);
+-webkit-box-shadow: 0px -1px 7px 0px rgba(0,0,0,0.19);
+-moz-box-shadow: 0px -1px 7px 0px rgba(0,0,0,0.19);
+    z-index: 99;
+  }
+
+  .company-label {
+    background-color: rgb(160, 184, 117);
+    color: white;
+    font-size: 14px;
+    text-align: start;
+    padding: 10px 1px;
+    width: auto;
+    min-width: 150px;
+    position: absolute;
+    top: 0;
+    left: 120px;
+    border-radius: 0 25px  25px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0px -1px 7px 0px rgba(0,0,0,0.19);
+-webkit-box-shadow: 0px -1px 7px 0px rgba(0,0,0,0.19);
+-moz-box-shadow: 0px -1px 7px 0px rgba(0,0,0,0.19);
+    z-index: 98;
+  }
+
+  .selected-dept-label {
+    background-color: rgb(174, 197, 160);
+    color: white;
+    font-size: 14px;
+    text-align: start;
+    padding: 10px 1px;
+    width: auto;
+    min-width: 200px;
+    position: absolute;
+    padding-left: 20px;
+    top: 0;
+    left: 240px;
+    border-radius: 0 25px  25px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0px -1px 7px 0px rgba(0,0,0,0.19);
+-webkit-box-shadow: 0px -1px 7px 0px rgba(0,0,0,0.19);
+-moz-box-shadow: 0px -1px 7px 0px rgba(0,0,0,0.19);
+    z-index: 97;
+  }
 
 .document-view {
     background-color: #d0dcb3;
