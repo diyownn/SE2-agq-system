@@ -201,19 +201,22 @@ body {
   padding-right: 50px;
 }
   
+
 .company-container-row {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  gap: 100px;
-  justify-content: flex-start;
+  gap: 50px; 
+  justify-content: flex-start; 
   margin: 20px 0px 40px 0;
+  width: 100%;
 }
 
+
 .company-button {
-  flex: 1 1 calc(20% - 10px);
+  flex: 0 0 calc(20% - 50px); 
   max-width: 200px;
-  text-align: center;
+  margin-bottom: 30px;
 }
   
 .company-container {
