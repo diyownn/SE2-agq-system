@@ -258,13 +258,18 @@ body {
     max-height: 0;
     overflow: hidden;
     background-color: #fff;
-    transition: max-height 0.5s ease-in-out, padding 0.3s ease;
+    transition: max-height 0.5s ease-in-out, padding 0.3s ease, background-color 0.15s;
     padding: 0 15px;
 }
 
 .transaction-content.open {
     max-height: 200px;
     padding: 15px;
+}
+
+.transaction-content.open:hover {
+    text-decoration: underline;
+    cursor: pointer;
 }
 
 .transaction-item {
