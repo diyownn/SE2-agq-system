@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,16 +12,16 @@
     <!-- Font Link -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">    
-    
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+
     <!-- Local CSS -->
-    <link rel = "stylesheet" type="text/css" href="agq.css">
+    <link rel="stylesheet" type="text/css" href="agq.css">
 </head>
-    <!-- Website Icon -->
-    <link rel="icon" href="images/agq_logo.png" type="image/ico">
+<!-- Website Icon -->
+<link rel="icon" href="images/agq_logo.png" type="image/ico">
 
 <body style="background-color: white; background-image:none">
-<a href="agq_choosedocument.php" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 39%; top: 55px;">←</a>
+    <a href="agq_choosedocument.php" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 39%; top: 55px;">←</a>
 
     <div class="container">
         <div class="row d-flex justify-content-center">
@@ -29,7 +30,7 @@
 
                 <form action="agq_othersForm.php" method="POST" class="form-content" enctype="multipart/form-data" onsubmit="return validate_otImg()">
                     <img src="" class="d-block mx-auto" id="imgholder" alt="" style="width: 335px; height: 350px">
-                    
+
                     <input type="text" name="edit" id="input3" class="form-control" placeholder="Edited by" onchange="return validate_edit()">
                     <div id="edit-error" style="margin-left: 16%; margin-top: 1%"></div>
 
@@ -81,19 +82,19 @@
         $stmt->bind_param("ssbssss", $refNum, $docType, $others_docs, $_POST['edit'], $editDate, $companyName, $department);
 
         if ($stmt->execute()) {
-            ?>
+    ?>
             <script>
-                    Swal.fire({
-                        icon: "success",
-                        title: "Document Added!",
-                        }).then((result) => {
-                        
-                        if (result.isConfirmed) {
+                Swal.fire({
+                    icon: "success",
+                    title: "Document Added!",
+                }).then((result) => {
+
+                    if (result.isConfirmed) {
                         window.location.href = "agq_manifestoView.php";
-                        }
-                        });
-                </script>
-            <?php
+                    }
+                });
+            </script>
+    <?php
         } else {
             echo "Error uploading company: " . $stmt->error;
         }
@@ -101,11 +102,10 @@
 
         $stmt->close();
         $conn->close();
-        
-        }
+    }
 
     ?>
-    
+
     <script>
         function previewImage(event) {
             var imgDisplay = document.getElementById("imgholder");
@@ -116,26 +116,38 @@
             var imgDisplay = document.getElementById("imgholder");
             var cpic = document.getElementById("cPic");
             var cpic_error = document.getElementById("image-error");
+            var input3 = document.getElementById("input3");
+            var edit_error = document.getElementById("edit-error");
 
+            var isValid = true;
+
+            // Validate file upload
             if (cpic.files.length === 0) {
                 cpic.classList.add("is-invalid");
-                error_text = "*Please upload the needed document";
-                cpic_error.innerHTML = error_text;
+                cpic_error.innerHTML = "*Please upload the needed document";
                 cpic_error.classList.add("invalid-feedback");
-                
-                return false;
+                isValid = false;
             } else if (!validateFileSize(cpic)) {
-                
-                return false;
-
+                isValid = false;
             } else {
                 cpic.classList.remove("is-invalid");
                 cpic_error.innerHTML = "";
                 cpic_error.classList.remove("invalid-feedback");
-
-                return true;
             }
 
+            // Validate input3 (Edited by)
+            if (input3.value.trim() === '') {
+                input3.classList.add("is-invalid");
+                edit_error.innerHTML = "*Please enter your name";
+                edit_error.classList.add("invalid-feedback");
+                isValid = false;
+            } else {
+                input3.classList.remove("is-invalid");
+                edit_error.innerHTML = "";
+                edit_error.classList.remove("invalid-feedback");
+            }
+
+            return isValid;
         }
 
         function validateFileSize(fileInput) {
@@ -193,7 +205,7 @@
                 return true;
             }
         }
-    
     </script>
 </body>
+
 </html>
