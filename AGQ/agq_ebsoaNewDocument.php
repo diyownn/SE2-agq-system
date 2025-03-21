@@ -145,7 +145,6 @@ $conn->close();
                     "95 Ocean Freight",
                     "Advance Shipping Lines",
                     "Processing",
-                    "Notes",
                     "Additional Charges"
                 ];
                 generateFixedCharges(lclCharges);
@@ -161,7 +160,6 @@ $conn->close();
                     "E2M Lodgement",
                     "Stuffing",
                     "Handling",
-                    "Notes",
                     "Additional Charges"
                 ];
                 generateFixedCharges(containerCharges, true);
@@ -213,33 +211,6 @@ $conn->close();
                     colContainer.insertAdjacentElement("afterend", errorDiv);
 
                 }
-
-                if (charge === "Notes") {
-                    // Create a text area for notes instead of a single-line input
-                    row.innerHTML = `
-                        <div class="charges">
-                            <div class="col">
-                                <input type="text" value="Notes" readonly style="width:360px; flex-direction: column">
-                                <textarea name="notes" placeholder="Enter notes" onchange="validateNotesField(this)" style="width:360px; height:100px; flex-direction: column; resize: none;"></textarea>
-                            </div>
-                        </div>
-                    `;
-
-                    const chargesContainer = row.querySelector(".charges");
-                    const colContainer = chargesContainer.querySelector(".col");
-
-                    // Create the error message div
-                    const errorDiv = document.createElement("div");
-                    errorDiv.id = "notes-error"; // Unique ID for the error element
-                    errorDiv.className = "invalid-feedback"; // Styling for the error div
-                    errorDiv.style.marginTop = "5px"; // Add spacing between .col and error message
-                    errorDiv.style.display = "none"; // Initially hidden
-                    errorDiv.innerHTML = `*Notes input has a validation error`; // Example error message
-
-                    // Insert the error div after the .col container
-                    colContainer.insertAdjacentElement("afterend", errorDiv);
-            }
-
 
                 chargesTable.appendChild(row);
             });
@@ -406,36 +377,32 @@ $conn->close();
             const maxLength = 255; // Maximum character limit
             let isValid = true; // Track overall validity
 
-            if (notesInput) {
-                const colContainer = notesInput.closest(".col"); // Locate the .col container
-                if (!colContainer) {
-                    console.error("Error: .col container not found for notes input");
-                    return false;
-                }
+            const errorElementId = notesInput.name + "-error"; // Unique error element ID
+            let errorElement = notesInput.nextElementSibling; // Locate the error element directly below the input
 
-                const errorDiv = colContainer.nextElementSibling; // Locate the error div
-                if (!errorDiv) {
-                    console.error("Error: Error div not found for notes input");
-                    return false;
-                }
+            if (!errorElement || errorElement.className !== "invalid-feedback") {
+                errorElement = document.createElement("div");
+                errorElement.id = errorElementId;
+                errorElement.className = "invalid-feedback";
+                notesInput.insertAdjacentElement("afterend", errorElement); // Place the error element below the input
+            }
 
-                // Validate the length
-                if (notesInput.value.length > maxLength) {
-                    notesInput.classList.add("is-invalid"); // Add invalid class
-                    errorDiv.innerHTML = `*Notes cannot exceed ${maxLength} characters`; // Set error message
-                    errorDiv.style.display = "block"; // Show error message
-                    isValid = false; // Mark as invalid
-                } 
-                // Validate allowed symbols (including line breaks)
-                else if (!allowedSymbols.test(notesInput.value)) {
-                    notesInput.classList.add("is-invalid");
-                    errorDiv.innerHTML = "*Only letters, numbers, and these symbols are allowed: ! @ $ % ^ & ( ) _ + / - : | , ~"; // Error message
-                    errorDiv.style.display = "block";
-                    isValid = false;
-                } else {
-                    notesInput.classList.remove("is-invalid"); // Remove invalid class
-                    errorDiv.style.display = "none"; // Hide error message
-                }
+            // Validate the length
+            if (notesInput.value.length > maxLength) {
+                notesInput.classList.add("is-invalid"); // Add invalid class
+                errorElement.innerHTML = `*Notes cannot exceed ${maxLength} characters`; // Set error message
+                errorElement.style.display = "block"; // Show error message
+                isValid = false; // Mark as invalid
+            } 
+            // Validate allowed symbols (including line breaks)
+            else if (!allowedSymbols.test(notesInput.value)) {
+                notesInput.classList.add("is-invalid");
+                errorElement.innerHTML = "*Only letters, numbers, and these symbols are allowed: ! @ $ % ^ & ( ) _ + / - : | , ~"; // Error message
+                errorElement.style.display = "block";
+                isValid = false;
+            } else {
+                notesInput.classList.remove("is-invalid"); // Remove invalid class
+                errorElement.style.display = "none"; // Hide error message
             }
 
             return isValid; // Return validity status
@@ -555,7 +522,9 @@ $conn->close();
                 <div class="section">
                     <input type="number" id="total" name="total" placeholder="Total" style="width: 100%" readonly>
                     <button type="button" onclick="calculateTotal()" class="calc-btn">Calculate</button>
-
+                </div>
+                <div class="section">
+                    <textarea name="notes" placeholder="Enter notes" onchange="validateNotesField(this)" style="width:750px; height:100px; flex-direction: column; resize: none;"></textarea>
                 </div>
                 <div class="section">
                     <input type="text" name="prepared_by" placeholder="Prepared by" style="width: 48%">
