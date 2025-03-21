@@ -110,9 +110,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                 <form action="agq_manifestoForm.php" method="POST" class="form-content" enctype="multipart/form-data" onsubmit="return validate_form()">
                     <img src="" class="d-block mx-auto" id="imgholder" alt="" style="width: 335px; height: 350px">
-
                     <input type="text" name="edit" id="einput" class="form-control" placeholder="Created by" onchange="return validate_edit()">
                     <div id="edit-error"></div>
+
 
                     <div class="d-flex justify-content-center">
                         <label class="file-upload d-flex justify-content-center">
@@ -143,6 +143,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 
     <script>
+        function previewImage(event) {
+            var imgDisplay = document.getElementById("imgholder");
+            imgDisplay.src = URL.createObjectURL(event.target.files[0]);
+        }
+
         function validate_form() {
             let editValid = validate_edit();
             let imageValid = validate_manImg();
