@@ -545,7 +545,7 @@ $conn->close();
                     <button type="button" onclick="calculateTotal()" class="calc-btn">Calculate</button>
                 </div>
                 <div class="section">
-                    <textarea name="notes" placeholder="Enter notes" onchange="validateNotesField(this)" style="width:750px; height:100px; flex-direction: column; resize: none;"></textarea>
+                    <textarea name="notes" placeholder="Enter notes" onchange="validateNotesField(this)" style="width: 800px; height:100px; flex-direction: column; resize: none;"></textarea>
                 </div>
                 <div class="section">
                     <input type="text" name="prepared_by" placeholder="Prepared by" style="width: 48%">
