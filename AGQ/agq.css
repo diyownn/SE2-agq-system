@@ -62,14 +62,16 @@ body{
     
 }
 
-#input3{
-    width: 223px;
-    background-color: #d9d9d9;
-    border: 1px solid;
-    border-radius: 0%;
-    display: block;
-    margin: 40px auto;
-    margin-bottom: 0%;
+.form-control {
+        width: 223px;
+        background-color: #d9d9d9;
+        border: 1px solid;
+        border-radius: 0%;
+        display: block;
+        margin: 40px auto;
+        margin-top: 10px;
+        margin-bottom: 0%;
+   
 }
 
 #forgotP a {
@@ -125,9 +127,14 @@ body{
     cursor: pointer;
 }
 
+#edit-error{
+    margin-left: 16%; 
+    margin-top: 1%
+}
+
 #image-error {
     position: absolute;
-    bottom: 133px;
+    bottom: 50px;
     right: 18px;
     margin-left: 0%;
     white-space: nowrap;
