@@ -10,6 +10,8 @@ ini_set('display_errors', 1);
 
 $role = $_SESSION['department'] ?? '';
 $search_query = isset($_GET['search']) ? trim($_GET['search']) : '';
+$dept = isset($_SESSION['SelectedDepartment']) ? $_SESSION['SelectedDepartment'] : '';
+$company = isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : '';
 $dept = $_SESSION['SelectedDepartment'] ?? ''; // Selected department filter
 $response = [];
 
@@ -31,18 +33,18 @@ if (!empty($search_query)) {
     $like_query = "%{$search_query}%";
     $query = "SELECT '$role' AS Department, RefNum, DocType, Company_name 
               FROM $table 
-              WHERE RefNum LIKE ? OR DocType LIKE ? OR Company_name LIKE ?";
+              WHERE RefNum LIKE ? OR DocType LIKE ? AND Company_name LIKE ?";
 
-    $params = [$like_query, $like_query, $like_query];
+    $params = [$like_query, $like_query, $company];
     $types = "sss";
 
-    // If there's a specific department selected, handle that separately
+
     if (!empty($dept) && isset($tables[$dept])) {
         $table = $tables[$dept];
         $query = "SELECT '$dept' AS Department, RefNum, DocType, Company_name 
                   FROM $table 
-                  WHERE RefNum LIKE ? OR DocType LIKE ? OR Company_name LIKE ?";
-        $params = [$like_query, $like_query, $like_query];
+                  WHERE RefNum LIKE ? OR DocType LIKE ? AND Company_name LIKE ?";
+        $params = [$like_query, $like_query, $company];
     }
 
     if ($stmt = $conn->prepare($query)) {
