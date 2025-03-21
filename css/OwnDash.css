@@ -128,6 +128,128 @@ body {
   background-color: #f0f0f0;
 }
 
+.nav-link-container {
+  display: flex;
+  gap: 55px;
+  margin-left: 0px;
+  align-items: center;
+  padding: 0 0 20px;
+}
+
+.nav-link-container a {
+  text-decoration: none;
+  color: #94ae5e;
+  font-weight: bold;
+  font-size: 14px; 
+}
+
+.dashboard-body {
+  margin: 30px 80px 10px 80px;
+}
+  
+.company-head {
+  display: flex;
+  flex-direction: row;
+  margin: 0px 15px 0px 10px;
+  justify-content: space-between;
+  align-items: center;
+} 
+
+.add-company {
+  display: flex;
+  align-items: center;
+  background-color: #94ae5e;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 50px;
+  font-family: 'IBM Plex Sans', Arial, sans-serif;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease;      
+}
+
+.add-company:hover {
+  background-color: #63852e;
+}
+
+.add-company span {
+  color: black;
+  margin-right: 10px;
+}
+  
+.icon {
+  width: 30px;
+  height: 30px;
+  background: #E0E0E0;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.icon svg {
+  width: 14px;
+  height: 14px;
+}
+  
+#company-container-parent {
+  display: flex !important; 
+  flex-direction: column !important;
+  justify-content: start !important;
+  padding-left: 50px;
+  padding-right: 50px;
+}
+  
+
+.company-container-row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 50px; 
+  justify-content: flex-start; 
+  margin: 20px 0px 40px 0;
+  width: 100%;
+}
+
+
+.company-button {
+  flex: 0 0 calc(20% - 50px); 
+  max-width: 200px;
+  margin-bottom: 30px;
+}
+  
+.company-container {
+  background-color: rgb(144, 174, 94);
+  padding: 10px 10px 10px 10px;
+  margin: 0px 15px 0px 15px;
+  border-style: none;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: box-shadow 0.15s,
+              opacity 0.1s;
+}
+  
+.company-container:hover {
+  box-shadow: 0px 0px 20px rgb(135, 164, 89);
+}
+  
+.company-container:active {
+  opacity: 0.7;
+}
+  
+.company-title {
+  font-weight: 600;
+  font-size: 40px;
+  margin-bottom: 13px;
+}
+  
+.company-logo {
+  width: 200px;
+  height: 200px;
+}
+
+/* Hamburger Menu Styles */
 .hamburger-menu {
   display: none;
   flex-direction: column;
@@ -246,148 +368,6 @@ body {
   z-index: 999;
 }
 
-.nav-link-container {
-  display: flex;
-  gap: 55px;
-  margin-left: 0px;
-  align-items: center;
-  padding: 0 0 20px;
-}
-
-.nav-link-container a {
-  text-decoration: none;
-  color: #94ae5e;
-  font-weight: bold;
-  font-size: 14px; 
-}
-
-.dashboard-body {
-  margin: 30px 80px 10px 80px;
-}
-  
-.company-head {
-  display: flex;
-  flex-direction: row;
-  margin: 0px 15px 0px 10px;
-  justify-content: space-between;
-  align-items: center;
-} 
-
-.add-company {
-  display: flex;
-  align-items: center;
-  background-color: #94ae5e;
-  padding: 10px 15px;
-  border: none;
-  border-radius: 50px;
-  font-family: 'IBM Plex Sans', Arial, sans-serif;
-  font-weight: bold;
-  cursor: pointer;
-  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
-  transition: background-color 0.3s ease;      
-}
-
-.add-company:hover {
-  background-color: #63852e;
-}
-
-.add-company span {
-  color: black;
-  margin-right: 10px;
-}
-  
-.icon {
-  width: 30px;
-  height: 30px;
-  background: #E0E0E0;
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.icon svg {
-  width: 14px;
-  height: 14px;
-}
-  
-#company-container-parent {
-  display: flex !important; 
-  flex-direction: column !important;
-  justify-content: start !important;
-  padding-left: 50px;
-  padding-right: 50px;
-}
-  
-.company-container-row {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  gap: 100px;
-  justify-content: flex-start;
-  margin: 20px 0px 40px 0;
-}
-
-.company-button {
-  flex: 1 1 calc(20% - 10px);
-  max-width: 200px;
-  text-align: center;
-}
-  
-.company-container {
-  background-color: rgb(144, 174, 94);
-  padding: 10px 10px 10px 10px;
-  margin: 0px 15px 0px 15px;
-  border-style: none;
-  border-radius: 25px;
-  cursor: pointer;
-  transition: box-shadow 0.15s,
-              opacity 0.1s;
-}
-  
-.company-container:hover {
-  box-shadow: 0px 0px 20px rgb(135, 164, 89);
-}
-  
-.company-container:active {
-  opacity: 0.7;
-}
-  
-.company-title {
-  font-weight: 600;
-  font-size: 40px;
-  margin-bottom: 13px;
-}
-  
-.company-logo {
-  width: 200px;
-  height: 200px;
-}
-
-
-
-/* Hamburger Menu Styles */
-.hamburger-menu {
-  display: none;
-  flex-direction: column;
-  justify-content: space-between;
-  width: 30px;
-  height: 20px;
-  cursor: pointer;
-  z-index: 1010;
-  position: absolute;
-  right: 20px;
-  top: 20px;
-}
-
-.hamburger-menu span {
-  width: 100%;
-  height: 3px;
-  background-color: #94ae5e;
-  border-radius: 3px;
-  transition: all 0.3s ease;
-}
-
 .mobile-nav {
   display: none;
   position: fixed;
@@ -461,113 +441,123 @@ body {
 }
 
 /* Responsive Styles */
-/* Adjust existing media queries */
-/* Adjust existing media queries */
 @media screen and (max-width: 1024px) {
   .dashboard-body {
-      margin: 30px 40px 10px 40px;
+    margin: 30px 40px 10px 40px;
   }
   
   #company-container-parent {
-      padding-left: 20px;
-      padding-right: 20px;
+    padding-left: 20px;
+    padding-right: 20px;
   }
   
   .company-container-row {
-      gap: 50px;
+    gap: 50px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
   }
 }
 
 @media screen and (max-width: 768px) {
   .hamburger-menu {
-      display: flex;
-      position: absolute;
-      top: 40px;
-      right: 20px;
+    display: flex;
+    position: absolute;
+    top: 40px;
+    right: 20px;
   }
 
   .mobile-menu {
-      display: block;
+    display: block;
   }
 
   .search-container, .nav-link-container {
-      display: none;
+    display: none;
   }
   
   .header-container {
-      justify-content: center;
-      margin-top: 60px;
-      padding-bottom: 20px;
+    justify-content: center;
+    margin-top: 60px;
+    padding-bottom: 20px;
   }
 
   .company-button {
-      flex: 1 1 calc(33.333% - 10px);
-      max-width: 180px;
+    flex: 0 0 calc(33.333% - 34px);
+    max-width: 180px;
+    margin: 0;
   }
   
   .company-logo {
-      width: 150px;
-      height: 150px;
+    width: 150px;
+    height: 150px;
+  }
+  
+  .company-container-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 50px;
+    width: 100%;
   }
 }
 
 @media screen and (max-width: 480px) {
   .dept-label {
-      width: 100%;
-      border-radius: 0;
-      position: relative;
-      text-align: center;
-      min-width: unset;
+    width: 100%;
+    border-radius: 0;
+    position: relative;
+    text-align: center;
+    min-width: unset;
   }
   
   .hamburger-menu {
-      top: 40px;
-      right: 20px;
+    top: 40px;
+    right: 20px;
   }
   
   .company-button {
-      flex: 1 1 calc(50% - 10px);
-      max-width: none;
+    flex: 0 0 calc(50% - 10px);
+    max-width: none;
   }
   
   .company-logo {
-      width: 120px;
-      height: 120px;
+    width: 120px;
+    height: 120px;
   }
   
   .company-title {
-      font-size: 28px;
+    font-size: 28px;
   }
   
   .company-container-row {
-      gap: 20px;
-      justify-content: center;
+    gap: 20px;
+    justify-content: center;
   }
   
   .dashboard-body {
-      margin: 20px 10px 10px 10px;
+    margin: 20px 10px 10px 10px;
   }
   
   .company-head {
-      flex-direction: column;
-      align-items: flex-start;
-      margin-bottom: 20px;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 20px;
   }
   
   .add-company {
-      width: 100%;
-      justify-content: center;
-      margin-top: 10px;
+    width: 100%;
+    justify-content: center;
+    margin-top: 10px;
   }
 }
 
 @media screen and (max-width: 320px) {
   .company-button {
-      flex: 1 1 100%;
+    flex: 1 1 100%;
   }
   
   .company-logo {
-      width: 100px;
-      height: 100px;
+    width: 100px;
+    height: 100px;
   }
 }

@@ -33,6 +33,7 @@ if (!$company) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Company Departments</title>
+    <link rel="icon" type="image/x-icon" href="/AGQ/images/favicon.ico">
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/cd.css">
 </head>
@@ -54,10 +55,13 @@ if (!$company) {
     <a href="agq_owndash.php" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 20px; top: 50px;">←</a>
 
     <div class="container">
-        <h1>Company Departments</h1>
+        <div class ="title-container">
+            <h1 class = "title"> COMPANY DEPARTMENTS </h1>
+        </div>
+
         <div class="grid">
             <div class="grid">
-                <a href="#" class="box" onclick="storeDepartmentSession('Import Forwarding')">Import Forwarding</a>
+                <a href="#" class="box" onclick="storeDepartmentSession('Import Forwarding')">Import Forwarding</a> <!-- href is misleading-->
                 <a href="#" class="box" onclick="storeDepartmentSession('Export Forwarding')">Export Forwarding</a>
                 <a href="#" class="box" onclick="storeDepartmentSession('Import Brokerage')">Import Brokerage</a>
                 <a href="#" class="box" onclick="storeDepartmentSession('Export Brokerage')">Export Brokerage</a>
