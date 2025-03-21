@@ -7,7 +7,7 @@ body {
     min-height: 100vh;
     margin: 0;
   }
-  
+
   .dept-container {
     position: relative;
     display: flex;
@@ -136,7 +136,7 @@ body {
     width: 100%;
     border-color: black;
     border-collapse: collapse;
-    margin-bottom: 20px;
+    margin-bottom: 50px;
   }
   
   .document-table th {
