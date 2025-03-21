@@ -104,6 +104,7 @@ if (!empty($search_query)) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="../AGQ/images/favicon.ico">
     <title>Transactions</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../css/otp.css">
@@ -125,8 +126,6 @@ if (!empty($search_query)) {
         </div>
     </div>
 
-    <a href="agq_employdash.php" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 20px; top: 50px;">←</a>
-
     <div class="container py-3">
         <div class="search-container d-flex flex-wrap justify-content-center">
             <input type="text" class="search-bar form-control" id="search-input" placeholder="Search Transaction Details...">
@@ -146,8 +145,8 @@ if (!empty($search_query)) {
         <div class="transactions mt-4">
 
             <?php
-            $docTypes = ['SOA', 'Invoice', 'Summary', 'Others'];
-            $labels = ['SOA', 'INVOICE', 'SUMMARY', 'OTHERS'];
+            $docTypes = ['SOA', 'Invoice'];
+            $labels = ['SOA', 'INVOICE'];
 
 
             $docTypeLabels = array_combine(array_map('strtoupper', $docTypes), $labels);
@@ -155,18 +154,14 @@ if (!empty($search_query)) {
 
             <?php foreach ($docTypes as $docType): ?>
                 <div class="transaction">
-
                     <div class="transaction-header"><?php echo $docTypeLabels[strtoupper($docType)]; ?> <span class="icon">&#x25BC;</span></div>
                     <div class="transaction-content">
-                        <?php
-
-                        $normalizedDocType = strtoupper(trim($docType));
-                        ?>
+                        <?php $normalizedDocType = strtoupper(trim($docType)); ?>
                         <?php if (!empty($transactions[$normalizedDocType])): ?>
                             <?php foreach ($transactions[$normalizedDocType] as $refNum): ?>
                                 <div class="transaction-item d-flex justify-content-between"
-                                    ondblclick="redirectToDocument('<?php echo htmlspecialchars($refNum); ?>')">
-                                    <span><?php echo htmlspecialchars($refNum); ?></span>
+                                    ondblclick="redirectToDocument('<?php echo htmlspecialchars($refNum); ?>', '<?php echo $normalizedDocType; ?>')">
+                                    <span><?php echo htmlspecialchars($refNum); ?> - <?php echo $normalizedDocType; ?></span>
                                     <input type="checkbox">
                                 </div>
                             <?php endforeach; ?>
@@ -179,13 +174,12 @@ if (!empty($search_query)) {
         </div>
     </div>
     <script>
-        function redirectToDocument(refnum) {
-            if (!refnum) {
+        function redirectToDocument(refnum, doctype) {
+            if (!refnum || !doctype) {
                 return;
             } else {
-                window.location.href = "agq_documentCatcher.php?refnum=" + encodeURIComponent(refnum);
+                window.location.href = "agq_documentCatcher.php?refnum=" + encodeURIComponent(refnum) + '&doctype=' + encodeURIComponent(doctype);;
             }
-
         }
 
         document.body.addEventListener("click", function(event) {
@@ -314,24 +308,18 @@ if (!empty($search_query)) {
                         // **Ensure SOA, Summary, and Others exist in all departments**
                         Object.keys(structuredTransactions).forEach(department => {
                             if (!structuredTransactions[department]["SOA"]) {
-                                structuredTransactions[department]["SOA"] = ["No transactions available"]; // Always show SOA
+                                structuredTransactions[department]["SOA"] = [];
                             }
-                            if (!structuredTransactions[department]["SUMMARY"]) {
-                                structuredTransactions[department]["SUMMARY"] = [];
+                            if (!structuredTransactions[department]["INVOICE"]) {
+                                structuredTransactions[department]["INVOICE"] = [];
                             }
-                            if (!structuredTransactions[department]["OTHERS"]) {
-                                structuredTransactions[department]["OTHERS"] = [];
-                            }
+
                         });
 
                         generateTransactionHTML(structuredTransactions, transactionsContainer);
                     })
                     .catch(error => console.error("Error fetching all transactions:", error));
             }
-
-
-
-
 
             function fetchFilteredTransactions(query) {
                 fetch("FILTER_TRANSACTIONS.php?search=" + encodeURIComponent(query))
@@ -377,15 +365,15 @@ if (!empty($search_query)) {
                     let departmentSection = document.createElement("div");
                     departmentSection.classList.add("department-section");
 
-                    // Define the order of document types
-                    const order = ["SOA", "INVOICE", "SUMMARY", "OTHERS"];
-
-                    // Sort document types based on the defined order
+                    const order = ["SOA", "INVOICE"];
                     let sortedDocTypes = Object.keys(docTypes).sort((a, b) => {
                         let indexA = order.indexOf(a.toUpperCase());
                         let indexB = order.indexOf(b.toUpperCase());
 
-                        return (indexA !== -1 ? indexA : order.length) - (indexB !== -1 ? indexB : order.length);
+                        if (indexA === -1) indexA = order.length;
+                        if (indexB === -1) indexB = order.length;
+
+                        return indexA - indexB;
                     });
 
                     sortedDocTypes.forEach(docType => {
@@ -405,10 +393,10 @@ if (!empty($search_query)) {
                             refs.forEach(refNum => {
                                 let transactionItem = document.createElement("div");
                                 transactionItem.classList.add("transaction-item", "d-flex", "justify-content-between");
-                                transactionItem.setAttribute("ondblclick", `redirectToDocument('${refNum}')`);
+                                transactionItem.setAttribute("ondblclick", `redirectToDocument('${refNum}', '${docType}')`);
 
                                 let transactionText = document.createElement("span");
-                                transactionText.textContent = refNum;
+                                transactionText.textContent = `${refNum} - ${docType}`;
 
                                 let transactionCheckbox = document.createElement("input");
                                 transactionCheckbox.type = "checkbox";

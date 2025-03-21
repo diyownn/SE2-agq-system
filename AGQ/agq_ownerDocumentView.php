@@ -5,10 +5,6 @@ $role = isset($_SESSION['department']) ? $_SESSION['department'] : '';
 $company = isset($_SESSION['Company']) ? $_SESSION['Company'] : '';
 $dept = isset($_SESSION['SelectedDepartment']) ? $_SESSION['SelectedDepartment'] : '';
 
-
-
-
-
 ?>
 
 <!DOCTYPE html>

@@ -78,6 +78,7 @@ if ($result) {
     <title>Transactions</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../css/otp.css">
+    <link rel="icon" type="image/x-icon" href="/AGQ/images/favicon.ico">
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
 </head>
@@ -100,8 +101,6 @@ if ($result) {
         </div>
     </div>
 
-    <a href="agq_choosedepartment.php" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 20px; top: 50px;">←</a>
-
     <!--<pre><?php print_r($transactions); ?></pre>-->
 
     <div class="container py-3">
@@ -113,8 +112,8 @@ if ($result) {
 
         <div class="transactions mt-4">
             <?php
-            $docTypes = ['SOA', 'Invoice', 'Summary', 'Others'];
-            $labels = ['SOA', 'INVOICE', 'SUMMARY', 'OTHERS'];
+            $docTypes = ['SOA', 'Invoice'];
+            $labels = ['SOA', 'INVOICE'];
 
 
             $docTypeLabels = array_combine(array_map('strtoupper', $docTypes), $labels);
@@ -122,18 +121,14 @@ if ($result) {
 
             <?php foreach ($docTypes as $docType): ?>
                 <div class="transaction">
-
                     <div class="transaction-header"><?php echo $docTypeLabels[strtoupper($docType)]; ?> <span class="icon">&#x25BC;</span></div>
                     <div class="transaction-content">
-                        <?php
-
-                        $normalizedDocType = strtoupper(trim($docType));
-                        ?>
+                        <?php $normalizedDocType = strtoupper(trim($docType)); ?>
                         <?php if (!empty($transactions[$normalizedDocType])): ?>
                             <?php foreach ($transactions[$normalizedDocType] as $refNum): ?>
                                 <div class="transaction-item d-flex justify-content-between"
-                                    ondblclick="redirectToDocument('<?php echo htmlspecialchars($refNum); ?>')">
-                                    <span><?php echo htmlspecialchars($refNum); ?></span>
+                                    ondblclick="redirectToDocument('<?php echo htmlspecialchars($refNum); ?>', '<?php echo $normalizedDocType; ?>')">
+                                    <span><?php echo htmlspecialchars($refNum); ?> - <?php echo $normalizedDocType; ?></span>
                                     <input type="checkbox">
                                 </div>
                             <?php endforeach; ?>
@@ -147,13 +142,12 @@ if ($result) {
     </div>
 
     <script>
-        function redirectToDocument(refnum) {
-            if (!refnum) {
+        function redirectToDocument(refnum, doctype) {
+            if (!refnum || !doctype) {
                 return;
             } else {
-                window.location.href = "agq_documentCatcher.php?refnum=" + encodeURIComponent(refnum);
+                window.location.href = "agq_documentCatcher.php?refnum=" + encodeURIComponent(refnum) + '&doctype=' + encodeURIComponent(doctype);;
             }
-
         }
 
         document.addEventListener("DOMContentLoaded", function() {
@@ -228,10 +222,6 @@ if ($result) {
                 });
         });
 
-
-
-
-
         document.addEventListener("DOMContentLoaded", function() {
             let searchInput = document.getElementById("search-input");
             let searchButton = document.getElementById("search-button");
@@ -289,12 +279,6 @@ if ($result) {
                             if (!structuredTransactions[department]["INVOICE"]) {
                                 structuredTransactions[department]["INVOICE"] = [];
                             }
-                            if (!structuredTransactions[department]["SUMMARY"]) {
-                                structuredTransactions[department]["SUMMARY"] = [];
-                            }
-                            if (!structuredTransactions[department]["OTHERS"]) {
-                                structuredTransactions[department]["OTHERS"] = [];
-                            }
                         });
 
                         generateTransactionHTML(structuredTransactions, transactionsContainer);
@@ -349,15 +333,12 @@ if ($result) {
                     let departmentSection = document.createElement("div");
                     departmentSection.classList.add("department-section");
 
-                    // Define the order of document types
                     const order = ["SOA", "INVOICE", "SUMMARY", "OTHERS"];
-
-                    // Sort document types based on the defined order
                     let sortedDocTypes = Object.keys(docTypes).sort((a, b) => {
                         let indexA = order.indexOf(a.toUpperCase());
                         let indexB = order.indexOf(b.toUpperCase());
 
-                        if (indexA === -1) indexA = order.length; // Put unknown types at the end
+                        if (indexA === -1) indexA = order.length;
                         if (indexB === -1) indexB = order.length;
 
                         return indexA - indexB;
@@ -380,10 +361,10 @@ if ($result) {
                             refs.forEach(refNum => {
                                 let transactionItem = document.createElement("div");
                                 transactionItem.classList.add("transaction-item", "d-flex", "justify-content-between");
-                                transactionItem.setAttribute("ondblclick", `redirectToDocument('${refNum}')`);
+                                transactionItem.setAttribute("ondblclick", `redirectToDocument('${refNum}', '${docType}')`);
 
                                 let transactionText = document.createElement("span");
-                                transactionText.textContent = refNum;
+                                transactionText.textContent = `${refNum} - ${docType}`;
 
                                 let transactionCheckbox = document.createElement("input");
                                 transactionCheckbox.type = "checkbox";
@@ -404,6 +385,7 @@ if ($result) {
                     container.appendChild(departmentSection);
                 });
             }
+
 
 
 
