@@ -24,6 +24,7 @@ $company = isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : '';
 <body>
   <div class="container">
     <div class="document-view">
+      <!-- Table Here -->
     </div>
     <div class="info-view">
       <div class="docu-information">

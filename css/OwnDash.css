@@ -206,7 +206,7 @@ body {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  gap: 50px; 
+  gap: 90px; 
   justify-content: flex-start; 
   margin: 20px 0px 40px 0;
   width: 100%;
@@ -452,7 +452,7 @@ body {
   }
   
   .company-container-row {
-    gap: 50px;
+    gap: 90px;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
@@ -496,7 +496,7 @@ body {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 50px;
+    gap: 90px;
     width: 100%;
   }
 }
