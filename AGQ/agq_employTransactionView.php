@@ -5,53 +5,15 @@ session_start();
 $role = isset($_SESSION['department']) ? $_SESSION['department'] : '';
 $company = isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : '';
 
+
 if (!$role) {
-    echo "<html><head><style>
-    body { font-family: Arial, sans-serif; text-align: center; background-color: #f8d7da; }
-    .container { margin-top: 50px; padding: 20px; background: white; border-radius: 10px; display: inline-block; }
-    h1 { color: #721c24; }
-    p { color: #721c24; }
-  </style></head><body>
-  <div class='container'>
-    <h1>Unauthorized Access</h1>
-    <p>You do not have permission to view this page.</p>
-  </div>
-  </body></html>";
-    exit;
+    header("Location: UNAUTHORIZED.php?error=401r");
 }
 
 if (!$company) {
-    echo "<html><head><style>
-    body { font-family: Arial, sans-serif; text-align: center; background-color: #f8d7da; }
-    .container { margin-top: 50px; padding: 20px; background: white; border-radius: 10px; display: inline-block; }
-    h1 { color: #721c24; }
-    p { color: #721c24; }
-  </style></head><body>
-  <div class='container'>
-    <h1>Unauthorized Access</h1>
-    <p>You do not have permission to view this page.</p>
-  </div>
-  </body></html>";
-    exit;
-}
-/*
-if (!isset($_SESSION['department'])) {
-    header("Location: agq_login.php");
-    session_destroy();
-    exit();
-} elseif ($role == 'Export Brokerage' || $role == 'Export Forwarding' || $role == 'Import Brokerage' || $role == 'Import Forwarding') {
-    header("Location: agq_dashCatcher.php");
-    session_destroy();
-    exit();
+    header("Location: UNAUTHORIZED.php?error=401c");
 }
 
-if (isset($_GET['logout']) && $_GET['logout'] == 'true') {
-    session_unset();
-    session_destroy();
-    header("Location: agq_login.php");
-    exit();
-}
-*/
 $query = "
 SELECT i.RefNum, i.DocType, c.Company_name
 FROM tbl_impfwd i
@@ -73,14 +35,35 @@ FROM tbl_expbrk e
 JOIN tbl_company c ON e.Company_name= c.Company_name
 WHERE '$role' = 'Export Brokerage' AND c.Company_name = '$company'
 ";
+
+if ($role == 'Import Forwarding') {
+    $query .= "
+    UNION
+    SELECT d.RefNum, d.DocType, c.Company_name
+    FROM tbl_document d
+    JOIN tbl_company c ON d.Company_name = c.Company_name
+    WHERE c.Company_name = '$company'
+    ";
+}
+
+
 $result = $conn->query($query);
 
+
+
+$result = $conn->query($query);
 $transactions = [];
 if ($result) {
     while ($row = $result->fetch_assoc()) {
-        $transactions[strtoupper($row['DocType'])][] = $row['RefNum'];
+        $docType = strtoupper($row['DocType']);
+        $transactions[$docType][] = [
+            'RefNum' => (string) $row['RefNum'], // Ensure it's a string
+            'DocumentID' => isset($row['DocumentID']) ? (string) $row['DocumentID'] : null // Convert DocumentID to string if available
+        ];
     }
 }
+
+
 /*
 if (!empty($search_query)) {
     $stmt = $conn->prepare("SELECT Company_name, Company_picture FROM tbl_company WHERE Company_name LIKE ?");
@@ -163,10 +146,10 @@ if (!empty($search_query)) {
                     <div class="transaction-content">
                         <?php $normalizedDocType = strtoupper(trim($docType)); ?>
                         <?php if (!empty($transactions[$normalizedDocType])): ?>
-                            <?php foreach ($transactions[$normalizedDocType] as $refNum): ?>
+                            <?php foreach ($transactions[$normalizedDocType] as $transaction): ?>
                                 <div class="transaction-item d-flex justify-content-between">
-                                    <span ondblclick="redirectToDocument('<?php echo htmlspecialchars($refNum); ?>', '<?php echo $normalizedDocType; ?>')">
-                                        <?php echo htmlspecialchars($refNum); ?> - <?php echo $normalizedDocType; ?>
+                                    <span ondblclick="redirectToDocument('<?php echo htmlspecialchars($transaction['RefNum']); ?>', '<?php echo $normalizedDocType; ?>')">
+                                        <?php echo htmlspecialchars($transaction['RefNum']); ?> - <?php echo $normalizedDocType; ?>
                                     </span>
                                     <input type="checkbox">
                                 </div>

@@ -32,8 +32,9 @@ $table = $tables[$role] ?? null; // Get table based on role
 if (!empty($search_query)) {
     $like_query = "%{$search_query}%";
     $query = "SELECT '$role' AS Department, RefNum, DocType, Company_name 
-              FROM $table 
-              WHERE RefNum LIKE ? OR DocType LIKE ? AND Company_name LIKE ?";
+    FROM $table 
+    WHERE (RefNum LIKE ? OR DocType LIKE ? OR DocType = 'Manifesto') AND Company_name LIKE ?";
+
 
     $params = [$like_query, $like_query, $company];
     $types = "sss";
@@ -41,9 +42,10 @@ if (!empty($search_query)) {
 
     if (!empty($dept) && isset($tables[$dept])) {
         $table = $tables[$dept];
-        $query = "SELECT '$dept' AS Department, RefNum, DocType, Company_name 
-                  FROM $table 
-                  WHERE RefNum LIKE ? OR DocType LIKE ? AND Company_name LIKE ?";
+        $query = "SELECT '$role' AS Department, RefNum, DocType, Company_name 
+          FROM $table 
+          WHERE (RefNum LIKE ? OR DocType LIKE ? OR DocType = 'Manifesto') AND Company_name LIKE ?";
+
         $params = [$like_query, $like_query, $company];
     }
 
