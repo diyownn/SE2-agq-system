@@ -1,8 +1,8 @@
 <?php
 
 require 'db_agq.php';
-
-$docType = isset($_SESSION['DocType']) ? $_SESSION['DocType'] : '';
+session_start();
+$docType = isset($_GET['doctype']) ? $_GET['doctype'] : '';
 $role = isset($_SESSION['department']) ? $_SESSION['department'] : '';
 $company = isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : '';
 
@@ -22,7 +22,8 @@ $company = isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : '';
 </head>
 
 <body>
-<div class="top-container">
+
+  <div class="top-container">
     <div class="dept-container">
       <div class="header-container">
         <div class="dept-label">
@@ -37,10 +38,13 @@ $company = isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : '';
       </div>
     </div>
   </div>
+
+  <a href="agq_employTransactionView.php" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 20px; top: 50px;">←</a>
+
   <div class="container">
     <div class="document-view">
-    <table class="document-table">
-        <thead class = "transaction-detail-table">
+      <table class="document-table">
+        <thead class="transaction-detail-table">
           <tr>
             <th>Transaction Details</th>
             <th></th>
@@ -112,23 +116,23 @@ $company = isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : '';
             <td>01/02/25 </td>
           </tr>
 
-        <thead>
-          <tr>
-            <th>Package Type</th>
-          </tr>
-        </thead>
+          <thead>
+            <tr>
+              <th>Package Type</th>
+            </tr>
+          </thead>
         <tbody>
           <tr>
             <td>LCL</td>
           </tr>
 
 
-        <thead>
-          <tr>
-            <th>Document ID</th>
-            <th>Document Name</th>
-          </tr>
-        </thead>
+          <thead>
+            <tr>
+              <th>Document ID</th>
+              <th>Document Name</th>
+            </tr>
+          </thead>
         <tbody>
           <tr>
             <td>DOC-001</td>
@@ -154,7 +158,7 @@ $company = isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : '';
             <th>Document ID</th>
             <th>Document Name</th>
           </tr>
-        </thead>
+          </thead>
         <tbody>
           <tr>
             <td>DOC-001</td>
@@ -180,7 +184,7 @@ $company = isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : '';
             <th>Document ID</th>
             <th>Document Name</th>
           </tr>
-        </thead>
+          </thead>
         <tbody>
           <tr>
             <td>DOC-001</td>
@@ -215,7 +219,7 @@ $company = isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : '';
         <p class="date"><strong>Modified By:</strong> Mary Russell</p>
       </div>
 
-      <p class = "comment-header"> Comments:
+      <p class="comment-header"> Comments:
       <div class="comment-box">
         <textarea id="textbox" maxlength="250" oninput="updateCounter()" readonly></textarea>
         <div class="button-container">

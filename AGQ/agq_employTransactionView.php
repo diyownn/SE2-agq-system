@@ -2,7 +2,6 @@
 require 'db_agq.php';
 session_start();
 
-$docType = isset($_SESSION['DocType']) ? $_SESSION['DocType'] : '';
 $role = isset($_SESSION['department']) ? $_SESSION['department'] : '';
 $company = isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : '';
 
@@ -125,7 +124,9 @@ if (!empty($search_query)) {
             </div>
         </div>
     </div>
+
     <a href="agq_employdash.php" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 20px; top: 50px;">←</a>
+
     <div class="container py-3">
         <div class="search-container d-flex flex-wrap justify-content-center">
             <input type="text" class="search-bar form-control" id="search-input" placeholder="Search Transaction Details...">
@@ -148,6 +149,10 @@ if (!empty($search_query)) {
             $docTypes = ['SOA', 'Invoice'];
             $labels = ['SOA', 'INVOICE'];
 
+            if ($role === 'Import Forwarding') {
+                $docTypes[] = 'MANIFESTO';
+                $labels[] = 'MANIFESTO';
+            }
 
             $docTypeLabels = array_combine(array_map('strtoupper', $docTypes), $labels);
             ?>
@@ -367,6 +372,11 @@ if (!empty($search_query)) {
                     departmentSection.classList.add("department-section");
 
                     const order = ["SOA", "INVOICE"];
+
+                    if ($role == "Import Forwarding") {
+                        const order = ["SOA", "INVOICE", "MANIFESTO"];
+                    }
+
                     let sortedDocTypes = Object.keys(docTypes).sort((a, b) => {
                         let indexA = order.indexOf(a.toUpperCase());
                         let indexB = order.indexOf(b.toUpperCase());

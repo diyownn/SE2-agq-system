@@ -3,7 +3,7 @@ session_start();
 
 $role = isset($_SESSION['department']) ? $_SESSION['department'] : '';
 $company = isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : '';
-/*
+
 if (!$role) {
     echo "<html><head><style>
     body { font-family: Arial, sans-serif; text-align: center; background-color: #f8d7da; }
@@ -23,7 +23,7 @@ if (!$company) {
 
     echo "Did not get Company";
 }
-*/
+
 ?>
 
 <!DOCTYPE html>
@@ -33,8 +33,6 @@ if (!$company) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Company Departments</title>
-    <link rel="icon" type="image/x-icon" href="/AGQ/images/favicon.ico">
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/cd.css">
 </head>
 
@@ -52,16 +50,13 @@ if (!$company) {
             </div>
         </div>
     </div>
-    <a href="agq_owndash.php" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 20px; top: 50px;">←</a>
+    <a href="agq_employdash.php" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 20px; top: 50px;">←</a>
 
     <div class="container">
-        <div class ="title-container">
-            <h1 class = "title"> COMPANY DEPARTMENTS </h1>
-        </div>
-
+        <h1>Company Departments</h1>
         <div class="grid">
             <div class="grid">
-                <a href="#" class="box" onclick="storeDepartmentSession('Import Forwarding')">Import Forwarding</a> <!-- href is misleading-->
+                <a href="#" class="box" onclick="storeDepartmentSession('Import Forwarding')">Import Forwarding</a>
                 <a href="#" class="box" onclick="storeDepartmentSession('Export Forwarding')">Export Forwarding</a>
                 <a href="#" class="box" onclick="storeDepartmentSession('Import Brokerage')">Import Brokerage</a>
                 <a href="#" class="box" onclick="storeDepartmentSession('Export Brokerage')">Export Brokerage</a>

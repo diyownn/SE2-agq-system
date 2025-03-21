@@ -5,7 +5,7 @@ session_start();
 $role = isset($_SESSION['department']) ? $_SESSION['department'] : '';
 $company = isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : '';
 
-/*
+
 if (!$role) {
     echo "<html><head><style>
     body { font-family: Arial, sans-serif; text-align: center; background-color: #f8d7da; }
@@ -21,7 +21,7 @@ if (!$role) {
     exit;
 }
 
-
+/*
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Retrieve and sanitize input
