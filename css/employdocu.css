@@ -7,6 +7,102 @@ body {
     min-height: 100vh;
     margin: 0;
   }
+  
+  .dept-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 120px;
+    width: 100%;
+  }
+  
+  .dept-label {
+    background-color: rgb(144, 174, 94);
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+    text-align: start;
+    padding: 10px 1px;
+    width: auto;
+    min-width: 150px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    border-radius: 0 25px  25px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0px -1px 7px 0px rgba(0,0,0,0.19);
+-webkit-box-shadow: 0px -1px 7px 0px rgba(0,0,0,0.19);
+-moz-box-shadow: 0px -1px 7px 0px rgba(0,0,0,0.19);
+    z-index: 99;
+  }
+
+  .company-label {
+    background-color: rgb(160, 184, 117);
+    color: white;
+    font-size: 14px;
+    text-align: start;
+    padding: 10px 1px;
+    width: auto;
+    min-width: 150px;
+    position: absolute;
+    top: 0;
+    left: 120px;
+    border-radius: 0 25px  25px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0px -1px 7px 0px rgba(0,0,0,0.19);
+-webkit-box-shadow: 0px -1px 7px 0px rgba(0,0,0,0.19);
+-moz-box-shadow: 0px -1px 7px 0px rgba(0,0,0,0.19);
+    z-index: 98;
+  }
+
+  .selected-dept-label {
+    background-color: rgb(174, 197, 160);
+    color: white;
+    font-size: 14px;
+    text-align: start;
+    padding: 10px 1px;
+    width: auto;
+    min-width: 200px;
+    position: absolute;
+    padding-left: 20px;
+    top: 0;
+    left: 240px;
+    border-radius: 0 25px  25px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0px -1px 7px 0px rgba(0,0,0,0.19);
+-webkit-box-shadow: 0px -1px 7px 0px rgba(0,0,0,0.19);
+-moz-box-shadow: 0px -1px 7px 0px rgba(0,0,0,0.19);
+    z-index: 97;
+  }
+
+  .selected-doctype {
+    background-color: rgb(174, 197, 160);
+    color: white;
+    font-size: 14px;
+    text-align: start;
+    padding: 10px 1px;
+    width: auto;
+    min-width: 200px;
+    position: absolute;
+    padding-left: 20px;
+    top: 0;
+    left: 240px;
+    border-radius: 0 25px  25px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0px -1px 7px 0px rgba(0,0,0,0.19);
+-webkit-box-shadow: 0px -1px 7px 0px rgba(0,0,0,0.19);
+-moz-box-shadow: 0px -1px 7px 0px rgba(0,0,0,0.19);
+    z-index: 97;
+  }
 
   .container {
     background-color: #f7f8f6;
@@ -24,12 +120,79 @@ body {
     
   }
 
+  
+
   .document-view {
     background-color: #d0dcb3;
     height: 700px;
+    overflow-y: auto;
     width: 600px;
     padding: 50px 100px 50px 100px;
     margin: 10px;
+  }
+
+   /* Table Styles */
+   .document-table {
+    width: 100%;
+    border-color: black;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+  }
+  
+  .document-table th {
+    background-color: #73894e;
+    color: #020303;
+    font-weight: 600;
+    text-align: left;
+    padding: 12px 15px;
+    border-bottom: 2px solid #000000;
+  }
+  
+  .document-table td {
+    padding: 10px 15px;
+    border-bottom: 1px solid #000000;
+    color: #34495e;
+  }
+  
+  .document-table tr:hover {
+    background-color: #f8f9fa;
+  }
+  
+  .document-table tr:last-child td {
+    border-bottom: none;
+  }
+  
+  .transaction-detail-table {
+    margin-bottom: 10px;
+  }
+
+  .status-pending {
+    color: #e67e22;
+    font-weight: 500;
+  }
+  
+  .status-approved {
+    color: #27ae60;
+    font-weight: 500;
+  }
+  
+  .status-rejected {
+    color: #e74c3c;
+    font-weight: 500;
+  }
+  
+  .action-button {
+    background-color: transparent;
+    color: #3498db;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    font-size: 14px;
+    font-weight: 500;
+  }
+  
+  .action-button:hover {
+    text-decoration: underline;
   }
 
   .info-view {
@@ -42,7 +205,7 @@ body {
   }
 
   .docu-information {
-    margin-bottom: 250px;
+    margin-bottom: 75px;
     padding-top: 50px;
   }
 
@@ -59,6 +222,11 @@ body {
   .document-type {
     font-size: 25px;
 
+  }
+
+  .comment-header {
+    font-weight: bold;
+    font-size: 19px;
   }
   
   textarea {
@@ -82,9 +250,19 @@ body {
     float: left; 
   }
 
+  .edit-button {
+    background-color: #62851b;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 50px;
+    font-family: 'IBM Plex Sans', Arial, sans-serif;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s ease;  
+  }
 
-  
-  .save-button {
+  .download-button {
     background-color: #62851b;
     padding: 10px 15px;
     border: none;
@@ -96,7 +274,7 @@ body {
     transition: background-color 0.3s ease;  
   }
   
-  .save-button:hover {
+  .edit-button:hover, .download-button:hover {
       background-color: #5a6e3a;
   }
   

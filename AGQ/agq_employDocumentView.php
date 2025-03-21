@@ -18,12 +18,192 @@ $company = isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : '';
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link type="stylesheet" type="text/css" href="../css/employdocuview.css">
+  <link rel="stylesheet" type="text/css" href="../css/employdocu.css">
 </head>
 
 <body>
+<div class="top-container">
+    <div class="dept-container">
+      <div class="header-container">
+        <div class="dept-label">
+          <?php echo htmlspecialchars($role); ?>
+        </div>
+        <div class="company-label">
+          <?php echo htmlspecialchars($company); ?>
+        </div>
+        <div class="selected-doctype">
+          <?php echo htmlspecialchars($docType); ?>
+        </div>
+      </div>
+    </div>
+  </div>
   <div class="container">
     <div class="document-view">
+    <table class="document-table">
+        <thead class = "transaction-detail-table">
+          <tr>
+            <th>Transaction Details</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>To</td>
+            <td>EURO-MED</td>
+          </tr>
+          <tr>
+            <td>Address</td>
+            <td>BLDG. 1000</td>
+          </tr>
+          <tr>
+            <td>TIN</td>
+            <td>00-00-00</td>
+          </tr>
+          <tr>
+            <td>Attention</td>
+            <td>Ma'am Lolit</td>
+          </tr>
+          <tr>
+            <td>Date</td>
+            <td>01/02/25 </td>
+          </tr>
+          <tr>
+            <td>Vessel</td>
+            <td>CNC BANGKOK ORMCFSINC</td>
+          </tr>
+          <tr>
+            <td>ETD/ETA</td>
+            <td>04/04/25</td>
+          </tr>
+          <tr>
+            <td>Ref No.</td>
+            <td>aaaaaa </td>
+          </tr>
+          <tr>
+            <td>Destination/Origin</td>
+            <td>01/02/25 </td>
+          </tr>
+          <tr>
+            <td>E.R.</td>
+            <td>01/02/25 </td>
+          </tr>
+          <tr>
+            <td>BL/HBL No</td>
+            <td>01/02/25 </td>
+          </tr>
+          <tr>
+            <td>Nature of Goods</td>
+            <td>01/02/25 </td>
+          </tr>
+          <tr>
+            <td>Packages</td>
+            <td>01/02/25 </td>
+          </tr>
+          <tr>
+            <td>Weight</td>
+            <td>01/02/25 </td>
+          </tr>
+          <tr>
+            <td>Volume</td>
+            <td>01/02/25 </td>
+          </tr>
+          <tr>
+            <td>Package</td>
+            <td>01/02/25 </td>
+          </tr>
+
+        <thead>
+          <tr>
+            <th>Package Type</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>LCL</td>
+          </tr>
+
+
+        <thead>
+          <tr>
+            <th>Document ID</th>
+            <th>Document Name</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>DOC-001</td>
+            <td>Employee Contract</td>
+          </tr>
+          <tr>
+            <td>DOC-002</td>
+            <td>Confidentiality Agreement</td>
+          </tr>
+          <tr>
+            <td>DOC-003</td>
+            <td>Performance Review</td>
+          </tr>
+          <tr>
+            <td>DOC-004</td>
+            <td>RequestExpense Report</td>
+          </tr>
+          <tr>
+            <td>DOC-005</td>
+            <td>Leave Request</td>
+          </tr>
+          <tr>
+            <th>Document ID</th>
+            <th>Document Name</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>DOC-001</td>
+            <td>Employee Contract</td>
+          </tr>
+          <tr>
+            <td>DOC-002</td>
+            <td>Confidentiality Agreement</td>
+          </tr>
+          <tr>
+            <td>DOC-003</td>
+            <td>Performance Review</td>
+          </tr>
+          <tr>
+            <td>DOC-004</td>
+            <td>Expense Report</td>
+          </tr>
+          <tr>
+            <td>DOC-005</td>
+            <td>Leave Request</td>
+          </tr>
+          <tr>
+            <th>Document ID</th>
+            <th>Document Name</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>DOC-001</td>
+            <td>Employee Contract</td>
+          </tr>
+          <tr>
+            <td>DOC-002</td>
+            <td>Confidentiality Agreement</td>
+          </tr>
+          <tr>
+            <td>DOC-003</td>
+            <td>Performance Review</td>
+          </tr>
+          <tr>
+            <td>DOC-004</td>
+            <td>Expense Report</td>
+          </tr>
+          <tr>
+            <td>DOC-005</td>
+            <td>Leave Request</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
     <div class="info-view">
       <div class="docu-information">
