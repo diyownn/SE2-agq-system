@@ -9,8 +9,6 @@ $dept = $_SESSION['SelectedDepartment'] ?? '';
 $search = $_GET['search'] ?? '';
 $company = $_SESSION['Company_name'] ?? '';
 
-
-
 $response = [];
 $tables = [
     "Export Brokerage"  => "tbl_expbrk",
@@ -39,7 +37,6 @@ if (!empty($dept) && isset($tables[$dept])) {
         $stmt->close();
     }
 }
-
 
 // If the role exists in the tables array and there's a search query, handle it
 if (!empty($role) && isset($tables[$role])) {
@@ -71,8 +68,26 @@ if (!empty($role) && isset($tables[$role])) {
             ];
         }
         $stmt->close();
-
     }
+}
+
+// **Additional fetch from tbl_document**
+$document_query = "SELECT RefNum, DocType FROM tbl_document WHERE RefNum LIKE ? OR DocType LIKE ?";
+
+if ($stmt = $conn->prepare($document_query)) {
+    $stmt->bind_param("ss", $like_query, $like_query);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    $response['documents'] = [];
+
+    while ($row = $result->fetch_assoc()) {
+        $response['documents'][] = [
+            "RefNum" => $row['RefNum'],
+            "DocType" => $row['DocType']
+        ];
+    }
+    $stmt->close();
 }
 
 echo json_encode(!empty($response) ? $response : ["error" => "No transactions found"]);
