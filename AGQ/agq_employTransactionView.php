@@ -2,6 +2,7 @@
 require 'db_agq.php';
 session_start();
 
+$url = isset($_GET['url']);
 $role = isset($_SESSION['department']) ? $_SESSION['department'] : '';
 $company = isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : '';
 
@@ -12,6 +13,10 @@ if (!$role) {
 
 if (!$company) {
     header("Location: UNAUTHORIZED.php?error=401c");
+}
+
+if (!$url) {
+    header("Location: UNAUTHORIZED.php?error=401u");
 }
 
 $query = "
@@ -139,13 +144,13 @@ if ($result) {
                                         </span>
                                     </div>
                                     <div class="transaction-actions">
-                                        <button class="btn btn-sm action-btn check-btn" title="Complete">
+                                        <button class="btn btn-sm action-btn check-btn" id="check-btn" title="Complete">
                                             <i class="bi bi-check2"></i>
                                         </button>
-                                        <button class="btn btn-sm action-btn edit-btn" title="Edit" onclick="editTransaction('<?php echo htmlspecialchars($transaction['RefNum']); ?>', '<?php echo $normalizedDocType; ?>')">
+                                        <button class="btn btn-sm action-btn edit-btn" id="edit-btn" title="Edit" onclick="editTransaction('<?php echo htmlspecialchars($transaction['RefNum']); ?>', '<?php echo $normalizedDocType; ?>')">
                                             <i class="bi bi-pencil"></i>
                                         </button>
-                                        <button class="btn btn-sm action-btn archive-btn" title="Archive">
+                                        <button class="btn btn-sm action-btn archive-btn" id="archive-btn" title="Archive">
                                             <i class="bi bi-archive"></i>
                                         </button>
                                     </div>
@@ -347,6 +352,11 @@ if ($result) {
                                     structuredTransactions[department][normalizedDocType] = [];
                                 }
 
+                                if (!Array.isArray(refArray)) {
+                                    console.warn(`Skipping non-array records for ${docType}:`, refArray);
+                                    return;
+                                }
+
                                 refArray.forEach(item => {
                                     structuredTransactions[department][normalizedDocType].push(item.RefNum);
                                 });
@@ -435,13 +445,13 @@ if ($result) {
                             actions.classList.add("transaction-actions");
 
                             // Checkmark button
-                            let checkBtn = document.createElement("button");
+                            let checkBtn = document.createElement("check-btn");
                             checkBtn.classList.add("btn", "btn-sm", "action-btn", "check-btn");
                             checkBtn.title = "Complete";
                             checkBtn.innerHTML = '<i class="bi bi-check2"></i>';
 
                             // Edit button
-                            let editBtn = document.createElement("button");
+                            let editBtn = document.createElement("edit-btn");
                             editBtn.classList.add("btn", "btn-sm", "action-btn", "edit-btn");
                             editBtn.title = "Edit";
                             editBtn.innerHTML = '<i class="bi bi-pencil"></i>';
@@ -450,8 +460,7 @@ if ($result) {
                             };
 
                             // Archive button
-                            let archiveBtn = document.createElement("button");
-                            archiveBtn.classList.add("btn", "btn-sm", "action-btn", "archive-btn");
+                            let archiveBtn = document.createElement("archive-btn");
                             archiveBtn.title = "Archive";
                             archiveBtn.innerHTML = '<i class="bi bi-archive"></i>';
 
@@ -472,6 +481,9 @@ if ($result) {
                     transactionSection.appendChild(transactionContent);
                     container.appendChild(transactionSection);
                 });
+
+
+                archiveBtn.classList.add("btn", "btn-sm", "action-btn", "archive-btn");
             }
 
 

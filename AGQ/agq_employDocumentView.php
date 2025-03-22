@@ -4,10 +4,14 @@ require 'db_agq.php';
 session_start();
 
 $refNum = isset($_GET['refNum']) ? $_GET['refNum'] : ''; // Get reference number from URL
-
+$url =  isset($_GET['url']);
 $docType = isset($_GET['doctype']) ? $_GET['doctype'] : '';
 $role = isset($_SESSION['department']) ? $_SESSION['department'] : '';
 $company = isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : '';
+
+if (!$url) {
+  header("Location: UNAUTHORIZED.php?error=401u");
+}
 
 function selectRecords($role, $conn, $refNum)
 {
