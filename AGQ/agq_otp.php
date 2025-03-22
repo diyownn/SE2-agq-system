@@ -62,7 +62,7 @@
     }
 
     if (time() - $_SESSION['last_otpattempt_time'] > 300) {
-        $_SESSION['otp_attempts'] = 4;
+        $_SESSION['otp_attempts'] = 1;
         $_SESSION['otplockout_start'] = 0; // Reset lockout start time
     }
 

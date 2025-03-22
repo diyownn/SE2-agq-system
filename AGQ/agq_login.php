@@ -76,7 +76,7 @@
     }
 
     if (time() - $_SESSION['last_attempt_time'] > 300) { //Reset in seconds
-        $_SESSION['login_attempts'] = 4;
+        $_SESSION['login_attempts'] = 1;
         $_SESSION['lockout_start'] = 0; // Reset lockout start time
     }
 
