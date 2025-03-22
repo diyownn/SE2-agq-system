@@ -224,7 +224,7 @@ $company = isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : '';
         <textarea id="textbox" maxlength="250" oninput="updateCounter()" readonly></textarea>
         <div class="button-container">
           <button class="edit-button" onclick="saveComment()">Edit</button>
-          <button class="download-button" onclick="saveComment()">Download</button>
+          <button class="download-button" onclick="window.location.href='Download/GENERATE_EXCEL.php';">Download</button>
         </div>
       </div>
     </div>
