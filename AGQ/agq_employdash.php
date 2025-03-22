@@ -6,10 +6,11 @@ session_start();
 
 $role = isset($_SESSION['department']) ? $_SESSION['department'] : '';
 
+/*
 if (!$role) {
     header("Location: UNAUTHORIZED.php?error=401r");
 }
-
+*/
 
 if (!isset($_SESSION['department'])) {
     session_destroy();
@@ -256,19 +257,24 @@ if (!empty($search_query)) {
                 .catch(error => console.error("Error fetching search results:", error));
         });
 
-        // Hide dropdown when clicking outside
         document.addEventListener("click", event => {
             if (!searchInput.contains(event.target) && !dropdown.contains(event.target)) {
                 dropdown.style.display = "none";
             }
         });
 
-        // Search button click handler
         searchButton.addEventListener("click", () => {
             let query = searchInput.value.trim();
             let url = query ? `FILTER_COMPANY.php?query=${encodeURIComponent(query)}` : "FILTER_COMPANY.php";
             fetchCompanies(url);
         });
+    });
+
+    searchInput.addEventListener("keydown", function(event) {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            searchButton.click();
+        }
     });
 </script>
 

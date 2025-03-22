@@ -4,7 +4,7 @@ require 'db_agq.php';
 
 header("Content-Type: application/json");
 
-$query = $_GET['query'] ?? ''; // Get the search query
+$query = $_GET['query'] ?? ''; 
 
 $response = [];
 
@@ -23,7 +23,7 @@ if (!empty($query)) {
         }
         $stmt->close();
     }
-}
+} 
 
 // Return JSON response
 echo json_encode(!empty($response) ? $response : ["error" => "No companies found"]);

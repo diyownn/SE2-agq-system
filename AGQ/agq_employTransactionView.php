@@ -302,6 +302,11 @@ if (!empty($search_query)) {
                             if (!structuredTransactions[department]["INVOICE"]) {
                                 structuredTransactions[department]["INVOICE"] = [];
                             }
+                            if ($role == "Import Forwarding") {
+                                if (!structuredTransactions[department]["MANIFESTO"]) {
+                                    structuredTransactions[department]["MANIFESTO"] = [];
+                                }
+                            }
 
                         });
 
@@ -401,6 +406,7 @@ if (!empty($search_query)) {
                                 transactionItem.appendChild(transactionCheckbox);
                                 transactionContent.appendChild(transactionItem);
                             });
+
                         } else {
                             transactionContent.innerHTML = "<p>No records found.</p>";
                         }

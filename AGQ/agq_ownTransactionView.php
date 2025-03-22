@@ -41,10 +41,31 @@ WHERE '$dept' = 'Export Brokerage' AND c.Company_name = '$company'
 
 $result = $conn->query($query);
 
+
+if ($dept == 'Import Forwarding') {
+    $query .= "
+    UNION
+    SELECT d.RefNum, d.DocType, c.Company_name
+    FROM tbl_document d
+    JOIN tbl_company c ON d.Company_name = c.Company_name
+    WHERE c.Company_name = '$company'
+    ";
+}
+
+
+$result = $conn->query($query);
+
+
+
+$result = $conn->query($query);
 $transactions = [];
 if ($result) {
     while ($row = $result->fetch_assoc()) {
-        $transactions[strtoupper($row['DocType'])][] = $row['RefNum'];
+        $docType = strtoupper($row['DocType']);
+        $transactions[$docType][] = [
+            'RefNum' => (string) $row['RefNum'], // Ensure it's a string
+            'DocumentID' => isset($row['DocumentID']) ? (string) $row['DocumentID'] : null // Convert DocumentID to string if available
+        ];
     }
 }
 
@@ -97,6 +118,10 @@ if ($result) {
             $docTypes = ['SOA', 'Invoice'];
             $labels = ['SOA', 'INVOICE'];
 
+            if ($dept === 'Import Forwarding' || $role === 'Import Forwarding') {
+                $docTypes[] = 'Manifesto';
+                $labels[] = 'MANIFESTO';
+            }
 
             $docTypeLabels = array_combine(array_map('strtoupper', $docTypes), $labels);
             ?>
@@ -107,10 +132,10 @@ if ($result) {
                     <div class="transaction-content">
                         <?php $normalizedDocType = strtoupper(trim($docType)); ?>
                         <?php if (!empty($transactions[$normalizedDocType])): ?>
-                            <?php foreach ($transactions[$normalizedDocType] as $refNum): ?>
+                            <?php foreach ($transactions[$normalizedDocType] as $transaction): ?>
                                 <div class="transaction-item d-flex justify-content-between">
-                                    <span ondblclick="redirectToDocument('<?php echo htmlspecialchars($refNum); ?>', '<?php echo $normalizedDocType; ?>')">
-                                        <?php echo htmlspecialchars($refNum); ?> - <?php echo $normalizedDocType; ?>
+                                    <span ondblclick="redirectToDocument('<?php echo htmlspecialchars($transaction['RefNum']); ?>', '<?php echo $normalizedDocType; ?>')">
+                                        <?php echo htmlspecialchars($transaction['RefNum']); ?> - <?php echo $normalizedDocType; ?>
                                     </span>
                                     <input type="checkbox">
                                 </div>
@@ -172,7 +197,7 @@ if ($result) {
                             let department = (item.Department || "").toLowerCase();
                             let docType = (item.DocType || "").toLowerCase(); // Fix variable naming
 
-                            if (company.includes(query) || refNum.includes(query) || department.includes(query) || docType.includes(query)) {
+                            if (company.includes(query) || refNum.includes(query) || department.includes(query) || docType.includes(query) || docType === "manifesto") {
                                 let div = document.createElement("div");
                                 div.classList.add("dropdown-item");
 
@@ -234,7 +259,6 @@ if ($result) {
                                 structuredTransactions[department] = {};
                             }
 
-                            // Loop through document types (e.g., INVOICE, SOA)
                             Object.entries(docTypes).forEach(([docType, records]) => {
                                 if (!Array.isArray(records)) {
                                     console.warn(`Skipping non-array records for ${docType}:`, records);
@@ -261,6 +285,11 @@ if ($result) {
                             }
                             if (!structuredTransactions[department]["INVOICE"]) {
                                 structuredTransactions[department]["INVOICE"] = [];
+                            }
+                            if ($dept == "Import Forwarding") {
+                                if (!structuredTransactions[department]["MANIFESTO"]) {
+                                    structuredTransactions[department]["MANIFESTO"] = [];
+                                }
                             }
                         });
 
@@ -316,7 +345,11 @@ if ($result) {
                     let departmentSection = document.createElement("div");
                     departmentSection.classList.add("department-section");
 
-                    const order = ["SOA", "INVOICE", "SUMMARY", "OTHERS"];
+                    const order = ["SOA", "INVOICE"];
+
+                    if ($dept == "Import Forwarding") {
+                        const order = ["SOA", "INVOICE", "MANIFESTO"];
+                    }
                     let sortedDocTypes = Object.keys(docTypes).sort((a, b) => {
                         let indexA = order.indexOf(a.toUpperCase());
                         let indexB = order.indexOf(b.toUpperCase());
