@@ -205,15 +205,16 @@ body {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  gap: 100px;
-  justify-content: flex-start;
+  gap: 90px; 
+  justify-content: flex-start; 
   margin: 20px 0px 40px 0;
+  width: 100%;
 }
 
 .company-button {
-  flex: 1 1 calc(20% - 10px); /* Each button takes 20% width with some spacing */
-  max-width: 200px; /* Adjust based on design */
-  text-align: center;
+  flex: 0 0 calc(20% - 50px); 
+  max-width: 200px;
+  margin-bottom: 30px;
 }
   
 .company-container {
