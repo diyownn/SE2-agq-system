@@ -7,7 +7,7 @@ body {
     min-height: 100vh;
     margin: 0;
   }
-  
+
   .dept-container {
     position: relative;
     display: flex;
@@ -132,14 +132,14 @@ body {
   }
 
    /* Table Styles */
-   .document-table {
+   table {
     width: 100%;
     border-color: black;
     border-collapse: collapse;
-    margin-bottom: 20px;
+    margin-bottom: 50px;
   }
   
-  .document-table th {
+  table th {
     background-color: #73894e;
     color: #020303;
     font-weight: 600;
@@ -148,51 +148,18 @@ body {
     border-bottom: 2px solid #000000;
   }
   
-  .document-table td {
+  table td {
     padding: 10px 15px;
     border-bottom: 1px solid #000000;
     color: #34495e;
   }
   
-  .document-table tr:hover {
+  table tr:hover {
     background-color: #f8f9fa;
   }
   
-  .document-table tr:last-child td {
+  table tr:last-child td {
     border-bottom: none;
-  }
-  
-  .transaction-detail-table {
-    margin-bottom: 10px;
-  }
-
-  .status-pending {
-    color: #e67e22;
-    font-weight: 500;
-  }
-  
-  .status-approved {
-    color: #27ae60;
-    font-weight: 500;
-  }
-  
-  .status-rejected {
-    color: #e74c3c;
-    font-weight: 500;
-  }
-  
-  .action-button {
-    background-color: transparent;
-    color: #3498db;
-    border: none;
-    cursor: pointer;
-    padding: 5px;
-    font-size: 14px;
-    font-weight: 500;
-  }
-  
-  .action-button:hover {
-    text-decoration: underline;
   }
 
   .info-view {
