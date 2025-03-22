@@ -1,8 +1,8 @@
 <?php
 
 require 'db_agq.php';
-
-$docType = isset($_SESSION['DocType']) ? $_SESSION['DocType'] : '';
+session_start();
+$docType = isset($_GET['doctype']) ? $_GET['doctype'] : '';
 $role = isset($_SESSION['department']) ? $_SESSION['department'] : '';
 $company = isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : '';
 
@@ -25,8 +25,8 @@ $company = isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : '';
   
   <div class="container">
     <div class="document-view">
-    <table class="document-table">
-        <thead class = "transaction-detail-table">
+      <table class="document-table">
+        <thead class="transaction-detail-table">
           <tr>
             <th>Transaction Details</th>
             <th></th>
@@ -121,6 +121,67 @@ $company = isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : '';
             <td>Processing</td>
             <td>50304</td>
           </tr>
+          <tr>
+            <td>DOC-004</td>
+            <td>RequestExpense Report</td>
+          </tr>
+          <tr>
+            <td>DOC-005</td>
+            <td>Leave Request</td>
+          </tr>
+          <tr>
+            <th>Document ID</th>
+            <th>Document Name</th>
+          </tr>
+          </thead>
+        <tbody>
+          <tr>
+            <td>DOC-001</td>
+            <td>Employee Contract</td>
+          </tr>
+          <tr>
+            <td>DOC-002</td>
+            <td>Confidentiality Agreement</td>
+          </tr>
+          <tr>
+            <td>DOC-003</td>
+            <td>Performance Review</td>
+          </tr>
+          <tr>
+            <td>DOC-004</td>
+            <td>Expense Report</td>
+          </tr>
+          <tr>
+            <td>DOC-005</td>
+            <td>Leave Request</td>
+          </tr>
+          <tr>
+            <th>Document ID</th>
+            <th>Document Name</th>
+          </tr>
+          </thead>
+        <tbody>
+          <tr>
+            <td>DOC-001</td>
+            <td>Employee Contract</td>
+          </tr>
+          <tr>
+            <td>DOC-002</td>
+            <td>Confidentiality Agreement</td>
+          </tr>
+          <tr>
+            <td>DOC-003</td>
+            <td>Performance Review</td>
+          </tr>
+          <tr>
+            <td>DOC-004</td>
+            <td>Expense Report</td>
+          </tr>
+          <tr>
+            <td>DOC-005</td>
+            <td>Leave Request</td>
+          </tr>
+        </tbody>
       </table>
     </div>
     <div class="info-view">
@@ -133,7 +194,7 @@ $company = isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : '';
         <p class="date"><strong>Modified By:</strong> Mary Russell</p>
       </div>
 
-      <p class = "comment-header"> Comments:
+      <p class="comment-header"> Comments:
       <div class="comment-box">
         <textarea id="textbox" maxlength="250" oninput="updateCounter()" readonly></textarea>
         <div class="button-container">

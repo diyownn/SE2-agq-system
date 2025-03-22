@@ -1,9 +1,13 @@
 <?php
 require 'db_agq.php';
 
+session_start();
+
 $role = isset($_SESSION['department']) ? $_SESSION['department'] : '';
-$company = isset($_SESSION['Company']) ? $_SESSION['Company'] : '';
+$company = isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : '';
+$docType = isset($_GET['doctype']) ? $_GET['doctype'] : '';
 $dept = isset($_SESSION['SelectedDepartment']) ? $_SESSION['SelectedDepartment'] : '';
+
 
 ?>
 
@@ -17,26 +21,33 @@ $dept = isset($_SESSION['SelectedDepartment']) ? $_SESSION['SelectedDepartment']
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel ="stylesheet" href = "../css/owndocu.css">
+  <link rel="stylesheet" href="../css/owndocu.css">
 </head>
 
 
 <body>
-<div class="top-container">
-        <div class="dept-container">
-            <div class="header-container">
-                <div class="dept-label">
-                    <?php echo htmlspecialchars($role); ?>
-                </div>
-                <div class="company-label">
-                    <?php echo htmlspecialchars($company); ?>
-                </div>
-                <div class="selected-dept-label">
-                    <?php echo htmlspecialchars($dept); ?>
-                </div>
-            </div>
+  <div class="top-container">
+    <div class="dept-container">
+      <div class="header-container">
+        <div class="dept-label">
+          <?php echo htmlspecialchars($role); ?>
         </div>
+        <div class="company-label">
+          <?php echo htmlspecialchars($company); ?>
+        </div>
+        <div class="selected-dept-label">
+          <?php echo htmlspecialchars($dept); ?>
+        </div>
+        <div class="selected-doctype">
+          <?php echo htmlspecialchars($docType); ?>
+        </div>
+      </div>
     </div>
+  </div>
+
+  <a href="agq_ownTransactionView.php" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 20px; top: 50px;">←</a>
+
+
   <div class="container">
     <div class="document-view">
     </div>
