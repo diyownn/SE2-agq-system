@@ -6,8 +6,9 @@ session_start();
 $role = isset($_SESSION['department']) ? $_SESSION['department'] : '';
 
 if (!isset($_SESSION['department'])) {
+   
+    header("Location: UNAUTHORIZED.php?error=401r");
     session_destroy();
-    header("Location: agq_login.php");
     exit();
 } elseif ($role == 'admin' || $role == 'Admin' || $role == 'owner' || $role == 'Owner') {
     header("Location: agq_dashCatcher.php");
@@ -44,6 +45,7 @@ if (!empty($search_query)) {
 
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="utf-8">
@@ -122,10 +124,10 @@ if (!empty($search_query)) {
                 while ($row = $result->fetch_assoc()) {
                     $company_name = $row['Company_name'];
                     $company_picture = $row['Company_picture'];
-            
+
                     $company_picture_base64 = base64_encode($company_picture);
                     $company_picture_src = 'data:image/jpeg;base64,' . $company_picture_base64;
-            
+
                     echo '<div class="company-button">';
                     echo '<button class="company-container" onclick="storeCompanySession(\'' . htmlspecialchars($company_name, ENT_QUOTES) . '\')">';
                     echo '<img class="company-logo" src="' . $company_picture_src . '" alt="' . $company_name . '">';
@@ -161,7 +163,7 @@ if (!empty($search_query)) {
         window.onpopstate = function() {
             history.pushState(null, "", location.href);
         };
-        
+
         document.addEventListener("DOMContentLoaded", function() {
             const searchInput = document.getElementById("search-input");
             const searchButton = document.getElementById("search-button");
@@ -323,4 +325,5 @@ if (!empty($search_query)) {
         });
     </script>
 </body>
+
 </html>
