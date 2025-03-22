@@ -150,6 +150,10 @@ if ($result) {
     </div>
 
     <script>
+        var role = "<?php echo isset($_SESSION['department']) ? $_SESSION['department'] : ''; ?>";
+        var company = "<?php echo isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : ''; ?>";
+        var dept = "<?php echo isset($_SESSION['SelectedDepartment']) ? $_SESSION['SelectedDepartment'] : ''; ?>"
+
         function redirectToDocument(refnum, doctype) {
             if (!refnum || !doctype) {
                 return;
@@ -286,7 +290,7 @@ if ($result) {
                             if (!structuredTransactions[department]["INVOICE"]) {
                                 structuredTransactions[department]["INVOICE"] = [];
                             }
-                            if ($dept == "Import Forwarding") {
+                            if (dept == "Import Forwarding") {
                                 if (!structuredTransactions[department]["MANIFESTO"]) {
                                     structuredTransactions[department]["MANIFESTO"] = [];
                                 }
@@ -347,7 +351,7 @@ if ($result) {
 
                     const order = ["SOA", "INVOICE"];
 
-                    if ($dept == "Import Forwarding") {
+                    if (dept == "Import Forwarding") {
                         const order = ["SOA", "INVOICE", "MANIFESTO"];
                     }
                     let sortedDocTypes = Object.keys(docTypes).sort((a, b) => {
@@ -440,9 +444,6 @@ if ($result) {
 
 
 
-        var role = "<?php echo isset($_SESSION['department']) ? $_SESSION['department'] : ''; ?>";
-        var company = "<?php echo isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : ''; ?>";
-        var selectdep = "<?php echo isset($_SESSION['SelectedDepartment']) ? $_SESSION['SelectedDepartment'] : ''; ?>"
 
 
         console.log("Role:", role);
