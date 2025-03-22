@@ -303,6 +303,11 @@ if ($result) {
                             if (!structuredTransactions[department]["INVOICE"]) {
                                 structuredTransactions[department]["INVOICE"] = [];
                             }
+                            if ($role == "Import Forwarding") {
+                                if (!structuredTransactions[department]["MANIFESTO"]) {
+                                    structuredTransactions[department]["MANIFESTO"] = [];
+                                }
+                            }
 
                         });
 
@@ -444,6 +449,7 @@ if ($result) {
                                 transactionItem.appendChild(actions);
                                 transactionContent.appendChild(transactionItem);
                             });
+
                         } else {
                             transactionContent.innerHTML = "<p>No records found.</p>";
                         }
