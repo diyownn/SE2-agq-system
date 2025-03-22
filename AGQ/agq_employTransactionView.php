@@ -49,9 +49,6 @@ if ($role == 'Import Forwarding') {
 
 $result = $conn->query($query);
 
-
-
-$result = $conn->query($query);
 $transactions = [];
 if ($result) {
     while ($row = $result->fetch_assoc()) {
@@ -62,22 +59,6 @@ if ($result) {
         ];
     }
 }
-
-
-/*
-if (!empty($search_query)) {
-    $stmt = $conn->prepare("SELECT Company_name, Company_picture FROM tbl_company WHERE Company_name LIKE ?");
-    $like_query = "%" . $search_query . "%";
-    $stmt->bind_param("s", $like_query);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $stmt->close();
-} else {
-
-    $companies = "SELECT Company_name, Company_picture FROM tbl_company";
-    $result = $conn->query($companies);
-}
-*/
 ?>
 
 <!DOCTYPE html>
@@ -91,6 +72,7 @@ if (!empty($search_query)) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../css/otp.css">
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 </head>
 
 <body>
@@ -147,11 +129,26 @@ if (!empty($search_query)) {
                         <?php $normalizedDocType = strtoupper(trim($docType)); ?>
                         <?php if (!empty($transactions[$normalizedDocType])): ?>
                             <?php foreach ($transactions[$normalizedDocType] as $transaction): ?>
-                                <div class="transaction-item d-flex justify-content-between">
-                                    <span ondblclick="redirectToDocument('<?php echo htmlspecialchars($transaction['RefNum']); ?>', '<?php echo $normalizedDocType; ?>')">
-                                        <?php echo htmlspecialchars($transaction['RefNum']); ?> - <?php echo $normalizedDocType; ?>
-                                    </span>
-                                    <input type="checkbox">
+                                <div class="transaction-item d-flex justify-content-between align-items-center">
+                                    <div class="d-flex align-items-center">
+                                        <div class="form-check me-2">
+                                            <input class="form-check-input transaction-checkbox" type="checkbox" id="check-<?php echo htmlspecialchars($transaction['RefNum']); ?>">
+                                        </div>
+                                        <span class="transaction-text" ondblclick="redirectToDocument('<?php echo htmlspecialchars($transaction['RefNum']); ?>', '<?php echo $normalizedDocType; ?>')">
+                                            <?php echo htmlspecialchars($transaction['RefNum']); ?> - <?php echo $normalizedDocType; ?>
+                                        </span>
+                                    </div>
+                                    <div class="transaction-actions">
+                                        <button class="btn btn-sm action-btn check-btn" title="Complete">
+                                            <i class="bi bi-check2"></i>
+                                        </button>
+                                        <button class="btn btn-sm action-btn edit-btn" title="Edit" onclick="editTransaction('<?php echo htmlspecialchars($transaction['RefNum']); ?>', '<?php echo $normalizedDocType; ?>')">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button class="btn btn-sm action-btn archive-btn" title="Archive">
+                                            <i class="bi bi-archive"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             <?php endforeach; ?>
                         <?php else: ?>
@@ -169,6 +166,10 @@ if (!empty($search_query)) {
             } else {
                 window.location.href = "agq_documentCatcher.php?refnum=" + encodeURIComponent(refnum) + '&doctype=' + encodeURIComponent(doctype);;
             }
+        }
+
+        function editTransaction(refnum, doctype) {
+            window.location.href = "agq_edit_transaction.php?refnum=" + encodeURIComponent(refnum) + '&doctype=' + encodeURIComponent(doctype);
         }
 
         document.body.addEventListener("click", function(event) {
@@ -386,19 +387,61 @@ if (!empty($search_query)) {
                         if (Array.isArray(refs) && refs.length > 0) {
                             refs.forEach(refNum => {
                                 let transactionItem = document.createElement("div");
-                                transactionItem.classList.add("transaction-item", "d-flex", "justify-content-between");
+                                transactionItem.classList.add("transaction-item", "d-flex", "justify-content-between", "align-items-center");
 
+                                let leftSide = document.createElement("div");
+                                leftSide.classList.add("d-flex", "align-items-center");
+                                
+                                let checkboxDiv = document.createElement("div");
+                                checkboxDiv.classList.add("form-check", "me-2");
+                                
+                                let checkbox = document.createElement("input");
+                                checkbox.classList.add("form-check-input", "transaction-checkbox");
+                                checkbox.type = "checkbox";
+                                checkbox.id = `check-${refNum}`;
+                                
+                                checkboxDiv.appendChild(checkbox);
+                                leftSide.appendChild(checkboxDiv);
+                                
                                 let transactionText = document.createElement("span");
+                                transactionText.classList.add("transaction-text");
                                 transactionText.textContent = `${refNum} - ${docType}`;
                                 transactionText.ondblclick = function() {
                                     redirectToDocument(refNum, docType);
                                 };
-
-                                let transactionCheckbox = document.createElement("input");
-                                transactionCheckbox.type = "checkbox";
-
-                                transactionItem.appendChild(transactionText);
-                                transactionItem.appendChild(transactionCheckbox);
+                                
+                                leftSide.appendChild(transactionText);
+                                
+                                let actions = document.createElement("div");
+                                actions.classList.add("transaction-actions");
+                                
+                                // Checkmark button
+                                let checkBtn = document.createElement("button");
+                                checkBtn.classList.add("btn", "btn-sm", "action-btn", "check-btn");
+                                checkBtn.title = "Complete";
+                                checkBtn.innerHTML = '<i class="bi bi-check2"></i>';
+                                
+                                // Edit button
+                                let editBtn = document.createElement("button");
+                                editBtn.classList.add("btn", "btn-sm", "action-btn", "edit-btn");
+                                editBtn.title = "Edit";
+                                editBtn.innerHTML = '<i class="bi bi-pencil"></i>';
+                                editBtn.onclick = function() {
+                                    editTransaction(refNum, docType);
+                                };
+                                
+                                // Archive button
+                                let archiveBtn = document.createElement("button");
+                                archiveBtn.classList.add("btn", "btn-sm", "action-btn", "archive-btn");
+                                archiveBtn.title = "Archive";
+                                archiveBtn.innerHTML = '<i class="bi bi-archive"></i>';
+                                
+                                actions.appendChild(checkBtn);
+                                actions.appendChild(editBtn);
+                                actions.appendChild(archiveBtn);
+                                
+                                transactionItem.appendChild(leftSide);
+                                transactionItem.appendChild(actions);
                                 transactionContent.appendChild(transactionItem);
                             });
                         } else {
