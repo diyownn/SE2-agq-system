@@ -171,10 +171,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <div class="col-sm-offset-4 col-sm-4" id="border1">
                 <p id="title" class="text-center" style="text-decoration: none; margin-top:0%">MANIFESTO</p>
 
-                <form action="agq_manifestoForm.php" method="POST" class="form-content" enctype="multipart/form-data" onsubmit="return validate_form()">
+                <form action="agq_manifestoForm.php" method="POST" class="form-content" enctype="multipart/form-data" onsubmit="validate_form()">
                     <img src="<?= htmlspecialchars($imageSrc); ?>" class="d-block mx-auto" id="imgholder"
                         alt="Document Image" style="width: 335px; height: 350px; display: <?= empty($imageSrc) ? 'none' : 'block' ?>;">
-                    <input type="text" name="editedby" id="einput" class="form-control" placeholder="Edited by" required>
+                    <input type="text" name="editedby" id="einput" class="form-control" placeholder="Edited by" onchange="validate_editName()">
 
                     <div id="edit-error"></div>
 
@@ -215,45 +215,97 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             imgDisplay.style.display = "block"; // Show the image
         }
 
+        function validate_form() {
+            var val_cimg = validate_manImg();
+            var val_cname = validate_editName();
+            
+           return val_cimg && val_cname;
+        }
+
         function validate_manImg() {
             var fileInput = document.getElementById("cPic");
-            var fileError = document.getElementById("image-error");
-
-            if (!fileError) {
-                console.error("Missing image-error div!");
-                return false;
-            }
+            //var fileError = document.getElementById("image-error");
+            let isValid = true; // Track overall validity
 
             if (fileInput.files.length === 0) {
-                fileInput.classList.add("is-invalid");
-                fileError.innerHTML = "*Please upload an image.";
-                fileError.classList.add("invalid-feedback");
-                return false;
-            } else if (!validateFileSize(fileInput)) {
-                return false;
+                fileInput.setCustomValidity("Please upload Manifesto Document");
+
+            } else if (validateFileSize(fileInput)) {
+
             } else {
-                fileInput.classList.remove("is-invalid");
-                fileError.innerHTML = "";
-                fileError.classList.remove("invalid-feedback");
-                return true;
+                fileInput.setCustomValidity(""); // Reset validation
             }
+
+            fileInput.reportValidity(); // Show validation message
+
+            if (!fileInput.checkValidity()) {
+                event.preventDefault(); // Prevent form submission if invalid
+            }
+
+            fileInput.addEventListener("input", function () {
+                fileInput.setCustomValidity(""); // Clear error when user types
+            });
+
+            return isValid;
         }
 
         function validateFileSize(fileInput) {
             var file = fileInput.files[0];
-            var fileError = document.getElementById("image-error");
+            //var fileError = document.getElementById("image-error");
+            let isValid = true; // Track overall validity
+
 
             if (file.size > 2 * 1024 * 1024) { // 2MB limit
-                fileInput.classList.add("is-invalid");
-                fileError.innerHTML = "*File size must be less than 2MB.";
-                fileError.classList.add("invalid-feedback");
-                return false;
+                fileInput.setCustomValidity("Image is more than 2mb");
+
             } else {
-                fileInput.classList.remove("is-invalid");
-                fileError.innerHTML = "";
-                fileError.classList.remove("invalid-feedback");
-                return true;
+                fileInput.setCustomValidity(""); // Reset validation
             }
+            fileInput.reportValidity(); // Show validation message
+
+            if (!fileInput.checkValidity()) {
+                event.preventDefault(); // Prevent form submission if invalid
+            }
+
+            fileInput.addEventListener("input", function () {
+                fileInput.setCustomValidity(""); // Clear error when user types
+            });
+            return isValid;
+
+        }
+
+
+        function validate_editName() {
+            var edit = document.getElementById("einput");
+            const allowedSymbols = /^[a-zA-Z0-9!.@$%^&()_+\-:/|,~ \r\n]*$/; // Allow letters, numbers, symbols, and line breaks
+            var nameregex = /^.{3,25}$/; // Maximum character limit
+            let isValid = true; // Track overall validity
+
+            //var comp_error = document.getElementById("name-error");
+
+            if (!edit.value.trim()) {
+                edit.setCustomValidity("Please enter the company name");
+            } else if (!allowedSymbols.test(edit.value)) {
+                edit.setCustomValidity("Only letters, numbers, and these symbols are allowed: ! @ $ % ^ & ( ) _ + / - : | , ~");
+            } else if (!nameregex.test(edit.value)) {
+                edit.setCustomValidity("Name must be 3-25 characters");
+
+            }else {
+                edit.setCustomValidity(""); // Reset validation
+                }
+
+                edit.reportValidity(); // Show validation message
+
+                if (!edit.checkValidity()) {
+                    event.preventDefault(); // Prevent form submission if invalid
+                }
+
+                edit.addEventListener("input", function () {
+                    edit.setCustomValidity(""); // Clear error when user types
+                });
+
+            return isValid;
+
         }
     </script>
 

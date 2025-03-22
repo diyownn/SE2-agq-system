@@ -35,14 +35,14 @@
                 <img src="images/agq_logo.png" alt="logo" class="mx-auto d-block" id="agqlogo">
                 <p id="title" class="text-center">Document Management System</p>
 
-                <form action="agq_login.php" method="post" class="form-content" onsubmit="return validate_form()">
+                <form action="agq_login.php" method="post" class="form-content" onsubmit="validate_form()">
                     <label for="inputs" class="form-label" id="labels">Email</label>
-                    <input type="text" name="email" id="inputs" class="form-control" onchange="return validate_email()">
+                    <input type="text" maxlength="100" name="email" id="inputs" class="form-control" onchange="validate_email()">
                     <div id="email-error"></div>
 
                     <label for="inputs0" class="form-label" id="labels">Password</label>
                     <div class="input-group mb-3">
-                        <input type="password" name="password" id="inputs0" class="form-control" onchange="return validate_password()">
+                        <input type="password" name="password" id="inputs0" class="form-control" onchange="validate_password()">
                         <span class="input-group-text" id="toggle-password" style="cursor: pointer;">
                             <i class="bi bi-eye-fill" id="toggle-password-icon"></i>
                         </span>
@@ -171,76 +171,95 @@
             var val_email = validate_email();
             var val_pass = validate_password();
 
-            if (val_email && val_pass) {
-
-                return true;
-
-            } else {
-                return false;
-            }
+            return val_email && val_pass;
         }
 
         function validate_email() {
             var email = document.getElementById("inputs");
-            var email_error = document.getElementById("email-error");
+            var emailregex = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9_.+-]+$/;
+            //var email_error = document.getElementById("email-error");
+            let isValid = true; // Track overall validity
 
-            if (email.value == '') {
-                email.classList.add("is-invalid");
-                error_text = "*Please enter your email address";
-                email_error.innerHTML = error_text;
-                email_error.classList.add("invalid-feedback");
 
-                return false;
+            if (!email.value.trim()) {
+                email.setCustomValidity("Please enter your email address");
+
+            } else if (!emailregex.test(email.value)) {
+                email.setCustomValidity("Email should be in the format xxx@xxx");
+
             } else {
-                var emailregex = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9_.+-]+$/;
-
-                if (!emailregex.test(email.value)) {
-                    email.classList.add("is-invalid");
-                    error_text = "*Email should be in the format xxx@xxx";
-                    email_error.innerHTML = error_text;
-                    email_error.classList.add("invalid-feedback");
-
-                    return false;
-                }
-
-                email.classList.remove("is-invalid");
-                email_error.innerHTML = "";
-                email_error.classList.remove("invalid-feedback");
-
-                return true;
+                email.setCustomValidity(""); // Reset validation
             }
+
+            email.reportValidity(); // Show validation message
+
+            if (!email.checkValidity()) {
+                event.preventDefault(); // Prevent form submission if invalid
+            }
+
+            email.addEventListener("input", function () {
+                email.setCustomValidity(""); // Clear error when user types
+            });
+
+            return isValid; // Return validity status
+
+
+            // if (email.value == '') {
+            //     email.classList.add("is-invalid");
+            //     error_text = "*Please enter your email address";
+            //     email_error.innerHTML = error_text;
+            //     email_error.classList.add("invalid-feedback");
+
+            //     return false;
+            // } else {
+            //     var emailregex = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9_.+-]+$/;
+
+            //     if (!emailregex.test(email.value)) {
+            //         email.classList.add("is-invalid");
+            //         error_text = "*Email should be in the format xxx@xxx";
+            //         email_error.innerHTML = error_text;
+            //         email_error.classList.add("invalid-feedback");
+
+            //         return false;
+            //     }
+
+            //     email.classList.remove("is-invalid");
+            //     email_error.innerHTML = "";
+            //     email_error.classList.remove("invalid-feedback");
+
+            //     return true;
+            // }
         }
 
         function validate_password() {
             var nPass = document.getElementById("inputs0");
-            var nPass_error = document.getElementById("pass-error");
+            const allowedSymbols = /^[a-zA-Z0-9!.@$%^&()_+\-:/|,~ \r\n]*$/; // Allow letters, numbers, symbols, and line breaks
+            var passregex = /^.{8,100}$/;
+            let isValid = true; // Track overall validity
+            //var nPass_error = document.getElementById("pass-error");
 
-            if (nPass.value == '') {
-                nPass.classList.add("is-invalid");
-                error_text = "*Please enter your Password";
-                nPass_error.innerHTML = error_text;
-                nPass_error.classList.add("invalid-feedback");
+            if (!nPass.value.trim()) {
+                nPass.setCustomValidity("Please enter your password");
+            } else if (!allowedSymbols.test(nPass.value)) {
+                nPass.setCustomValidity("Only letters, numbers, and these symbols are allowed: ! @ $ % ^ & ( ) _ + / - : | , ~");
+            } else if (!passregex.test(nPass.value)) {
+                nPass.setCustomValidity("Password must be atleast 8 characters");
 
-                return false;
-            } else {
-                var passregex = /^.{8,100}$/;
-
-                if (!passregex.test(nPass.value)) {
-                    nPass.classList.add("is-invalid");
-                    error_text = "*Your Password must be atleast 8 characters";
-                    nPass_error.innerHTML = error_text;
-                    nPass_error.classList.add("invalid-feedback");
-
-                    return false;
+            }else {
+                nPass.setCustomValidity(""); // Reset validation
                 }
 
-                nPass.classList.remove("is-invalid");
-                nPass_error.innerHTML = "";
-                nPass_error.classList.remove("invalid-feedback");
+                nPass.reportValidity(); // Show validation message
 
-                return true;
+                if (!nPass.checkValidity()) {
+                    event.preventDefault(); // Prevent form submission if invalid
+                }
 
-            }
+                nPass.addEventListener("input", function () {
+                    nPass.setCustomValidity(""); // Clear error when user types
+                });
+
+            return isValid;
 
         }
 

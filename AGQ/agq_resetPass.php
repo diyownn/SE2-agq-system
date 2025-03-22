@@ -33,7 +33,7 @@
                     
                     <label for="newPass" class="form-label" id="labels">Enter New Password</label>
                     <div class="input-group mb-3">
-                        <input type="password" name="newPword" id="newPass" class="form-control" onchange="return validate_newPassword()">
+                        <input type="password" name="newPword" id="newPass" class="form-control" onchange="validate_newPassword()">
                         <span class="input-group-text" id="toggle-password" style="cursor: pointer;">
                             <i class="bi bi-eye-fill" id="toggle-password-icon"></i> 
                         </span>
@@ -42,7 +42,7 @@
 
                     <label for="rePass" class="form-label" id="labels">Re-enter Password</label>
                     <div class="input-group mb-3">
-                        <input type="password" name="rePword" id="rePass" class="form-control" onchange="return validate_newPassword()"> 
+                        <input type="password" name="rePword" id="rePass" class="form-control" onchange="validate_rePassword()"> 
                         <span class="input-group-text" id="toggle-password1" style="cursor: pointer;">
                             <i class="bi bi-eye-fill" id="toggle-password-icon1"></i> 
                         </span>
@@ -112,139 +112,169 @@
 
                 return validate_finalPassword();
 
-            }else {
-                return false;
             }
         }
 
         function validate_newPassword(){
             var nPass = document.getElementById("newPass");
-            var nPass_error = document.getElementById("pass-error1");
+            var passregex = /^.{8,100}$/;
+            var allNumbersRegex = /^\d+$/;
+            var allUppercaseRegex = /^[A-Z]+$/;
+            var allLowercaseRegex = /^[a-z]+$/;
+            const allowedSymbols = /^[a-zA-Z0-9!.@$%^&()_+\-:/|,~ \r\n]*$/; // Allow letters, numbers, symbols, and line breaks
+            let isValid = true; // Track overall validity
+            //var nPass_error = document.getElementById("pass-error1");
 
-            if(nPass.value == ''){
-                nPass.classList.add("is-invalid");
-                error_text = "*Please enter your new Password";
-                nPass_error.innerHTML = error_text;
-                nPass_error.classList.add("invalid-feedback");
-            return false;
-            } else {
-                var passregex = /^.{8,100}$/; 
-
-                if(!passregex.test(nPass.value)){ 
-                    nPass.classList.add("is-invalid");
-                    error_text = "*Your Password must be at least 8 characters";
-                    nPass_error.innerHTML = error_text;
-                    nPass_error.classList.add("invalid-feedback");
-                    return false;
-                }
-
-                var symbolregex = /[^a-zA-Z0-9!@$%^&()_+\-:|,~]/;
-
-                if (symbolregex.test(nPass.value)) {
-                    nPass.classList.add("is-invalid");
-                    error_text = "*Your Password contains invalid symbols";
-                    nPass_error.innerHTML = error_text;
-                    nPass_error.classList.add("invalid-feedback");
-                    return false;
-                }
-
-                var allNumbersRegex = /^\d+$/;
-                var allUppercaseRegex = /^[A-Z]+$/;
-                var allLowercaseRegex = /^[a-z]+$/;
-
-                if (allNumbersRegex.test(nPass.value) || allUppercaseRegex.test(nPass.value) || allLowercaseRegex.test(nPass.value)) {
-                    nPass.classList.add("is-invalid");
-                    error_text = "*Your Password must be alphanumeric or contains symbols";
-                    nPass_error.innerHTML = error_text;
-                    nPass_error.classList.add("invalid-feedback");
-                    return false;
-                }
-
-                nPass.classList.remove("is-invalid");
-                nPass_error.innerHTML = "";
-                nPass_error.classList.remove("invalid-feedback");
-                return true;
+            if (!nPass.value.trim()) {
+                nPass.setCustomValidity("Please enter your password");
+            } else if (!passregex.test(nPass.value)) {
+                nPass.setCustomValidity("Password must be atleast 8 characters");
+            } else if (!allowedSymbols.test(nPass.value)) {
+                nPass.setCustomValidity("Only letters, numbers, and these symbols are allowed: ! @ $ % ^ & ( ) _ + / - : | , ~");
+            } else if (allNumbersRegex.test(nPass.value) || allUppercaseRegex.test(nPass.value) || allLowercaseRegex.test(nPass.value)) {
+                nPass.setCustomValidity("Your Password must be alphanumeric or contains symbols");
+            }else {
+                nPass.setCustomValidity(""); // Reset validation
             }
+                nPass.reportValidity(); // Show validation message
+
+                if (!nPass.checkValidity()) {
+                    event.preventDefault(); // Prevent form submission if invalid
+                }
+
+                nPass.addEventListener("input", function () {
+                    nPass.setCustomValidity(""); // Clear error when user types
+                });
+
+            return isValid;
+
         }
 
         function validate_rePassword(){
             var rPass = document.getElementById("rePass");
-            var rPass_error = document.getElementById("pass-error2");
+            var passregex = /^.{8,100}$/;
+            var allNumbersRegex = /^\d+$/;
+            var allUppercaseRegex = /^[A-Z]+$/;
+            var allLowercaseRegex = /^[a-z]+$/;
+            const allowedSymbols = /^[a-zA-Z0-9!.@$%^&()_+\-:/|,~ \r\n]*$/; // Allow letters, numbers, symbols, and line breaks
+            let isValid = true; // Track overall validity
+            //var rPass_error = document.getElementById("pass-error2");
 
-            if(rPass.value == ''){
-                rPass.classList.add("is-invalid");
-                error_text = "*Please re-enter your new Password";
-                rPass_error.innerHTML = error_text;
-                rPass_error.classList.add("invalid-feedback");
-                return false;
-            } else {
-            
-                var passregex = /^.{8,100}$/; 
-
-                if(!passregex.test(rPass.value)){ 
-                    rPass.classList.add("is-invalid");
-                    error_text = "*Your Password must be at least 8 characters";
-                    rPass_error.innerHTML = error_text;
-                    rPass_error.classList.add("invalid-feedback");
-                    return false;
-                }
-
-                var symbolregex = /[^a-zA-Z0-9!@$%^&()_+\-:|,~]/;
-
-                if (symbolregex.test(rPass.value)) {
-                    rPass.classList.add("is-invalid");
-                    error_text = "*Your Password contains invalid symbols";
-                    rPass_error.innerHTML = error_text;
-                    rPass_error.classList.add("invalid-feedback");
-                    return false;
-                }
-
-                var allNumbersRegex = /^\d+$/;
-                var allUppercaseRegex = /^[A-Z]+$/;
-                var allLowercaseRegex = /^[a-z]+$/;
-
-                if (allNumbersRegex.test(rPass.value) || allUppercaseRegex.test(rPass.value) || allLowercaseRegex.test(rPass.value)) {
-                    rPass.classList.add("is-invalid");
-                    error_text = "*Your Password must be alphanumeric";
-                    rPass_error.innerHTML = error_text;
-                    rPass_error.classList.add("invalid-feedback");
-                    return false;
-                }
-
-                rPass.classList.remove("is-invalid");
-                rPass_error.innerHTML = "";
-                rPass_error.classList.remove("invalid-feedback");
-                return true;
+            if (!rPass.value.trim()) {
+                rPass.setCustomValidity("Please enter your password");
+            } else if (!passregex.test(rPass.value)) {
+                rPass.setCustomValidity("Password must be atleast 8 characters");
+            } else if (!allowedSymbols.test(rPass.value)) {
+                rPass.setCustomValidity("Only letters, numbers, and these symbols are allowed: ! @ $ % ^ & ( ) _ + / - : | , ~");
+            } else if (allNumbersRegex.test(rPass.value) || allUppercaseRegex.test(rPass.value) || allLowercaseRegex.test(rPass.value)) {
+                rPass.setCustomValidity("Your Password must be alphanumeric or contains symbols");
+            }else {
+                rPass.setCustomValidity(""); // Reset validation
             }
+                rPass.reportValidity(); // Show validation message
+
+                if (!rPass.checkValidity()) {
+                    event.preventDefault(); // Prevent form submission if invalid
+                }
+
+                rPass.addEventListener("input", function () {
+                    rPass.setCustomValidity(""); // Clear error when user types
+                });
+
+            return isValid;
+            // if(rPass.value == ''){
+            //     rPass.classList.add("is-invalid");
+            //     error_text = "*Please re-enter your new Password";
+            //     rPass_error.innerHTML = error_text;
+            //     rPass_error.classList.add("invalid-feedback");
+            //     return false;
+            // } else {
+            
+            //     var passregex = /^.{8,100}$/; 
+
+            //     if(!passregex.test(rPass.value)){ 
+            //         rPass.classList.add("is-invalid");
+            //         error_text = "*Your Password must be at least 8 characters";
+            //         rPass_error.innerHTML = error_text;
+            //         rPass_error.classList.add("invalid-feedback");
+            //         return false;
+            //     }
+
+            //     var symbolregex = /[^a-zA-Z0-9!@$%^&()_+\-:|,~]/;
+
+            //     if (symbolregex.test(rPass.value)) {
+            //         rPass.classList.add("is-invalid");
+            //         error_text = "*Your Password contains invalid symbols";
+            //         rPass_error.innerHTML = error_text;
+            //         rPass_error.classList.add("invalid-feedback");
+            //         return false;
+            //     }
+
+            //     var allNumbersRegex = /^\d+$/;
+            //     var allUppercaseRegex = /^[A-Z]+$/;
+            //     var allLowercaseRegex = /^[a-z]+$/;
+
+            //     if (allNumbersRegex.test(rPass.value) || allUppercaseRegex.test(rPass.value) || allLowercaseRegex.test(rPass.value)) {
+            //         rPass.classList.add("is-invalid");
+            //         error_text = "*Your Password must be alphanumeric";
+            //         rPass_error.innerHTML = error_text;
+            //         rPass_error.classList.add("invalid-feedback");
+            //         return false;
+            //     }
+
+            //     rPass.classList.remove("is-invalid");
+            //     rPass_error.innerHTML = "";
+            //     rPass_error.classList.remove("invalid-feedback");
+            //     return true;
+            // }
         }
 
         function validate_finalPassword() {
             var nPass = document.getElementById("newPass");
             var rPass = document.getElementById("rePass");
-            var rPass_error = document.getElementById("pass-error2");
-            var nPass_error = document.getElementById("pass-error1");
+            let isValid = true; // Track overall validity
+            //var rPass_error = document.getElementById("pass-error2");
+            //var nPass_error = document.getElementById("pass-error1");
 
             if (nPass.value !== rPass.value) {
-                nPass.classList.add("is-invalid");
-                error_text = "*Passwords do not match.";
-                nPass_error.innerHTML = error_text;
-                nPass_error.classList.add("invalid-feedback");
-
-                rPass.classList.add("is-invalid");
-                error_text = "*Passwords do not match.";
-                rPass_error.innerHTML = error_text;
-                rPass_error.classList.add("invalid-feedback");
-                return false;
-            } else {
-                nPass.classList.remove("is-invalid");
-                nPass_error.innerHTML = "";
-                nPass_error.classList.remove("invalid-feedback");
-
-                rPass.classList.remove("is-invalid");
-                rPass_error.innerHTML = "";
-                rPass_error.classList.remove("invalid-feedback");
-                return true;
+                nPass.setCustomValidity("Passwords do not match."); // Clear error when user types
+                rPass.setCustomValidity("Passwords do not match."); // Clear error when user types
+            }else {
+                rPass.setCustomValidity(""); // Reset validation
             }
+                rPass.reportValidity(); // Show validation message
+
+                if (!rPass.checkValidity()) {
+                    event.preventDefault(); // Prevent form submission if invalid
+                }
+
+                rPass.addEventListener("input", function () {
+                    rPass.setCustomValidity(""); // Clear error when user types
+                });
+
+            return isValid;
+
+            // if (nPass.value !== rPass.value) {
+            //     nPass.classList.add("is-invalid");
+            //     error_text = "*Passwords do not match.";
+            //     nPass_error.innerHTML = error_text;
+            //     nPass_error.classList.add("invalid-feedback");
+
+            //     rPass.classList.add("is-invalid");
+            //     error_text = "*Passwords do not match.";
+            //     rPass_error.innerHTML = error_text;
+            //     rPass_error.classList.add("invalid-feedback");
+            //     return false;
+            // } else {
+            //     nPass.classList.remove("is-invalid");
+            //     nPass_error.innerHTML = "";
+            //     nPass_error.classList.remove("invalid-feedback");
+
+            //     rPass.classList.remove("is-invalid");
+            //     rPass_error.innerHTML = "";
+            //     rPass_error.classList.remove("invalid-feedback");
+            //     return true;
+            // }
         }
 
 
