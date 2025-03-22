@@ -462,17 +462,19 @@ $conn->close();
                     </label>
                 </div>
                 <div class="section" id="package-details">
-                    <!-- <input type="text" placeholder="Enter package details" style="width: 100%"> -->
+                    <!-- Package details will be populated by JavaScript -->
                 </div>
                 <div class="table-container">
                     <div class="table-header">
                         <span>Reimbursable Charges</span>
                         <span>Amount</span>
                     </div>
-                    <div id="charges-table"></div>
+                    <div id="charges-table">
+                        <!-- Charges will be populated by JavaScript -->
+                    </div>
                 </div>
                 <div class="section">
-                    <input type="text" id="total" name="total" placeholder="Total" style="width: 100%" readonly>
+                    <input type="number" id="total" name="total" placeholder="Total" style="width: 100%" readonly>
                     <button type="button" onclick="calculateTotal()" class="calc-btn">Calculate</button>
                 </div>
                 <div class="section">

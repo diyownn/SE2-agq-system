@@ -236,7 +236,6 @@ $conn->close();
             }
         }
 
-
         function validateChargeInput(inputElement) {
             const maxAmount = 16500000; 
             const value = parseFloat(inputElement.value) || 0;
@@ -357,7 +356,7 @@ $conn->close();
         }
 
 
-        function validateForm() {
+    function validateForm() {
         const numberFieldsValid = validateChargeAmount(chargeElement);
         const textFieldsValid = validateTextFields(textElement);
         const dateFieldValid = validateDateFields(dateElement);
@@ -429,14 +428,17 @@ $conn->close();
                 </label>
             </div>
             <div class="section" id="package-details">
-                <!-- <input type="text" placeholder="Enter package details" style="width: 100%"> -->
+                <!-- Package details will be populated by JavaScript -->
             </div>
             <div class="table-container">
                 <div class="table-header">
                     <span>Reimbursable Charges</span>
                     <span>Amount</span>
                 </div>
-                <div id="charges-table"></div>
+                <div id="charges-table">
+                    <!-- Charges will be populated by JavaScript -->
+
+                </div>
             </div>
             <div class="section">
                 <input type="number" id="total" name="total" placeholder="Total" style="width: 100%" readonly>
@@ -444,14 +446,13 @@ $conn->close();
             </div>
             <div class="section">
                     <textarea name="notes" placeholder="Enter notes" onchange="validateNotesField(this)" style="width: 800px; height:100px; flex-direction: column; resize: none;"></textarea>
-                </div>
+            </div>
             <div class="section">
                 <input type="text" maxlength="25" name="preparedBy" placeholder="Prepared by" onchange="validateTextFields(this)" style="width: 48%">
                 <input type="text" maxlength="25" name="approvedBy" placeholder="Approved by" onchange="validateTextFields(this)" style="width: 48%">
                 <input type="text" maxlength="25" name="editedBy" placeholder="Edited by" onchange="validateTextFields(this)" style="width: 24%">
             </div>
             <div class="footer">
-                <!-- <button class="save-btn">Save</button> -->
                 <input type="submit" name="save" class="save-btn" value="Save">
             </div>
         </form>

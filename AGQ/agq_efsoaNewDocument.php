@@ -433,12 +433,12 @@ $conn->close();
                 </div>
             </div>
             <div class="section">
-                <input type="text" id="total" name="total" placeholder="Total" style="width: 100%">
+                <input type="number" id="total" name="total" placeholder="Total" style="width: 100%">
                 <button type="button" onclick="calculateTotal()" class="calc-btn">Calculate</button>
             </div>
             <div class="section">
                     <textarea name="notes" placeholder="Enter notes" onchange="validateNotesField(this)" style="width:800px; height:100px; flex-direction: column; resize: none;"></textarea>
-                </div>
+            </div>
             <div class="section">
                 <input type="text" maxlength="25" name="prepared" placeholder="Prepared by" onchange="validateTextFields(this)" style="width: 48%">
                 <input type="text" maxlength="25" name="approve" placeholder="Approved by" onchange="validateTextFields(this)" style="width: 48%">
