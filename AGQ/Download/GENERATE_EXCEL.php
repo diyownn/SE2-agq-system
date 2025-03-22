@@ -178,7 +178,7 @@ switch ($dept) {
 
         if ($row) {
 
-            $sheet->getStyle('P35:P47')->getNumberFormat()->setFormatCode('₱#,##0.00;[Red]-₱#,##0.00');
+            $SOA->getStyle('P35:P47')->getNumberFormat()->setFormatCode('₱#,##0.00;[Red]-₱#,##0.00');
 
             $SOA->setCellValue("C17", $row['To:']);
             $SOA->setCellValue("C19", $row['Address']);

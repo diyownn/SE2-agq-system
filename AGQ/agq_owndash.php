@@ -323,6 +323,13 @@ if (!empty($search_query)) {
                 let url = query ? `FILTER_COMPANY.php?query=${encodeURIComponent(query)}` : "FILTER_COMPANY.php";
                 fetchCompanies(url);
             });
+
+            searchInput.addEventListener("keydown", function(event) {
+                if (event.key === "Enter") {
+                    event.preventDefault();
+                    searchButton.click();
+                }
+            });
         }
     </script>
 
