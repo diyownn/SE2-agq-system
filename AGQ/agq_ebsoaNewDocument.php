@@ -1,6 +1,8 @@
 <?php
 require 'db_agq.php';
 
+session_start();
+
 // Handle form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_POST['save'])) {
@@ -15,9 +17,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 // Function to insert a record
 function insertRecord($conn)
 {
-    $docType = isset($_SESSION['DocType']) ? $_SESSION['DocType'] : null;
-    $department = isset($_SESSION['Department']) ? $_SESSION['Department'] : null;
+    $department = isset($_SESSION['department']) ? $_SESSION['department'] : null;
     $companyName = isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : null;
+    $docType = isset($_SESSION['selected_documenttype']) ? $_SESSION['selected_documenttype'] : null;
+
     date_default_timezone_set('Asia/Manila');
     $editDate = date('Y-m-d');
 

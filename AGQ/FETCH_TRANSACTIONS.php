@@ -16,13 +16,13 @@ $tables = [
     "Export Brokerage"  => "tbl_expbrk",
     "Export Forwarding" => "tbl_expfwd",
     "Import Brokerage"  => "tbl_impbrk",
-    "Import Forwarding" => "tbl_impfwd"
+    "Import Forwarding" => "tbl_impfwd", 
 ];
 
 // Ensure that $dept is valid
 if (!empty($dept) && isset($tables[$dept])) {
     $table = $tables[$dept];
-    $query = "SELECT RefNum, DocType FROM $table WHERE (RefNum LIKE ? OR DocType LIKE ?) AND Company_name = ?";
+    $query = "SELECT RefNum, DocType FROM $table WHERE (RefNum LIKE ? OR DocType LIKE ? OR DocType = 'Manifesto') AND Company_name = ?";
     $like_query = "%{$search}%";
 
     if ($stmt = $conn->prepare($query)) {
@@ -71,6 +71,7 @@ if (!empty($role) && isset($tables[$role])) {
             ];
         }
         $stmt->close();
+
     }
 }
 

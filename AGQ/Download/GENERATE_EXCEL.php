@@ -17,8 +17,11 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-$refnum = $_GET['request'] ?? null;
-$dept = $_GET['user'] ?? null;
+// $refnum = $_GET['request'] ?? null;
+// $dept = $_GET['user'] ?? null;
+
+$refNum = "Euro";
+$dept = "Export Brokerage";
 
 switch ($dept) {
 

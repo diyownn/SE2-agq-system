@@ -7,35 +7,16 @@ $dept = isset($_SESSION['SelectedDepartment']) ? $_SESSION['SelectedDepartment']
 $company = isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : '';
 
 if (!$role) {
-    echo "<html><head><style>
-    body { font-family: Arial, sans-serif; text-align: center; background-color: #f8d7da; }
-    .container { margin-top: 50px; padding: 20px; background: white; border-radius: 10px; display: inline-block; }
-    h1 { color: #721c24; }
-    p { color: #721c24; }
-  </style></head><body>
-  <div class='container'>
-    <h1>Unauthorized Access</h1>
-    <p>You do not have permission to view this page. (ERR: R)</p>
-  </div>
-  </body></html>";
-    exit;
+    header("Location: UNAUTHORIZED.php?error=401r");
 }
 
 if (!$company) {
-    echo "<html><head><style>
-    body { font-family: Arial, sans-serif; text-align: center; background-color: #f8d7da; }
-    .container { margin-top: 50px; padding: 20px; background: white; border-radius: 10px; display: inline-block; }
-    h1 { color: #721c24; }
-    p { color: #721c24; }
-  </style></head><body>
-  <div class='container'>
-    <h1>Unauthorized Access</h1>
-    <p>You do not have permission to view this page. (ERR: C)</p>
-  </div>
-  </body></html>";
-    exit;
+    header("Location: UNAUTHORIZED.php?error=401c");
 }
 
+if (!$dept) {
+    header("Location: UNAUTHORIZED.php?error=401d");
+}
 $query = "
 SELECT i.RefNum, i.DocType, c.Company_name
 FROM tbl_impfwd i
@@ -391,8 +372,6 @@ if ($result) {
 
 
 
-
-
             searchButton.addEventListener("click", function() {
                 let query = searchInput.value.trim();
 
@@ -402,8 +381,14 @@ if ($result) {
                     fetchFilteredTransactions(query);
                 }
             });
-        });
 
+            searchInput.addEventListener("keydown", function(event) {
+                if (event.key === "Enter") {
+                    event.preventDefault();
+                    searchButton.click();
+                }
+            });
+        });
 
         function downloadDocument(refNum, department) {
             const encodedRefNum = encodeURIComponent(refNum);
@@ -419,6 +404,7 @@ if ($result) {
                 }
             }, 3000);
         }
+
 
 
         var role = "<?php echo isset($_SESSION['department']) ? $_SESSION['department'] : ''; ?>";

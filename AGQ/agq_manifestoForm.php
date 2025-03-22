@@ -2,26 +2,52 @@
 require_once "db_agq.php";
 session_start();
 
-$docType = $_SESSION['DocType'] ?? null;
-$department = $_SESSION['department'] ?? null;
-$companyName = $_SESSION['Company_name'] ?? null;
+$refNum = $_GET['refnum'] ?? null; // Check if refnum exists for edit mode
+$editedBy = $_GET['editedby'] ?? '';
+$docType = "Manifesto";
+$department = $_SESSION['department'] ?? '';
+$companyName = $_SESSION['Company_name'] ?? '';
 date_default_timezone_set('Asia/Manila');
 $editDate = date('Y-m-d');
 
+$imageSrc = "";
+
+if ($refNum) {
+    require_once "db_agq.php";
+
+    $stmt = $conn->prepare("SELECT Document_picture FROM tbl_document WHERE RefNum = ?");
+    $stmt->bind_param("s", $refNum);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        if (!empty($row['Document_picture']) && file_exists($row['Document_picture'])) {
+            $imageSrc = $row['Document_picture']; // Use existing image
+        }
+    }
+
+    $stmt->close();
+    $conn->close();
+}
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $editText = trim($_POST['edit'] ?? '');
+    $refNum = random_int(1000000000, 9999999999);
+    $editedBy = trim($_POST['editedby'] ?? '');
     $hasError = false;
 
     // Backend validation for security
-    if (empty($editText)) {
+    if (empty($editedBy)) {
         echo '<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>';
         echo '<script>
+            document.addEventListener("DOMContentLoaded", function() {
                 Swal.fire({
                     icon: "error",
                     title: "Missing Input",
-                    text: "Please enter the created by field."
+                    text: "Please enter the edited by field."
                 });
-              </script>';
+            });
+          </script>';
         $hasError = true;
     }
 
@@ -37,44 +63,81 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $hasError = true;
     }
 
-    // Stop execution if there's an error
     if ($hasError) {
         exit;
     }
 
-    // Process upload only if validation passes
-    $refNum = rand(1000000000, 9999999999);
-    $man_docs = fopen($_FILES['manPic']['tmp_name'], 'rb');
+    $imageData = file_get_contents($_FILES['manPic']['tmp_name']);
+    $imageHash = hash('sha256', $imageData);
 
-    $stmt = $conn->prepare("INSERT INTO tbl_document (DocumentID, Document_type, Document_picture, Edited_by, EditDate, Company_name, Department) VALUES (?, ?, ?, ?, ?, ?, ?)");
+    $stmt = $conn->prepare("SELECT Document_picture FROM tbl_document WHERE SHA2(Document_picture, 256) = ?");
+    $stmt->bind_param("s", $imageHash);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows > 0) {
+        echo '<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>';
+        echo '<script>
+                Swal.fire({
+                    icon: "warning",
+                    title: "Duplicate Image",
+                    text: "This image already exists in the system."
+                });
+              </script>';
+        exit;
+    }
+
+    // Store the image in the "uploads" directory instead of the database
+    $targetDir = "uploads/";
+    if (!file_exists($targetDir)) {
+        mkdir($targetDir, 0777, true); // Create directory if not exists
+    }
+    $fileExtension = pathinfo($_FILES["manPic"]["name"], PATHINFO_EXTENSION);
+    $fileName = $refNum . "." . $fileExtension;
+    $targetFilePath = $targetDir . basename($fileName);
+
+    if (!move_uploaded_file($_FILES["manPic"]["tmp_name"], $targetFilePath)) {
+        echo '<script>
+                Swal.fire({
+                    icon: "error",
+                    title: "Upload Failed",
+                    text: "Failed to upload image. Please try again."
+                });
+              </script>';
+        exit;
+    }
+
+    // Insert data into the database with the file path
+    $stmt = $conn->prepare("INSERT INTO tbl_document (RefNum, DocType, Document_picture, Edited_by, EditDate, Company_name, Department) VALUES (?, ?, ?, ?, ?, ?, ?)");
 
     if (!$stmt) {
         die("Preparation failed: " . $conn->error);
     }
 
-    $dummyblob = null;
-    $stmt->bind_param("isbssss", $refNum, $docType, $dummyblob, $editText, $editDate, $companyName, $department);
-    $stmt->send_long_data(2, file_get_contents($_FILES['manPic']['tmp_name']));
+    $stmt->bind_param("sssssss", $refNum, $docType, $targetFilePath, $editedBy, $editDate, $companyName, $department);
 
     if ($stmt->execute()) {
         echo '<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>';
         echo '<script>
+            document.addEventListener("DOMContentLoaded", function() {
                 Swal.fire({
                     icon: "success",
                     title: "Document Added!",
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.location.href = "agq_manifestoView.php";
-                    }
+                    timer: 1500, 
+                    showConfirmButton: false
+                }).then(() => {
+                    window.location.href = "agq_manifestoView.php?refnum=' . htmlspecialchars($refNum) . '";
                 });
-              </script>';
+            });
+          </script>';
     }
 
-    fclose($man_docs);
     $stmt->close();
     $conn->close();
 }
 ?>
+
+
 
 
 
@@ -109,8 +172,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <p id="title" class="text-center" style="text-decoration: none; margin-top:0%">MANIFESTO</p>
 
                 <form action="agq_manifestoForm.php" method="POST" class="form-content" enctype="multipart/form-data" onsubmit="return validate_form()">
-                    <img src="" class="d-block mx-auto" id="imgholder" alt="" style="width: 335px; height: 350px">
-                    <input type="text" name="edit" id="einput" class="form-control" placeholder="Created by" onchange="return validate_edit()">
+                    <img src="<?= htmlspecialchars($imageSrc); ?>" class="d-block mx-auto" id="imgholder"
+                        alt="Document Image" style="width: 335px; height: 350px; display: <?= empty($imageSrc) ? 'none' : 'block' ?>;">
+                    <input type="text" name="editedby" id="einput" class="form-control" placeholder="Edited by" required>
+
                     <div id="edit-error"></div>
 
 
@@ -118,7 +183,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <label class="file-upload d-flex justify-content-center">
                             <input type="file" id="cPic" name="manPic" accept="image/*" onchange="previewImage(event)">
                             <input type="button" id="button1" style="margin-top: 39.5%; margin-bottom: 0%; margin-right: 10px;" value="Upload">
-                            <div id="image-error"></div>
+                            <div id="image-error" class="text-danger"></div>
+
                         </label>
                         <input type="submit" id="button1" style="margin-top: 12%; margin-bottom: 0%;" value="Save">
                     </div>
@@ -146,34 +212,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         function previewImage(event) {
             var imgDisplay = document.getElementById("imgholder");
             imgDisplay.src = URL.createObjectURL(event.target.files[0]);
-        }
-
-        function validate_form() {
-            let editValid = validate_edit();
-            let imageValid = validate_manImg();
-            return editValid && imageValid;
-        }
-
-        function validate_edit() {
-            var editInput = document.getElementById("einput");
-            var editError = document.getElementById("edit-error");
-
-            if (editInput.value.trim() === '') {
-                editInput.classList.add("is-invalid");
-                editError.innerHTML = "*Please input an Author";
-                editError.classList.add("invalid-feedback");
-                return false;
-            } else {
-                editInput.classList.remove("is-invalid");
-                editError.innerHTML = "";
-                editError.classList.remove("invalid-feedback");
-                return true;
-            }
+            imgDisplay.style.display = "block"; // Show the image
         }
 
         function validate_manImg() {
             var fileInput = document.getElementById("cPic");
             var fileError = document.getElementById("image-error");
+
+            if (!fileError) {
+                console.error("Missing image-error div!");
+                return false;
+            }
 
             if (fileInput.files.length === 0) {
                 fileInput.classList.add("is-invalid");
