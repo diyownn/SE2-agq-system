@@ -49,9 +49,6 @@ if ($role == 'Import Forwarding') {
 
 $result = $conn->query($query);
 
-
-
-$result = $conn->query($query);
 $transactions = [];
 if ($result) {
     while ($row = $result->fetch_assoc()) {
@@ -62,22 +59,6 @@ if ($result) {
         ];
     }
 }
-
-
-/*
-if (!empty($search_query)) {
-    $stmt = $conn->prepare("SELECT Company_name, Company_picture FROM tbl_company WHERE Company_name LIKE ?");
-    $like_query = "%" . $search_query . "%";
-    $stmt->bind_param("s", $like_query);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $stmt->close();
-} else {
-
-    $companies = "SELECT Company_name, Company_picture FROM tbl_company";
-    $result = $conn->query($companies);
-}
-*/
 ?>
 
 <!DOCTYPE html>
@@ -91,6 +72,7 @@ if (!empty($search_query)) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../css/otp.css">
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 </head>
 
 <body>
@@ -147,11 +129,26 @@ if (!empty($search_query)) {
                         <?php $normalizedDocType = strtoupper(trim($docType)); ?>
                         <?php if (!empty($transactions[$normalizedDocType])): ?>
                             <?php foreach ($transactions[$normalizedDocType] as $transaction): ?>
-                                <div class="transaction-item d-flex justify-content-between">
-                                    <span ondblclick="redirectToDocument('<?php echo htmlspecialchars($transaction['RefNum']); ?>', '<?php echo $normalizedDocType; ?>')">
-                                        <?php echo htmlspecialchars($transaction['RefNum']); ?> - <?php echo $normalizedDocType; ?>
-                                    </span>
-                                    <input type="checkbox">
+                                <div class="transaction-item d-flex justify-content-between align-items-center">
+                                    <div class="d-flex align-items-center">
+                                        <div class="form-check me-2">
+                                            <input class="form-check-input transaction-checkbox" type="checkbox" id="check-<?php echo htmlspecialchars($transaction['RefNum']); ?>">
+                                        </div>
+                                        <span class="transaction-text" ondblclick="redirectToDocument('<?php echo htmlspecialchars($transaction['RefNum']); ?>', '<?php echo $normalizedDocType; ?>')">
+                                            <?php echo htmlspecialchars($transaction['RefNum']); ?> - <?php echo $normalizedDocType; ?>
+                                        </span>
+                                    </div>
+                                    <div class="transaction-actions">
+                                        <button class="btn btn-sm action-btn check-btn" title="Complete">
+                                            <i class="bi bi-check2"></i>
+                                        </button>
+                                        <button class="btn btn-sm action-btn edit-btn" title="Edit" onclick="editTransaction('<?php echo htmlspecialchars($transaction['RefNum']); ?>', '<?php echo $normalizedDocType; ?>')">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button class="btn btn-sm action-btn archive-btn" title="Archive">
+                                            <i class="bi bi-archive"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             <?php endforeach; ?>
                         <?php else: ?>
@@ -163,12 +160,20 @@ if (!empty($search_query)) {
         </div>
     </div>
     <script>
+        var doctype = "<?php echo isset($_SESSION['selected_documenttype']) ? $_SESSION['selected_documenttype'] : ''; ?>"
+        var role = "<?php echo isset($_SESSION['department']) ? $_SESSION['department'] : ''; ?>";
+        var company = "<?php echo isset($_SESSION['selected_company']) ? $_SESSION['selected_company'] : ''; ?>";
+
         function redirectToDocument(refnum, doctype) {
             if (!refnum || !doctype) {
                 return;
             } else {
                 window.location.href = "agq_documentCatcher.php?refnum=" + encodeURIComponent(refnum) + '&doctype=' + encodeURIComponent(doctype);;
             }
+        }
+
+        function editTransaction(refnum, doctype) {
+            window.location.href = "agq_edit_transaction.php?refnum=" + encodeURIComponent(refnum) + '&doctype=' + encodeURIComponent(doctype);
         }
 
         document.body.addEventListener("click", function(event) {
@@ -185,12 +190,13 @@ if (!empty($search_query)) {
 
 
         let searchInput = document.getElementById("search-input");
+        let dropdown = document.getElementById("dropdown");
+
         if (searchInput) {
             searchInput.addEventListener("input", function() {
                 let query = this.value.trim().toLowerCase();
-                let dropdown = document.getElementById("dropdown");
 
-                if (query.length === 0) {
+                if (!query) {
                     dropdown.style.display = "none";
                     return;
                 }
@@ -201,38 +207,38 @@ if (!empty($search_query)) {
                         console.log("API Response:", JSON.stringify(data, null, 2));
 
                         dropdown.innerHTML = "";
+                        let seenItems = new Set(); // Track unique entries
 
-                        // Extract transactions properly (nested inside departments and document types)
+                        // Extract transactions
                         let transactions = [];
-                        Object.values(data).forEach(department => { // Iterate through departments
-                            Object.values(department).forEach(docType => { // Iterate through document types
-                                transactions = transactions.concat(docType); // Collect all transactions
+                        Object.values(data).forEach(department => {
+                            Object.values(department).forEach(docType => {
+                                transactions = transactions.concat(docType);
                             });
                         });
 
-                        console.log("Extracted Transactions:", transactions); // Debugging
+                        transactions.forEach(item => {
+                            let refNum = item.RefNum || "";
+                            let docType = item.DocType || "";
+                            let itemKey = `${refNum}-${docType}`.toLowerCase();
 
-                        if (transactions.length > 0) {
-                            transactions.forEach(item => {
-                                let refNum = (item.RefNum || "").toLowerCase();
-                                let docType = (item.DocType || "").toLowerCase();
+                            if (!seenItems.has(itemKey) && (refNum.toLowerCase().includes(query) || docType.toLowerCase().includes(query))) {
+                                seenItems.add(itemKey);
 
-                                if (refNum.includes(query) || docType.includes(query)) {
-                                    let div = document.createElement("div");
-                                    div.classList.add("dropdown-item");
-                                    div.innerHTML = `<strong>${item.RefNum || "Unknown RefNum"}</strong> - ${item.DocType || "No DocType"}`;
-                                    div.onclick = function() {
-                                        searchInput.value = item.RefNum || item.DocType || "";
-                                        dropdown.style.display = "none";
-                                    };
-                                    dropdown.appendChild(div);
-                                }
-                            });
+                                let div = document.createElement("div");
+                                div.classList.add("dropdown-item");
+                                div.innerHTML = `<strong>${refNum || "Unknown RefNum"}</strong> - ${docType || "No DocType"}`;
 
-                            dropdown.style.display = dropdown.children.length > 0 ? "block" : "none";
-                        } else {
-                            dropdown.style.display = "none";
-                        }
+                                div.onclick = function() {
+                                    searchInput.value = refNum || docType;
+                                    dropdown.style.display = "none";
+                                };
+
+                                dropdown.appendChild(div);
+                            }
+                        });
+
+                        dropdown.style.display = dropdown.children.length ? "block" : "none";
                     })
                     .catch(error => {
                         console.error("Error fetching search results:", error);
@@ -268,7 +274,7 @@ if (!empty($search_query)) {
 
                         let structuredTransactions = {};
 
-                        // Process API response
+                        transactionsContainer.innerHTML = "";
                         Object.entries(data).forEach(([department, docTypes]) => {
                             if (!structuredTransactions[department]) {
                                 structuredTransactions[department] = {};
@@ -294,13 +300,18 @@ if (!empty($search_query)) {
                             });
                         });
 
-                        // **Ensure SOA, Summary, and Others exist in all departments**
+
                         Object.keys(structuredTransactions).forEach(department => {
                             if (!structuredTransactions[department]["SOA"]) {
                                 structuredTransactions[department]["SOA"] = [];
                             }
                             if (!structuredTransactions[department]["INVOICE"]) {
                                 structuredTransactions[department]["INVOICE"] = [];
+                            }
+                            if (role == "Import Forwarding") {
+                                if (!structuredTransactions[department]["MANIFESTO"]) {
+                                    structuredTransactions[department]["MANIFESTO"] = [];
+                                }
                             }
 
                         });
@@ -350,69 +361,119 @@ if (!empty($search_query)) {
             function generateTransactionHTML(transactions, container) {
                 container.innerHTML = "";
 
+                let structuredTransactions = {};
+
+                // Aggregate transactions across all departments
                 Object.entries(transactions).forEach(([department, docTypes]) => {
-                    let departmentSection = document.createElement("div");
-                    departmentSection.classList.add("department-section");
+                    Object.entries(docTypes).forEach(([docType, records]) => {
+                        let normalizedDocType = docType.toUpperCase().trim();
 
-                    const order = ["SOA", "INVOICE"];
-
-                    if ($role == "Import Forwarding") {
-                        const order = ["SOA", "INVOICE", "MANIFESTO"];
-                    }
-
-                    let sortedDocTypes = Object.keys(docTypes).sort((a, b) => {
-                        let indexA = order.indexOf(a.toUpperCase());
-                        let indexB = order.indexOf(b.toUpperCase());
-
-                        if (indexA === -1) indexA = order.length;
-                        if (indexB === -1) indexB = order.length;
-
-                        return indexA - indexB;
-                    });
-
-                    sortedDocTypes.forEach(docType => {
-                        let refs = docTypes[docType];
-
-                        let transactionSection = document.createElement("div");
-                        transactionSection.classList.add("transaction");
-
-                        let transactionHeader = document.createElement("div");
-                        transactionHeader.classList.add("transaction-header");
-                        transactionHeader.innerHTML = `${docType} <span class="icon">&#x25BC;</span>`;
-
-                        let transactionContent = document.createElement("div");
-                        transactionContent.classList.add("transaction-content");
-
-                        if (Array.isArray(refs) && refs.length > 0) {
-                            refs.forEach(refNum => {
-                                let transactionItem = document.createElement("div");
-                                transactionItem.classList.add("transaction-item", "d-flex", "justify-content-between");
-
-                                let transactionText = document.createElement("span");
-                                transactionText.textContent = `${refNum} - ${docType}`;
-                                transactionText.ondblclick = function() {
-                                    redirectToDocument(refNum, docType);
-                                };
-
-                                let transactionCheckbox = document.createElement("input");
-                                transactionCheckbox.type = "checkbox";
-
-                                transactionItem.appendChild(transactionText);
-                                transactionItem.appendChild(transactionCheckbox);
-                                transactionContent.appendChild(transactionItem);
-                            });
-                        } else {
-                            transactionContent.innerHTML = "<p>No records found.</p>";
+                        if (!structuredTransactions[normalizedDocType]) {
+                            structuredTransactions[normalizedDocType] = [];
                         }
 
-                        transactionSection.appendChild(transactionHeader);
-                        transactionSection.appendChild(transactionContent);
-                        departmentSection.appendChild(transactionSection);
+                        structuredTransactions[normalizedDocType].push(...records);
                     });
+                });
 
-                    container.appendChild(departmentSection);
+                const order = ["SOA", "INVOICE"];
+                if (role == "Import Forwarding") {
+                    order.push("MANIFESTO");
+                }
+
+                let sortedDocTypes = Object.keys(structuredTransactions).sort((a, b) => {
+                    let indexA = order.indexOf(a);
+                    let indexB = order.indexOf(b);
+                    if (indexA === -1) indexA = order.length;
+                    if (indexB === -1) indexB = order.length;
+                    return indexA - indexB;
+                });
+
+                // Create sections for each document type only once
+                sortedDocTypes.forEach(docType => {
+                    let refs = structuredTransactions[docType];
+
+                    let transactionSection = document.createElement("div");
+                    transactionSection.classList.add("transaction");
+
+                    let transactionHeader = document.createElement("div");
+                    transactionHeader.classList.add("transaction-header");
+                    transactionHeader.innerHTML = `${docType} <span class="icon">&#x25BC;</span>`;
+
+                    let transactionContent = document.createElement("div");
+                    transactionContent.classList.add("transaction-content");
+
+                    if (Array.isArray(refs) && refs.length > 0) {
+                        refs.forEach(refNum => {
+                            let transactionItem = document.createElement("div");
+                            transactionItem.classList.add("transaction-item", "d-flex", "justify-content-between", "align-items-center");
+
+                            let leftSide = document.createElement("div");
+                            leftSide.classList.add("d-flex", "align-items-center");
+
+                            let checkboxDiv = document.createElement("div");
+                            checkboxDiv.classList.add("form-check", "me-2");
+
+                            let checkbox = document.createElement("input");
+                            checkbox.classList.add("form-check-input", "transaction-checkbox");
+                            checkbox.type = "checkbox";
+                            checkbox.id = `check-${refNum}`;
+
+                            checkboxDiv.appendChild(checkbox);
+                            leftSide.appendChild(checkboxDiv);
+
+                            let transactionText = document.createElement("span");
+                            transactionText.classList.add("transaction-text");
+                            transactionText.textContent = `${refNum} - ${docType}`;
+                            transactionText.ondblclick = function() {
+                                redirectToDocument(refNum, docType);
+                            };
+
+                            leftSide.appendChild(transactionText);
+
+                            let actions = document.createElement("div");
+                            actions.classList.add("transaction-actions");
+
+                            // Checkmark button
+                            let checkBtn = document.createElement("button");
+                            checkBtn.classList.add("btn", "btn-sm", "action-btn", "check-btn");
+                            checkBtn.title = "Complete";
+                            checkBtn.innerHTML = '<i class="bi bi-check2"></i>';
+
+                            // Edit button
+                            let editBtn = document.createElement("button");
+                            editBtn.classList.add("btn", "btn-sm", "action-btn", "edit-btn");
+                            editBtn.title = "Edit";
+                            editBtn.innerHTML = '<i class="bi bi-pencil"></i>';
+                            editBtn.onclick = function() {
+                                editTransaction(refNum, docType);
+                            };
+
+                            // Archive button
+                            let archiveBtn = document.createElement("button");
+                            archiveBtn.classList.add("btn", "btn-sm", "action-btn", "archive-btn");
+                            archiveBtn.title = "Archive";
+                            archiveBtn.innerHTML = '<i class="bi bi-archive"></i>';
+
+                            actions.appendChild(checkBtn);
+                            actions.appendChild(editBtn);
+                            actions.appendChild(archiveBtn);
+
+                            transactionItem.appendChild(leftSide);
+                            transactionItem.appendChild(actions);
+                            transactionContent.appendChild(transactionItem);
+                        });
+
+                    } else {
+                        transactionContent.innerHTML = "<p>No records found.</p>";
+                    }
+
+                    transactionSection.appendChild(transactionHeader);
+                    transactionSection.appendChild(transactionContent);
+                    container.appendChild(transactionSection);
                 });
             }
+
 
             searchButton.addEventListener("click", function() {
                 let query = searchInput.value.trim();
@@ -421,6 +482,13 @@ if (!empty($search_query)) {
                     fetchAllTransactions();
                 } else {
                     fetchFilteredTransactions(query);
+                }
+            });
+
+            searchInput.addEventListener("keydown", function(event) {
+                if (event.key === "Enter") {
+                    event.preventDefault();
+                    searchButton.click();
                 }
             });
 
@@ -441,10 +509,6 @@ if (!empty($search_query)) {
             }, 3000);
         }
 
-
-        var doctype = "<?php echo isset($_SESSION['selected_documenttype']) ? $_SESSION['selected_documenttype'] : ''; ?>"
-        var role = "<?php echo isset($_SESSION['department']) ? $_SESSION['department'] : ''; ?>";
-        var company = "<?php echo isset($_SESSION['selected_company']) ? $_SESSION['selected_company'] : ''; ?>";
 
         console.log("DocType:", doctype);
         console.log("Role:", role);

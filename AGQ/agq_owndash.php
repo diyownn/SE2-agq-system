@@ -71,7 +71,7 @@ if (!empty($search_query)) {
     <link rel="stylesheet" type="text/css" href="../css/owndash.css">
 </head>
 
-<body>
+<body style="background-image: url('sbg.png'); background-repeat: no-repeat; background-size: cover; background-position: center; background-attachment: fixed;">
     <div class="top-container">
         <div class="dept-container">
             <div class="dept-label">
@@ -145,31 +145,20 @@ if (!empty($search_query)) {
                 $result = $conn->query($companies);
 
                 if ($result->num_rows > 0) {
-                    $index = 0;
+                    echo '<div class="company-container-row">';
                     while ($row = $result->fetch_assoc()) {
-                        $varName = 'Company' . $index;
-                        $varName = $row['Company_name'];
-
                         $company_name = $row['Company_name'];
                         $company_picture = $row['Company_picture'];
-
+                
                         $company_picture_base64 = base64_encode($company_picture);
                         $company_picture_src = 'data:image/jpeg;base64,' . $company_picture_base64;
-
-
-                        if ($index > 0 && $index % 5 === 0) {
-                            echo '</div><div class="company-container-row">';
-                        }
-
+                
                         echo '<div class="company-button">';
                         echo '<button class="company-container" onclick="storeCompanySession(\'' . htmlspecialchars($company_name, ENT_QUOTES) . '\')">';
                         echo '<img class="company-logo" src="' . $company_picture_src . '" alt="' . $company_name . '">';
                         echo '</button>';
                         echo '</div>';
-
-                        $index++;
                     }
-
                     echo '</div>';
                 } else {
                     echo "No companies found in the database.";
@@ -333,6 +322,13 @@ if (!empty($search_query)) {
                 let query = searchInput.value.trim();
                 let url = query ? `FILTER_COMPANY.php?query=${encodeURIComponent(query)}` : "FILTER_COMPANY.php";
                 fetchCompanies(url);
+            });
+
+            searchInput.addEventListener("keydown", function(event) {
+                if (event.key === "Enter") {
+                    event.preventDefault();
+                    searchButton.click();
+                }
             });
         }
     </script>

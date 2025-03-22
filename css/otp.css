@@ -12,7 +12,7 @@ body {
 }
 
 .search-bar {
-    flex: 1; /* Ensures input expands properly */
+    flex: a; /* Ensures input expands properly */
     min-width: 300px; /* Prevents shrinking too much */
     border-radius: 8px; /* Smooth corners */
 }
@@ -27,14 +27,13 @@ body {
     border-radius: 0 50px 50px 0;
     cursor: pointer;
     flex-shrink: 0;
-  }
+}
   
-  .search-button:hover {
+.search-button:hover {
     opacity: 1;
     background-color: rgb(99, 133, 46);
-  }
+}
   
-
 #dropdown {
     position: absolute;
     top: 100%; /* Moves it below the search bar */
@@ -73,7 +72,7 @@ body {
     width: 100%;
     padding-bottom: 10px;
     align-items: flex-start;
-  }
+}
   
 .dept-container {
     position: relative;
@@ -82,9 +81,9 @@ body {
     justify-content: space-between;
     height: 120px;
     width: 100%;
-  }
+}
   
-  .dept-label {
+.dept-label {
     background-color: rgb(144, 174, 94);
     color: white;
     font-weight: bold;
@@ -104,9 +103,9 @@ body {
     -webkit-box-shadow: 0px -1px 7px 0px rgba(0,0,0,0.19);
     -moz-box-shadow: 0px -1px 7px 0px rgba(0,0,0,0.19);
     z-index: 99;
-  }
+}
 
-  .company-label {
+.company-label {
     background-color: rgb(160, 184, 117);
     color: white;
     font-size: 14px;
@@ -125,9 +124,9 @@ body {
     -webkit-box-shadow: 0px -1px 7px 0px rgba(0,0,0,0.19);
     -moz-box-shadow: 0px -1px 7px 0px rgba(0,0,0,0.19);
     z-index: 98;
-  }
+}
 
-  .selected-dept-label {
+.selected-dept-label {
     background-color: rgb(174, 197, 160);
     color: white;
     font-size: 14px;
@@ -147,16 +146,16 @@ body {
     -webkit-box-shadow: 0px -1px 7px 0px rgba(0,0,0,0.19);
     -moz-box-shadow: 0px -1px 7px 0px rgba(0,0,0,0.19);
     z-index: 97;
-  }
+}
   
-  .header-container {
+.header-container {
     margin-top: auto; /* Push the search and logout to the bottom */
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
     padding: 10px 40px;
-  }
+}
 
 .container {
     margin: 50px auto;
@@ -185,10 +184,10 @@ body {
     background-color: #63852e;
 }
   
-  .add-company span {
+.add-company span {
     color: black;
     margin-right: 10px;
-  }
+}
 
 .search-bar {
     flex: 1;
@@ -225,13 +224,12 @@ body {
     border-style: solid;
     border-color: black;
     margin-bottom: 10px;
-
 }
 
 .transaction-header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: left;
     cursor: pointer;
     font-weight: bold;
     padding: 15px;
@@ -283,39 +281,68 @@ body {
 .transaction-item:last-child {
     border-bottom: none;
 }
+/* New styles for action buttons */
+.transaction-actions {
+    display: flex;
+    gap: 8px;
+}
 
-input[type="checkbox"] {
-    width: 18px;
-    height: 18px;
-    appearance: none;
-    border: 2px solid #d0dcb3;
-    border-radius: 4px;
-    margin-top: 5px;
-    outline: none;
-    cursor: pointer;
-    background-color: #fff;
-    transition: all 0.3s ease;
+.action-btn {
+    width: 30px;
+    height: 30px;
     display: flex;
     align-items: center;
     justify-content: center;
+    border-radius: 4px;
+    background-color: transparent;
+    border: none;
+    transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-input[type="checkbox"]:checked {
-    background-color: #d0dcb3;
-    border-color: #a6b07f;
+.check-btn {
+    color: #94ae5e;
 }
 
-input[type="checkbox"]::after {
-    content: '✔';
-    color: #000;
-    font-size: 14px;
-    font-weight: bold;
+.edit-btn {
+    color: #94ae5e;
+}
+
+.edit-btn:hover {
+    background-color: #63852e;
+    color: white;
+}
+
+.archive-btn {
+    color: #94ae5e;
+}
+
+.archive-btn:hover {
+    background-color: #63852e;
+    color: white;
+}
+
+/* Remove checkboxes completely */
+input[type="checkbox"] {
     display: none;
 }
 
-input[type="checkbox"]:checked::after {
-    display: block;
+/* Adjust SOA item styling for layout without checkboxes */
+.soa-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: left;
+    padding: 15px;
+    border-bottom: 1px solid #eee;
 }
 
+/* Add padding where checkboxes were to maintain alignment */
+.soa-item-ref {
+    padding-left: 15px;
+    text-align: left;
+}
 
-    
+/* Styling for the SOA header box with left-aligned text */
+.transaction-header {
+    text-align: left;
+    padding-left: 15px;
+}
