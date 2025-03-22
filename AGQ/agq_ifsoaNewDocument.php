@@ -3,16 +3,15 @@ require 'db_agq.php';
 
 session_start();
 
-
-
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_POST['save'])) {
         insertRecord($conn);
-    } elseif (isset($_POST['select'])) {
-        selectRecords($conn);
-    } elseif (isset($_POST['delete'])) {
-        deleteRecord($conn, $_POST['refNum']);
-    }
+    } 
+    // elseif (isset($_POST['select'])) {
+    //     selectRecords($conn);
+    // } elseif (isset($_POST['delete'])) {
+    //     deleteRecord($conn, $_POST['refNum']);
+    // }
 }
 
 // Function to insert a record
@@ -78,7 +77,6 @@ function insertRecord($conn)
     );
 
     if ($stmt->execute()) {
-        // echo "New record inserted successfully!";
         echo '<script>
         if (confirm("Document Successfully Created!\\nDo you want to view it?")) {
             window.location.href = "agq_employTransactionView.php";
@@ -91,34 +89,34 @@ function insertRecord($conn)
 }
 
 // Function to select records
-function selectRecords($conn)
-{
-    $sql = "SELECT * FROM your_table";
-    $result = $conn->query($sql);
+// function selectRecords($conn)
+// {
+//     $sql = "SELECT * FROM your_table";
+//     $result = $conn->query($sql);
 
-    if ($result->num_rows > 0) {
-        while ($row = $result->fetch_assoc()) {
-            echo "RefNum: " . $row["RefNum"] . " - To: " . $row["To"] . " - Address: " . $row["Address"] . "<br>";
-        }
-    } else {
-        echo "0 results";
-    }
-}
+//     if ($result->num_rows > 0) {
+//         while ($row = $result->fetch_assoc()) {
+//             echo "RefNum: " . $row["RefNum"] . " - To: " . $row["To"] . " - Address: " . $row["Address"] . "<br>";
+//         }
+//     } else {
+//         echo "0 results";
+//     }
+// }
 
-// Function to delete a record
-function deleteRecord($conn, $refNum)
-{
-    $sql = "DELETE FROM your_table WHERE RefNum = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("s", $refNum);
+// // Function to delete a record
+// function deleteRecord($conn, $refNum)
+// {
+//     $sql = "DELETE FROM your_table WHERE RefNum = ?";
+//     $stmt = $conn->prepare($sql);
+//     $stmt->bind_param("s", $refNum);
 
-    if ($stmt->execute()) {
-        echo "Record deleted successfully!";
-    } else {
-        echo "Error: " . $stmt->error;
-    }
-    $stmt->close();
-}
+//     if ($stmt->execute()) {
+//         echo "Record deleted successfully!";
+//     } else {
+//         echo "Error: " . $stmt->error;
+//     }
+//     $stmt->close();
+// }
 
 $conn->close();
 ?>
@@ -192,7 +190,7 @@ $conn->close();
                     const inputName = charge.toLowerCase().replace(/\s+/g, '').replace('/', '');
                     row.innerHTML = `
                         <input type="text" name="charge_type[]" value="${charge}" readonly>
-                        <input type="number" name="${inputName}" placeholder="Enter amount">
+                        <input type="number" name="${inputName}" placeholder="Enter amount" onchange ="validateChargeAmount(this)">
                     `;
                 }
 
@@ -220,13 +218,9 @@ $conn->close();
 
             // Add row HTML
             newRow.innerHTML = `
-                <div class="charges">
-                    <div class="col">
-                        <input type="text" value="${selectedCharge}" readonly style="width:360px; flex-direction: column">
-                        <input type="number" name="${inputName}" placeholder="Enter amount" style="width:288px; flex-direction: column" onchange="validateChargeInput(this)">
-                        <button type="button" onclick="removeCharge(this)">Remove</button>
-                    </div>
-                </div>
+                <input type="text" value="${selectedCharge}" readonly>
+                <input type="number" name="${inputName}" placeholder="Enter amount" onchange="validateChargeInput(this)">
+                <button onclick="removeCharge(this)">Remove</button>
             `;
 
             chargesTable.appendChild(newRow); // Append the new row to the table
@@ -244,209 +238,129 @@ $conn->close();
 
 
         function validateChargeInput(inputElement) {
-            const maxAmount = 16500000; // Set a max allowable amount
-            const colContainer = inputElement.closest(".col");
-            const errorElementId = `${inputElement.name}-error`; // Unique error element ID
-            let errorElement = colContainer.nextElementSibling;
+            const maxAmount = 16500000; 
+            const value = parseFloat(inputElement.value) || 0;
 
-            // Create the error element if it doesn't exist
-            if (!errorElement) {
-                errorElement = document.createElement("div");
-                errorElement.id = errorElementId;
-                errorElement.className = "invalid-feedback";
-                errorElement.style.marginTop = "5px";
-                errorElement.style.display = "none";
-                colContainer.insertAdjacentElement("afterend", errorElement);
-            }
-
-            // Validate input value
-            const value = parseFloat(inputElement.value) || 0; // Default to 0 if empty
             if (value > maxAmount) {
-                inputElement.classList.add("is-invalid");
-                errorElement.innerHTML = `*Value cannot exceed ${maxAmount.toLocaleString()}`;
-                errorElement.style.display = "block"; // Show error message
+                inputElement.setCustomValidity("Value cannot exceed 16,500,000");
             } else {
-                inputElement.classList.remove("is-invalid");
-                errorElement.style.display = "none"; // Hide error message
+                inputElement.setCustomValidity(""); // Reset validation
             }
+
+            inputElement.reportValidity(); // Show validation message
+
+            if (!inputElement.checkValidity()) {
+                inputElement.preventDefault(); // Prevent form submission if invalid
+            }
+
+            inputElement.addEventListener("input", function () {
+                inputElement.setCustomValidity(""); // Clear error when user types
+            });
         }
 
-        function validateChargeAmount() {
-            const inputs = document.querySelectorAll('input[type="number"]');
+        function validateChargeAmount(chargeElement) {
             const maxAmount = 16500000;
             let isValid = true;
 
-            inputs.forEach(input => {
-                const colContainer = input.closest(".col");
-                if (!colContainer) {
-                    console.error("Error: .col container not found for input", input);
-                    return;
-                }
-
-                // Check for error div or create it dynamically
-                let errorDiv = colContainer.nextElementSibling;
-                if (!errorDiv) {
-                    errorDiv = document.createElement("div");
-                    errorDiv.id = `${input.name}-error`;
-                    errorDiv.className = "invalid-feedback";
-                    errorDiv.style.marginTop = "5px";
-                    errorDiv.style.display = "none";
-                    colContainer.insertAdjacentElement("afterend", errorDiv);
-                }
-
-                // Perform validation
-                const value = parseFloat(input.value) || 0; // Default to 0 if input is empty
+            const value = parseFloat(chargeElement.value) || 0;
+                
                 if (value > maxAmount) {
-                    input.classList.add("is-invalid");
-                    errorDiv.innerHTML = `*Value cannot exceed ${maxAmount.toLocaleString()}`;
-                    errorDiv.style.display = "block";
-                    isValid = false;
+                    chargeElement.setCustomValidity("Value cannot exceed 16,500,000");
                 } else {
-                    input.classList.remove("is-invalid");
-                    errorDiv.style.display = "none";
+                    chargeElement.setCustomValidity(""); // Reset validation
                 }
-            });
+
+                chargeElement.reportValidity(); // Show validation message
+
+                if (!chargeElement.checkValidity()) {
+                    event.preventDefault(); // Prevent form submission if invalid
+                }
+
+                chargeElement.addEventListener("input", function () {
+                    chargeElement.setCustomValidity(""); // Clear error when user types
+                });
 
             return isValid;
         }
 
-        function validateTextFields() {
-            const inputs = document.querySelectorAll('input[type="text"]'); // Select all text inputs
+        function validateTextFields(textElement) {
             const allowedSymbols = /^[a-zA-Z0-9!@$%^&()_+\-:/|,~ ]+$/; // Allow letters, numbers, and symbols
             let isValid = true; // Track overall validity
 
-            inputs.forEach(input => {
-                // // Exclude the readonly input and the one named "notes"
-                // if (input.readOnly || input.name === "notes") {
-                //     return; // Skip validation for these inputs
-                // }
+                if (!textElement.value.trim()) {
+                    textElement.setCustomValidity("This field is required");
+                } else if (!allowedSymbols.test(textElement.value)) {
+                    textElement.setCustomValidity("Only letters, numbers, and these symbols are allowed: ! @ $ % ^ & ( ) _ + / - : | , ~");
+                } else {
+                    textElement.setCustomValidity(""); // Reset validation
+                }
 
-                // const errorElementId = input.name + "-error"; // Unique error element ID
-                // let errorElement = input.nextElementSibling; // Locate the error element directly below the input
+                textElement.reportValidity(); // Show validation message
 
-                // // Create an error element dynamically if it doesn't exist
-                // if (!errorElement || errorElement.className !== "invalid-feedback") {
-                //     errorElement = document.createElement("div");
-                //     errorElement.id = errorElementId;
-                //     errorElement.className = "invalid-feedback";
-                //     input.insertAdjacentElement("afterend", errorElement); // Place the error element below the input
-                // }
-
-                // // Check if the field is empty
-                // if (input.value.trim() === "") {
-                //     input.classList.add("is-invalid"); // Add invalid class to input
-                //     errorElement.innerHTML = "*This field is required"; // Set error message
-                //     errorElement.style.display = "block"; // Show error element
-                //     isValid = false; // Mark form as invalid
-                // } 
-                // // Check if the input contains only allowed symbols, letters, or numbers
-                // else if (!allowedSymbols.test(input.value)) {
-                //     input.classList.add("is-invalid"); // Add invalid class
-                //     const errorText = "*Only letters, numbers, and these symbols are allowed: ! @ $ % ^ & ( ) _ + / - : | , ~";
-                //     errorElement.innerHTML = errorText; // Set error message
-                //     errorElement.style.display = "block"; // Show error element
-                //     isValid = false; // Mark form as invalid
-                // } else {
-                //     input.classList.remove("is-invalid"); // Remove invalid class
-                //     errorElement.style.display = "none"; // Hide error element
-                // }
-
-                if (!input.value.trim()) {
-                    input.setCustomValidity("This field is required");
-                    } else if (!allowedSymbols.test(input.value)) {
-                    input.setCustomValidity("Only letters, numbers, and these symbols are allowed: ! @ $ % ^ & ( ) _ + / - : | , ~");
-                    } else {
-                    input.setCustomValidity(""); // Reset validation
-                    }
-
-                    input.reportValidity(); // Show validation message
-
-                    if (!input.checkValidity()) {
+                if (!textElement.checkValidity()) {
                     event.preventDefault(); // Prevent form submission if invalid
-                    }
+                }
 
-                    input.addEventListener("input", function () {
-                    input.setCustomValidity(""); // Clear error when user types
-                    });
+                textElement.addEventListener("input", function () {
+                    textElement.setCustomValidity(""); // Clear error when user types
+                });
+
+            return isValid; // Return validity status
+        }
+
+        function validateNotesField(notesInput) {
+            const allowedSymbols = /^[a-zA-Z0-9!.@$%^&()_+\-:/|,~ \r\n]*$/; // Allow letters, numbers, symbols, and line breaks
+            const maxLength = 500; // Maximum character limit
+            let isValid = true; // Track overall validity
+
+            if (!allowedSymbols.test(notesInput.value)) {
+                notesInput.setCustomValidity("Only letters, numbers, and these symbols are allowed: ! @ $ % ^ & ( ) _ + / - : | , ~");
+            } else if (notesInput.value.length > maxLength) {
+                notesInput.setCustomValidity("Notes cannot exceed 500 characters");
+            } else {
+                notesInput.setCustomValidity(""); // Reset validation
+            }
+
+            notesInput.reportValidity(); // Show validation message
+
+            if (!notesInput.checkValidity()) {
+                event.preventDefault(); // Prevent form submission if invalid
+            }
+
+            notesInput.addEventListener("input", function () {
+                notesInput.setCustomValidity(""); // Clear error when user types
+            });
+            
+            return isValid; // Return validity status
+        }
+
+        function validateDateFields(dateElement) {
+            let isValid = true; // Track overall validity
+
+            if (!dateElement.value.trim()) {
+                dateElement.setCustomValidity("This field is required");
+            } else {
+                dateElement.setCustomValidity(""); // Reset validation
+            }
+
+            dateElement.reportValidity(); // Show validation message
+
+            if (!dateElement.checkValidity()) {
+                event.preventDefault(); // Prevent form submission if invalid
+            }
+
+            dateElement.addEventListener("input", function () {
+                dateElement.setCustomValidity(""); // Clear error when user types
             });
 
             return isValid; // Return validity status
         }
 
 
-        function validateNotesField(notesInput) {
-            const allowedSymbols = /^[a-zA-Z0-9!.@$%^&()_+\-:/|,~ \r\n]*$/; // Allow letters, numbers, symbols, and line breaks
-            const maxLength = 255; // Maximum character limit
-            let isValid = true; // Track overall validity
-
-            const errorElementId = notesInput.name + "-error"; // Unique error element ID
-            let errorElement = notesInput.nextElementSibling; // Locate the error element directly below the input
-
-            // Create an error element dynamically if it doesn't exist
-            if (!errorElement || errorElement.className !== "invalid-feedback") {
-                errorElement = document.createElement("div");
-                errorElement.id = errorElementId;
-                errorElement.className = "invalid-feedback";
-                notesInput.insertAdjacentElement("afterend", errorElement); // Place the error element below the input
-            }
-
-            // Validate the length
-            if (notesInput.value.length > maxLength) {
-                notesInput.classList.add("is-invalid"); // Add invalid class
-                errorElement.innerHTML = `*Notes cannot exceed ${maxLength} characters`; // Set error message
-                errorElement.style.display = "block"; // Show error message
-                isValid = false; // Mark as invalid
-            } 
-            // Validate allowed symbols (including line breaks)
-            else if (!allowedSymbols.test(notesInput.value)) {
-                notesInput.classList.add("is-invalid");
-                errorElement.innerHTML = "*Only letters, numbers, and these symbols are allowed: ! @ $ % ^ & ( ) _ + / - : | , ~"; // Error message
-                errorElement.style.display = "block";
-                isValid = false;
-            } else {
-                notesInput.classList.remove("is-invalid"); // Remove invalid class
-                errorElement.style.display = "none"; // Hide error message
-            }
-
-            return isValid; // Return validity status
-        }
-
-        function validateDateFields() {
-        const dateInputs = document.querySelectorAll('input[type="date"]'); // Select all date inputs
-        let isValid = true; // Track overall validity
-
-        dateInputs.forEach(input => {
-            const errorElementId = input.name + "-error"; // Unique error element ID
-            let errorElement = input.nextElementSibling; // Locate the error element directly below the input
-
-            // Create an error element dynamically if it doesn't exist
-            if (!errorElement || errorElement.className !== "invalid-feedback") {
-                errorElement = document.createElement("div");
-                errorElement.id = errorElementId;
-                errorElement.className = "invalid-feedback";
-                input.insertAdjacentElement("afterend", errorElement); // Place the error element below the input
-            }
-
-            // Check if the field is empty
-            if (input.value.trim() === "") {
-                input.classList.add("is-invalid"); // Add invalid class to input
-                errorElement.innerHTML = "*This field is required"; // Set error message
-                errorElement.style.display = "block"; // Show error element
-                isValid = false; // Mark as invalid
-            } else {
-                input.classList.remove("is-invalid"); // Remove invalid class
-                errorElement.style.display = "none"; // Hide error element
-            }
-        });
-
-        return isValid; // Return validity status
-    }
-
-
-    function validateForm() {
-        const numberFieldsValid = validateChargeAmount();
-        const textFieldsValid = validateTextFields();
-        const dateFieldValid = validateDateFields();
+        function validateForm() {
+        const numberFieldsValid = validateChargeAmount(chargeElement);
+        const textFieldsValid = validateTextFields(textElement);
+        const dateFieldValid = validateDateFields(dateElement);
 
         // Select the notes textarea
         const notesInput = document.querySelector('textarea[name="notes"]');
@@ -477,33 +391,33 @@ $conn->close();
         <div class="header">STATEMENT OF ACCOUNT</div>
         <form method="POST" onsubmit="return validateForm();">
             <div class="section">
-                <input type="text" name="to" placeholder="To" style="width: 70%">
-                <input type="date" name="date" placeholder="Date" style="width: 28%">
+                <input type="text" maxlength="50" name="to" onchange="validateTextFields(this)" placeholder="To" style="width: 70%">
+                <input type="date" name="date" placeholder="Date" onchange="validateDateFields(this)" style="width: 28%">
             </div>
             <div class="section">
-                <input type="text" name="address" placeholder="Address" style="width: 100%">
+                <input type="text" maxlength="100" name="address" onchange="validateTextFields(this)" placeholder="Address" style="width: 100%">
             </div>
             <div class="section">
-                <input type="text" name="tin" placeholder="TIN" style="width: 48%">
-                <input type="text" name="attention" placeholder="Attention" style="width: 48%">
+                <input type="text" maxlength="20" name="tin" placeholder="TIN" onchange="validateTextFields(this)" style="width: 48%">
+                <input type="text" maxlength="30" name="attention" placeholder="Attention" onchange="validateTextFields(this)" style="width: 48%">
             </div>
             <div class="section">
-                <input type="text" name="vessel" placeholder="Vessel" style="width: 32%">
-                <input type="date" name="eta" placeholder="ETD/ETA" style="width: 32%">
-                <input type="text" name="referenceNo" placeholder="Reference No" style="width: 32%">
+                <input type="text" maxlength="30" name="vessel" placeholder="Vessel" onchange="validateTextFields(this)" style="width: 32%">
+                <input type="date" name="eta" placeholder="ETD/ETA" onchange="validateDateFields(this)" style="width: 32%">
+                <input type="text" maxlength="20" name="referenceNo" placeholder="Reference No" onchange="validateTextFields(this)" style="width: 32%">
             </div>
             <div class="section">
-                <input type="text" name="destinationOrigin" placeholder="Destination/Origin" style="width: 48%">
-                <input type="text" name="er" placeholder="E.R" style="width: 22%">
-                <input type="text" name="bhNo" placeholder="BL/HBL No" style="width: 22%">
+                <input type="text" maxlength="25" name="destinationOrigin" onchange="validateTextFields(this)" placeholder="Destination/Origin" style="width: 48%">
+                <input type="text" maxlength="25" name="er" placeholder="E.R" onchange="validateTextFields(this)" style="width: 22%">
+                <input type="text" maxlength="25" name="bhNo" placeholder="BL/HBL No" onchange="validateTextFields(this)" style="width: 22%">
             </div>
             <div class="section">
-                <input type="text" name="natureofGoods" placeholder="Nature of Goods" style="width: 100%">
+                <input type="text" maxlength="30" name="natureofGoods" placeholder="Nature of Goods" onchange="validateTextFields(this)" style="width: 100%">
             </div>
             <div class="section">
-                <input type="text" name="packages" placeholder="Packages" style="width: 32%">
-                <input type="text" name="weight" placeholder="Weight/Measurement" style="width: 32%">
-                <input type="text" name="volume" placeholder="Volume" style="width: 32%">
+                <input type="text" maxlength="100" name="packages" placeholder="Packages" onchange="validateTextFields(this)" style="width: 32%">
+                <input type="text" maxlength="20" name="weight" placeholder="Weight/Measurement" onchange="validateTextFields(this)" style="width: 32%">
+                <input type="text" maxlength="20" name="volume" placeholder="Volume" onchange="validateTextFields(this)" style="width: 32%">
             </div>
             <div class="section radio-group">
                 <label>Package Type:</label>
@@ -532,9 +446,9 @@ $conn->close();
                     <textarea name="notes" placeholder="Enter notes" onchange="validateNotesField(this)" style="width: 800px; height:100px; flex-direction: column; resize: none;"></textarea>
                 </div>
             <div class="section">
-                <input type="text" name="preparedBy" placeholder="Prepared by" style="width: 48%">
-                <input type="text" name="approvedBy" placeholder="Approved by" style="width: 48%">
-                <input type="text" name="editedBy" placeholder="Edited by" style="width: 24%">
+                <input type="text" maxlength="25" name="preparedBy" placeholder="Prepared by" onchange="validateTextFields(this)" style="width: 48%">
+                <input type="text" maxlength="25" name="approvedBy" placeholder="Approved by" onchange="validateTextFields(this)" style="width: 48%">
+                <input type="text" maxlength="25" name="editedBy" placeholder="Edited by" onchange="validateTextFields(this)" style="width: 24%">
             </div>
             <div class="footer">
                 <!-- <button class="save-btn">Save</button> -->
