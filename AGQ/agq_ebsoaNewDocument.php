@@ -20,7 +20,7 @@ function insertRecord($conn)
 {
     $department = isset($_SESSION['department']) ? $_SESSION['department'] : null;
     $companyName = isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : null;
-    $docType = isset($_SESSION['selected_documenttype']) ? $_SESSION['selected_documenttype'] : null;
+    $docType = isset($_SESSION['DocType']) ? $_SESSION['DocType'] : null;
 
     date_default_timezone_set('Asia/Manila');
     $editDate = date('Y-m-d');
