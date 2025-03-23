@@ -50,7 +50,7 @@ if ($docType == 'MANIFESTO') {
         $encrypted_url = encrypt_url($original_url, $key);
         $encoded_url = urlencode($encrypted_url);
 
-        header('Location: agq_ownerDocumentView.php?refnum=' . $refnum);
+        header('Location: agq_ownerDocumentView.php?url=' . $encoded_url . '&refnum=' . $refnum);
         exit;
     } else if (($role == 'Export Forwarding' || $role == 'Import Forwarding' || $role == 'Export Brokerage' || $role == 'Import Brokerage') && $pword != 'agqFreight') {
 

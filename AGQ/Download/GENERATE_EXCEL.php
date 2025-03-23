@@ -377,7 +377,7 @@ switch ($dept) {
 
         $cleanRefNum = str_replace(['/', '-'], '', $refNum);
 
-        $newFile = $cleanRefNum . "-Import_Forwarding.xls";
+        $newFile = $cleanRefNum . "-Import_Brokerage.xls";
         $writer = new Xls($spreadsheet);
         $writer->save($newFile);
 
@@ -408,8 +408,7 @@ switch ($dept) {
         $query = "SELECT `To:`, `Address`, Tin, Attention, `Date`, Vessel, ETA, RefNum, DestinationOrigin, ER, BHNum,
         NatureOfGoods, Packages, `Weight`, Volume, PackageType, OceanFreight95, OceanFreight5, BrokerageFee, 
         Others, Notes, Vat12, DocsFee, LCLCharge, ExportProcessing, FormsStamps, ArrastreWharf, 
-        E2MLodge, THC, FAF, SealFee, Storage, Telex, Total, 
-        Prepared_by, Approved_by, DocType
+        E2MLodge, THC, FAF, SealFee, Storage, Telex, Total, Prepared_by, Approved_by, DocType
         FROM tbl_expfwd 
         WHERE RefNum LIKE ? AND Department LIKE ?";
 
@@ -543,7 +542,7 @@ switch ($dept) {
 
         $cleanRefNum = str_replace(['/', '-'], '', $refNum);
 
-        $newFile = $cleanRefNum . "-Import_Forwarding.xls";
+        $newFile = $cleanRefNum . "-Export_Forwarding.xls";
         $writer = new Xls($spreadsheet);
         $writer->save($newFile);
 
@@ -571,7 +570,7 @@ switch ($dept) {
         $INVOICEFULL = $spreadsheet->getSheetByName("SI_FULL");
 
         $query = "SELECT `To:`, `Address`, Tin, Attention, `Date`, Vessel, ETA, RefNum, DestinationOrigin, ER, BHNum,
-        NatureOfGoods, Packages, `Weight`, Volume, PackageType, Others, Notes, 
+        NatureOfGoods, Packages, `Weight`, Volume, PackageType, OceanFreight95, OceanFreight5, BrokerageFee, Discount50, Vat12, Others, Notes, 
         AdvanceShipping, Processing, Arrastre, Wharfage, FormsStamps, PhotocopyNotarial,
         Documentation, E2MLodge, ManualStuffing, Handling, PCCI, Total, Prepared_by, Approved_by, DocType 
         FROM tbl_expbrk 
@@ -713,7 +712,7 @@ switch ($dept) {
 
         $cleanRefNum = str_replace(['/', '-'], '', $refNum);
 
-        $newFile = $cleanRefNum . "-Import_Forwarding.xls";
+        $newFile = $cleanRefNum . "-Export_Brokerage.xls";
         $writer = new Xls($spreadsheet);
         $writer->save($newFile);
 
