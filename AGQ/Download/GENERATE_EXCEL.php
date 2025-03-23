@@ -176,7 +176,7 @@ switch ($dept) {
                 $INVOICEFULL->setCellValue("P36", $row['FCLCharge']);
                 $INVOICEFULL->setCellValue("P37", $row['Documentation']);
                 $INVOICEFULL->setCellValue("P38", $row['Handling']);
-                $INVOICEFULL->setCellValue("P39", $row['VAT12']);
+                $INVOICEFULL->setCellValue("P39", $row['Vat12']);
                 $INVOICEFULL->setCellValue("P46", $row['Others']);
                 $INVOICEFULL->setCellValue("P47", $row['Total']);
                 $INVOICEFULL->setCellValue("G41", $row['Notes']);
@@ -338,7 +338,7 @@ switch ($dept) {
                 $INVOICELCL->setCellValue("P29", $row['Volume']);
                 $INVOICELCL->setCellValue("P35", $row['OceanFreight5']);
                 $INVOICELCL->setCellValue("P36", $row['BrokerageFee']);
-                $INVOICELCL->setCellValue("P37", $row['VAT12']);
+                $INVOICELCL->setCellValue("P37", $row['Vat12']);
                 $INVOICELCL->setCellValue("P46", $row['Others']);
                 $INVOICELCL->setCellValue("P47", $row['Total']);
                 $INVOICELCL->setCellValue("G41", $row['Notes']);
@@ -365,7 +365,7 @@ switch ($dept) {
                 $INVOICEFULL->setCellValue("P29", $row['Volume']);
                 $INVOICEFULL->setCellValue("P35", $row['OceanFreight5']);
                 $INVOICEFULL->setCellValue("P36", $row['BrokerageFee']);
-                $INVOICEFULL->setCellValue("P37", $row['VAT12']);
+                $INVOICEFULL->setCellValue("P37", $row['Vat12']);
                 $INVOICEFULL->setCellValue("P45", $row['Others']);
                 $INVOICEFULL->setCellValue("P46", $row['TruckingService']);
                 $INVOICEFULL->setCellValue("P47", $row['Total']);
@@ -532,7 +532,7 @@ switch ($dept) {
                 $INVOICEFULL->setCellValue("L29", $row['Weight']);
                 $INVOICEFULL->setCellValue("P29", $row['Volume']);
                 $INVOICEFULL->setCellValue("P35", $row['OceanFreight5']);
-                $INVOICEFULL->setCellValue("P36", $row['VAT12']);
+                $INVOICEFULL->setCellValue("P36", $row['Vat12']);
                 $INVOICEFULL->setCellValue("P46", $row['Others']);
                 $INVOICEFULL->setCellValue("P47", $row['Total']);
                 $INVOICEFULL->setCellValue("G41", $row['Notes']);
@@ -673,7 +673,7 @@ switch ($dept) {
                 $INVOICELCL->setCellValue("P35", $row['OceanFreight5']);
                 $INVOICELCL->setCellValue("P36", $row['BrokerageFee']);
                 $INVOICELCL->setCellValue("P37", $row['Discount50']);
-                $INVOICELCL->setCellValue("P38", $row['VAT12']);
+                $INVOICELCL->setCellValue("P38", $row['Vat12']);
                 $INVOICELCL->setCellValue("P46", $row['Others']);
                 $INVOICELCL->setCellValue("P47", $row['Total']);
                 $INVOICELCL->setCellValue("G41", $row['Notes']);
@@ -701,7 +701,7 @@ switch ($dept) {
                 $INVOICEFULL->setCellValue("P35", $row['OceanFreight5']);
                 $INVOICEFULL->setCellValue("P36", $row['BrokerageFee']);
                 $INVOICEFULL->setCellValue("P37", $row['Discount50']);
-                $INVOICEFULL->setCellValue("P38", $row['VAT12']);
+                $INVOICEFULL->setCellValue("P38", $row['Vat12']);
                 $INVOICEFULL->setCellValue("P46", $row['Others']);
                 $INVOICEFULL->setCellValue("P47", $row['Total']);
                 $INVOICEFULL->setCellValue("G41", $row['Notes']);
