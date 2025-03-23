@@ -35,27 +35,37 @@ $query = "
 SELECT i.RefNum, i.DocType, c.Company_name
 FROM tbl_impfwd i
 JOIN tbl_company c ON i.Company_name = c.Company_name
-WHERE '$dept' = 'Import Forwarding' AND c.Company_name = '$company'
-UNION
+WHERE '$dept' = 'Import Forwarding' 
+AND c.Company_name = '$company'
+AND i.isArchived = 0
+
+UNION 
+
 SELECT b.RefNum, b.DocType, c.Company_name
 FROM tbl_impbrk b
 JOIN tbl_company c ON b.Company_name = c.Company_name
-WHERE '$dept' = 'Import Brokerage' AND c.Company_name = '$company'
+WHERE '$dept' = 'Import Brokerage' 
+AND c.Company_name = '$company'
+AND b.isArchived = 0
+
 UNION
+
 SELECT f.RefNum, f.DocType, c.Company_name
 FROM tbl_expfwd f
 JOIN tbl_company c ON f.Company_name = c.Company_name
-WHERE '$dept' = 'Export Forwarding' AND c.Company_name = '$company'
+WHERE '$role' = 'Export Forwarding' 
+AND c.Company_name = '$company'
+AND f.isArchived = 0
+
 UNION
+
 SELECT e.RefNum, e.DocType, c.Company_name
 FROM tbl_expbrk e
-JOIN tbl_company c ON e.Company_name= c.Company_name
-WHERE '$dept' = 'Export Brokerage' AND c.Company_name = '$company'
+JOIN tbl_company c ON e.Company_name = c.Company_name
+WHERE '$dept' = 'Export Brokerage' 
+AND c.Company_name = '$company'
+AND e.isArchived = 0
 ";
-
-
-$result = $conn->query($query);
-
 
 if ($dept == 'Import Forwarding') {
     $query .= "
@@ -64,9 +74,9 @@ if ($dept == 'Import Forwarding') {
     FROM tbl_document d
     JOIN tbl_company c ON d.Company_name = c.Company_name
     WHERE c.Company_name = '$company'
+    AND d.isArchived = 0
     ";
 }
-
 
 $result = $conn->query($query);
 $transactions = [];
@@ -96,6 +106,7 @@ if ($result) {
     <link rel="stylesheet" href="../css/otp.css">
     <link rel="icon" type="image/x-icon" href="/AGQ/images/favicon.ico">
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 
 </head>
@@ -121,7 +132,7 @@ if ($result) {
     </div>
 
 
-    <!--<pre><?php print_r($transactions); ?></pre>-->
+
     <a href="agq_chooseDepartment.php" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 20px; top: 50px;">←</a>
 
 
@@ -149,6 +160,7 @@ if ($result) {
             ?>
 
 
+
             <?php foreach ($docTypes as $docType): ?>
                 <div class="transaction">
                     <div class="transaction-header"><?php echo $docTypeLabels[strtoupper($docType)]; ?> <span class="icon">&#x25BC;</span></div>
@@ -161,8 +173,11 @@ if ($result) {
                                         <?php echo htmlspecialchars($transaction['RefNum']); ?> - <?php echo $normalizedDocType; ?>
                                     </span>
                                     <div class="checkbox-container">
-                                        <!-- Changed from having two checkboxes to a single checkbox -->
-                                        <input type="checkbox" id="tx-<?php echo htmlspecialchars($transaction['RefNum']); ?>" class="transaction-checkbox">
+                                        <input type="checkbox" id="tx-<?php echo htmlspecialchars($transaction['RefNum']); ?>"
+                                            class="transaction-checkbox"
+                                            data-refnum="<?php echo htmlspecialchars($transaction['RefNum']); ?>"
+                                            data-docType="<?php echo htmlspecialchars($normalizedDocType); ?>"
+                                            onclick="updateApprovalStatus(this)">
                                     </div>
                                 </div>
                             <?php endforeach; ?>
@@ -180,7 +195,7 @@ if ($result) {
         var role = "<?php echo isset($_SESSION['department']) ? $_SESSION['department'] : ''; ?>";
         var company = "<?php echo isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : ''; ?>";
         var dept = "<?php echo isset($_SESSION['SelectedDepartment']) ? $_SESSION['SelectedDepartment'] : ''; ?>";
-        var selectdep = "<?php echo isset($_SESSION['SelectedDepartment']) ? $_SESSION['SelectedDepartment'] : ''; ?>";
+
 
 
         function redirectToDocument(refnum, doctype) {
@@ -191,87 +206,144 @@ if ($result) {
             }
         }
 
+        function updateApprovalStatus(checkbox) {
+            let refNum = checkbox.getAttribute("data-refnum");
+            let docType = checkbox.getAttribute("data-docType");
+            let isApproved = checkbox.checked ? 1 : 0; // Set to 1 if checked, 0 if unchecked
+
+            fetch("UPDATE_APPROVAL.php", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        refNum: refNum,
+                        company: company,
+                        docType: docType,
+                        dept: dept,
+                        isApproved: isApproved
+                    }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            title: "Success!",
+                            text: "Approval status updated successfully.",
+                            icon: "success",
+                            confirmButtonColor: "#3085d6",
+                            confirmButtonText: "OK"
+                        });
+                    } else {
+                        Swal.fire({
+                            title: "Error!",
+                            text: data.message,
+                            icon: "error",
+                            confirmButtonColor: "#d33",
+                            confirmButtonText: "OK"
+                        });
+                        checkbox.checked = !checkbox.checked;
+                    }
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    Swal.fire({
+                        title: "Error!",
+                        text: "Something went wrong. Please try again.",
+                        icon: "error",
+                        confirmButtonColor: "#d33",
+                        confirmButtonText: "OK"
+                    });
+                    checkbox.checked = !checkbox.checked;
+                });
+        }
 
         document.addEventListener("DOMContentLoaded", function() {
             document.body.addEventListener("click", function(event) {
                 if (event.target.classList.contains("transaction-header") || event.target.classList.contains("icon")) {
-                    const content = event.target.closest(".transaction").querySelector(".transaction-content");
-                    content.classList.toggle("open");
-                    event.target.closest(".transaction-header").classList.toggle("active");
+                    const transaction = event.target.closest(".transaction");
+                    const content = transaction.querySelector(".transaction-content");
+
+                    if (content.classList.contains("open")) {
+                        content.style.maxHeight = "0px"; // Collapse
+                        setTimeout(() => content.classList.remove("open"), 500); // Remove class after animation
+                    } else {
+                        content.style.maxHeight = content.scrollHeight + 10 + "px"; // Expand
+                        content.classList.add("open");
+                    }
+
+                    transaction.querySelector(".transaction-header").classList.toggle("active");
                 }
             });
         });
 
 
-        document.getElementById("search-input").addEventListener("input", function() {
-            let query = this.value.trim().toLowerCase();
+        let searchInput = document.getElementById("search-input");
+        let dropdown = document.getElementById("dropdown");
 
+        if (searchInput) {
+            searchInput.addEventListener("input", function() {
+                let query = this.value.trim().toLowerCase();
 
-            if (query.length === 0) {
-                document.getElementById("dropdown").style.display = "none";
-                return;
-            }
+                if (!query) {
+                    dropdown.style.display = "none";
+                    return;
+                }
 
+                fetch("FETCH_Transactions.php?search=" + encodeURIComponent(query))
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log("API Response:", JSON.stringify(data, null, 2));
 
-            fetch("FETCH_Transactions.php?search=" + encodeURIComponent(query))
-                .then(response => response.json())
-                .then(data => {
-                    console.log("API Response:", JSON.stringify(data, null, 2));
+                        dropdown.innerHTML = "";
 
+                        // Identify the correct department key dynamically
+                        let departmentKey = Object.keys(data).find(key => Array.isArray(data[key]));
+                        let transactions = departmentKey ? data[departmentKey] : [];
 
-                    let dropdown = document.getElementById("dropdown");
-                    dropdown.innerHTML = "";
+                        if (transactions.length > 0) {
+                            transactions.forEach(item => {
+                                let refNum = item.RefNum || "Unknown RefNum";
+                                let docType = item.DocType || "No DocType";
+                                let isArchived = item.ArchivedStatus === "Archived"; // Check archived status
 
-
-                    // Identify the correct department key dynamically
-                    let departmentKey = Object.keys(data).find(key => Array.isArray(data[key]));
-                    let transactions = departmentKey ? data[departmentKey] : [];
-
-
-                    if (transactions.length > 0) {
-                        transactions.forEach(item => {
-                            let company = (item.Company_name || "").toLowerCase();
-                            let refNum = (item.RefNum || "").toLowerCase();
-                            let department = (item.Department || "").toLowerCase();
-                            let docType = (item.DocType || "").toLowerCase();
-
-
-                            if (company.includes(query) || refNum.includes(query) || department.includes(query) || docType.includes(query) || docType === "manifesto") {
                                 let div = document.createElement("div");
                                 div.classList.add("dropdown-item");
+                                div.style.display = "flex";
+                                div.style.justifyContent = "space-between"; // Aligns left and right
+                                div.style.padding = "10px 15px";
 
+                                if (isArchived) {
+                                    div.style.cursor = "not-allowed";
+                                    div.style.opacity = "0.5"; // Make archived items appear faded
+                                } else {
+                                    div.onclick = function() {
+                                        searchInput.value = refNum;
+                                        dropdown.style.display = "none";
+                                    };
+                                }
 
                                 div.innerHTML = `
-                                    <strong>${item.RefNum || "Unknown RefNum"}</strong> - ${item.DocType || "No DocType"}
-                                `;
-
-
-                                div.onclick = function() {
-                                    if (!refNum) {
-                                        document.getElementById("search-input").value = item.DocType || "";
-                                    } else {
-                                        document.getElementById("search-input").value = item.RefNum || "";
-                                    }
-                                    document.getElementById("dropdown").style.display = "none";
-                                };
-
+                            <span><strong>${refNum}</strong> - ${docType}</span>
+                            <span style="color: red; font-weight: bold;">${isArchived ? "Archived" : ""}</span>
+                        `;
 
                                 dropdown.appendChild(div);
-                            }
-                        });
+                            });
 
-
-                        // Show dropdown only if there are matching results
-                        dropdown.style.display = dropdown.children.length > 0 ? "block" : "none";
-                    } else {
+                            // Show dropdown only if there are matching results
+                            dropdown.style.display = dropdown.children.length > 0 ? "block" : "none";
+                        } else {
+                            dropdown.style.display = "none";
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error fetching search results:", error);
                         dropdown.style.display = "none";
-                    }
-                })
-                .catch(error => {
-                    console.error("Error fetching search results:", error);
-                    document.getElementById("dropdown").style.display = "none";
-                });
-        });
+                    });
+            });
+        }
+
 
 
         document.addEventListener("DOMContentLoaded", function() {
@@ -410,9 +482,9 @@ if ($result) {
 
                     const order = ["SOA", "INVOICE"];
                     let orderWithManifesto = ["SOA", "INVOICE", "MANIFESTO"];
-                   
+
                     let sortedOrder = (department == "Import Forwarding" || dept == "Import Forwarding") ? orderWithManifesto : order;
-                   
+
                     let sortedDocTypes = Object.keys(docTypes).sort((a, b) => {
                         let indexA = sortedOrder.indexOf(a.toUpperCase());
                         let indexB = sortedOrder.indexOf(b.toUpperCase());
@@ -527,7 +599,7 @@ if ($result) {
 
         console.log("Role:", role);
         console.log("Company:", company);
-        console.log("Selected Department:", selectdep);
+        console.log("Selected Department:", dep);
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>

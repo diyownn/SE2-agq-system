@@ -20,37 +20,51 @@ if (!$url) {
 }
 
 $query = "
-SELECT i.RefNum, i.DocType, c.Company_name
+SELECT i.RefNum, i.DocType, c.Company_name, i.isApproved
 FROM tbl_impfwd i
 JOIN tbl_company c ON i.Company_name = c.Company_name
-WHERE '$role' = 'Import Forwarding' AND c.Company_name = '$company'
+WHERE '$role' = 'Import Forwarding' 
+AND c.Company_name = '$company'
+AND i.isArchived = 0
+
 UNION 
-SELECT b.RefNum, b.DocType, c.Company_name
+
+SELECT b.RefNum, b.DocType, c.Company_name, b.isApproved
 FROM tbl_impbrk b
 JOIN tbl_company c ON b.Company_name = c.Company_name
-WHERE '$role' = 'Import Brokerage' AND c.Company_name = '$company'
+WHERE '$role' = 'Import Brokerage' 
+AND c.Company_name = '$company'
+AND b.isArchived = 0
+
 UNION
-SELECT f.RefNum, f.DocType, c.Company_name
+
+SELECT f.RefNum, f.DocType, c.Company_name, f.isApproved
 FROM tbl_expfwd f
 JOIN tbl_company c ON f.Company_name = c.Company_name
-WHERE '$role' = 'Export Forwarding' AND c.Company_name = '$company'
+WHERE '$role' = 'Export Forwarding' 
+AND c.Company_name = '$company'
+AND f.isArchived = 0
+
 UNION
-SELECT e.RefNum, e.DocType, c.Company_name
+
+SELECT e.RefNum, e.DocType, c.Company_name, e.isApproved
 FROM tbl_expbrk e
-JOIN tbl_company c ON e.Company_name= c.Company_name
-WHERE '$role' = 'Export Brokerage' AND c.Company_name = '$company'
+JOIN tbl_company c ON e.Company_name = c.Company_name
+WHERE '$role' = 'Export Brokerage' 
+AND c.Company_name = '$company'
+AND e.isArchived = 0
 ";
 
 if ($role == 'Import Forwarding') {
     $query .= "
     UNION
-    SELECT d.RefNum, d.DocType, c.Company_name
+    SELECT d.RefNum, d.DocType, c.Company_name, d.isApproved
     FROM tbl_document d
     JOIN tbl_company c ON d.Company_name = c.Company_name
     WHERE c.Company_name = '$company'
+    AND d.isArchived = 0
     ";
 }
-
 
 $result = $conn->query($query);
 
@@ -59,11 +73,13 @@ if ($result) {
     while ($row = $result->fetch_assoc()) {
         $docType = strtoupper($row['DocType']);
         $transactions[$docType][] = [
-            'RefNum' => (string) $row['RefNum'], // Ensure it's a string
-            'DocumentID' => isset($row['DocumentID']) ? (string) $row['DocumentID'] : null // Convert DocumentID to string if available
+            'RefNum' => (string) $row['RefNum'],
+            'DocumentID' => isset($row['DocumentID']) ? (string) $row['DocumentID'] : null,
+            'isApproved' => $row['isApproved'] // Store isApproved status
         ];
     }
 }
+
 ?>
 
 <!DOCTYPE html>
@@ -145,9 +161,13 @@ if ($result) {
                                         </span>
                                     </div>
                                     <div class="transaction-actions">
-                                        <button class="btn btn-sm action-btn check-btn" id="check-btn" title="Complete">
+                                        <button class="btn btn-sm action-btn check-btn"
+                                            id="check-btn-<?php echo htmlspecialchars($transaction['RefNum']); ?>"
+                                            title="Complete"
+                                            style="display: <?php echo ($transaction['isApproved'] == 1) ? 'block' : 'none'; ?>;">
                                             <i class="bi bi-check2"></i>
                                         </button>
+
                                         <button class="btn btn-sm action-btn edit-btn" id="edit-btn" title="Edit"
                                             onclick="redirectToDocument2('<?php echo htmlspecialchars($transaction['RefNum']); ?>', '<?php echo $normalizedDocType; ?>')">
                                             <i class="bi bi-pencil"></i>
@@ -172,6 +192,26 @@ if ($result) {
         var doctype = "<?php echo isset($_SESSION['DocType']) ? $_SESSION['DocType'] : ''; ?>"
         var role = "<?php echo isset($_SESSION['department']) ? $_SESSION['department'] : ''; ?>";
         var company = "<?php echo isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : ''; ?>";
+
+        function updateCheckButtons() {
+            document.querySelectorAll('.check-btn').forEach(button => {
+                let refNum = button.id.replace('check-btn-', '');
+                fetch(`APPROVAL_STATUS.php?refNum=${refNum}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.isApproved == 1) {
+                            button.style.display = "block";
+                        } else {
+                            button.style.display = "none";
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+            });
+        }
+
+        // Run the function when the page loads
+        document.addEventListener("DOMContentLoaded", updateCheckButtons);
+
 
         function archiveDocument(refnum) {
             fetch("ARCHIVE_HANDLE.php?action=archive", {
@@ -269,38 +309,46 @@ if ($result) {
                         console.log("API Response:", JSON.stringify(data, null, 2));
 
                         dropdown.innerHTML = "";
-                        let seenItems = new Set(); // Track unique entries
 
-                        // Extract transactions
-                        let transactions = [];
-                        Object.values(data).forEach(department => {
-                            Object.values(department).forEach(docType => {
-                                transactions = transactions.concat(docType);
-                            });
-                        });
+                        // Identify the correct department key dynamically
+                        let departmentKey = Object.keys(data).find(key => Array.isArray(data[key]));
+                        let transactions = departmentKey ? data[departmentKey] : [];
 
-                        transactions.forEach(item => {
-                            let refNum = item.RefNum || "";
-                            let docType = item.DocType || "";
-                            let itemKey = `${refNum}-${docType}`.toLowerCase();
-
-                            if (!seenItems.has(itemKey) && (refNum.toLowerCase().includes(query) || docType.toLowerCase().includes(query))) {
-                                seenItems.add(itemKey);
+                        if (transactions.length > 0) {
+                            transactions.forEach(item => {
+                                let refNum = item.RefNum || "Unknown RefNum";
+                                let docType = item.DocType || "No DocType";
+                                let isArchived = item.ArchivedStatus === "Archived"; // Check archived status
 
                                 let div = document.createElement("div");
                                 div.classList.add("dropdown-item");
-                                div.innerHTML = `<strong>${refNum || "Unknown RefNum"}</strong> - ${docType || "No DocType"}`;
+                                div.style.display = "flex";
+                                div.style.justifyContent = "space-between"; // Aligns left and right
+                                div.style.padding = "10px 15px";
 
-                                div.onclick = function() {
-                                    searchInput.value = refNum || docType;
-                                    dropdown.style.display = "none";
-                                };
+                                if (isArchived) {
+                                    div.style.cursor = "not-allowed";
+                                    div.style.opacity = "0.5"; // Make archived items appear faded
+                                } else {
+                                    div.onclick = function() {
+                                        searchInput.value = refNum;
+                                        dropdown.style.display = "none";
+                                    };
+                                }
+
+                                div.innerHTML = `
+                            <span><strong>${refNum}</strong> - ${docType}</span>
+                            <span style="color: red; font-weight: bold;">${isArchived ? "Archived" : ""}</span>
+                        `;
 
                                 dropdown.appendChild(div);
-                            }
-                        });
+                            });
 
-                        dropdown.style.display = dropdown.children.length ? "block" : "none";
+                            // Show dropdown only if there are matching results
+                            dropdown.style.display = dropdown.children.length > 0 ? "block" : "none";
+                        } else {
+                            dropdown.style.display = "none";
+                        }
                     })
                     .catch(error => {
                         console.error("Error fetching search results:", error);
@@ -342,14 +390,13 @@ if ($result) {
                                 structuredTransactions[department] = {};
                             }
 
-                            // Loop through document types (e.g., INVOICE, SOA)
                             Object.entries(docTypes).forEach(([docType, records]) => {
-                                if (!Array.isArray(records)) {
-                                    console.warn(`Skipping non-array records for ${docType}:`, records);
-                                    return;
-                                }
-
                                 let normalizedDocType = docType.toUpperCase().trim();
+
+                                // Convert non-array records into an array
+                                if (!Array.isArray(records)) {
+                                    records = [records]; // Wrap single objects into an array
+                                }
 
                                 if (!structuredTransactions[department][normalizedDocType]) {
                                     structuredTransactions[department][normalizedDocType] = [];
@@ -362,22 +409,7 @@ if ($result) {
                             });
                         });
 
-
-                        Object.keys(structuredTransactions).forEach(department => {
-                            if (!structuredTransactions[department]["SOA"]) {
-                                structuredTransactions[department]["SOA"] = [];
-                            }
-                            if (!structuredTransactions[department]["INVOICE"]) {
-                                structuredTransactions[department]["INVOICE"] = [];
-                            }
-                            if (role == "Import Forwarding") {
-                                if (!structuredTransactions[department]["MANIFESTO"]) {
-                                    structuredTransactions[department]["MANIFESTO"] = [];
-                                }
-                            }
-
-                        });
-
+                        ensureDocumentTypes(structuredTransactions);
                         generateTransactionHTML(structuredTransactions, transactionsContainer);
                     })
                     .catch(error => console.error("Error fetching all transactions:", error));
@@ -395,26 +427,25 @@ if ($result) {
                             transactionsContainer.innerHTML = "<p>No transactions found.</p>";
                             return;
                         }
-                        console.log("All Transactions:", data);
 
                         let structuredTransactions = {};
 
                         Object.entries(data).forEach(([department, docTypes]) => {
                             structuredTransactions[department] = {};
 
-                            Object.entries(docTypes).forEach(([docType, refArray]) => {
+                            Object.entries(docTypes).forEach(([docType, records]) => {
                                 let normalizedDocType = docType.toUpperCase().trim();
+
+                                // ✅ FIX: Convert non-array records into an array
+                                if (!Array.isArray(records)) {
+                                    records = [records]; // Wrap single objects into an array
+                                }
 
                                 if (!structuredTransactions[department][normalizedDocType]) {
                                     structuredTransactions[department][normalizedDocType] = [];
                                 }
 
-                                if (!Array.isArray(refArray)) {
-                                    console.warn(`Skipping non-array records for ${docType}:`, refArray);
-                                    return;
-                                }
-
-                                refArray.forEach(item => {
+                                records.forEach(item => {
                                     structuredTransactions[department][normalizedDocType].push(item.RefNum);
                                 });
                             });
@@ -423,6 +454,22 @@ if ($result) {
                         generateTransactionHTML(structuredTransactions, transactionsContainer);
                     })
                     .catch(error => console.error("Error fetching filtered transactions:", error));
+            }
+
+            function ensureDocumentTypes(structuredTransactions) {
+                Object.keys(structuredTransactions).forEach(department => {
+                    if (!structuredTransactions[department]["SOA"]) {
+                        structuredTransactions[department]["SOA"] = [];
+                    }
+                    if (!structuredTransactions[department]["INVOICE"]) {
+                        structuredTransactions[department]["INVOICE"] = [];
+                    }
+                    if (role === "Import Forwarding") {
+                        if (!structuredTransactions[department]["MANIFESTO"]) {
+                            structuredTransactions[department]["MANIFESTO"] = [];
+                        }
+                    }
+                });
             }
 
             function generateTransactionHTML(transactions, container) {
@@ -444,7 +491,7 @@ if ($result) {
                 });
 
                 const order = ["SOA", "INVOICE"];
-                if (role == "Import Forwarding") {
+                if (role === "Import Forwarding") {
                     order.push("MANIFESTO");
                 }
 
@@ -501,23 +548,15 @@ if ($result) {
                             let actions = document.createElement("div");
                             actions.classList.add("transaction-actions");
 
-                            // Checkmark button
-                            let checkBtn = document.createElement("check-btn");
-                            checkBtn.classList.add("btn", "btn-sm", "action-btn", "check-btn");
-                            checkBtn.title = "Complete";
-                            checkBtn.innerHTML = '<i class="bi bi-check2"></i>';
-
-                            // Edit button
-                            let editBtn = document.createElement("edit-button");
+                            let editBtn = document.createElement("button");
                             editBtn.classList.add("btn", "btn-sm", "action-btn", "edit-btn");
                             editBtn.title = "Edit";
                             editBtn.innerHTML = '<i class="bi bi-pencil"></i>';
                             editBtn.onclick = function() {
-                                redirectToDocument2(refNum, docType); // Correct function call
+                                redirectToDocument2(refNum, docType);
                             };
 
-                            // Archive button
-                            let archiveBtn = document.createElement("archive-button");
+                            let archiveBtn = document.createElement("button");
                             archiveBtn.classList.add("btn", "btn-sm", "action-btn", "archive-btn");
                             archiveBtn.title = "Archive";
                             archiveBtn.innerHTML = '<i class="bi bi-archive"></i>';
@@ -525,7 +564,6 @@ if ($result) {
                                 archiveDocument(refNum);
                             };
 
-                            actions.appendChild(checkBtn);
                             actions.appendChild(editBtn);
                             actions.appendChild(archiveBtn);
 
@@ -542,11 +580,7 @@ if ($result) {
                     transactionSection.appendChild(transactionContent);
                     container.appendChild(transactionSection);
                 });
-
-
-                archiveBtn.classList.add("btn", "btn-sm", "action-btn", "archive-btn");
             }
-
 
             searchButton.addEventListener("click", function() {
                 let query = searchInput.value.trim();
@@ -564,8 +598,8 @@ if ($result) {
                     searchButton.click();
                 }
             });
-
         });
+
 
         function downloadDocument(refNum, department) {
             const encodedRefNum = encodeURIComponent(refNum);
