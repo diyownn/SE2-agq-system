@@ -160,11 +160,15 @@ $record = selectRecords($conn, $role, $refNum);
           </tr>
           <tr>
             <td>5 Ocean Freight</td>
-            <td id="ocean-freight-5"><?php echo htmlspecialchars($record['OceanFreight5	'] ?? 'N/A'); ?></td>
+            <td id="ocean-freight-5"><?php echo htmlspecialchars($record['OceanFreight5'] ?? 'N/A'); ?></td>
           </tr>
           <tr>
             <td>Brokerage Fee</td>
             <td id="brokerage-fee"><?php echo htmlspecialchars($record['BrokerageFee'] ?? 'N/A'); ?></td>
+          </tr>
+          <tr>
+            <td>Discount 50%</td>
+            <td id="discount50"><?php echo htmlspecialchars($record['Discount50'] ?? 'N/A'); ?></td>
           </tr>
           <tr>
             <td>VAT 12%</td>
@@ -303,22 +307,23 @@ $record = selectRecords($conn, $role, $refNum);
           <button class="edit-button" onclick="redirectToDocument2('<?php echo htmlspecialchars($refNum); ?>', '<?php echo htmlspecialchars($record['DocType'] ?? ''); ?>')">
             Edit
           </button>
-          <button class="download-button" onclick="downloadDocument(<?php echo htmlspecialchars($transaction['RefNum']); ?>)">Download</button>
+          <button class="download-button" onclick="downloadDocument('<?php echo htmlspecialchars($refNum); ?>')">Download</button>
         </div>
       </div>
     </div>
   </div>
   <script>
     function downloadDocument(refnum) {
-      let url = "Download/GENERATE_EXCEL.php" + encodeURIComponent(refnum);
-
       if (!refnum) {
         console.log("No refnum provided");
-      } else {
-        window.href.location = url;
+        return;
       }
 
+      let url = `Download/GENERATE_EXCEL.php?refnum=${encodeURIComponent(refnum)}`;
+      console.log(url)
+      window.location.href = url;
     }
+
 
     function redirectToDocument2(refnum, doctype) {
       let url = "";
