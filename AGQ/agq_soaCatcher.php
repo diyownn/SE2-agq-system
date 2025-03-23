@@ -2,12 +2,14 @@
 session_start();
 $role = isset($_SESSION['department']) ? $_SESSION['department'] : '';
 
+/*
 require __DIR__ . '/secret/vendor/autoload.php';
 
 use Dotenv\Dotenv;
 
 $dotenv = Dotenv::createImmutable(__DIR__);
 $dotenv->load();
+*/
 
 $key = "0jRw1M89WhVwukjsZiZvhPPsRVFgK/IIQnLOYVEWDdi2TXJjx8QPOAOIxMH7b+uW"; //$_ENV['ENCRYPTION_KEY'];
 echo "Key Loaded: " . $key;

@@ -2,7 +2,12 @@
 require 'db_agq.php';
 session_start();
 
+$url = isset($_GET['url']);
 $role = isset($_SESSION['department']) ? $_SESSION['department'] : '';
+
+if (!$url) {
+    header("Location: UNAUTHORIZED.php?error=401u");
+}
 
 if (!$role) {
     header("Location: UNAUTHORIZED.php?error=401r");
@@ -17,6 +22,8 @@ if (!isset($_SESSION['department'])) {
     session_destroy();
     exit();
 }
+
+
 
 if (isset($_SESSION['selected_company'])) {
     $companyName = $_SESSION['selected_company'];

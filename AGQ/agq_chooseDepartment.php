@@ -39,7 +39,7 @@ if (!$company) {
             </div>
         </div>
     </div>
-    <a href="agq_employdash.php" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 20px; top: 50px;">←</a>
+    <a href="agq_dashCatcher.php" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 20px; top: 50px;">←</a>
 
     <div class="container">
         <h1>Company Departments</h1>
@@ -70,7 +70,6 @@ if (!$company) {
             })
             .catch(error => console.error("Error:", error));
     }
-    
 </script>
 
 </html>

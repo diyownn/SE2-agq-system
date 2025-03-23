@@ -2,6 +2,7 @@
 require 'db_agq.php';
 session_start();
 
+$url = isset($_GET['url']);
 $role = isset($_SESSION['department']) ? $_SESSION['department'] : '';
 $dept = isset($_SESSION['SelectedDepartment']) ? $_SESSION['SelectedDepartment'] : '';
 $company = isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : '';
@@ -17,6 +18,11 @@ if (!$company) {
 if (!$dept) {
     header("Location: UNAUTHORIZED.php?error=401d");
 }
+
+if (!$url) {
+    header("Location: UNAUTHORIZED.php?error=401u");
+}
+
 $query = "
 SELECT i.RefNum, i.DocType, c.Company_name
 FROM tbl_impfwd i
@@ -444,7 +450,7 @@ if ($result) {
 
 
 
-       
+
 
         console.log("Role:", role);
         console.log("Company:", company);
