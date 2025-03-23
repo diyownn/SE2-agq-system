@@ -9,7 +9,7 @@ use Dotenv\Dotenv;
 $dotenv = Dotenv::createImmutable(__DIR__);
 $dotenv->load();
 
-$key = $_ENV['ENCRYPTION_KEY'];
+$key = "0jRw1M89WhVwukjsZiZvhPPsRVFgK/IIQnLOYVEWDdi2TXJjx8QPOAOIxMH7b+uW"; //$_ENV['ENCRYPTION_KEY'];
 echo "Key Loaded: " . $key;
 if (!$key) {
     die("Location: UNAUTHORIZED.php?error=401k ");
@@ -31,7 +31,7 @@ function decrypt_url($encrypted_url, $key)
 
 if ($role == 'Export Brokerage') {
 
-    
+
     $original_url = 'http://localhost/SE2-agq-system/AGQ/agq_ebsoaNewDocument.php';
     $encrypted_url = encrypt_url($original_url, $key);
     $encoded_url = urlencode($encrypted_url);
@@ -39,7 +39,7 @@ if ($role == 'Export Brokerage') {
     header('Location: agq_ebsoaNewDocument.php?url=' . $encoded_url);
     exit;
 } else if ($role == 'Export Forwarding') {
- 
+
 
     $original_url = 'http://localhost/SE2-agq-system/AGQ/agq_efsoaNewDocument.php';
     $encrypted_url = encrypt_url($original_url, $key);

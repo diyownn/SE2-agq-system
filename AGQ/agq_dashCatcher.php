@@ -8,7 +8,7 @@ use Dotenv\Dotenv;
 $dotenv = Dotenv::createImmutable(__DIR__);
 $dotenv->load();
 
-$key = $_ENV['ENCRYPTION_KEY'];
+$key = "0jRw1M89WhVwukjsZiZvhPPsRVFgK/IIQnLOYVEWDdi2TXJjx8QPOAOIxMH7b+uW"; //$_ENV['ENCRYPTION_KEY'];
 echo "Key Loaded: " . $key;
 if (!$key) {
     die("Location: UNAUTHORIZED.php?error=401k");
@@ -29,7 +29,7 @@ function decrypt_url($encrypted_url, $key)
     return openssl_decrypt($encrypted_url, 'aes-256-cbc', $key, 0, $iv);
 }
 
-// Check role and redirect accordingly
+
 if (
     ($role == 'admin' || $role == 'Admin' || $role == 'owner' || $role == 'Owner') &&
     (!isset($pword) || $pword != 'agqLogistics')
