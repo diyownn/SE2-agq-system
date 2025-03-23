@@ -374,6 +374,7 @@ body {
 
 
 .check-btn {
+    display: none;
     color: #94ae5e;
 }
 

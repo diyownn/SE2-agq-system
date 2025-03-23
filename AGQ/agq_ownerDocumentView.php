@@ -191,6 +191,10 @@ $record = selectRecords($conn, $dept, $refNum);
             <td id="brokerage-fee"><?php echo htmlspecialchars($record['BrokerageFee'] ?? 'N/A'); ?></td>
           </tr>
           <tr>
+            <td>Discount 50%</td>
+            <td id="discount50"><?php echo htmlspecialchars($record['Discount50'] ?? 'N/A'); ?></td>
+          </tr>
+          <tr>
             <td>VAT 12%</td>
             <td id="vat-12"><?php echo htmlspecialchars($record['Vat12'] ?? 'N/A'); ?></td>
           </tr>
@@ -216,7 +220,7 @@ $record = selectRecords($conn, $dept, $refNum);
           </tr>
           <tr>
             <td>Manifest Fee</td>
-            <td id="manifest-fee"><?php echo htmlspecialchars($record['ManifestFee'] ?? 'N/A'); ?></td>
+            <td id="manifest-fee"><?php echo htmlspecialchars($record['Attention'] ?? 'N/A'); ?></td>
           </tr>
           <tr>
             <td>THC</td>
@@ -361,4 +365,4 @@ $record = selectRecords($conn, $dept, $refNum);
     </script>
 </body>
 
-</html> 
+</html>
