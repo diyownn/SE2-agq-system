@@ -147,7 +147,7 @@ $record = selectRecords($conn, $role, $refNum);
         </thead>
         <tbody>
           <tr>
-            <td>95 Ocean Freight</td>
+            <td>95% Ocean Freight</td>
             <td id="ocean-freight-95"><?php echo htmlspecialchars($record['OceanFreight95'] ?? 'N/A'); ?></td>
           </tr>
           <tr>
@@ -159,6 +159,8 @@ $record = selectRecords($conn, $role, $refNum);
             <td id="processing"><?php echo htmlspecialchars($record['Processing'] ?? 'N/A'); ?></td>
           </tr>
           <tr>
+            <td>5% Ocean Freight</td>
+            <td id="ocean-freight-5"><?php echo htmlspecialchars($record['OceanFreight5'] ?? 'N/A'); ?></td>
             <td>5 Ocean Freight</td>
             <td id="ocean-freight-5"><?php echo htmlspecialchars($record['OceanFreight5'] ?? 'N/A'); ?></td>
           </tr>
@@ -171,7 +173,11 @@ $record = selectRecords($conn, $role, $refNum);
             <td id="discount50"><?php echo htmlspecialchars($record['Discount50'] ?? 'N/A'); ?></td>
           </tr>
           <tr>
-            <td>VAT 12%</td>
+            <td>50% Discount</td>
+            <td id="vat-12"><?php echo htmlspecialchars($record['Discount50'] ?? 'N/A'); ?></td>
+          </tr>
+          <tr>
+            <td>12% VAT</td>
             <td id="vat-12"><?php echo htmlspecialchars($record['Vat12'] ?? 'N/A'); ?></td>
           </tr>
           <tr>

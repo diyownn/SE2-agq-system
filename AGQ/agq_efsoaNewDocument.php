@@ -23,6 +23,21 @@ function insertRecord($conn)
     date_default_timezone_set('Asia/Manila');
     $editDate = date('Y-m-d');
 
+    $refNum = $_POST['refNum'];
+    $checkSql = "SELECT RefNum FROM tbl_expbrk WHERE RefNum = ?";
+    $checkStmt = $conn->prepare($checkSql);
+    $checkStmt->bind_param("s", $refNum);
+    $checkStmt->execute();
+    $checkStmt->store_result();
+
+    if ($checkStmt->num_rows > 0) {
+        echo '<script>alert("Reference Number already exist. Please create the document again.");</script>';
+        $checkStmt->close();
+        return; // Stop execution if RefNum exists
+    }
+
+    $checkStmt->close();
+
     $sql = "INSERT INTO tbl_expfwd (
         `To:`, `Address`, Tin, Attention, `Date`, Vessel, ETA, RefNum, DestinationOrigin, ER, BHNum,
         NatureOfGoods, Packages, `Weight`, Volume, PackageType, OceanFreight95, Others, Notes,
