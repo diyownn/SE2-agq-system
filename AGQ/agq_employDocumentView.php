@@ -161,8 +161,6 @@ $record = selectRecords($conn, $role, $refNum);
           <tr>
             <td>5% Ocean Freight</td>
             <td id="ocean-freight-5"><?php echo htmlspecialchars($record['OceanFreight5'] ?? 'N/A'); ?></td>
-            <td>5 Ocean Freight</td>
-            <td id="ocean-freight-5"><?php echo htmlspecialchars($record['OceanFreight5'] ?? 'N/A'); ?></td>
           </tr>
           <tr>
             <td>Brokerage Fee</td>
