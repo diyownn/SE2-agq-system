@@ -18,7 +18,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 function insertRecord($conn)
 {
     $docType = isset($_SESSION['DocType']) ? $_SESSION['DocType'] : null;
-    $department = isset($_SESSION['Department']) ? $_SESSION['Department'] : null;
+    $department = isset($_SESSION['department']) ? $_SESSION['department'] : null;
     $companyName = isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : null;
     date_default_timezone_set('Asia/Manila');
     $editDate = date('Y-m-d');
@@ -76,7 +76,7 @@ function insertRecord($conn)
     if ($stmt->execute()) {
         echo '<script>
         if (confirm("Document Successfully Created!\\nDo you want to view it?")) {
-            window.location.href = "agq_employTransactionView.php";
+            window.location.href = "agq_transactionCatcher.php";
         }
             </script>';
     } else {

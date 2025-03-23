@@ -67,7 +67,7 @@ function insertRecord($conn)
     if ($stmt->execute()) {
         echo '<script>
         if (confirm("Document Successfully Created!\\nDo you want to view it?")) {
-            window.location.href = "agq_employTransactionView.php";
+            window.location.href = "agq_transactionCatcher.php";
         }
             </script>';
     } else {

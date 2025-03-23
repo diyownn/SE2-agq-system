@@ -80,7 +80,7 @@ function insertRecord($conn)
         // echo "New record inserted successfully!";
         echo '<script>
         if (confirm("Document Successfully Created!\\nDo you want to view it?")) {
-            window.location.href = "agq_employDocumentView.php";
+            window.location.href = "agq_transactionCatcher.php";
         }
             </script>';
     } else {
