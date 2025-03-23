@@ -349,17 +349,46 @@ $conn->close();
         return isValid; // Return validity status
     }
 
-    function validateForm() {
-        const numberFieldsValid = validateChargeAmount(chargeElement);
-        const textFieldsValid = validateTextFields(textElement);
-        const dateFieldValid = validateDateFields(dateElement);
+    function validateForm(event) {
+            let isValid = true;
 
-        // Select the notes textarea
-        const notesInput = document.querySelector('textarea[name="notes"]');
-        const notesFieldValid = validateNotesField(notesInput);
+            // Validate number fields
+            const chargeElements = document.querySelectorAll('#charges-table input[type="number"]');
+            chargeElements.forEach((chargeElement) => {
+                if (!validateChargeAmount(chargeElement)) {
+                    isValid = false;
+                }
+            });
 
-        return numberFieldsValid && textFieldsValid && dateFieldValid && notesFieldValid;
-    }
+            // Validate text fields
+            const textFields = document.querySelectorAll('input[type="text"]');
+            textFields.forEach((textField) => {
+                if (!validateTextFields(textField)) {
+                    isValid = false;
+                }
+            });
+
+            // Validate date fields
+            const dateFields = document.querySelectorAll('input[type="date"]');
+            dateFields.forEach((dateField) => {
+                if (!validateDateFields(dateField)) {
+                    isValid = false;
+                }
+            });
+
+            // Validate notes field
+            const notesInput = document.querySelector('textarea[name="notes"]');
+            if (!validateNotesField(notesInput)) {
+                isValid = false;
+            }
+
+            // If any field is invalid, prevent form submission
+            if (!isValid) {
+                event.preventDefault(); // Stop form submission
+            }
+
+            return isValid; // Return the overall validity
+        }
 
     function calculateTotal() {
         let total = 0;
@@ -381,7 +410,7 @@ $conn->close();
 <a href="agq_choosedocument.php" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 20px; top: 20px;">←</a>
     <div class="container">
         <div class="header">STATEMENT OF ACCOUNT</div>
-        <form method="POST" onsubmit="return validateForm();">
+        <form method="POST" onsubmit="return validateForm(event);">
             <div class="section">
                 <input type="text" maxlength="50" name="to" placeholder="To" onchange="validateTextFields(this)" style="width: 70%">
                 <input type="date" name="date" placeholder="Date" onchange="validateDateFields(this)" style="width: 28%">
