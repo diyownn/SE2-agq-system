@@ -20,7 +20,7 @@ if ($conn->connect_error) {
 // $refnum = $_GET['request'] ?? null;
 // $dept = $_GET['user'] ?? null;
 
-$refNum = "IF0003/01-21";
+$refNum = isset($_GET['refnum']) ? $_GET['refnum'] : '';
 $dept = isset($_SESSION['department']) ? $_SESSION['department'] : '';
 
 switch ($dept) {

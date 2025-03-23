@@ -192,7 +192,7 @@ $record = selectRecords($conn, $role, $refNum);
           </tr>
           <tr>
             <td>Manifest Fee</td>
-            <td id="manifest-fee"><?php echo htmlspecialchars($record['Attention'] ?? 'N/A'); ?></td>
+            <td id="manifest-fee"><?php echo htmlspecialchars($record['ManifestFee'] ?? 'N/A'); ?></td>
           </tr>
           <tr>
             <td>THC</td>
