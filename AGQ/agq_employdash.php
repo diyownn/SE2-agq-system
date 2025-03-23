@@ -70,7 +70,7 @@ if (!empty($search_query)) {
 </head>
 <link rel="icon" href="images/agq_logo.png" type="image/ico">
 
-<body style="background-image: url('sbg.png'); background-repeat: no-repeat; background-size: cover; background-position: center;">
+<body style="background-image: url('e2bg.png'); background-repeat: no-repeat; background-size: cover; background-position: center; background-attachment: fixed;">
     <div class="top-container">
         <div class="dept-container">
             <div class="dept-label">

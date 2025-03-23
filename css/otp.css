@@ -12,7 +12,7 @@ body {
 }
 
 .search-bar {
-    flex: a; /* Ensures input expands properly */
+    flex: 1; /* Ensures input expands properly */
     min-width: 300px; /* Prevents shrinking too much */
     border-radius: 8px; /* Smooth corners */
 }
@@ -38,7 +38,7 @@ body {
     position: absolute;
     top: 100%; /* Moves it below the search bar */
     left: 0;
-    width:82%; /* Matches search bar width */
+    width: 82%; /* Matches search bar width */
     background: white;
     border: 1px solid #ccc;
     border-top: none; /* Remove top border to visually connect with input */
@@ -216,26 +216,30 @@ body {
     flex-direction: column;
     max-width: 800px;
     margin: 0 auto;
-    
 }
 
 .transaction {
-    border: 1px;
-    border-style: solid;
-    border-color: black;
+    border: 1px solid black;
     margin-bottom: 10px;
+    transition: background-color 0.3s ease;
+    font-weight: bold;
+}
+
+.transaction:hover {
+    background-color: #f2f2f2;
 }
 
 .transaction-header {
     display: flex;
     justify-content: space-between;
-    align-items: left;
+    align-items: center;
     cursor: pointer;
     font-weight: bold;
     padding: 15px;
     background-color: #c3d2a2;
     border-bottom: 1px solid #000;
     transition: background-color 0.3s ease;
+    text-align: left;
 }
 
 .transaction-header .icon {
@@ -247,44 +251,84 @@ body {
     transform: rotate(180deg);
 }
 
-.transaction-header.active:hover {
+.transaction-header.active:hover,
+.transaction-header:hover {
     background-color: #b0c494;
 }
 
-/* drop down effect kumpuru */
+/* drop down effect */
 .transaction-content {
     max-height: 0;
     overflow: hidden;
     background-color: #fff;
-    transition: max-height 0.5s ease-in-out, padding 0.3s ease, background-color 0.15s;
-    padding: 0 15px;
+    transition: max-height 0.5s ease-in-out, padding 0.3s ease;
+    padding: 0;
 }
 
 .transaction-content.open {
     max-height: 200px;
-    padding: 15px;
+    padding: 0;
 }
 
-.transaction-content.open:hover {
-    text-decoration: underline;
-    cursor: pointer;
-}
-
+/* Transaction item styling with solid hover background */
 .transaction-item {
     display: flex;
     justify-content: space-between;
-    padding: 10px 0;
-    font-weight: 500;
+    align-items: center;
+    padding: 15px;
     border-bottom: 1px solid #000;
+    transition: background-color 0.3s ease;
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0;
+    font-weight: bold;
+}
+
+.transaction-item:hover {
+    text-decoration: underline;
+    cursor: pointer;
+    background-color: #e8e8e8;
 }
 
 .transaction-item:last-child {
     border-bottom: none;
 }
-/* New styles for action buttons */
+
+/* SOA, INVOICE, MANIFESTO item styling */
+.soa-item,
+.invoice-item,
+.manifesto-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    border-bottom: 1px solid #000;
+    transition: background-color 0.3s ease;
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0;
+    font-weight: bold;
+}
+
+.soa-item:hover,
+.invoice-item:hover,
+.manifesto-item:hover {
+    text-decoration: underline;
+    cursor: pointer;
+    background-color: #e8e8e8;
+}
+
+.soa-item:last-child,
+.invoice-item:last-child,
+.manifesto-item:last-child {
+    border-bottom: none;
+}
+
+/* Action buttons */
 .transaction-actions {
     display: flex;
     gap: 8px;
+    z-index: 1;
 }
 
 .action-btn {
@@ -321,28 +365,85 @@ body {
     color: white;
 }
 
-/* Remove checkboxes completely */
-input[type="checkbox"] {
+/* Checkbox styling */
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.transaction-checkbox {
+    display: inline-block;
+    margin: 0 10px;
+    cursor: pointer;
+    width: 18px;
+    height: 18px;
+    appearance: none;
+    -webkit-appearance: none;
+    border: 2px solid #94ae5e;
+    border-radius: 3px;
+    background-color: white;
+    position: relative;
+}
+
+.transaction-checkbox:checked {
+    background-color: #94ae5e;
+}
+
+.transaction-checkbox:checked:after {
+    content: '\2714';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 12px;
+}
+
+/* Remove the previous separate employee/owner checkbox styles */
+.employee-checkbox, 
+.owner-checkbox {
     display: none;
 }
 
-/* Adjust SOA item styling for layout without checkboxes */
-.soa-item {
+/* SOA item styling for reference */
+.soa-item-ref {
+    text-align: left;
+    flex: 1;
+    font-weight: bold;
+}
+
+/* Employee transaction view */
+.employee-transaction {
+    border: 1px solid black;
+    margin-bottom: 10px;
+    transition: background-color 0.3s ease;
+    font-weight: bold;
+}
+
+.employee-transaction:hover {
+    background-color: #f2f2f2;
+}
+
+.employee-transaction-item {
     display: flex;
     justify-content: space-between;
-    align-items: left;
+    align-items: center;
     padding: 15px;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid #000;
+    transition: background-color 0.3s ease;
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0;
+    font-weight: bold;
 }
 
-/* Add padding where checkboxes were to maintain alignment */
-.soa-item-ref {
-    padding-left: 15px;
-    text-align: left;
+.employee-transaction-item:hover {
+    background-color: #e8e8e8;
+    text-decoration: underline;
+    cursor: pointer;
 }
 
-/* Styling for the SOA header box with left-aligned text */
-.transaction-header {
-    text-align: left;
-    padding-left: 15px;
+.employee-transaction-item:last-child {
+    border-bottom: none;
 }

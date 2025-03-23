@@ -4,7 +4,7 @@ session_start();
 
 $role = isset($_SESSION['department']) ? $_SESSION['department'] : '';
 $company = isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : '';
-
+$isOwner = isset($_SESSION['isOwner']) ? $_SESSION['isOwner'] : false;
 
 if (!$role) {
     header("Location: UNAUTHORIZED.php?error=401r");
@@ -46,7 +46,6 @@ if ($role == 'Import Forwarding') {
     ";
 }
 
-
 $result = $conn->query($query);
 
 $transactions = [];
@@ -73,6 +72,7 @@ if ($result) {
     <link rel="stylesheet" href="../css/otp.css">
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body>
@@ -95,7 +95,7 @@ if ($result) {
     <div class="container py-3">
         <div class="search-container d-flex flex-wrap justify-content-center">
             <input type="text" class="search-bar form-control" id="search-input" placeholder="Search Transaction Details...">
-            <div id="dropdown" class="dropdown" id="dropdown" style="display: none;"></div>
+            <div id="dropdown" class="dropdown" style="display: none;"></div>
             <button class="search-button" id="search-button">SEARCH</button>
         </div>
         <div>
@@ -130,25 +130,23 @@ if ($result) {
                         <?php if (!empty($transactions[$normalizedDocType])): ?>
                             <?php foreach ($transactions[$normalizedDocType] as $transaction): ?>
                                 <div class="transaction-item d-flex justify-content-between align-items-center">
-                                    <div class="d-flex align-items-center">
-                                        <div class="form-check me-2">
-                                            <input class="form-check-input transaction-checkbox" type="checkbox" id="check-<?php echo htmlspecialchars($transaction['RefNum']); ?>">
+                                    <span class="transaction-text" ondblclick="redirectToDocument('<?php echo htmlspecialchars($transaction['RefNum']); ?>', '<?php echo $normalizedDocType; ?>')">
+                                        <?php echo htmlspecialchars($transaction['RefNum']); ?> - <?php echo $normalizedDocType; ?>
+                                    </span>
+                                    
+                                    <?php if (!$isOwner): ?>
+                                        <div class="transaction-actions">
+                                            <button class="btn btn-sm action-btn check-btn" id="check-btn" title="Complete">
+                                                <i class="bi bi-check2"></i>
+                                            </button>
+                                            <button class="btn btn-sm action-btn edit-btn" id="edit-btn" title="Edit" onclick="redirectToDocument2('<?php echo htmlspecialchars($transaction['RefNum']); ?>', '<?php echo $normalizedDocType; ?>')">
+                                                <i class="bi bi-pencil"></i>
+                                            </button>
+                                            <button class="btn btn-sm action-btn archive-btn" id="archive-btn" title="Archive" onclick="archiveDocument('<?php echo htmlspecialchars($transaction['RefNum']); ?>')">
+                                                <i class="bi bi-archive"></i>
+                                            </button>
                                         </div>
-                                        <span class="transaction-text" ondblclick="redirectToDocument('<?php echo htmlspecialchars($transaction['RefNum']); ?>', '<?php echo $normalizedDocType; ?>')">
-                                            <?php echo htmlspecialchars($transaction['RefNum']); ?> - <?php echo $normalizedDocType; ?>
-                                        </span>
-                                    </div>
-                                    <div class="transaction-actions">
-                                        <button class="btn btn-sm action-btn check-btn" title="Complete">
-                                            <i class="bi bi-check2"></i>
-                                        </button>
-                                        <button class="btn btn-sm action-btn edit-btn" title="Edit" onclick="editTransaction('<?php echo htmlspecialchars($transaction['RefNum']); ?>', '<?php echo $normalizedDocType; ?>')">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                        <button class="btn btn-sm action-btn archive-btn" title="Archive">
-                                            <i class="bi bi-archive"></i>
-                                        </button>
-                                    </div>
+                                    <?php endif; ?>
                                 </div>
                             <?php endforeach; ?>
                         <?php else: ?>
@@ -160,12 +158,56 @@ if ($result) {
         </div>
     </div>
     <script>
+        var doctype = "<?php echo isset($_SESSION['DocType']) ? $_SESSION['DocType'] : ''; ?>"
+        var role = "<?php echo isset($_SESSION['department']) ? $_SESSION['department'] : ''; ?>";
+        var company = "<?php echo isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : ''; ?>";
+
+        function archiveDocument(refnum) {
+            fetch(`ARCHIVE_HANDLE.php?archived=${encodeURIComponent(refnum)}`, {
+                    method: "GET"
+                })
+                .then(response => response.text())
+                .then(data => {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Archived!',
+                        text: 'The document has been successfully archived.',
+                        confirmButtonColor: '#27ae60'
+                    });
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Failed to archive the document.',
+                        confirmButtonColor: '#d33'
+                    });
+                });
+        }
+
         function redirectToDocument(refnum, doctype) {
             if (!refnum || !doctype) {
                 return;
             } else {
                 window.location.href = "agq_documentCatcher.php?refnum=" + encodeURIComponent(refnum) + '&doctype=' + encodeURIComponent(doctype);;
             }
+        }
+
+        function redirectToDocument2(refnum, doctype) {
+            let url = "";
+            switch (doctype) {
+                case "INVOICE":
+                    url = "agq_invoiceCatcher.php?refNum=" + encodeURIComponent(refnum);
+                    break;
+                case "SOA":
+                    url = "agq_soaCatcher.php?refNum=" + encodeURIComponent(refnum);
+                    break;
+                default:
+                    url = "agq_login.php";
+                    break;
+            }
+            window.location.href = url;
         }
 
         function editTransaction(refnum, doctype) {
@@ -183,14 +225,13 @@ if ($result) {
             }
         });
 
-
-
         let searchInput = document.getElementById("search-input");
+        let dropdown = document.getElementById("dropdown");
+
         if (searchInput) {
             searchInput.addEventListener("input", function() {
                 let query = this.value.trim().toLowerCase();
-                let dropdown = document.getElementById("dropdown");
-
+                
                 if (query.length === 0) {
                     dropdown.style.display = "none";
                     return;
@@ -202,6 +243,7 @@ if ($result) {
                         console.log("API Response:", JSON.stringify(data, null, 2));
 
                         dropdown.innerHTML = "";
+                        let seenItems = new Set(); // Track unique entries
 
                         // Extract transactions properly (nested inside departments and document types)
                         let transactions = [];
@@ -217,8 +259,11 @@ if ($result) {
                             transactions.forEach(item => {
                                 let refNum = (item.RefNum || "").toLowerCase();
                                 let docType = (item.DocType || "").toLowerCase();
+                                let itemKey = `${refNum}-${docType}`.toLowerCase();
 
-                                if (refNum.includes(query) || docType.includes(query)) {
+                                if (!seenItems.has(itemKey) && (refNum.includes(query) || docType.includes(query))) {
+                                    seenItems.add(itemKey);
+                                    
                                     let div = document.createElement("div");
                                     div.classList.add("dropdown-item");
                                     div.innerHTML = `<strong>${item.RefNum || "Unknown RefNum"}</strong> - ${item.DocType || "No DocType"}`;
@@ -241,10 +286,6 @@ if ($result) {
                     });
             });
         }
-
-
-
-
 
         document.addEventListener("DOMContentLoaded", function() {
             let searchInput = document.getElementById("search-input");
@@ -303,12 +344,11 @@ if ($result) {
                             if (!structuredTransactions[department]["INVOICE"]) {
                                 structuredTransactions[department]["INVOICE"] = [];
                             }
-                            if ($role == "Import Forwarding") {
+                            if (role == "Import Forwarding") {
                                 if (!structuredTransactions[department]["MANIFESTO"]) {
                                     structuredTransactions[department]["MANIFESTO"] = [];
                                 }
                             }
-
                         });
 
                         generateTransactionHTML(structuredTransactions, transactionsContainer);
@@ -342,6 +382,11 @@ if ($result) {
                                     structuredTransactions[department][normalizedDocType] = [];
                                 }
 
+                                if (!Array.isArray(refArray)) {
+                                    console.warn(`Skipping non-array records for ${docType}:`, refArray);
+                                    return;
+                                }
+
                                 refArray.forEach(item => {
                                     structuredTransactions[department][normalizedDocType].push(item.RefNum);
                                 });
@@ -356,110 +401,112 @@ if ($result) {
             function generateTransactionHTML(transactions, container) {
                 container.innerHTML = "";
 
+                let structuredTransactions = {};
+
+                // Aggregate transactions across all departments
                 Object.entries(transactions).forEach(([department, docTypes]) => {
-                    let departmentSection = document.createElement("div");
-                    departmentSection.classList.add("department-section");
+                    Object.entries(docTypes).forEach(([docType, records]) => {
+                        let normalizedDocType = docType.toUpperCase().trim();
 
-                    const order = ["SOA", "INVOICE"];
+                        if (!structuredTransactions[normalizedDocType]) {
+                            structuredTransactions[normalizedDocType] = [];
+                        }
 
-                    if ($role == "Import Forwarding") {
-                        const order = ["SOA", "INVOICE", "MANIFESTO"];
-                    }
-
-                    let sortedDocTypes = Object.keys(docTypes).sort((a, b) => {
-                        let indexA = order.indexOf(a.toUpperCase());
-                        let indexB = order.indexOf(b.toUpperCase());
-
-                        if (indexA === -1) indexA = order.length;
-                        if (indexB === -1) indexB = order.length;
-
-                        return indexA - indexB;
+                        structuredTransactions[normalizedDocType].push(...records);
                     });
+                });
 
-                    sortedDocTypes.forEach(docType => {
-                        let refs = docTypes[docType];
+                const order = ["SOA", "INVOICE"];
+                if (role == "Import Forwarding") {
+                    order.push("MANIFESTO");
+                }
 
-                        let transactionSection = document.createElement("div");
-                        transactionSection.classList.add("transaction");
+                let sortedDocTypes = Object.keys(structuredTransactions).sort((a, b) => {
+                    let indexA = order.indexOf(a);
+                    let indexB = order.indexOf(b);
+                    if (indexA === -1) indexA = order.length;
+                    if (indexB === -1) indexB = order.length;
+                    return indexA - indexB;
+                });
 
-                        let transactionHeader = document.createElement("div");
-                        transactionHeader.classList.add("transaction-header");
-                        transactionHeader.innerHTML = `${docType} <span class="icon">&#x25BC;</span>`;
+                // Create sections for each document type only once
+                sortedDocTypes.forEach(docType => {
+                    let refs = structuredTransactions[docType];
 
-                        let transactionContent = document.createElement("div");
-                        transactionContent.classList.add("transaction-content");
+                    let transactionSection = document.createElement("div");
+                    transactionSection.classList.add("transaction");
 
-                        if (Array.isArray(refs) && refs.length > 0) {
-                            refs.forEach(refNum => {
-                                let transactionItem = document.createElement("div");
-                                transactionItem.classList.add("transaction-item", "d-flex", "justify-content-between", "align-items-center");
+                    let transactionHeader = document.createElement("div");
+                    transactionHeader.classList.add("transaction-header");
+                    transactionHeader.innerHTML = `${docType} <span class="icon">&#x25BC;</span>`;
 
-                                let leftSide = document.createElement("div");
-                                leftSide.classList.add("d-flex", "align-items-center");
-                                
-                                let checkboxDiv = document.createElement("div");
-                                checkboxDiv.classList.add("form-check", "me-2");
-                                
-                                let checkbox = document.createElement("input");
-                                checkbox.classList.add("form-check-input", "transaction-checkbox");
-                                checkbox.type = "checkbox";
-                                checkbox.id = `check-${refNum}`;
-                                
-                                checkboxDiv.appendChild(checkbox);
-                                leftSide.appendChild(checkboxDiv);
-                                
-                                let transactionText = document.createElement("span");
-                                transactionText.classList.add("transaction-text");
-                                transactionText.textContent = `${refNum} - ${docType}`;
-                                transactionText.ondblclick = function() {
-                                    redirectToDocument(refNum, docType);
-                                };
-                                
-                                leftSide.appendChild(transactionText);
-                                
+                    let transactionContent = document.createElement("div");
+                    transactionContent.classList.add("transaction-content");
+
+                    if (Array.isArray(refs) && refs.length > 0) {
+                        refs.forEach(refNum => {
+                            let transactionItem = document.createElement("div");
+                            transactionItem.classList.add("transaction-item", "d-flex", "justify-content-between", "align-items-center");
+                            
+                            let transactionText = document.createElement("span");
+                            transactionText.classList.add("transaction-text");
+                            transactionText.textContent = `${refNum} - ${docType}`;
+                            transactionText.ondblclick = function() {
+                                redirectToDocument(refNum, docType);
+                            };
+                            
+                            transactionItem.appendChild(transactionText);
+                            
+                            let isOwner = <?php echo $isOwner ? 'true' : 'false'; ?>;
+                            
+                            if (!isOwner) {
+                                // Employee view - action buttons
                                 let actions = document.createElement("div");
                                 actions.classList.add("transaction-actions");
                                 
                                 // Checkmark button
                                 let checkBtn = document.createElement("button");
                                 checkBtn.classList.add("btn", "btn-sm", "action-btn", "check-btn");
+                                checkBtn.id = "check-btn";
                                 checkBtn.title = "Complete";
                                 checkBtn.innerHTML = '<i class="bi bi-check2"></i>';
                                 
                                 // Edit button
                                 let editBtn = document.createElement("button");
                                 editBtn.classList.add("btn", "btn-sm", "action-btn", "edit-btn");
+                                editBtn.id = "edit-btn";
                                 editBtn.title = "Edit";
                                 editBtn.innerHTML = '<i class="bi bi-pencil"></i>';
                                 editBtn.onclick = function() {
-                                    editTransaction(refNum, docType);
+                                    redirectToDocument2(refNum, docType);
                                 };
                                 
                                 // Archive button
                                 let archiveBtn = document.createElement("button");
                                 archiveBtn.classList.add("btn", "btn-sm", "action-btn", "archive-btn");
+                                archiveBtn.id = "archive-btn";
                                 archiveBtn.title = "Archive";
                                 archiveBtn.innerHTML = '<i class="bi bi-archive"></i>';
+                                archiveBtn.onclick = function() {
+                                    archiveDocument(refNum);
+                                };
                                 
                                 actions.appendChild(checkBtn);
                                 actions.appendChild(editBtn);
                                 actions.appendChild(archiveBtn);
-                                
-                                transactionItem.appendChild(leftSide);
                                 transactionItem.appendChild(actions);
-                                transactionContent.appendChild(transactionItem);
-                            });
+                            }
+                            
+                            transactionContent.appendChild(transactionItem);
+                        });
 
-                        } else {
-                            transactionContent.innerHTML = "<p>No records found.</p>";
-                        }
+                    } else {
+                        transactionContent.innerHTML = "<p>No records found.</p>";
+                    }
 
-                        transactionSection.appendChild(transactionHeader);
-                        transactionSection.appendChild(transactionContent);
-                        departmentSection.appendChild(transactionSection);
-                    });
-
-                    container.appendChild(departmentSection);
+                    transactionSection.appendChild(transactionHeader);
+                    transactionSection.appendChild(transactionContent);
+                    container.appendChild(transactionSection);
                 });
             }
 
@@ -472,7 +519,13 @@ if ($result) {
                     fetchFilteredTransactions(query);
                 }
             });
-
+            
+            searchInput.addEventListener("keydown", function(event) {
+                if (event.key === "Enter") {
+                    event.preventDefault();
+                    searchButton.click();
+                }
+            });
         });
 
         function downloadDocument(refNum, department) {
@@ -489,11 +542,6 @@ if ($result) {
                 }
             }, 3000);
         }
-
-
-        var doctype = "<?php echo isset($_SESSION['selected_documenttype']) ? $_SESSION['selected_documenttype'] : ''; ?>"
-        var role = "<?php echo isset($_SESSION['department']) ? $_SESSION['department'] : ''; ?>";
-        var company = "<?php echo isset($_SESSION['selected_company']) ? $_SESSION['selected_company'] : ''; ?>";
 
         console.log("DocType:", doctype);
         console.log("Role:", role);

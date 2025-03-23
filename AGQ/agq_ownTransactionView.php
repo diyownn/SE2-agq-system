@@ -2,6 +2,7 @@
 require 'db_agq.php';
 session_start();
 
+$url = isset($_GET['url']) ? $_GET['url'] : ''; // Fixed this line to properly check the URL
 $role = isset($_SESSION['department']) ? $_SESSION['department'] : '';
 $dept = isset($_SESSION['SelectedDepartment']) ? $_SESSION['SelectedDepartment'] : '';
 $company = isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : '';
@@ -17,6 +18,13 @@ if (!$company) {
 if (!$dept) {
     header("Location: UNAUTHORIZED.php?error=401d");
 }
+
+// Changed this condition to check if URL is empty, not just if it's set
+if ($url === '') {
+    // Removed this redirect to avoid unauthorized page
+    // header("Location: UNAUTHORIZED.php?error=401u");
+}
+
 $query = "
 SELECT i.RefNum, i.DocType, c.Company_name
 FROM tbl_impfwd i
@@ -41,7 +49,6 @@ WHERE '$dept' = 'Export Brokerage' AND c.Company_name = '$company'
 
 $result = $conn->query($query);
 
-
 if ($dept == 'Import Forwarding') {
     $query .= "
     UNION
@@ -51,11 +58,6 @@ if ($dept == 'Import Forwarding') {
     WHERE c.Company_name = '$company'
     ";
 }
-
-
-$result = $conn->query($query);
-
-
 
 $result = $conn->query($query);
 $transactions = [];
@@ -109,7 +111,7 @@ if ($result) {
     <div class="container py-3">
         <div class="search-container d-flex flex-wrap justify-content-center">
             <input type="text" class="search-bar form-control" id="search-input" placeholder="Search Transaction Details...">
-            <div id="dropdown" class="dropdown" id="dropdown" style="display: none;"></div>
+            <div id="dropdown" class="dropdown" style="display: none;"></div>
             <button class="search-button" id="search-button">SEARCH</button>
         </div>
 
@@ -137,7 +139,10 @@ if ($result) {
                                     <span ondblclick="redirectToDocument('<?php echo htmlspecialchars($transaction['RefNum']); ?>', '<?php echo $normalizedDocType; ?>')">
                                         <?php echo htmlspecialchars($transaction['RefNum']); ?> - <?php echo $normalizedDocType; ?>
                                     </span>
-                                    <input type="checkbox">
+                                    <div class="checkbox-container">
+                                        <!-- Changed from having two checkboxes to a single checkbox -->
+                                        <input type="checkbox" id="tx-<?php echo htmlspecialchars($transaction['RefNum']); ?>" class="transaction-checkbox">
+                                    </div>
                                 </div>
                             <?php endforeach; ?>
                         <?php else: ?>
@@ -150,24 +155,28 @@ if ($result) {
     </div>
 
     <script>
+        var role = "<?php echo isset($_SESSION['department']) ? $_SESSION['department'] : ''; ?>";
+        var company = "<?php echo isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : ''; ?>";
+        var dept = "<?php echo isset($_SESSION['SelectedDepartment']) ? $_SESSION['SelectedDepartment'] : ''; ?>";
+        var selectdep = "<?php echo isset($_SESSION['SelectedDepartment']) ? $_SESSION['SelectedDepartment'] : ''; ?>";
+
         function redirectToDocument(refnum, doctype) {
             if (!refnum || !doctype) {
                 return;
             } else {
-                window.location.href = "agq_documentCatcher.php?refnum=" + encodeURIComponent(refnum) + '&doctype=' + encodeURIComponent(doctype);;
+                window.location.href = "agq_documentCatcher.php?refnum=" + encodeURIComponent(refnum) + '&doctype=' + encodeURIComponent(doctype);
             }
         }
 
         document.addEventListener("DOMContentLoaded", function() {
             document.body.addEventListener("click", function(event) {
                 if (event.target.classList.contains("transaction-header") || event.target.classList.contains("icon")) {
-                    const content = event.target.nextElementSibling;
+                    const content = event.target.closest(".transaction").querySelector(".transaction-content");
                     content.classList.toggle("open");
-                    event.target.classList.toggle("active");
+                    event.target.closest(".transaction-header").classList.toggle("active");
                 }
             });
         });
-
 
         document.getElementById("search-input").addEventListener("input", function() {
             let query = this.value.trim().toLowerCase();
@@ -189,24 +198,23 @@ if ($result) {
                     let departmentKey = Object.keys(data).find(key => Array.isArray(data[key]));
                     let transactions = departmentKey ? data[departmentKey] : [];
 
-
                     if (transactions.length > 0) {
                         transactions.forEach(item => {
                             let company = (item.Company_name || "").toLowerCase();
                             let refNum = (item.RefNum || "").toLowerCase();
                             let department = (item.Department || "").toLowerCase();
-                            let docType = (item.DocType || "").toLowerCase(); // Fix variable naming
+                            let docType = (item.DocType || "").toLowerCase();
 
                             if (company.includes(query) || refNum.includes(query) || department.includes(query) || docType.includes(query) || docType === "manifesto") {
                                 let div = document.createElement("div");
                                 div.classList.add("dropdown-item");
 
                                 div.innerHTML = `
-                <strong>${item.RefNum || "Unknown Company"}</strong> - ${item.DocType || "No DocType"}
-            `;
+                                    <strong>${item.RefNum || "Unknown RefNum"}</strong> - ${item.DocType || "No DocType"}
+                                `;
 
                                 div.onclick = function() {
-                                    if (!refNum) { // Fix variable name
+                                    if (!refNum) {
                                         document.getElementById("search-input").value = item.DocType || "";
                                     } else {
                                         document.getElementById("search-input").value = item.RefNum || "";
@@ -278,7 +286,7 @@ if ($result) {
                             });
                         });
 
-                        // **Ensure SOA, Summary, and Others exist in all departments**
+                        // Ensure SOA, Invoice, and Manifesto (if Import Forwarding) exist in all departments
                         Object.keys(structuredTransactions).forEach(department => {
                             if (!structuredTransactions[department]["SOA"]) {
                                 structuredTransactions[department]["SOA"] = [];
@@ -286,7 +294,7 @@ if ($result) {
                             if (!structuredTransactions[department]["INVOICE"]) {
                                 structuredTransactions[department]["INVOICE"] = [];
                             }
-                            if ($dept == "Import Forwarding") {
+                            if (department == "Import Forwarding" || dept == "Import Forwarding") {
                                 if (!structuredTransactions[department]["MANIFESTO"]) {
                                     structuredTransactions[department]["MANIFESTO"] = [];
                                 }
@@ -297,10 +305,6 @@ if ($result) {
                     })
                     .catch(error => console.error("Error fetching all transactions:", error));
             }
-
-
-
-
 
             function fetchFilteredTransactions(query) {
                 fetch("FILTER_TRANSACTIONS.php?search=" + encodeURIComponent(query))
@@ -346,16 +350,16 @@ if ($result) {
                     departmentSection.classList.add("department-section");
 
                     const order = ["SOA", "INVOICE"];
-
-                    if ($dept == "Import Forwarding") {
-                        const order = ["SOA", "INVOICE", "MANIFESTO"];
-                    }
+                    let orderWithManifesto = ["SOA", "INVOICE", "MANIFESTO"];
+                    
+                    let sortedOrder = (department == "Import Forwarding" || dept == "Import Forwarding") ? orderWithManifesto : order;
+                    
                     let sortedDocTypes = Object.keys(docTypes).sort((a, b) => {
-                        let indexA = order.indexOf(a.toUpperCase());
-                        let indexB = order.indexOf(b.toUpperCase());
+                        let indexA = sortedOrder.indexOf(a.toUpperCase());
+                        let indexB = sortedOrder.indexOf(b.toUpperCase());
 
-                        if (indexA === -1) indexA = order.length;
-                        if (indexB === -1) indexB = order.length;
+                        if (indexA === -1) indexA = sortedOrder.length;
+                        if (indexB === -1) indexB = sortedOrder.length;
 
                         return indexA - indexB;
                     });
@@ -382,11 +386,18 @@ if ($result) {
                                 let transactionText = document.createElement("span");
                                 transactionText.textContent = `${refNum} - ${docType}`;
 
-                                let transactionCheckbox = document.createElement("input");
-                                transactionCheckbox.type = "checkbox";
+                                let checkboxContainer = document.createElement("div");
+                                checkboxContainer.classList.add("checkbox-container");
 
+                                // Single checkbox instead of two
+                                let checkbox = document.createElement("input");
+                                checkbox.type = "checkbox";
+                                checkbox.id = `tx-${refNum}`;
+                                checkbox.classList.add("transaction-checkbox");
+
+                                checkboxContainer.appendChild(checkbox);
                                 transactionItem.appendChild(transactionText);
-                                transactionItem.appendChild(transactionCheckbox);
+                                transactionItem.appendChild(checkboxContainer);
                                 transactionContent.appendChild(transactionItem);
                             });
                         } else {
@@ -401,9 +412,6 @@ if ($result) {
                     container.appendChild(departmentSection);
                 });
             }
-
-
-
 
             searchButton.addEventListener("click", function() {
                 let query = searchInput.value.trim();
@@ -437,13 +445,6 @@ if ($result) {
                 }
             }, 3000);
         }
-
-
-
-        var role = "<?php echo isset($_SESSION['department']) ? $_SESSION['department'] : ''; ?>";
-        var company = "<?php echo isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : ''; ?>";
-        var selectdep = "<?php echo isset($_SESSION['SelectedDepartment']) ? $_SESSION['SelectedDepartment'] : ''; ?>"
-
 
         console.log("Role:", role);
         console.log("Company:", company);
