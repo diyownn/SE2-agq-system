@@ -1,127 +1,162 @@
 <?php
 require 'db_agq.php';
+session_start();
+header('Content-Type: application/json');
+error_reporting(E_ALL);
+ini_set('display_errors', 0);
+ini_set('log_errors', 1);
 
-header('Content-Type: application/json'); // Ensure JSON response
+// Validate database connection
+if (!isset($conn) || $conn->connect_error) {
+    exit(json_encode(["error" => "Database connection failed: " . ($conn->connect_error ?? 'Unknown error')]));
+}
+
+// Ensure session variables exist
+$role = $_SESSION['department'] ?? null;
+$dept = $_SESSION['SelectedDepartment'] ?? null;
+$company = $_SESSION['Company_name'] ?? null;
+
+// Mapping tables to roles
+$tables = [
+    "Export Brokerage"  => "tbl_expbrk",
+    "Export Forwarding" => "tbl_expfwd",
+    "Import Brokerage"  => "tbl_impbrk",
+    "Import Forwarding" => "tbl_impfwd",
+];
+
+// Determine the correct table
+$targetTable = $tables[$role] ?? $tables[$dept] ?? null;
+if (!$targetTable) {
+    exit(json_encode(["error" => "Invalid department or role."]));
+}
+
 
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_GET["action"])) {
-    $action = $_GET["action"];
-    $refNum = isset($_POST["RefNum"]) ? $_POST["RefNum"] : '';
+    $action = filter_var($_GET["action"]);
+    $refNum = $_POST["RefNum"] ?? null;
 
-    if (empty($refNum)) {
-        echo json_encode(["success" => false, "message" => "Reference Number is required."]);
-        exit();
+    if (!$refNum) {
+        exit(json_encode(["success" => false, "message" => "Reference Number is required."]));
     }
 
-    // Define tables
-    $tables = ["tbl_archive", "tbl_impfwd", "tbl_impbrk", "tbl_expfwd", "tbl_expbrk"];
+    switch ($action) {
+        case "delete":
+            deleteDocument($conn, $refNum);
+            break;
+        case "restore":
+            restoreDocument($conn, $refNum, $role, $dept);
+            break;
+        case "archive":
+            archiveDocument($conn, $targetTable, $refNum, $company, $role);
+            break;
+        default:
+            exit(json_encode(["success" => false, "message" => "Invalid action."]));
+    }
+}
 
-    if ($action === "delete") {
-        $deletedFrom = [];
+/**
+ * Archive document
+ */
+function archiveDocument($conn, $table, $refNum, $company, $role)
+{
+    if (!validTable($table)) {
+        exit(json_encode(["error" => "Invalid table."]));
+    }
 
-        foreach ($tables as $table) {
-            $sqlDelete = "DELETE FROM $table WHERE RefNum = ?";
-            $stmtDelete = $conn->prepare($sqlDelete);
-            $stmtDelete->bind_param("s", $refNum);
-            $stmtDelete->execute();
+    $query = "UPDATE $table SET isArchived = 1 WHERE RefNum = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("s", $refNum);
 
-            if ($stmtDelete->affected_rows > 0) {
-                $deletedFrom[] = $table;
-            }
+    if ($stmt->execute() && $stmt->affected_rows > 0) {
+        $insertQuery = "INSERT INTO tbl_archive (Company_name, department, RefNum) VALUES (?, ?, ?)";
+        $insertStmt = $conn->prepare($insertQuery);
+        $insertStmt->bind_param("sss", $company, $role, $refNum);
 
-            $stmtDelete->close();
-        }
-
-        if (!empty($deletedFrom)) {
-            echo json_encode(["success" => true, "message" => "Deleted from: " . implode(", ", $deletedFrom)]);
+        if ($insertStmt->execute()) {
+            $response = ["success" => true, "message" => "Document archived successfully!"];
         } else {
-            echo json_encode(["success" => false, "message" => "No matching record found."]);
-        }
-    } elseif ($action === "restore") {
-
-        // Debug: Log received data
-        echo "<script>console.log('DEBUG: Received POST Data:', " . json_encode($_POST) . ");</script>";
-
-        $sqlFetch = "SELECT Company_name, RefNum, Department FROM tbl_archive WHERE RefNum = ?";
-        $stmtFetch = $conn->prepare($sqlFetch);
-        $stmtFetch->bind_param("s", $refNum);
-        $stmtFetch->execute();
-        $result = $stmtFetch->get_result();
-        $row = $result->fetch_assoc();
-        $stmtFetch->close();
-
-        if (!$row) {
-            echo json_encode(["success" => false, "message" => "Reference Number not found in archives."]);
-            exit();
+            $response = ["success" => false, "message" => "Failed to insert into archive: " . $insertStmt->error];
         }
 
-        $departments = [
-            "Import Forwarding" => "tbl_impfwd",
-            "Import Brokerage" => "tbl_impbrk",
-            "Export Forwarding" => "tbl_expfwd",
-            "Export Brokerage" => "tbl_expbrk"
-        ];
-
-        $restoreTable = $departments[$row["Department"]] ?? null;
-
-        if (!$restoreTable) {
-            echo json_encode(["success" => false, "message" => "Invalid department."]);
-            exit();
-        }
-
-        // Debug: Check the target table
-        echo "<script>console.log('DEBUG: Restoring to table:', '" . $restoreTable . "');</script>";
-
-        // Check if the record exists in the restore table
-        $sqlCheck = "SELECT COUNT(*) FROM $restoreTable WHERE RefNum = ?";
-        $stmtCheck = $conn->prepare($sqlCheck);
-        $stmtCheck->bind_param("s", $row["RefNum"]);
-        $stmtCheck->execute();
-        $stmtCheck->bind_result($count);
-        $stmtCheck->fetch();
-        $stmtCheck->close();
-
-        // Debug: Check if record exists in the table
-        echo "<script>console.log('DEBUG: Record exists count:', " . $count . ");</script>";
-
-        if ($count > 0) {
-            // Update the existing record
-            $sqlUpdate = "UPDATE $restoreTable SET isArchived = 0 WHERE RefNum = ?";
-            $stmtUpdate = $conn->prepare($sqlUpdate);
-            $stmtUpdate->bind_param("s", $row["RefNum"]);
-        } else {
-            // Insert a new record
-            $sqlUpdate = "INSERT INTO $restoreTable (Company_name, RefNum, Department, isArchived) VALUES (?, ?, ?, 0)";
-            $stmtUpdate = $conn->prepare($sqlUpdate);
-            $stmtUpdate->bind_param("sss", $row["Company_name"], $row["RefNum"], $row["Department"]);
-        }
-
-        if ($stmtUpdate->execute() && $stmtUpdate->affected_rows > 0) {
-            echo "<script>console.log('SUCCESS: Record updated/inserted successfully!');</script>";
-
-            // Delete from tbl_archive after successful restore
-            $sqlDelete = "DELETE FROM tbl_archive WHERE RefNum = ?";
-            $stmtDelete = $conn->prepare($sqlDelete);
-            $stmtDelete->bind_param("s", $row["RefNum"]);
-            $stmtDelete->execute();
-
-            if ($stmtDelete->affected_rows > 0) {
-                echo "<script>console.log('SUCCESS: Record deleted from archive');</script>";
-            } else {
-                echo "<script>console.warn('WARNING: No record deleted from archive.');</script>";
-            }
-
-            $stmtDelete->close();
-            echo json_encode(["success" => true, "message" => "Document successfully restored."]);
-        } else {
-            echo "<script>console.error('ERROR: Query execution failed:', '" . $stmtUpdate->error . "');</script>";
-            echo json_encode(["success" => false, "message" => "Error restoring document."]);
-        }
-
-        $stmtUpdate->close();
+        $insertStmt->close();
     } else {
-        echo json_encode(["success" => false, "message" => "Invalid action."]);
+        $response = ["success" => false, "message" => "Document not found or already archived."];
     }
 
+    $stmt->close();
+    echo json_encode($response);
+}
 
-    $conn->close();
+/**
+ * Delete document from all tables
+ */
+function deleteDocument($conn, $refNum)
+{
+    $tables = ["tbl_archive", "tbl_impfwd", "tbl_impbrk", "tbl_expfwd", "tbl_expbrk"];
+    $deletedFrom = [];
+
+    foreach ($tables as $table) {
+        if (!validTable($table)) continue; // Skip invalid tables
+
+        $stmt = $conn->prepare("DELETE FROM $table WHERE RefNum = ?");
+        $stmt->bind_param("s", $refNum);
+        $stmt->execute();
+
+        if ($stmt->affected_rows > 0) {
+            $deletedFrom[] = $table;
+        }
+        $stmt->close();
+    }
+
+    echo json_encode(!empty($deletedFrom) ?
+        ["success" => true, "message" => "Deleted from: " . implode(", ", $deletedFrom)] :
+        ["success" => false, "message" => "No matching record found."]);
+}
+
+/**
+ * Restore document from archive
+ */
+function restoreDocument($conn, $refNum, $role, $dept)
+{
+    $stmtDelete = $conn->prepare("DELETE FROM tbl_archive WHERE RefNum = ?");
+    $stmtDelete->bind_param("s", $refNum);
+
+    if (!$stmtDelete->execute()) {
+        exit(json_encode(["success" => false, "message" => "Failed to remove from archive: " . $stmtDelete->error]));
+    }
+    $stmtDelete->close();
+
+    // Determine the target table
+    $tables = [
+        "Export Brokerage"  => "tbl_expbrk",
+        "Export Forwarding" => "tbl_expfwd",
+        "Import Brokerage"  => "tbl_impbrk",
+        "Import Forwarding" => "tbl_impfwd",
+    ];
+    $targetTable = $tables[$role] ?? $tables[$dept] ?? null;
+
+    if (!$targetTable || !validTable($targetTable)) {
+        exit(json_encode(["success" => false, "message" => "Invalid department or role."]));
+    }
+
+    // Restore document
+    $stmtUpdate = $conn->prepare("UPDATE $targetTable SET isArchived = 0 WHERE RefNum = ?");
+    $stmtUpdate->bind_param("s", $refNum);
+
+    if ($stmtUpdate->execute() && $stmtUpdate->affected_rows > 0) {
+        echo json_encode(["success" => true, "message" => "Document successfully restored."]);
+    } else {
+        echo json_encode(["success" => false, "message" => "Failed to restore document. Maybe it doesn't exist?"]);
+    }
+
+    $stmtUpdate->close();
+}
+
+/**
+ * Validate table names against predefined lists
+ */
+function validTable($table)
+{
+    $allowedTables = ["tbl_expbrk", "tbl_expfwd", "tbl_impbrk", "tbl_impfwd", "tbl_archive"];
+    return in_array($table, $allowedTables);
 }

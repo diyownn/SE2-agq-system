@@ -303,12 +303,23 @@ $record = selectRecords($conn, $role, $refNum);
           <button class="edit-button" onclick="redirectToDocument2('<?php echo htmlspecialchars($refNum); ?>', '<?php echo htmlspecialchars($record['DocType'] ?? ''); ?>')">
             Edit
           </button>
-          <button class="download-button" onclick="window.location.href='Download/GENERATE_EXCEL.php';">Download</button>
+          <button class="download-button" onclick="downloadDocument(<?php echo htmlspecialchars($transaction['RefNum']); ?>)">Download</button>
         </div>
       </div>
     </div>
   </div>
   <script>
+    function downloadDocument(refnum) {
+      let url = "Download/GENERATE_EXCEL.php" + encodeURIComponent(refnum);
+
+      if (!refnum) {
+        console.log("No refnum provided");
+      } else {
+        window.href.location = url;
+      }
+
+    }
+
     function redirectToDocument2(refnum, doctype) {
       let url = "";
       switch (doctype) {

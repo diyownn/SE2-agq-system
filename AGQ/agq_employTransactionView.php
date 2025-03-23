@@ -2,9 +2,10 @@
 require 'db_agq.php';
 session_start();
 
+$url = isset($_GET['url']);
 $role = isset($_SESSION['department']) ? $_SESSION['department'] : '';
 $company = isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : '';
-$isOwner = isset($_SESSION['isOwner']) ? $_SESSION['isOwner'] : false;
+
 
 if (!$role) {
     header("Location: UNAUTHORIZED.php?error=401r");
@@ -12,6 +13,10 @@ if (!$role) {
 
 if (!$company) {
     header("Location: UNAUTHORIZED.php?error=401c");
+}
+
+if (!$url) {
+    header("Location: UNAUTHORIZED.php?error=401u");
 }
 
 $query = "
@@ -45,6 +50,7 @@ if ($role == 'Import Forwarding') {
     WHERE c.Company_name = '$company'
     ";
 }
+
 
 $result = $conn->query($query);
 
@@ -95,7 +101,7 @@ if ($result) {
     <div class="container py-3">
         <div class="search-container d-flex flex-wrap justify-content-center">
             <input type="text" class="search-bar form-control" id="search-input" placeholder="Search Transaction Details...">
-            <div id="dropdown" class="dropdown" style="display: none;"></div>
+            <div id="dropdown" class="dropdown" id="dropdown" style="display: none;"></div>
             <button class="search-button" id="search-button">SEARCH</button>
         </div>
         <div>
@@ -130,23 +136,28 @@ if ($result) {
                         <?php if (!empty($transactions[$normalizedDocType])): ?>
                             <?php foreach ($transactions[$normalizedDocType] as $transaction): ?>
                                 <div class="transaction-item d-flex justify-content-between align-items-center">
-                                    <span class="transaction-text" ondblclick="redirectToDocument('<?php echo htmlspecialchars($transaction['RefNum']); ?>', '<?php echo $normalizedDocType; ?>')">
-                                        <?php echo htmlspecialchars($transaction['RefNum']); ?> - <?php echo $normalizedDocType; ?>
-                                    </span>
-                                    
-                                    <?php if (!$isOwner): ?>
-                                        <div class="transaction-actions">
-                                            <button class="btn btn-sm action-btn check-btn" id="check-btn" title="Complete">
-                                                <i class="bi bi-check2"></i>
-                                            </button>
-                                            <button class="btn btn-sm action-btn edit-btn" id="edit-btn" title="Edit" onclick="redirectToDocument2('<?php echo htmlspecialchars($transaction['RefNum']); ?>', '<?php echo $normalizedDocType; ?>')">
-                                                <i class="bi bi-pencil"></i>
-                                            </button>
-                                            <button class="btn btn-sm action-btn archive-btn" id="archive-btn" title="Archive" onclick="archiveDocument('<?php echo htmlspecialchars($transaction['RefNum']); ?>')">
-                                                <i class="bi bi-archive"></i>
-                                            </button>
+                                    <div class="d-flex align-items-center">
+                                        <div class="form-check me-2">
+                                            <input class="form-check-input transaction-checkbox" type="checkbox" id="empcheckbox" disabled>
                                         </div>
-                                    <?php endif; ?>
+                                        <span class="transaction-text" ondblclick="redirectToDocument('<?php echo htmlspecialchars($transaction['RefNum']); ?>', '<?php echo $normalizedDocType; ?>')">
+                                            <?php echo htmlspecialchars($transaction['RefNum']); ?> - <?php echo $normalizedDocType; ?>
+                                        </span>
+                                    </div>
+                                    <div class="transaction-actions">
+                                        <button class="btn btn-sm action-btn check-btn" id="check-btn" title="Complete">
+                                            <i class="bi bi-check2"></i>
+                                        </button>
+                                        <button class="btn btn-sm action-btn edit-btn" id="edit-btn" title="Edit"
+                                            onclick="redirectToDocument2('<?php echo htmlspecialchars($transaction['RefNum']); ?>', '<?php echo $normalizedDocType; ?>')">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button class="btn btn-sm action-btn archive-btn" id="archive-btn" title="Archive"
+                                            onclick="archiveDocument('<?php echo htmlspecialchars($transaction['RefNum']); ?>')">
+                                            <i class="bi bi-archive"></i>
+                                        </button>
+
+                                    </div>
                                 </div>
                             <?php endforeach; ?>
                         <?php else: ?>
@@ -163,28 +174,42 @@ if ($result) {
         var company = "<?php echo isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : ''; ?>";
 
         function archiveDocument(refnum) {
-            fetch(`ARCHIVE_HANDLE.php?archived=${encodeURIComponent(refnum)}`, {
-                    method: "GET"
+            fetch("ARCHIVE_HANDLE.php?action=archive", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    },
+                    body: `RefNum=${encodeURIComponent(refnum)}`
                 })
-                .then(response => response.text())
+                .then(response => response.json()) // Expect JSON response
                 .then(data => {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Archived!',
-                        text: 'The document has been successfully archived.',
-                        confirmButtonColor: '#27ae60'
-                    });
+                    if (data.success) {
+                        Swal.fire({
+                            icon: "success",
+                            title: "Archived!",
+                            text: data.message || "The document has been successfully archived.",
+                            confirmButtonColor: "#27ae60"
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Error",
+                            text: data.message || "Failed to archive the document.",
+                            confirmButtonColor: "#d33"
+                        });
+                    }
                 })
                 .catch(error => {
                     console.error("Error:", error);
                     Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'Failed to archive the document.',
-                        confirmButtonColor: '#d33'
+                        icon: "error",
+                        title: "Error",
+                        text: "Failed to communicate with the server.",
+                        confirmButtonColor: "#d33"
                     });
                 });
         }
+
 
         function redirectToDocument(refnum, doctype) {
             if (!refnum || !doctype) {
@@ -207,12 +232,11 @@ if ($result) {
                     url = "agq_login.php";
                     break;
             }
+
+
             window.location.href = url;
         }
 
-        function editTransaction(refnum, doctype) {
-            window.location.href = "agq_edit_transaction.php?refnum=" + encodeURIComponent(refnum) + '&doctype=' + encodeURIComponent(doctype);
-        }
 
         document.body.addEventListener("click", function(event) {
             let header = event.target.closest(".transaction-header");
@@ -225,14 +249,16 @@ if ($result) {
             }
         });
 
+
+
         let searchInput = document.getElementById("search-input");
         let dropdown = document.getElementById("dropdown");
 
         if (searchInput) {
             searchInput.addEventListener("input", function() {
                 let query = this.value.trim().toLowerCase();
-                
-                if (query.length === 0) {
+
+                if (!query) {
                     dropdown.style.display = "none";
                     return;
                 }
@@ -245,40 +271,36 @@ if ($result) {
                         dropdown.innerHTML = "";
                         let seenItems = new Set(); // Track unique entries
 
-                        // Extract transactions properly (nested inside departments and document types)
+                        // Extract transactions
                         let transactions = [];
-                        Object.values(data).forEach(department => { // Iterate through departments
-                            Object.values(department).forEach(docType => { // Iterate through document types
-                                transactions = transactions.concat(docType); // Collect all transactions
+                        Object.values(data).forEach(department => {
+                            Object.values(department).forEach(docType => {
+                                transactions = transactions.concat(docType);
                             });
                         });
 
-                        console.log("Extracted Transactions:", transactions); // Debugging
+                        transactions.forEach(item => {
+                            let refNum = item.RefNum || "";
+                            let docType = item.DocType || "";
+                            let itemKey = `${refNum}-${docType}`.toLowerCase();
 
-                        if (transactions.length > 0) {
-                            transactions.forEach(item => {
-                                let refNum = (item.RefNum || "").toLowerCase();
-                                let docType = (item.DocType || "").toLowerCase();
-                                let itemKey = `${refNum}-${docType}`.toLowerCase();
+                            if (!seenItems.has(itemKey) && (refNum.toLowerCase().includes(query) || docType.toLowerCase().includes(query))) {
+                                seenItems.add(itemKey);
 
-                                if (!seenItems.has(itemKey) && (refNum.includes(query) || docType.includes(query))) {
-                                    seenItems.add(itemKey);
-                                    
-                                    let div = document.createElement("div");
-                                    div.classList.add("dropdown-item");
-                                    div.innerHTML = `<strong>${item.RefNum || "Unknown RefNum"}</strong> - ${item.DocType || "No DocType"}`;
-                                    div.onclick = function() {
-                                        searchInput.value = item.RefNum || item.DocType || "";
-                                        dropdown.style.display = "none";
-                                    };
-                                    dropdown.appendChild(div);
-                                }
-                            });
+                                let div = document.createElement("div");
+                                div.classList.add("dropdown-item");
+                                div.innerHTML = `<strong>${refNum || "Unknown RefNum"}</strong> - ${docType || "No DocType"}`;
 
-                            dropdown.style.display = dropdown.children.length > 0 ? "block" : "none";
-                        } else {
-                            dropdown.style.display = "none";
-                        }
+                                div.onclick = function() {
+                                    searchInput.value = refNum || docType;
+                                    dropdown.style.display = "none";
+                                };
+
+                                dropdown.appendChild(div);
+                            }
+                        });
+
+                        dropdown.style.display = dropdown.children.length ? "block" : "none";
                     })
                     .catch(error => {
                         console.error("Error fetching search results:", error);
@@ -286,6 +308,10 @@ if ($result) {
                     });
             });
         }
+
+
+
+
 
         document.addEventListener("DOMContentLoaded", function() {
             let searchInput = document.getElementById("search-input");
@@ -310,7 +336,7 @@ if ($result) {
 
                         let structuredTransactions = {};
 
-                        // Process API response
+                        transactionsContainer.innerHTML = "";
                         Object.entries(data).forEach(([department, docTypes]) => {
                             if (!structuredTransactions[department]) {
                                 structuredTransactions[department] = {};
@@ -336,7 +362,7 @@ if ($result) {
                             });
                         });
 
-                        // **Ensure SOA, Summary, and Others exist in all departments**
+
                         Object.keys(structuredTransactions).forEach(department => {
                             if (!structuredTransactions[department]["SOA"]) {
                                 structuredTransactions[department]["SOA"] = [];
@@ -349,6 +375,7 @@ if ($result) {
                                     structuredTransactions[department]["MANIFESTO"] = [];
                                 }
                             }
+
                         });
 
                         generateTransactionHTML(structuredTransactions, transactionsContainer);
@@ -447,56 +474,63 @@ if ($result) {
                         refs.forEach(refNum => {
                             let transactionItem = document.createElement("div");
                             transactionItem.classList.add("transaction-item", "d-flex", "justify-content-between", "align-items-center");
-                            
+
+                            let leftSide = document.createElement("div");
+                            leftSide.classList.add("d-flex", "align-items-center");
+
+                            let checkboxDiv = document.createElement("div");
+                            checkboxDiv.classList.add("form-check", "me-2");
+
+                            let checkbox = document.createElement("input");
+                            checkbox.classList.add("form-check-input", "transaction-checkbox");
+                            checkbox.type = "checkbox";
+                            checkbox.id = `check-${refNum}`;
+
+                            checkboxDiv.appendChild(checkbox);
+                            leftSide.appendChild(checkboxDiv);
+
                             let transactionText = document.createElement("span");
                             transactionText.classList.add("transaction-text");
                             transactionText.textContent = `${refNum} - ${docType}`;
                             transactionText.ondblclick = function() {
                                 redirectToDocument(refNum, docType);
                             };
-                            
-                            transactionItem.appendChild(transactionText);
-                            
-                            let isOwner = <?php echo $isOwner ? 'true' : 'false'; ?>;
-                            
-                            if (!isOwner) {
-                                // Employee view - action buttons
-                                let actions = document.createElement("div");
-                                actions.classList.add("transaction-actions");
-                                
-                                // Checkmark button
-                                let checkBtn = document.createElement("button");
-                                checkBtn.classList.add("btn", "btn-sm", "action-btn", "check-btn");
-                                checkBtn.id = "check-btn";
-                                checkBtn.title = "Complete";
-                                checkBtn.innerHTML = '<i class="bi bi-check2"></i>';
-                                
-                                // Edit button
-                                let editBtn = document.createElement("button");
-                                editBtn.classList.add("btn", "btn-sm", "action-btn", "edit-btn");
-                                editBtn.id = "edit-btn";
-                                editBtn.title = "Edit";
-                                editBtn.innerHTML = '<i class="bi bi-pencil"></i>';
-                                editBtn.onclick = function() {
-                                    redirectToDocument2(refNum, docType);
-                                };
-                                
-                                // Archive button
-                                let archiveBtn = document.createElement("button");
-                                archiveBtn.classList.add("btn", "btn-sm", "action-btn", "archive-btn");
-                                archiveBtn.id = "archive-btn";
-                                archiveBtn.title = "Archive";
-                                archiveBtn.innerHTML = '<i class="bi bi-archive"></i>';
-                                archiveBtn.onclick = function() {
-                                    archiveDocument(refNum);
-                                };
-                                
-                                actions.appendChild(checkBtn);
-                                actions.appendChild(editBtn);
-                                actions.appendChild(archiveBtn);
-                                transactionItem.appendChild(actions);
-                            }
-                            
+
+                            leftSide.appendChild(transactionText);
+
+                            let actions = document.createElement("div");
+                            actions.classList.add("transaction-actions");
+
+                            // Checkmark button
+                            let checkBtn = document.createElement("check-btn");
+                            checkBtn.classList.add("btn", "btn-sm", "action-btn", "check-btn");
+                            checkBtn.title = "Complete";
+                            checkBtn.innerHTML = '<i class="bi bi-check2"></i>';
+
+                            // Edit button
+                            let editBtn = document.createElement("edit-button");
+                            editBtn.classList.add("btn", "btn-sm", "action-btn", "edit-btn");
+                            editBtn.title = "Edit";
+                            editBtn.innerHTML = '<i class="bi bi-pencil"></i>';
+                            editBtn.onclick = function() {
+                                redirectToDocument2(refNum, docType); // Correct function call
+                            };
+
+                            // Archive button
+                            let archiveBtn = document.createElement("archive-button");
+                            archiveBtn.classList.add("btn", "btn-sm", "action-btn", "archive-btn");
+                            archiveBtn.title = "Archive";
+                            archiveBtn.innerHTML = '<i class="bi bi-archive"></i>';
+                            archiveBtn.onclick = function() {
+                                archiveDocument(refNum);
+                            };
+
+                            actions.appendChild(checkBtn);
+                            actions.appendChild(editBtn);
+                            actions.appendChild(archiveBtn);
+
+                            transactionItem.appendChild(leftSide);
+                            transactionItem.appendChild(actions);
                             transactionContent.appendChild(transactionItem);
                         });
 
@@ -508,7 +542,11 @@ if ($result) {
                     transactionSection.appendChild(transactionContent);
                     container.appendChild(transactionSection);
                 });
+
+
+                archiveBtn.classList.add("btn", "btn-sm", "action-btn", "archive-btn");
             }
+
 
             searchButton.addEventListener("click", function() {
                 let query = searchInput.value.trim();
@@ -519,13 +557,14 @@ if ($result) {
                     fetchFilteredTransactions(query);
                 }
             });
-            
+
             searchInput.addEventListener("keydown", function(event) {
                 if (event.key === "Enter") {
                     event.preventDefault();
                     searchButton.click();
                 }
             });
+
         });
 
         function downloadDocument(refNum, department) {
@@ -542,6 +581,7 @@ if ($result) {
                 }
             }, 3000);
         }
+
 
         console.log("DocType:", doctype);
         console.log("Role:", role);

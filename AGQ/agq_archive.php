@@ -4,7 +4,7 @@ session_start();
 
 $role = isset($_SESSION['department']) ? $_SESSION['department'] : '';
 
-// Fetch all RefNum from tbl_archive
+
 $sqlArchive = "SELECT RefNum FROM tbl_archive";
 $resultArchive = $conn->query($sqlArchive);
 
@@ -12,7 +12,7 @@ if ($resultArchive && $resultArchive->num_rows > 0) {
     while ($row = $resultArchive->fetch_assoc()) {
         $refNum = $row['RefNum'];
 
-        // Check if RefNum exists in any table where isArchived != 1
+
         $tables = ["tbl_impfwd", "tbl_impbrk", "tbl_expfwd", "tbl_expbrk"];
         $shouldDelete = false;
 
@@ -51,7 +51,7 @@ if ($resultArchive && $resultArchive->num_rows > 0) {
     }
 }
 
-// Handle search functionality
+
 if (isset($_GET['search'])) {
     $searchTerm = "%" . $_GET['search'] . "%";
     $stmt = $conn->prepare("SELECT archive_id, RefNum, Company_name, Department, archive_date FROM tbl_archive 
@@ -90,6 +90,7 @@ if (isset($_GET['search'])) {
     <link rel="stylesheet" type="text/css" href="../css/archive.css">
     <link rel="icon" href="images/agq_logo.png" type="image/ico">
     <title>Archives</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body>
@@ -101,7 +102,7 @@ if (isset($_GET['search'])) {
         </div>
     </div>
 
-    <a href="agq_owndash.php" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 20px; top: 50px;">←</a>
+    <a href="agq_dashCatcher.php" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 20px; top: 50px;">←</a>
 
     <div class="search-container">
         <input type="text" class="search-input" placeholder="Search archives..." />
@@ -162,60 +163,105 @@ if (isset($_GET['search'])) {
 
     <script>
         function openModal() {
-            document.getElementById("archiveModal").style.display = "flex";
+            let modal = document.getElementById("archiveModal");
+            modal.style.display = "flex"; // Make modal visible
+            setTimeout(() => modal.classList.add("show"), 10); // Trigger animation
         }
 
         function closeModal() {
-            document.getElementById("archiveModal").style.display = "none";
+            let modal = document.getElementById("archiveModal");
+            modal.classList.remove("show");
+            setTimeout(() => modal.style.display = "none", 0); // Hide after animation
         }
 
         function deleteDocument() {
             let refNum = document.getElementById("edit-input").value.trim();
-            if (!refNum) return;
-
-            if (confirm("Are you sure you want to delete this document?")) {
-                fetch("ARCHIVE_HANDLE.php?action=delete", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/x-www-form-urlencoded"
-                        },
-                        body: "RefNum=" + encodeURIComponent(refNum)
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            closeModal();
-                            location.reload();
-                        }
-                    })
-                    .catch(error => console.error("Error:", error));
+            if (!refNum) {
+                Swal.fire("Error", "Please enter a Reference Number.", "error");
+                return;
             }
+
+            Swal.fire({
+                title: "Are you sure?",
+                text: "This action cannot be undone!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#3085d6",
+                confirmButtonText: "Yes, delete it!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch("ARCHIVE_HANDLE.php?action=delete", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/x-www-form-urlencoded"
+                            },
+                            body: "RefNum=" + encodeURIComponent(refNum)
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            Swal.fire({
+                                title: data.success ? "Deleted!" : "Error!",
+                                text: data.message,
+                                icon: data.success ? "success" : "error",
+                            }).then(() => {
+                                if (data.success) {
+                                    closeModal();
+                                    location.reload();
+                                }
+                            });
+                        })
+                        .catch(error => {
+                            console.error("Error:", error);
+                            Swal.fire("Error", "An error occurred. Please try again.", "error");
+                        });
+                }
+            });
         }
 
         function restoreDocument() {
             let refNum = document.getElementById("edit-input").value.trim();
             if (!refNum) {
-                alert("Please enter a Reference Number.");
+                Swal.fire("Error", "Please enter a Reference Number.", "error");
                 return;
             }
 
-            if (confirm("Are you sure you want to restore this document?")) {
-                fetch("ARCHIVE_HANDLE.php?action=restore", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/x-www-form-urlencoded"
-                        },
-                        body: "RefNum=" + encodeURIComponent(refNum)
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            closeModal();
-                            location.reload();
-                        }
-                    })
-                    .catch(error => console.error("Error:", error));
-            }
+            Swal.fire({
+                title: "Are you sure?",
+                text: "You are about to restore this document.",
+                icon: "question",
+                showCancelButton: true,
+                confirmButtonColor: "#28a745",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, restore it!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch("ARCHIVE_HANDLE.php?action=restore", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/x-www-form-urlencoded"
+                            },
+                            body: "RefNum=" + encodeURIComponent(refNum)
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            Swal.fire({
+                                title: data.success ? "Restored!" : "Error!",
+                                text: data.message,
+                                icon: data.success ? "success" : "error",
+                            }).then(() => {
+                                if (data.success) {
+                                    closeModal();
+                                    location.reload();
+                                }
+                            });
+                        })
+                        .catch(error => {
+                            console.error("Error:", error);
+                            Swal.fire("Error", "An error occurred. Please try again.", "error");
+                        });
+                }
+            });
         }
     </script>
 </body>
