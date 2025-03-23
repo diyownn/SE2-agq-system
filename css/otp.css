@@ -11,11 +11,13 @@ body {
     margin: 0 auto 20px;
 }
 
+
 .search-bar {
     flex: 1; /* Ensures input expands properly */
     min-width: 300px; /* Prevents shrinking too much */
     border-radius: 8px; /* Smooth corners */
 }
+
 
 .search-button {
     padding: 12px 25px;
@@ -28,12 +30,12 @@ body {
     cursor: pointer;
     flex-shrink: 0;
 }
-  
+ 
 .search-button:hover {
     opacity: 1;
     background-color: rgb(99, 133, 46);
 }
-  
+ 
 #dropdown {
     position: absolute;
     top: 100%; /* Moves it below the search bar */
@@ -50,6 +52,7 @@ body {
     display: none;
 }
 
+
 .dropdown-item {
     padding: 10px 15px;
     cursor: pointer;
@@ -57,13 +60,16 @@ body {
     transition: background-color 0.2s ease;
 }
 
+
 .dropdown-item:last-child {
     border-bottom: none;
 }
 
+
 .dropdown-item:hover {
     background-color: #f0f0f0;
 }
+
 
 .top-container{
     display: flex;
@@ -73,7 +79,7 @@ body {
     padding-bottom: 10px;
     align-items: flex-start;
 }
-  
+ 
 .dept-container {
     position: relative;
     display: flex;
@@ -82,7 +88,7 @@ body {
     height: 120px;
     width: 100%;
 }
-  
+ 
 .dept-label {
     background-color: rgb(144, 174, 94);
     color: white;
@@ -105,6 +111,7 @@ body {
     z-index: 99;
 }
 
+
 .company-label {
     background-color: rgb(160, 184, 117);
     color: white;
@@ -125,6 +132,7 @@ body {
     -moz-box-shadow: 0px -1px 7px 0px rgba(0,0,0,0.19);
     z-index: 98;
 }
+
 
 .selected-dept-label {
     background-color: rgb(174, 197, 160);
@@ -147,7 +155,7 @@ body {
     -moz-box-shadow: 0px -1px 7px 0px rgba(0,0,0,0.19);
     z-index: 97;
 }
-  
+ 
 .header-container {
     margin-top: auto; /* Push the search and logout to the bottom */
     display: flex;
@@ -157,6 +165,7 @@ body {
     padding: 10px 40px;
 }
 
+
 .container {
     margin: 50px auto;
     padding: 40px;
@@ -164,6 +173,7 @@ body {
     background: white;
     border-radius: 10px;
 }
+
 
 .add-company {
     display: flex;
@@ -179,15 +189,16 @@ body {
     transition: background-color 0.3s ease;
     margin-left: 87%;    
 }
-  
+ 
 .add-company:hover {
     background-color: #63852e;
 }
-  
+ 
 .add-company span {
     color: black;
     margin-right: 10px;
 }
+
 
 .search-bar {
     flex: 1;
@@ -200,6 +211,7 @@ body {
     font-weight: bold;
 }
 
+
 .search-button {
     padding: 12px 25px;
     border: none;
@@ -211,12 +223,14 @@ body {
     cursor: pointer;
 }
 
+
 .transactions {
     display: flex;
     flex-direction: column;
     max-width: 800px;
     margin: 0 auto;
 }
+
 
 .transaction {
     border: 1px solid black;
@@ -225,9 +239,11 @@ body {
     font-weight: bold;
 }
 
+
 .transaction:hover {
     background-color: #f2f2f2;
 }
+
 
 .transaction-header {
     display: flex;
@@ -242,19 +258,23 @@ body {
     text-align: left;
 }
 
+
 .transaction-header .icon {
     display: inline-block;
     transition: transform 0.3s ease-in-out;
 }
 
+
 .transaction-header.active .icon {
     transform: rotate(180deg);
 }
+
 
 .transaction-header.active:hover,
 .transaction-header:hover {
     background-color: #b0c494;
 }
+
 
 /* drop down effect */
 .transaction-content {
@@ -265,10 +285,12 @@ body {
     padding: 0;
 }
 
+
 .transaction-content.open {
     max-height: 200px;
     padding: 0;
 }
+
 
 /* Transaction item styling with solid hover background */
 .transaction-item {
@@ -284,15 +306,18 @@ body {
     font-weight: bold;
 }
 
+
 .transaction-item:hover {
     text-decoration: underline;
     cursor: pointer;
     background-color: #e8e8e8;
 }
 
+
 .transaction-item:last-child {
     border-bottom: none;
 }
+
 
 /* SOA, INVOICE, MANIFESTO item styling */
 .soa-item,
@@ -310,6 +335,7 @@ body {
     font-weight: bold;
 }
 
+
 .soa-item:hover,
 .invoice-item:hover,
 .manifesto-item:hover {
@@ -318,11 +344,13 @@ body {
     background-color: #e8e8e8;
 }
 
+
 .soa-item:last-child,
 .invoice-item:last-child,
 .manifesto-item:last-child {
     border-bottom: none;
 }
+
 
 /* Action buttons */
 .transaction-actions {
@@ -330,6 +358,7 @@ body {
     gap: 8px;
     z-index: 1;
 }
+
 
 .action-btn {
     width: 30px;
@@ -343,27 +372,33 @@ body {
     transition: background-color 0.2s ease, color 0.2s ease;
 }
 
+
 .check-btn {
     color: #94ae5e;
 }
 
+
 .edit-btn {
     color: #94ae5e;
 }
+
 
 .edit-btn:hover {
     background-color: #63852e;
     color: white;
 }
 
+
 .archive-btn {
     color: #94ae5e;
 }
+
 
 .archive-btn:hover {
     background-color: #63852e;
     color: white;
 }
+
 
 /* Checkbox styling */
 .checkbox-container {
@@ -371,6 +406,7 @@ body {
     align-items: center;
     justify-content: center;
 }
+
 
 .transaction-checkbox {
     display: inline-block;
@@ -386,9 +422,11 @@ body {
     position: relative;
 }
 
+
 .transaction-checkbox:checked {
     background-color: #94ae5e;
 }
+
 
 .transaction-checkbox:checked:after {
     content: '\2714';
@@ -400,11 +438,13 @@ body {
     font-size: 12px;
 }
 
+
 /* Remove the previous separate employee/owner checkbox styles */
-.employee-checkbox, 
+.employee-checkbox,
 .owner-checkbox {
     display: none;
 }
+
 
 /* SOA item styling for reference */
 .soa-item-ref {
@@ -412,6 +452,7 @@ body {
     flex: 1;
     font-weight: bold;
 }
+
 
 /* Employee transaction view */
 .employee-transaction {
@@ -421,9 +462,11 @@ body {
     font-weight: bold;
 }
 
+
 .employee-transaction:hover {
     background-color: #f2f2f2;
 }
+
 
 .employee-transaction-item {
     display: flex;
@@ -438,11 +481,13 @@ body {
     font-weight: bold;
 }
 
+
 .employee-transaction-item:hover {
     background-color: #e8e8e8;
     text-decoration: underline;
     cursor: pointer;
 }
+
 
 .employee-transaction-item:last-child {
     border-bottom: none;

@@ -1,18 +1,23 @@
 <?php
 require 'db_agq.php';
 
+
 session_start();
+
 
 $url = isset($_GET['url']);
 $role = isset($_SESSION['department']) ? $_SESSION['department'] : '';
+
 
 if (!$url) {
     header("Location: UNAUTHORIZED.php?error=401u");
 }
 
+
 if (!$role) {
     header("Location: UNAUTHORIZED.php?error=401r");
 }
+
 
 if (!isset($_SESSION['department'])) {
     session_destroy();
@@ -24,6 +29,8 @@ if (!isset($_SESSION['department'])) {
 }
 
 
+
+
 if (isset($_GET['logout']) && $_GET['logout'] == 'true') {
     session_unset();
     session_destroy();
@@ -31,13 +38,16 @@ if (isset($_GET['logout']) && $_GET['logout'] == 'true') {
     exit();
 }
 
+
 header("Expires: Sat, 26 Jul 1997 05:00:00 GMT");
 header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
 
+
 $search_query = isset($_GET['q']) ? trim($_GET['q']) : '';
+
 
 if (!empty($search_query)) {
     $stmt = $conn->prepare("SELECT Company_name, Company_picture FROM tbl_company WHERE Company_name LIKE ?");
@@ -48,14 +58,19 @@ if (!empty($search_query)) {
     $stmt->close();
 } else {
 
+
     $companies = "SELECT Company_name, Company_picture FROM tbl_company";
     $result = $conn->query($companies);
 }
 
+
 ?>
 
 
+
+
 <html>
+
 
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- provide viewport -->
@@ -69,15 +84,18 @@ if (!empty($search_query)) {
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="../css/employdash.css">
 
+
 </head>
 <link rel="icon" href="images/agq_logo.png" type="image/ico">
 
-<body style="background-image: url('sbg.png'); background-repeat: no-repeat; background-size: cover; background-position: center;">
+
+<body style="background-image: url('e2bg.png'); background-repeat: no-repeat; background-size: cover; background-position: center; background-attachment: fixed;">
     <div class="top-container">
         <div class="dept-container">
             <div class="dept-label">
                 <?php echo htmlspecialchars($role); ?>
             </div>
+
 
             <div class="header-container">
                 <div class="search-container">
@@ -93,6 +111,8 @@ if (!empty($search_query)) {
     </div>
 
 
+
+
     <div class=" dashboard-body">
         <div class="company-head">
             <div class="company-title">
@@ -105,22 +125,28 @@ if (!empty($search_query)) {
                 $companies = "SELECT Company_name, Company_picture FROM tbl_company";
                 $result = $conn->query($companies);
 
+
                 if ($result->num_rows > 0) {
                     $index = 0;
                     while ($row = $result->fetch_assoc()) {
                         $varName = 'Company' . $index;
                         $varName = $row['Company_name'];
 
+
                         $company_name = $row['Company_name'];
                         $company_picture = $row['Company_picture'];
+
 
                         $company_picture_base64 = base64_encode($company_picture);
                         $company_picture_src = 'data:image/jpeg;base64,' . $company_picture_base64;
 
 
+
+
                         if ($index > 0 && $index % 5 === 0) {
                             echo '</div><div class="company-container-row">';
                         }
+
 
                         echo '<div class="company-button">';
                         echo '<button class="company-container" onclick="storeCompanySession(\'' . htmlspecialchars($company_name, ENT_QUOTES) . '\')">';
@@ -128,8 +154,10 @@ if (!empty($search_query)) {
                         echo '</button>';
                         echo '</div>';
 
+
                         $index++;
                     }
+
 
                     echo '</div>';
                 } else {
@@ -137,6 +165,7 @@ if (!empty($search_query)) {
                 }
                 ?>
             </div>
+
 
 </body>
 <script>
@@ -156,6 +185,7 @@ if (!empty($search_query)) {
             .catch(error => console.error("Error:", error));
     }
 
+
     history.pushState(null, "", location.href);
     window.onpopstate = function() {
         history.pushState(null, "", location.href);
@@ -166,10 +196,12 @@ if (!empty($search_query)) {
         const dropdown = document.getElementById("dropdown");
         const companyContainerParent = document.getElementById("company-container-parent");
 
+
         if (!searchInput || !searchButton || !dropdown || !companyContainerParent) {
             console.error("Error: One or more elements not found.");
             return;
         }
+
 
         // Fetch and display companies
         function fetchCompanies(url) {
@@ -178,37 +210,45 @@ if (!empty($search_query)) {
                 .then(data => {
                     companyContainerParent.innerHTML = "";
 
+
                     if (!data.company || data.company.length === 0) {
                         companyContainerParent.innerHTML = "<p>No Companies found.</p>";
                         return;
                     }
+
 
                     displayCompanies(data.company);
                 })
                 .catch(error => console.error("Error fetching companies:", error));
         }
 
+
         // Display companies in grid format
         function displayCompanies(companies) {
             let companyRowDiv = document.createElement("div");
             companyRowDiv.classList.add("company-container-row");
 
+
             companies.forEach((company, index) => {
                 let companyButtonDiv = document.createElement("div");
                 companyButtonDiv.classList.add("company-button");
 
+
                 let companyButton = document.createElement("button");
                 companyButton.classList.add("company-container");
                 companyButton.onclick = () => storeCompanySession(company.Company_name);
+
 
                 let companyLogo = document.createElement("img");
                 companyLogo.classList.add("company-logo");
                 companyLogo.src = `data:image/jpeg;base64,${company.Company_picture}`;
                 companyLogo.alt = company.Company_name;
 
+
                 companyButton.appendChild(companyLogo);
                 companyButtonDiv.appendChild(companyButton);
                 companyRowDiv.appendChild(companyButtonDiv);
+
 
                 if ((index + 1) % 5 === 0) {
                     companyContainerParent.appendChild(companyRowDiv);
@@ -217,19 +257,23 @@ if (!empty($search_query)) {
                 }
             });
 
+
             if (companyRowDiv.children.length > 0) {
                 companyContainerParent.appendChild(companyRowDiv);
             }
         }
 
+
         // Handle dropdown search
         searchInput.addEventListener("input", function() {
             let query = this.value.trim();
+
 
             if (!query) {
                 dropdown.style.display = "none";
                 return;
             }
+
 
             fetch(`FETCH_COMPANY.php?query=${encodeURIComponent(query)}`)
                 .then(response => response.json())
@@ -239,6 +283,7 @@ if (!empty($search_query)) {
                         console.error("Invalid API response", data);
                         return;
                     }
+
 
                     if (data.company.length > 0) {
                         data.company.forEach(item => {
@@ -259,17 +304,20 @@ if (!empty($search_query)) {
                 .catch(error => console.error("Error fetching search results:", error));
         });
 
+
         document.addEventListener("click", event => {
             if (!searchInput.contains(event.target) && !dropdown.contains(event.target)) {
                 dropdown.style.display = "none";
             }
         });
 
+
         searchButton.addEventListener("click", () => {
             let query = searchInput.value.trim();
             let url = query ? `FILTER_COMPANY.php?query=${encodeURIComponent(query)}` : "FILTER_COMPANY.php";
             fetchCompanies(url);
         });
+
 
         searchInput.addEventListener("keydown", function(event) {
             if (event.key === "Enter") {
@@ -279,5 +327,6 @@ if (!empty($search_query)) {
         });
     });
 </script>
+
 
 </html
