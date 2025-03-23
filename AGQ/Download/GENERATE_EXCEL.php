@@ -1,6 +1,8 @@
 <?php
 require 'vendor/autoload.php';
 
+session_start();
+
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xls;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -21,6 +23,7 @@ if ($conn->connect_error) {
 // $dept = $_GET['user'] ?? null;
 
 $refNum = isset($_GET['refnum']) ? $_GET['refnum'] : '';
+//$refNum = "EB229340";
 $dept = isset($_SESSION['department']) ? $_SESSION['department'] : '';
 
 switch ($dept) {
