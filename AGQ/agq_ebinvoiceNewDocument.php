@@ -17,6 +17,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 
 // Function to insert a record
+// Function to insert a record
 function insertRecord($conn)
 {
     $docType = isset($_SESSION['DocType']) ? $_SESSION['DocType'] : null;
@@ -25,6 +26,23 @@ function insertRecord($conn)
     date_default_timezone_set('Asia/Manila');
     $editDate = date('Y-m-d');
 
+    // Check if RefNum already exists
+    $refNum = $_POST['refNum'];
+    $checkSql = "SELECT RefNum FROM tbl_expbrk WHERE RefNum = ?";
+    $checkStmt = $conn->prepare($checkSql);
+    $checkStmt->bind_param("s", $refNum);
+    $checkStmt->execute();
+    $checkStmt->store_result();
+
+    if ($checkStmt->num_rows > 0) {
+        echo '<script>alert("Reference Number already exist. Please create the document again.");</script>';
+        $checkStmt->close();
+        return; // Stop execution if RefNum exists
+    }
+
+    $checkStmt->close();
+
+    // Prepare the insert query
     $sql = "INSERT INTO tbl_expbrk (
         `To:`, `Address`, Tin, Attention, `Date`, Vessel, ETA, RefNum, DestinationOrigin, ER, BHNum,
         NatureOfGoods, Packages, `Weight`, Volume, PackageType, Others, Notes, OceanFreight5,
@@ -72,7 +90,7 @@ function insertRecord($conn)
         if (confirm("Document Successfully Created!\\nDo you want to view it?")) {
             window.location.href = "agq_transactionCatcher.php";
         }
-            </script>';
+        </script>';
     } else {
         echo "Error: " . $stmt->error;
     }
