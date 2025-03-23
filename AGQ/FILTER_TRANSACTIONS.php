@@ -10,11 +10,9 @@ ini_set('display_errors', 1);
 
 $role = $_SESSION['department'] ?? '';
 $search_query = isset($_GET['search']) ? trim($_GET['search']) : '';
-$dept = isset($_SESSION['SelectedDepartment']) ? $_SESSION['SelectedDepartment'] : '';
-$company = isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : '';
 $dept = $_SESSION['SelectedDepartment'] ?? ''; // Selected department filter
+$company = $_SESSION['Company_name'] ?? ''; // Company name
 $response = [];
-
 
 error_log("Search Query: " . $search_query);
 
@@ -27,25 +25,23 @@ $tables = [
 
 $table = $tables[$role] ?? null; // Get table based on role
 
-
 // If search query is provided, fetch filtered results
 if (!empty($search_query)) {
     $like_query = "%{$search_query}%";
     $query = "SELECT '$role' AS Department, RefNum, DocType, Company_name 
-    FROM $table 
-    WHERE (RefNum LIKE ? OR DocType LIKE ? OR DocType = 'Manifesto') AND Company_name LIKE ?";
-
+              FROM $table 
+              WHERE (RefNum LIKE ? OR DocType LIKE ? OR DocType = 'Manifesto') 
+              AND Company_name LIKE ?";
 
     $params = [$like_query, $like_query, $company];
     $types = "sss";
 
-
     if (!empty($dept) && isset($tables[$dept])) {
         $table = $tables[$dept];
         $query = "SELECT '$role' AS Department, RefNum, DocType, Company_name 
-          FROM $table 
-          WHERE (RefNum LIKE ? OR DocType LIKE ? OR DocType = 'Manifesto') AND Company_name LIKE ?";
-
+                  FROM $table 
+                  WHERE (RefNum LIKE ? OR DocType LIKE ? OR DocType = 'Manifesto') 
+                  AND Company_name LIKE ?";
         $params = [$like_query, $like_query, $company];
     }
 
@@ -54,7 +50,6 @@ if (!empty($search_query)) {
 
         if ($stmt->execute()) {
             $result = $stmt->get_result();
-
             while ($row = $result->fetch_assoc()) {
                 $department = $row['Department'];
                 $docType = strtoupper(trim($row['DocType']));
@@ -75,12 +70,37 @@ if (!empty($search_query)) {
         } else {
             error_log("SQL Execution Error: " . $stmt->error);
         }
-
         $stmt->close();
     } else {
         error_log("SQL Prepare Error: " . $conn->error);
     }
-} elseif (empty($search_query) && $role === "Admin") {
+
+    // 🔥 **Additional Fetch from tbl_document** 🔥
+    $doc_query = "SELECT RefNum, DocType FROM tbl_document WHERE RefNum LIKE ? OR DocType LIKE ?";
+    if ($stmt = $conn->prepare($doc_query)) {
+        $stmt->bind_param("ss", $like_query, $like_query);
+        if ($stmt->execute()) {
+            $result = $stmt->get_result();
+            while ($row = $result->fetch_assoc()) {
+                if (!isset($response["tbl_document"])) {
+                    $response["tbl_document"] = [];
+                }
+                $response["tbl_document"][] = [
+                    "RefNum" => $row['RefNum'],
+                    "DocType" => $row['DocType']
+                ];
+            }
+        } else {
+            error_log("tbl_document Query Execution Error: " . $stmt->error);
+        }
+        $stmt->close();
+    } else {
+        error_log("tbl_document Query Prepare Error: " . $conn->error);
+    }
+}
+
+// Existing queries for admin and role-based fetches (unchanged)
+elseif (empty($search_query) && $role === "Admin") {
     $query = "
         SELECT i.RefNum, i.DocType, c.Company_name
         FROM tbl_impfwd i

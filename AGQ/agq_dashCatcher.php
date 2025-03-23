@@ -1,7 +1,20 @@
 <?php
 session_start();
+/*
+require __DIR__ . '/secret/vendor/autoload.php';
+
+use Dotenv\Dotenv;
+
+$dotenv = Dotenv::createImmutable(__DIR__);
+$dotenv->load();
+*/
+$key = "0jRw1M89WhVwukjsZiZvhPPsRVFgK/IIQnLOYVEWDdi2TXJjx8QPOAOIxMH7b+uW"; //$_ENV['ENCRYPTION_KEY'];
+echo "Key Loaded: " . $key;
+if (!$key) {
+    die("Location: UNAUTHORIZED.php?error=401k");
+}
+
 $role = isset($_SESSION['department']) ? $_SESSION['department'] : '';
-$key = '0jRw1M89WhVwukjsZiZvhPPsRVFgK/IIQnLOYVEWDdi2TXJjx8QPOAOIxMH7b+uW';
 
 function encrypt_url($url, $key)
 {
@@ -17,33 +30,24 @@ function decrypt_url($encrypted_url, $key)
 }
 
 
-if ($docType == 'MANIFESTO') {
-    $original_url = 'http://localhost/SOFT%20ENG/agq_manifestoView.php';
+if (
+    ($role == 'admin' || $role == 'Admin' || $role == 'owner' || $role == 'Owner') &&
+    (!isset($pword) || $pword != 'agqLogistics')
+) {
+    $original_url = 'http://localhost/SOFT%20ENG/owndash.php';
     $encrypted_url = encrypt_url($original_url, $key);
     $encoded_url = urlencode($encrypted_url);
 
-    header('Location: agq_manifestoView.php?url=' . $encoded_url . '&refnum=' . $refnum);
+    header('Location: agq_owndash.php?url=' . $encoded_url);
     exit;
-} else {
+} elseif (
+    ($role == 'Export Forwarding' || $role == 'Import Forwarding' || $role == 'Export Brokerage' || $role == 'Import Brokerage') &&
+    (!isset($pword) || $pword != 'agqFreight')
+) {
+    $original_url = 'http://localhost/SOFT%20ENG/employdash.php';
+    $encrypted_url = encrypt_url($original_url, $key);
+    $encoded_url = urlencode($encrypted_url);
 
-    if (($role == 'Admin' || $role == 'admin' || $role == 'owner' || $role == 'Owner') && $pword != 'agqLogistics') {
-
-
-        $original_url = 'http://localhost/SOFT%20ENG/owndash.php';
-
-        $encrypted_url = encrypt_url($original_url, $key);
-        $encoded_url = urlencode($encrypted_url);
-
-        header('Location: agq_owndash.php?url='  . $encoded_url . '&refnum=' . $refnum);
-        exit;
-    } else if (($role == 'Export Forwarding' || $role == 'Import Forwarding' || $role == 'Export Brokerage' || $role == 'Import Brokerage') && $pword != 'agqFreight') {
-
-        $original_url = 'http://localhost/SOFT%20ENG/employdash.php';
-
-        $encrypted_url = encrypt_url($original_url, $key);
-        $encoded_url = urlencode($encrypted_url);
-
-        header('Location: agq_employdash.php?url=' . $encoded_url . '&refnum=' . $refnum);
-        exit;
-    };
+    header('Location: agq_employdash.php?url=' . $encoded_url);
+    exit;
 }

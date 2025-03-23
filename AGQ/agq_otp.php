@@ -27,9 +27,9 @@
                 <img src="images/agq_logo.png" alt="logo" class="mx-auto d-block" id="agqlogo">
                 <p id="title" class="text-center">Enter OTP</p>
 
-                <form id="otpForm" action="agq_otp.php" method="post" class="form-content" onsubmit="return validate_otp()">
+                <form id="otpForm" action="agq_otp.php" method="post" class="form-content" onsubmit="validate_otp()">
                     <div class="d-flex justify-content-center flex-column align-items-center" style="margin-top: 5%;">
-                        <input type="number" name="otp" id="inputs" class="form-control" style="width: 160px;" onchange="return validate_otp()">
+                        <input type="number" name="otp" id="inputs" class="form-control" style="width: 160px;" onchange="validate_otp()">
                         <div id="otp-error" class="text-center mt-2"></div>
                     </div>
 
@@ -62,7 +62,7 @@
     }
 
     if (time() - $_SESSION['last_otpattempt_time'] > 300) {
-        $_SESSION['otp_attempts'] = 4;
+        $_SESSION['otp_attempts'] = 1;
         $_SESSION['otplockout_start'] = 0; // Reset lockout start time
     }
 
@@ -159,30 +159,31 @@
     });
         function validate_otp(){
             var otp = document.getElementById("inputs");
-            var otp_error = document.getElementById("otp-error");
-        
-            if(otp.value == ''){
-                otp.classList.add("is-invalid");
-                error_text = "*Please enter OTP";
-                otp_error.innerHTML = error_text;
-                otp_error.classList.add("invalid-feedback");
-            return false;
-            } else {
-                var otpregex = /^.{6,6}$/; 
+            var otpregex = /^.{6,6}$/; 
+            let isValid = true; // Track overall validity
 
-                if(!otpregex.test(otp.value)){ 
-                    otp.classList.add("is-invalid");
-                    error_text = "*OTP is only a 6-digit number";
-                    otp_error.innerHTML = error_text;
-                    otp_error.classList.add("invalid-feedback");
-                    return false;
+            //var otp_error = document.getElementById("otp-error");
+        
+            if (!otp.value.trim()) {
+                otp.setCustomValidity("Please enter your OTP");
+
+            } else if (!otpregex.test(otp.value)){
+                otp.setCustomValidity("OTP is a 6-digit number");
+            }else {
+                otp.setCustomValidity(""); // Reset validation
                 }
 
-                otp.classList.remove("is-invalid");
-                otp_error.innerHTML = "";
-                otp_error.classList.remove("invalid-feedback");
-                return true;
-            }
+                otp.reportValidity(); // Show validation message
+
+                if (!otp.checkValidity()) {
+                    event.preventDefault(); // Prevent form submission if invalid
+                }
+
+                otp.addEventListener("input", function () {
+                    otp.setCustomValidity(""); // Clear error when user types
+                });
+
+            return isValid;
         }
 
         function disableInputField() {

@@ -2,14 +2,19 @@
 require 'db_agq.php';
 session_start();
 
+$url = isset($_GET['url']);
 $role = isset($_SESSION['department']) ? $_SESSION['department'] : '';
+
+if (!$url) {
+    header("Location: UNAUTHORIZED.php?error=401u");
+}
 
 if (!$role) {
     header("Location: UNAUTHORIZED.php?error=401r");
 }
 
 if (!isset($_SESSION['department'])) {
-    header("Location: agq_login.php");
+    header("Location: UNAUTHORIZED.php?error=401r");
     session_destroy();
     exit();
 } elseif ($role == 'Export Brokerage' || $role == 'Export Forwarding' || $role == 'Import Brokerage' || $role == 'Import Forwarding') {
@@ -17,6 +22,8 @@ if (!isset($_SESSION['department'])) {
     session_destroy();
     exit();
 }
+
+
 
 if (isset($_SESSION['selected_company'])) {
     $companyName = $_SESSION['selected_company'];
@@ -71,7 +78,7 @@ if (!empty($search_query)) {
     <link rel="stylesheet" type="text/css" href="../css/owndash.css">
 </head>
 
-<body style="background-image: url('obg.png'); background-repeat: no-repeat; background-size: cover; background-position: center; background-attachment: fixed;">
+<body style="background-image: url('sbg.png'); background-repeat: no-repeat; background-size: cover; background-position: center; background-attachment: fixed;">
     <div class="top-container">
         <div class="dept-container">
             <div class="dept-label">
@@ -149,10 +156,10 @@ if (!empty($search_query)) {
                     while ($row = $result->fetch_assoc()) {
                         $company_name = $row['Company_name'];
                         $company_picture = $row['Company_picture'];
-                
+
                         $company_picture_base64 = base64_encode($company_picture);
                         $company_picture_src = 'data:image/jpeg;base64,' . $company_picture_base64;
-                
+
                         echo '<div class="company-button">';
                         echo '<button class="company-container" onclick="storeCompanySession(\'' . htmlspecialchars($company_name, ENT_QUOTES) . '\')">';
                         echo '<img class="company-logo" src="' . $company_picture_src . '" alt="' . $company_name . '">';

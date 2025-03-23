@@ -2,7 +2,6 @@
 require 'db_agq.php';
 session_start();
 
-$url = isset($_GET['url']) ? $_GET['url'] : ''; // Fixed this line to properly check the URL
 $role = isset($_SESSION['department']) ? $_SESSION['department'] : '';
 $dept = isset($_SESSION['SelectedDepartment']) ? $_SESSION['SelectedDepartment'] : '';
 $company = isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : '';
@@ -18,13 +17,6 @@ if (!$company) {
 if (!$dept) {
     header("Location: UNAUTHORIZED.php?error=401d");
 }
-
-// Changed this condition to check if URL is empty, not just if it's set
-if ($url === '') {
-    // Removed this redirect to avoid unauthorized page
-    // header("Location: UNAUTHORIZED.php?error=401u");
-}
-
 $query = "
 SELECT i.RefNum, i.DocType, c.Company_name
 FROM tbl_impfwd i
@@ -155,11 +147,6 @@ if ($result) {
     </div>
 
     <script>
-        var role = "<?php echo isset($_SESSION['department']) ? $_SESSION['department'] : ''; ?>";
-        var company = "<?php echo isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : ''; ?>";
-        var dept = "<?php echo isset($_SESSION['SelectedDepartment']) ? $_SESSION['SelectedDepartment'] : ''; ?>";
-        var selectdep = "<?php echo isset($_SESSION['SelectedDepartment']) ? $_SESSION['SelectedDepartment'] : ''; ?>";
-
         function redirectToDocument(refnum, doctype) {
             if (!refnum || !doctype) {
                 return;
@@ -294,7 +281,7 @@ if ($result) {
                             if (!structuredTransactions[department]["INVOICE"]) {
                                 structuredTransactions[department]["INVOICE"] = [];
                             }
-                            if (department == "Import Forwarding" || dept == "Import Forwarding") {
+                            if ($dept == "Import Forwarding") {
                                 if (!structuredTransactions[department]["MANIFESTO"]) {
                                     structuredTransactions[department]["MANIFESTO"] = [];
                                 }
@@ -350,10 +337,10 @@ if ($result) {
                     departmentSection.classList.add("department-section");
 
                     const order = ["SOA", "INVOICE"];
-                    let orderWithManifesto = ["SOA", "INVOICE", "MANIFESTO"];
-                    
-                    let sortedOrder = (department == "Import Forwarding" || dept == "Import Forwarding") ? orderWithManifesto : order;
-                    
+
+                    if ($dept == "Import Forwarding") {
+                        const order = ["SOA", "INVOICE", "MANIFESTO"];
+                    }
                     let sortedDocTypes = Object.keys(docTypes).sort((a, b) => {
                         let indexA = sortedOrder.indexOf(a.toUpperCase());
                         let indexB = sortedOrder.indexOf(b.toUpperCase());
@@ -445,6 +432,13 @@ if ($result) {
                 }
             }, 3000);
         }
+
+
+
+        var role = "<?php echo isset($_SESSION['department']) ? $_SESSION['department'] : ''; ?>";
+        var company = "<?php echo isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : ''; ?>";
+        var selectdep = "<?php echo isset($_SESSION['SelectedDepartment']) ? $_SESSION['SelectedDepartment'] : ''; ?>"
+
 
         console.log("Role:", role);
         console.log("Company:", company);

@@ -7,13 +7,13 @@ $company = isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : '';
 
 
 if (!$role) {
-  header("Location: UNAUTHORIZED.php?error=401r");
+    header("Location: UNAUTHORIZED.php?error=401r");
 }
 
 if (!$company) {
     header("Location: UNAUTHORIZED.php?error=401c");
-  }
-  
+}
+
 
 /*
 
@@ -109,7 +109,7 @@ $conn->close();
             </div>
         </div>
     </div>
-    <a href="agq_employTransactionView.php" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 20px; top: 50px;">←</a>
+    <a href="agq_transactionCatcher.php" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 20px; top: 50px;">←</a>
 
     <div class="document-type-body">
         <div class="title-heading">

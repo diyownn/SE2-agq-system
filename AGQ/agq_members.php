@@ -143,7 +143,7 @@ $result = $conn->query($query);
 </head>
 
 <body>
-    <a href="agq_owndash.php" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 20px; top: 20px;">←</a>
+    <a href="agq_dashCatcher.php" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 20px; top: 20px;">←</a>
     <div class="header">
         <h1>MEMBERS OF THE COMPANY</h1>
         <div class="top-bar">

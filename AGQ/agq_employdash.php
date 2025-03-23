@@ -3,14 +3,16 @@ require 'db_agq.php';
 
 session_start();
 
-
+$url = isset($_GET['url']);
 $role = isset($_SESSION['department']) ? $_SESSION['department'] : '';
 
-/*
+if (!$url) {
+    header("Location: UNAUTHORIZED.php?error=401u");
+}
+
 if (!$role) {
     header("Location: UNAUTHORIZED.php?error=401r");
 }
-*/
 
 if (!isset($_SESSION['department'])) {
     session_destroy();
@@ -70,7 +72,7 @@ if (!empty($search_query)) {
 </head>
 <link rel="icon" href="images/agq_logo.png" type="image/ico">
 
-<body style="background-image: url('e2bg.png'); background-repeat: no-repeat; background-size: cover; background-position: center; background-attachment: fixed;">
+<body style="background-image: url('sbg.png'); background-repeat: no-repeat; background-size: cover; background-position: center;">
     <div class="top-container">
         <div class="dept-container">
             <div class="dept-label">
@@ -149,7 +151,7 @@ if (!empty($search_query)) {
             .then(response => response.text())
             .then(data => {
                 console.log("Session stored:", data);
-                window.location.href = "agq_employTransactionView.php";
+                window.location.href = "agq_transactionCatcher.php";
             })
             .catch(error => console.error("Error:", error));
     }
@@ -268,13 +270,13 @@ if (!empty($search_query)) {
             let url = query ? `FILTER_COMPANY.php?query=${encodeURIComponent(query)}` : "FILTER_COMPANY.php";
             fetchCompanies(url);
         });
-    });
 
-    searchInput.addEventListener("keydown", function(event) {
-        if (event.key === "Enter") {
-            event.preventDefault();
-            searchButton.click();
-        }
+        searchInput.addEventListener("keydown", function(event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                searchButton.click();
+            }
+        });
     });
 </script>
 

@@ -27,11 +27,11 @@
                 <a href="agq_owndash.php" style="text-decoration: none; color: black; font-size: x-large">←</a>
                 <p id="title" class="text-center" style="text-decoration: none; margin-top:0%">COMPANY FORM</p>
 
-                <form action="agq_companyForm.php" method="POST" class="form-content" enctype="multipart/form-data" onsubmit="return validate_form()">
+                <form action="agq_companyForm.php" method="POST" class="form-content" enctype="multipart/form-data" onsubmit="validate_form()">
 
                     <img src="" class="d-block mx-auto" id="imgholder" alt="">
 
-                    <input type="text" name=" compName" id="input3" class="form-control" placeholder="Company Name" onchange="return validate_compName()">
+                    <input type="text" name=" compName" id="input3" class="form-control" placeholder="Company Name" onchange="validate_compName()">
                     <div id="name-error" style="margin-left: 16%; margin-top: 1%"></div>
 
                     <div class="d-flex justify-content-center">
@@ -72,7 +72,7 @@
         }
 
         $stmt->bind_param("ssb", $companyid, $company_name, $company_picture);
-        $stmt->send_long_data(2, $company_picture);
+        //$stmt->send_long_data(4, $company_picture);
 
         if ($stmt->execute()) {
     ?>
@@ -103,90 +103,130 @@
         function validate_form() {
             var val_cimg = validate_compImg();
             var val_cname = validate_compName();
-
-            if (val_cimg && val_cname) {
-                return true;
-            } else {
-                return false;
-            }
+            
+           return val_cimg && val_cname;
         }
 
         function validate_compImg() {
-            var imgDisplay = document.getElementById("imgholder");
-            var cpic = document.getElementById("cPic");
-            var cpic_error = document.getElementById("image-error");
+            var fileInput = document.getElementById("cPic");
+            //var fileError = document.getElementById("image-error");
+            let isValid = true; // Track overall validity
 
-            if (cpic.files.length === 0) {
-                cpic.classList.add("is-invalid");
-                error_text = "*Please upload the company logo";
-                cpic_error.innerHTML = error_text;
-                cpic_error.classList.add("invalid-feedback");
-                return false;
-            } else if (!validateFileSize(cpic)) {
-               
-                return false;
+            if (fileInput.files.length === 0) {
+                fileInput.setCustomValidity("Please upload company logo");
+
+            } else if (validateFileSize(fileInput)) {
+
             } else {
-                cpic.classList.remove("is-invalid");
-                cpic_error.innerHTML = "";
-                cpic_error.classList.remove("invalid-feedback");
-                return true;
+                fileInput.setCustomValidity(""); // Reset validation
             }
+
+            fileInput.reportValidity(); // Show validation message
+
+            if (!fileInput.checkValidity()) {
+                event.preventDefault(); // Prevent form submission if invalid
+            }
+
+            fileInput.addEventListener("input", function () {
+                fileInput.setCustomValidity(""); // Clear error when user types
+            });
+
+            return isValid;
         }
 
         function validateFileSize(fileInput) {
             var file = fileInput.files[0];
-            var fileError = document.getElementById("image-error");
+            //var fileError = document.getElementById("image-error");
+            let isValid = true; // Track overall validity
 
-            if (file.size > 2 * 1024 * 1024) { //bytes form
-                fileInput.classList.add("is-invalid");
-                error_text = "*File size must be less than or equal to 2MB.";
-                fileError.innerHTML = error_text;
-                fileError.classList.add("invalid-feedback");
-                return false;
+
+            if (file.size > 2 * 1024 * 1024) { // 2MB limit
+                fileInput.setCustomValidity("Image is more than 2mb");
+
             } else {
-                fileInput.classList.remove("is-invalid");
-                fileError.innerHTML = "";
-                fileError.classList.remove("invalid-feedback");
-                return true;
+                fileInput.setCustomValidity(""); // Reset validation
             }
+            fileInput.reportValidity(); // Show validation message
+
+            if (!fileInput.checkValidity()) {
+                event.preventDefault(); // Prevent form submission if invalid
+            }
+
+            fileInput.addEventListener("input", function () {
+                fileInput.setCustomValidity(""); // Clear error when user types
+            });
+            return isValid;
+
         }
+
 
         function validate_compName() {
             var comp = document.getElementById("input3");
-            var comp_error = document.getElementById("name-error");
+            const allowedSymbols = /^[a-zA-Z0-9!.@$%^&()_+\-:/|,~ \r\n]*$/; // Allow letters, numbers, symbols, and line breaks
+            var nameregex = /^.{2,25}$/; // Maximum character limit
+            let isValid = true; // Track overall validity
 
-            if (comp.value == '') {
-                comp.classList.add("is-invalid");
-                error_text = "*Please enter the company name";
-                comp_error.innerHTML = error_text;
-                comp_error.classList.add("invalid-feedback");
-                return false;
-            } else {
-                var nameregex = /^.{2,25}$/;
+            //var comp_error = document.getElementById("name-error");
 
-                if (!nameregex.test(comp.value)) {
-                    comp.classList.add("is-invalid");
-                    error_text = "*Company Name must be 2-25 characters";
-                    comp_error.innerHTML = error_text;
-                    comp_error.classList.add("invalid-feedback");
-                    return false;
+            if (!comp.value.trim()) {
+                comp.setCustomValidity("Please enter the company name");
+            } else if (!allowedSymbols.test(comp.value)) {
+                comp.setCustomValidity("Only letters, numbers, and these symbols are allowed: ! @ $ % ^ & ( ) _ + / - : | , ~");
+            } else if (!nameregex.test(comp.value)) {
+                comp.setCustomValidity("Company Name must be 2-25 characters");
+
+            }else {
+                comp.setCustomValidity(""); // Reset validation
                 }
 
-                var symbolregex = /[!@#$%^&*()_+\-={};:'"\\|,<>\/?~]/;
+                comp.reportValidity(); // Show validation message
 
-                if (symbolregex.test(comp.value)) {
-                    comp.classList.add("is-invalid");
-                    error_text = "*Company Name must not contain symbols";
-                    comp_error.innerHTML = error_text;
-                    comp_error.classList.add("invalid-feedback");
-                    return false;
+                if (!comp.checkValidity()) {
+                    event.preventDefault(); // Prevent form submission if invalid
                 }
 
-                comp.classList.remove("is-invalid");
-                comp_error.innerHTML = "";
-                comp_error.classList.remove("invalid-feedback");
-                return true;
-            }
+                comp.addEventListener("input", function () {
+                    comp.setCustomValidity(""); // Clear error when user types
+                });
+
+            return isValid;
+
+
+
+            // if (comp.value == '') {
+            //     comp.classList.add("is-invalid");
+            //     error_text = "*Please enter the company name";
+            //     comp_error.innerHTML = error_text;
+            //     comp_error.classList.add("invalid-feedback");
+            //     return false;
+            // } else {
+            //     var nameregex = /^.{2,25}$/;
+
+            //     if (!nameregex.test(comp.value)) {
+            //         comp.classList.add("is-invalid");
+            //         error_text = "*Company Name must be 2-25 characters";
+            //         comp_error.innerHTML = error_text;
+            //         comp_error.classList.add("invalid-feedback");
+            //         return false;
+            //     }
+
+            //     var symbolregex = /[!@#$%^&*()_+\-={};:'"\\|,<>\/?~]/;
+
+            //     if (symbolregex.test(comp.value)) {
+            //         comp.classList.add("is-invalid");
+            //         error_text = "*Company Name must not contain symbols";
+            //         comp_error.innerHTML = error_text;
+            //         comp_error.classList.add("invalid-feedback");
+            //         return false;
+            //     }
+
+            //     comp.classList.remove("is-invalid");
+            //     comp_error.innerHTML = "";
+            //     comp_error.classList.remove("invalid-feedback");
+            //     return true;
+            // }
+
+
         }
     </script>
 
