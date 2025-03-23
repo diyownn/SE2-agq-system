@@ -7,13 +7,13 @@ $company = isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : '';
 
 
 if (!$role) {
-  header("Location: UNAUTHORIZED.php?error=401r");
+    header("Location: UNAUTHORIZED.php?error=401r");
 }
 
 if (!$company) {
     header("Location: UNAUTHORIZED.php?error=401c");
-  }
-  
+}
+
 
 /*
 

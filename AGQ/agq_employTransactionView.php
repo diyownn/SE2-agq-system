@@ -95,7 +95,7 @@ if ($result) {
         </div>
     </div>
 
-    <a href="agq_dashcatcher.php" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 20px; top: 50px;">←</a>
+    <a href="agq_dashCatcher.php" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 20px; top: 50px;">←</a>
 
     <div class="container py-3">
         <div class="search-container d-flex flex-wrap justify-content-center">
