@@ -601,7 +601,7 @@ $conn->close();
             <div class="section radio-group">
                 <label>Package Type:</label>
                 <label>
-                    <input type="radio" id="lcl" name="packageType" value="LCL" onclick="togglePackageField()"> LCL
+                    <input type="radio" id="lcl" name="packageType" value="LCL" onclick="togglePackageField()" required> LCL
                 </label>
                 <label>
                     <input type="radio" id="container" name="packageType" value="Full Container" onclick="togglePackageField()"> Full Container
