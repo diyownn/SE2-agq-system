@@ -349,10 +349,12 @@ $record = selectRecords($conn, $role, $refNum);
                  <td id='total'>".htmlspecialchars($record['Total'] ?? 'N/A')."</td>
                </tr>
                <tr>
-                 <td id='total'>Notes: ".htmlspecialchars($record['Notes'] ?? 'N/A')."</td>
+                <td>Notes</td>
+                <td id='total'>".htmlspecialchars($record['Notes'] ?? 'N/A')."</td>
                </tr>
                </tbody>
            </table>";
+
           }
 
           break;
