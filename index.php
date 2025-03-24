@@ -531,7 +531,7 @@
       <div class="header-content">
         <div class="logo">
           <img
-            src="../SOGETWA/AGQ/images/agq_logo.png"
+            src="../SE2-agq-system/AGQ/images/agq_logo.png"
             alt="AGQ Freight Logistics Logo" />
         </div>
         <nav>
@@ -575,7 +575,7 @@
     <div class="container">
       <div class="section-header">
         <h2>Our Services</h2>
-        <p style="margin-top: 15px; font-size: larger;" >Comprehensive logistics solutions for your business</p>
+        <p style="margin-top: 15px; font-size: larger;">Comprehensive logistics solutions for your business</p>
       </div>
 
       <div class="services-grid">
@@ -618,7 +618,7 @@
       <div class="feature-card">
         <div class="feature-image">
           <img
-            src="../SOGETWA/pexels-tima-miroshnichenko-6169668.jpg"
+            src="../SE2-agq-system/pexels-tima-miroshnichenko-6169668.jpg"
             alt="Exceptional Service" />
         </div>
         <div class="feature-content">
@@ -650,13 +650,13 @@
           </p>
         </div>
         <div class="feature-image">
-          <img src="../SOGETWA/pexels-dibert-1117210.jpg" alt="International Freight" />
+          <img src="../SE2-agq-system/pexels-dibert-1117210.jpg" alt="International Freight" />
         </div>
       </div>
 
       <div class="feature-card">
         <div class="feature-image">
-          <img src="../SOGETWA/pexels-tiger-lily-4484155.jpg" alt="Customs Brokerage" />
+          <img src="../SE2-agq-system/pexels-tiger-lily-4484155.jpg" alt="Customs Brokerage" />
         </div>
         <div class="feature-content">
           <h3>CUSTOMS BROKERAGE</h3>
