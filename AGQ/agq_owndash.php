@@ -395,7 +395,7 @@ if (!empty($search_query)) {
                     searchButton.click();
                 }
             });
-        }
+        }e
     </script>
 
 

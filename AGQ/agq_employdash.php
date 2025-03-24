@@ -129,6 +129,7 @@ if (!empty($search_query)) {
                         </svg>
                     </button>
                 </div>
+                <div id="mobile-dropdown" class="dropdown" style="display: none;"></div>
             </div>
             <div class="mobile-nav-links">
                 <a href="agq_archive.php">Archive</a>
@@ -206,34 +207,39 @@ if (!empty($search_query)) {
         history.pushState(null, "", location.href);
     };
     document.addEventListener("DOMContentLoaded", function() {
-        const searchInput = document.getElementById("search-input");
-        const searchButton = document.getElementById("search-button");
-        const mobileSearchInput = document.getElementById("mobile-search-input");
-        const mobileSearchButton = document.getElementById("mobile-search-button");            const dropdown = document.getElementById("dropdown");
-        const companyContainerParent = document.getElementById("company-container-parent");
         const hamburgerMenu = document.getElementById("hamburger-menu");
         const mobileMenu = document.getElementById("mobile-menu");
         const menuOverlay = document.getElementById("menu-overlay");
         
         hamburgerMenu.addEventListener("click", function() {
-                this.classList.toggle("active");
-                mobileMenu.classList.toggle("active");
-                menuOverlay.style.display = mobileMenu.classList.contains("active") ? "block" : "none";
-                document.body.style.overflow = mobileMenu.classList.contains("active") ? "hidden" : "";
-            });
+            this.classList.toggle("active");
+            mobileMenu.classList.toggle("active");
+            menuOverlay.style.display = mobileMenu.classList.contains("active") ? "block" : "none";
+            document.body.style.overflow = mobileMenu.classList.contains("active") ? "hidden" : "";
+        });
 
         menuOverlay.addEventListener("click", function() {
-                hamburgerMenu.classList.remove("active");
-                mobileMenu.classList.remove("active");
-                this.style.display = "none";
-                document.body.style.overflow = "";
-            });
+            hamburgerMenu.classList.remove("active");
+            mobileMenu.classList.remove("active");
+            this.style.display = "none";
+            document.body.style.overflow = "";
+        });
+
+        // Setup search functionality for both desktop and mobile
+        setupSearchDropdown("search-input", "dropdown", "search-button");
+        setupSearchDropdown("mobile-search-input", "mobile-dropdown", "mobile-search-button");
+    });
+
+    function setupSearchDropdown(inputId, dropdownId, buttonId) {
+        const searchInput = document.getElementById(inputId);
+        const searchButton = document.getElementById(buttonId);
+        const dropdown = document.getElementById(dropdownId);
+        const companyContainerParent = document.getElementById("company-container-parent");
 
         if (!searchInput || !searchButton || !dropdown || !companyContainerParent) {
-            console.error("Error: One or more elements not found.");
+            console.error("Error: One or more elements not found for " + inputId);
             return;
         }
-
 
         // Fetch and display companies
         function fetchCompanies(url) {
@@ -242,45 +248,37 @@ if (!empty($search_query)) {
                 .then(data => {
                     companyContainerParent.innerHTML = "";
 
-
                     if (!data.company || data.company.length === 0) {
                         companyContainerParent.innerHTML = "<p>No Companies found.</p>";
                         return;
                     }
-
 
                     displayCompanies(data.company);
                 })
                 .catch(error => console.error("Error fetching companies:", error));
         }
 
-
         // Display companies in grid format
         function displayCompanies(companies) {
             let companyRowDiv = document.createElement("div");
             companyRowDiv.classList.add("company-container-row");
 
-
             companies.forEach((company, index) => {
                 let companyButtonDiv = document.createElement("div");
                 companyButtonDiv.classList.add("company-button");
 
-
                 let companyButton = document.createElement("button");
                 companyButton.classList.add("company-container");
                 companyButton.onclick = () => storeCompanySession(company.Company_name);
-
 
                 let companyLogo = document.createElement("img");
                 companyLogo.classList.add("company-logo");
                 companyLogo.src = `data:image/jpeg;base64,${company.Company_picture}`;
                 companyLogo.alt = company.Company_name;
 
-
                 companyButton.appendChild(companyLogo);
                 companyButtonDiv.appendChild(companyButton);
                 companyRowDiv.appendChild(companyButtonDiv);
-
 
                 if ((index + 1) % 5 === 0) {
                     companyContainerParent.appendChild(companyRowDiv);
@@ -289,25 +287,21 @@ if (!empty($search_query)) {
                 }
             });
 
-
             if (companyRowDiv.children.length > 0) {
                 companyContainerParent.appendChild(companyRowDiv);
             }
         }
 
-
         // Handle dropdown search
         searchInput.addEventListener("input", function() {
             let query = this.value.trim();
-
 
             if (!query) {
                 dropdown.style.display = "none";
                 return;
             }
 
-
-            fetch(`FETCH_COMPANY.php?query=${encodeURIComponent(query)}`)
+            fetch("FETCH_COMPANY.php?query=" + encodeURIComponent(query))
                 .then(response => response.json())
                 .then(data => {
                     dropdown.innerHTML = "";
@@ -315,7 +309,6 @@ if (!empty($search_query)) {
                         console.error("Invalid API response", data);
                         return;
                     }
-
 
                     if (data.company.length > 0) {
                         data.company.forEach(item => {
@@ -336,29 +329,29 @@ if (!empty($search_query)) {
                 .catch(error => console.error("Error fetching search results:", error));
         });
 
-
+        // Hide dropdown when clicking outside
         document.addEventListener("click", event => {
             if (!searchInput.contains(event.target) && !dropdown.contains(event.target)) {
                 dropdown.style.display = "none";
             }
         });
 
-
+        // Search button click handler
         searchButton.addEventListener("click", () => {
             let query = searchInput.value.trim();
             let url = query ? `FILTER_COMPANY.php?query=${encodeURIComponent(query)}` : "FILTER_COMPANY.php";
             fetchCompanies(url);
         });
 
-
+        // Enter key handler
         searchInput.addEventListener("keydown", function(event) {
             if (event.key === "Enter") {
                 event.preventDefault();
                 searchButton.click();
             }
         });
-    });
+    }
 </script>
 
 
-</html
+</html>
