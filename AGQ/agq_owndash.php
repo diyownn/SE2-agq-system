@@ -111,6 +111,7 @@ if (!empty($search_query)) {
                     <button class="search-button" id="search-button"> SEARCH </button>
                 </div>
                 <div class="nav-link-container">
+                    <a href="agq_archive.php">Archive</a>
                     <a href="agq_members.php">Members</a>
                     <a href="?logout=true">Logout</a>
                 </div>
@@ -130,8 +131,6 @@ if (!empty($search_query)) {
     <!-- Mobile Menu -->
     <div class="menu-overlay" id="menu-overlay"></div>
     <div class="mobile-menu" id="mobile-menu">
-        <!-- Add close icon at the top -->
-
 
         <div class="mobile-search-container">
             <div class="mobile-search-input-wrapper">
@@ -148,6 +147,7 @@ if (!empty($search_query)) {
 
 
         <div class="mobile-nav-links">
+            <a href="agq_archive.php">Archive</a>
             <a href="agq_members.php">Members</a>
             <a href="?logout=true">Logout</a>
         </div>
