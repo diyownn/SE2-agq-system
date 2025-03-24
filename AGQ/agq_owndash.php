@@ -205,197 +205,178 @@ if (!empty($search_query)) {
 
 
     <script>
-        window.addEventListener("load", function() {
-            setTimeout(() => {
-                document.getElementById("loader-container").style.display = "none";
-            }, 1500); // Waits 1.5 seconds before hiding the loader
+       window.addEventListener("load", function() {
+        // Initially hide the main content
+        document.body.classList.add('loading');
+    
+    setTimeout(() => {
+        document.getElementById("loader-container").style.display = "none";
+        // Show the main content after loader disappears
+        document.body.classList.remove('loading');
+    }, 1500); // Waits 1.5 seconds before hiding the loader
+});
+
+function storeCompanySession(companyName) {
+    fetch('STORE_SESSION.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'company_name=' + encodeURIComponent(companyName)
+        })
+        .then(response => response.text())
+        .then(data => {
+            console.log("Session stored:", data);
+            window.location.href = "agq_chooseDepartment.php";
+        })
+        .catch(error => console.error("Error:", error));
+}
+
+history.pushState(null, "", location.href);
+window.onpopstate = function() {
+    history.pushState(null, "", location.href);
+};
+
+// Hamburger menu functionality
+document.addEventListener("DOMContentLoaded", function() {
+    const hamburgerButton = document.getElementById("hamburger-button");
+    const mobileMenu = document.getElementById("mobile-menu");
+    const menuOverlay = document.getElementById("menu-overlay");
+
+    hamburgerButton.addEventListener("click", function() {
+        mobileMenu.classList.toggle("active");
+        hamburgerButton.classList.toggle("active");
+        menuOverlay.style.display = mobileMenu.classList.contains("active") ? "block" : "none";
+    });
+
+    menuOverlay.addEventListener("click", function() {
+        mobileMenu.classList.remove("active");
+        hamburgerButton.classList.remove("active");
+        menuOverlay.style.display = "none";
+    });
+
+    setupSearchDropdown("search-input", "dropdown", "search-button");
+    setupSearchDropdown("mobile-search-input", "mobile-dropdown", "mobile-search-button");
+});
+
+function setupSearchDropdown(inputId, dropdownId, buttonId) {
+    let searchInput = document.getElementById(inputId);
+    let searchButton = document.getElementById(buttonId);
+    let dropdown = document.getElementById(dropdownId);
+    let companyContainerParent = document.getElementById("company-container-parent");
+
+    if (!searchInput || !searchButton || !dropdown || !companyContainerParent) {
+        console.error("Error: One or more elements not found for " + inputId);
+        return;
+    }
+
+    // Fetch and display companies
+    function fetchCompanies(url) {
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                companyContainerParent.innerHTML = "";
+                if (!data.company || data.company.length === 0) {
+                    companyContainerParent.innerHTML = "<p>No Companies found.</p>";
+                    return;
+                }
+                displayCompanies(data.company);
+            })
+            .catch(error => console.error("Error fetching companies:", error));
+    }
+
+    // Display companies in grid format
+    function displayCompanies(companies) {
+        let companyRowDiv = document.createElement("div");
+        companyRowDiv.classList.add("company-container-row");
+
+        companies.forEach((company, index) => {
+            let companyButtonDiv = document.createElement("div");
+            companyButtonDiv.classList.add("company-button");
+
+            let companyButton = document.createElement("button");
+            companyButton.classList.add("company-container");
+            companyButton.onclick = () => storeCompanySession(company.Company_name);
+
+            let companyLogo = document.createElement("img");
+            companyLogo.classList.add("company-logo");
+            companyLogo.src = `data:image/jpeg;base64,${company.Company_picture}`;
+            companyLogo.alt = company.Company_name;
+
+            companyButton.appendChild(companyLogo);
+            companyButtonDiv.appendChild(companyButton);
+            companyRowDiv.appendChild(companyButtonDiv);
+
+            if ((index + 1) % 5 === 0) {
+                companyContainerParent.appendChild(companyRowDiv);
+                companyRowDiv = document.createElement("div");
+                companyRowDiv.classList.add("company-container-row");
+            }
         });
 
-        function storeCompanySession(companyName) {
-            fetch('STORE_SESSION.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: 'company_name=' + encodeURIComponent(companyName)
-                })
-                .then(response => response.text())
-                .then(data => {
-                    console.log("Session stored:", data);
-                    window.location.href = "agq_chooseDepartment.php";
-                })
-                .catch(error => console.error("Error:", error));
+        if (companyRowDiv.children.length > 0) {
+            companyContainerParent.appendChild(companyRowDiv);
+        }
+    }
+
+    // Handle dropdown search
+    searchInput.addEventListener("input", function() {
+        let query = this.value.trim();
+
+        if (!query) {
+            dropdown.style.display = "none";
+            return;
         }
 
-
-        history.pushState(null, "", location.href);
-        window.onpopstate = function() {
-            history.pushState(null, "", location.href);
-        };
-
-
-        // Hamburger menu functionality
-        document.addEventListener("DOMContentLoaded", function() {
-            const hamburgerButton = document.getElementById("hamburger-button");
-            const mobileMenu = document.getElementById("mobile-menu");
-            const menuOverlay = document.getElementById("menu-overlay");
-
-
-            hamburgerButton.addEventListener("click", function() {
-                mobileMenu.classList.toggle("active");
-                hamburgerButton.classList.toggle("active"); // Add this line to toggle active class for hamburger
-                menuOverlay.style.display = mobileMenu.classList.contains("active") ? "block" : "none";
-            });
-
-
-            menuOverlay.addEventListener("click", function() {
-                mobileMenu.classList.remove("active");
-                hamburgerButton.classList.remove("active"); // Add this line to remove active class
-                menuOverlay.style.display = "none";
-            });
-
-
-
-
-            setupSearchDropdown("search-input", "dropdown", "search-button");
-            setupSearchDropdown("mobile-search-input", "mobile-dropdown", "mobile-search-button");
-        });
-
-
-        function setupSearchDropdown(inputId, dropdownId, buttonId) {
-            let searchInput = document.getElementById(inputId);
-            let searchButton = document.getElementById(buttonId);
-            let dropdown = document.getElementById(dropdownId);
-            let companyContainerParent = document.getElementById("company-container-parent");
-
-
-            if (!searchInput || !searchButton || !dropdown || !companyContainerParent) {
-                console.error("Error: One or more elements not found for " + inputId);
-                return;
-            }
-
-
-            // Fetch and display companies
-            function fetchCompanies(url) {
-                fetch(url)
-                    .then(response => response.json())
-                    .then(data => {
-                        companyContainerParent.innerHTML = "";
-                        if (!data.company || data.company.length === 0) {
-                            companyContainerParent.innerHTML = "<p>No Companies found.</p>";
-                            return;
-                        }
-                        displayCompanies(data.company);
-                    })
-                    .catch(error => console.error("Error fetching companies:", error));
-            }
-
-
-            // Display companies in grid format
-            function displayCompanies(companies) {
-                let companyRowDiv = document.createElement("div");
-                companyRowDiv.classList.add("company-container-row");
-
-
-                companies.forEach((company, index) => {
-                    let companyButtonDiv = document.createElement("div");
-                    companyButtonDiv.classList.add("company-button");
-
-
-                    let companyButton = document.createElement("button");
-                    companyButton.classList.add("company-container");
-                    companyButton.onclick = () => storeCompanySession(company.Company_name);
-
-
-                    let companyLogo = document.createElement("img");
-                    companyLogo.classList.add("company-logo");
-                    companyLogo.src = `data:image/jpeg;base64,${company.Company_picture}`;
-                    companyLogo.alt = company.Company_name;
-
-
-                    companyButton.appendChild(companyLogo);
-                    companyButtonDiv.appendChild(companyButton);
-                    companyRowDiv.appendChild(companyButtonDiv);
-
-
-                    if ((index + 1) % 5 === 0) {
-                        companyContainerParent.appendChild(companyRowDiv);
-                        companyRowDiv = document.createElement("div");
-                        companyRowDiv.classList.add("company-container-row");
-                    }
-                });
-
-
-                if (companyRowDiv.children.length > 0) {
-                    companyContainerParent.appendChild(companyRowDiv);
-                }
-            }
-
-
-            // Handle dropdown search
-            searchInput.addEventListener("input", function() {
-                let query = this.value.trim();
-
-
-                if (!query) {
-                    dropdown.style.display = "none";
+        fetch("FETCH_COMPANY.php?query=" + encodeURIComponent(query))
+            .then(response => response.json())
+            .then(data => {
+                dropdown.innerHTML = "";
+                if (!data || !Array.isArray(data.company)) {
+                    console.error("Invalid API response", data);
                     return;
                 }
 
-
-                fetch("FETCH_COMPANY.php?query=" + encodeURIComponent(query))
-                    .then(response => response.json())
-                    .then(data => {
-                        dropdown.innerHTML = "";
-                        if (!data || !Array.isArray(data.company)) {
-                            console.error("Invalid API response", data);
-                            return;
-                        }
-
-
-                        if (data.company.length > 0) {
-                            data.company.forEach(item => {
-                                let div = document.createElement("div");
-                                div.classList.add("dropdown-item");
-                                div.textContent = item.Company_name;
-                                div.onclick = () => {
-                                    searchInput.value = item.Company_name;
-                                    dropdown.style.display = "none";
-                                };
-                                dropdown.appendChild(div);
-                            });
-                            dropdown.style.display = "block";
-                        } else {
+                if (data.company.length > 0) {
+                    data.company.forEach(item => {
+                        let div = document.createElement("div");
+                        div.classList.add("dropdown-item");
+                        div.textContent = item.Company_name;
+                        div.onclick = () => {
+                            searchInput.value = item.Company_name;
                             dropdown.style.display = "none";
-                        }
-                    })
-                    .catch(error => console.error("Error fetching search results:", error));
-            });
-
-
-            // Hide dropdown when clicking outside
-            document.addEventListener("click", event => {
-                if (!searchInput.contains(event.target) && !dropdown.contains(event.target)) {
+                        };
+                        dropdown.appendChild(div);
+                    });
+                    dropdown.style.display = "block";
+                } else {
                     dropdown.style.display = "none";
                 }
-            });
+            })
+            .catch(error => console.error("Error fetching search results:", error));
+    });
 
+    // Hide dropdown when clicking outside
+    document.addEventListener("click", event => {
+        if (!searchInput.contains(event.target) && !dropdown.contains(event.target)) {
+            dropdown.style.display = "none";
+        }
+    });
 
-            // Search button click handler
-            searchButton.addEventListener("click", () => {
-                let query = searchInput.value.trim();
-                let url = query ? `FILTER_COMPANY.php?query=${encodeURIComponent(query)}` : "FILTER_COMPANY.php";
-                fetchCompanies(url);
-            });
+    // Search button click handler
+    searchButton.addEventListener("click", () => {
+        let query = searchInput.value.trim();
+        let url = query ? `FILTER_COMPANY.php?query=${encodeURIComponent(query)}` : "FILTER_COMPANY.php";
+        fetchCompanies(url);
+    });
 
-
-            searchInput.addEventListener("keydown", function(event) {
-                if (event.key === "Enter") {
-                    event.preventDefault();
-                    searchButton.click();
-                }
-            });
-        }e
+    searchInput.addEventListener("keydown", function(event) {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            searchButton.click();
+        }
+    });
+}
     </script>
 
 
