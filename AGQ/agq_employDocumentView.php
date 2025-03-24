@@ -1016,7 +1016,6 @@ $record = selectRecords($conn, $role, $refNum);
         </tbody>
       </table>
 
-
     </div>
     <div class="info-view">
       <div class="docu-information">
