@@ -23,7 +23,7 @@ function insertRecord($conn)
     date_default_timezone_set('Asia/Manila');
     $editDate = date('Y-m-d');
 
-    $refNum = $_POST['refNum'];
+    $refNum = $_POST['referenceNo'];
     $checkSql = "SELECT RefNum FROM tbl_expbrk WHERE RefNum = ?";
     $checkStmt = $conn->prepare($checkSql);
     $checkStmt->bind_param("s", $refNum);
