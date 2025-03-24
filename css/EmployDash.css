@@ -4,6 +4,38 @@ body {
   margin: 0;
 }
 
+#loader-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+#loader-frame {
+  width: 100%;
+  /* Adjust size */
+  height: 100%;
+  border: none;
+  /* Removes iframe border */
+  background: transparent;
+}
+
+
+@keyframes spin {
+  0% {
+      transform: rotate(0deg);
+  }
+
+  100% {
+      transform: rotate(360deg);
+  }
+}
 .top-container {
   display: flex;
   flex-direction: row;
@@ -440,6 +472,31 @@ body {
   padding: 10px 0;
   border-bottom: 1px solid #eee;
 }
+
+body.loading .top-container,
+body.loading .dashboard-body,
+body.loading .mobile-menu,
+body.loading .menu-overlay,
+body.loading .hamburger-menu {
+    display: none !important;
+}
+
+#loader-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    background-color: #fff;
+}
+
+#loader-frame {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
 
 /* Responsive Styles */
 @media screen and (max-width: 1024px) {

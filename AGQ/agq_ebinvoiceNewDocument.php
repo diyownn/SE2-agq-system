@@ -1,10 +1,8 @@
 <?php
-
 require 'db_agq.php';
 
 session_start();
 
-// Handle form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_POST['save'])) {
         insertRecord($conn);
@@ -16,7 +14,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // }
 }
 
-// Function to insert a record
 // Function to insert a record
 function insertRecord($conn)
 {

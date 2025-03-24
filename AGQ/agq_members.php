@@ -143,6 +143,8 @@ $result = $conn->query($query);
 </head>
 
 <body>
+<body style="background-image: url('mbg.png'); background-repeat: no-repeat; background-size: cover; background-position: center; background-attachment: fixed;">
+
     <a href="agq_dashCatcher.php" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 20px; top: 20px;">←</a>
     <div class="header">
         <h1>MEMBERS OF THE COMPANY</h1>

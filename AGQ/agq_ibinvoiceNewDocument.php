@@ -17,7 +17,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 // Function to insert a record
 function insertRecord($conn)
 {
-
     $docType = isset($_SESSION['DocType']) ? $_SESSION['DocType'] : null;
     $department = isset($_SESSION['department']) ? $_SESSION['department'] : null;
     $companyName = isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : null;
