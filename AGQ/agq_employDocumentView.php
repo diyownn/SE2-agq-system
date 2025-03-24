@@ -365,13 +365,265 @@ $record = selectRecords($conn, $role, $refNum);
           $package = $record['PackageType'];
 
           if ($docType == "SOA" && $package == "LCL") {
+            echo "
+            <table>
+             <thead>
+               <tr>
+                 <th>Reimbursable Charges</th>
+                 <th>Amount</th>
+               </tr>
+             </thead>
+             <tbody>
+               <tr>
+                 <td>95% Ocean Freight</td>
+                 <td id='ocean-freight-95'>".htmlspecialchars($record['OceanFreight95'] ?? 'N/A')."</td>
+               </tr>
+               <tr>
+                 <td>Forwarder</td>
+                 <td id='forwarder'>".htmlspecialchars($record['Forwarder'] ?? 'N/A')."</td>
+               </tr>
+               <tr>
+                 <td>Warehouse Charges</td>
+                 <td id='warehouse-charge'>".htmlspecialchars($record['WarehouseCharge'] ?? 'N/A')."</td>
+               </tr>
+               <tr>
+                 <td>E-Lodgement</td>
+                 <td id='eLodge'>".htmlspecialchars($record['ELodge'] ?? 'N/A')."</td>
+               </tr>
+               <tr>
+                 <td>Processing</td>
+                 <td id='processing'>".htmlspecialchars($record['Processing'] ?? 'N/A')."</td>
+               </tr>
+                <tr>
+                 <td>Customs Forms/Stamps</td>
+                 <td id='forms-stamps'>".htmlspecialchars($record['FormsStamps'] ?? 'N/A')."</td>
+               </tr>
+                <tr>
+                 <td>Photocopy/Notarial</td>
+                 <td id='photocopy-notarial'>".htmlspecialchars($record['PhotocopyNotarial'] ?? 'N/A')."</td>
+               </tr>
+                <tr>
+                 <td>Documentation</td>
+                 <td id='documentation'>".htmlspecialchars($record['Documentation'] ?? 'N/A')."</td>
+               </tr>
+                <tr>
+                 <td>Delivery Expense</td>
+                 <td id='delivery-expense'>".htmlspecialchars($record['DeliveryExpense'] ?? 'N/A')."</td>
+               </tr>
+                <tr>
+                 <td>MISC.,transpo,tel. Card</td>
+                 <td id='miscellaneous'>".htmlspecialchars($record['Miscellaneous'] ?? 'N/A')."</td>
+               </tr>
+               <tr>
+                 <td>Others</td>
+                 <td id='others'>".htmlspecialchars($record['Others'] ?? 'N/A')."</td>
+               </tr>
+               <tr>
+                 <td>Door to Door Bacolod (all in)</td>
+                 <td id='door2door'>".htmlspecialchars($record['Door2Door'] ?? 'N/A')."</td>
+                </tr>
+               <tr>
+                 <td>Total</td>
+                 <td id='total'>".htmlspecialchars($record['Total'] ?? 'N/A')."</td>
+               </tr>
+               <tr>
+                <td>Notes</td>
+                <td id='total'>".htmlspecialchars($record['Notes'] ?? 'N/A')."</td>
+               </tr>
+               </tbody>
+           </table>";
 
           }else if ($docType == "SOA" && $package == "FULL") {
+            echo "
+            <table>
+             <thead>
+               <tr>
+                 <th>Reimbursable Charges</th>
+                 <th>Amount</th>
+               </tr>
+             </thead>
+             <tbody>
+               <tr>
+                 <td>95% Ocean Freight</td>
+                 <td id='ocean-freight-95'>".htmlspecialchars($record['OceanFreight95'] ?? 'N/A')."</td>
+               </tr>
+               <tr>
+                 <td>THC</td>
+                 <td id='thc'>".htmlspecialchars($record['THC'] ?? 'N/A')."</td>
+               </tr>
+               <tr>
+                 <td>AISL</td>
+                 <td id='eLodge'>".htmlspecialchars($record['AISL'] ?? 'N/A')."</td>
+               </tr>
+               <tr>
+                 <td>GO Fast</td>
+                 <td id='gofast'>".htmlspecialchars($record['GOFast'] ?? 'N/A')."</td>
+               </tr>
+                <tr>
+                 <td>Processing</td>
+                 <td id='processing'>".htmlspecialchars($record['Processing'] ?? 'N/A')."</td>
+               </tr>
+                <tr>
+                 <td>Additional Processing</td>
+                 <td id='additional-processing'>".htmlspecialchars($record['AdditionalProcessing'] ?? 'N/A')."</td>
+               </tr>
+                <tr>
+                 <td>Customs Forms/Stamps</td>
+                 <td id='forms-stamps'>".htmlspecialchars($record['FormsStamps'] ?? 'N/A')."</td>
+               </tr>
+               <tr>
+                  <td>Handling</td>
+                  <td id='handling'>".htmlspecialchars($record['Handling'] ?? 'N/A')."</td>
+                </tr>
+                <tr>
+                  <td>Extra Handling Fee</td>
+                  <td id='extra-handling'>".htmlspecialchars($record['ExtraHandlingFee'] ?? 'N/A')."</td>
+                </tr>
+                <tr>
+                 <td>Photocopy/Notarial</td>
+                 <td id='photocopy-notarial'>".htmlspecialchars($record['PhotocopyNotarial'] ?? 'N/A')."</td>
+               </tr>
+                <tr>
+                 <td>Clearance Expenses</td>
+                 <td id='clearance-expenses'>".htmlspecialchars($record['ClearanceExpenses'] ?? 'N/A')."</td>
+               </tr>
+                <tr>
+                 <td>Hauling and Trucking</td>
+                 <td id='hauling-trucking'>".htmlspecialchars($record['HaulingTrucking'] ?? 'N/A')."</td>
+               </tr>
+               <tr>
+                 <td>Additional Container</td>
+                 <td id='additional-container'>".htmlspecialchars($record['AdditionalContainer'] ?? 'N/A')."</td>
+               </tr>
+                <tr>
+                 <td>StuffingPlant</td>
+                 <td id='stuffing-plant'>".htmlspecialchars($record['StuffingPlant'] ?? 'N/A')."</td>
+               </tr>
+                <tr>
+                 <td>IED/Entry Encoding</td>
+                 <td id='ied'>".htmlspecialchars($record['IED'] ?? 'N/A')."</td>
+               </tr> <tr>
+                 <td>Early Gate In</td>
+                 <td id='early-gate-in'>".htmlspecialchars($record['EarlyGateIn'] ?? 'N/A')."</td>
+               </tr> <tr>
+                 <td>TABS</td>
+                 <td id='tabs'>".htmlspecialchars($record['TABS'] ?? 'N/A')."</td>
+               </tr> <tr>
+                 <td>Docs Fee</td>
+                 <td id='docs-fee'>".htmlspecialchars($record['DocsFee'] ?? 'N/A')."</td>
+               </tr> 
+               <tr>
+                 <td>Others</td>
+                 <td id='others'>".htmlspecialchars($record['Others'] ?? 'N/A')."</td>
+               </tr> 
+               <tr>
+                 <td>Detention Charges</td>
+                 <td id='detention-charges'>".htmlspecialchars($record['DetentionCharges'] ?? 'N/A')."</td>
+               </tr>  
+               <tr>
+                 <td>Container Deposit</td>
+                 <td id='container-deposit'>".htmlspecialchars($record['ContainerDeposit'] ?? 'N/A')."</td>
+               </tr> 
+               <tr>
+                 <td>Late Charge</td>
+                 <td id='late-charge'>".htmlspecialchars($record['LateCharge'] ?? 'N/A')."</td>
+               </tr>
+               <tr>
+                 <td>Late Collection</td>
+                 <td id='late-collection'>".htmlspecialchars($record['LateCollection'] ?? 'N/A')."</td>
+               </tr>
+                <tr>
+                 <td>Demurrage</td>
+                 <td id='demurrage'>".htmlspecialchars($record['Demurrage'] ?? 'N/A')."</td>
+               </tr>
+               <tr>
+                 <td>Total</td>
+                 <td id='total'>".htmlspecialchars($record['Total'] ?? 'N/A')."</td>
+               </tr>
+               <tr>
+                <td>Notes</td>
+                <td id='total'>".htmlspecialchars($record['Notes'] ?? 'N/A')."</td>
+               </tr>
+               </tbody>
+           </table>";
 
           }else if ($docType == "Invoice" && $package == "LCL") {
+            echo "
+            <table>
+             <thead>
+               <tr>
+                 <th>Reimbursable Charges</th>
+                 <th>Amount</th>
+               </tr>
+             </thead>
+             <tbody>
+               <tr>
+                 <td>5% Ocean Freight</td>
+                 <td id='ocean-freight-5'>".htmlspecialchars($record['OceanFreight5'] ?? 'N/A')."</td>
+               </tr>
+               <tr>
+                 <td>Brokerage Fee</td>
+                 <td id='brokerage-fee'>".htmlspecialchars($record['BrokerageFee'] ?? 'N/A')."</td>
+               </tr>
+               <tr>
+                 <td>12% VAT</td>
+                 <td id='vat-12'>".htmlspecialchars($record['Vat12'] ?? 'N/A')."</td>
+               </tr>
+               <tr>
+                 <td>Others</td>
+                 <td id='others'>".htmlspecialchars($record['Others'] ?? 'N/A')."</td>
+               </tr>
+               <tr>
+                 <td>Total</td>
+                 <td id='total'>".htmlspecialchars($record['Total'] ?? 'N/A')."</td>
+               </tr>
+               <tr>
+                <td>Notes</td>
+                <td id='total'>".htmlspecialchars($record['Notes'] ?? 'N/A')."</td>
+               </tr>
+               </tbody>
+           </table>";
 
           }else if ($docType == "Invoice" && $package == "FULL") {
-
+            echo "
+            <table>
+             <thead>
+               <tr>
+                 <th>Reimbursable Charges</th>
+                 <th>Amount</th>
+               </tr>
+             </thead>
+             <tbody>
+               <tr>
+                 <td>5% Ocean Freight</td>
+                 <td id='ocean-freight-5'>".htmlspecialchars($record['OceanFreight5'] ?? 'N/A')."</td>
+               </tr>
+               <tr>
+                 <td>Brokerage Fee</td>
+                 <td id='brokerage-fee'>".htmlspecialchars($record['BrokerageFee'] ?? 'N/A')."</td>
+               </tr>
+               <tr>
+                 <td>12% VAT</td>
+                 <td id='vat-12'>".htmlspecialchars($record['Vat12'] ?? 'N/A')."</td>
+               </tr>
+               <tr>
+                 <td>Others</td>
+                 <td id='others'>".htmlspecialchars($record['Others'] ?? 'N/A')."</td>
+               </tr>
+               <tr>
+                 <td>Trucking Service</td>
+                 <td id='trucking-service'>".htmlspecialchars($record['TruckingService'] ?? 'N/A')."</td>
+               </tr>
+               <tr>
+                 <td>Total</td>
+                 <td id='total'>".htmlspecialchars($record['Total'] ?? 'N/A')."</td>
+               </tr>
+               <tr>
+                <td>Notes</td>
+                <td id='total'>".htmlspecialchars($record['Notes'] ?? 'N/A')."</td>
+               </tr>
+               </tbody>
+           </table>";
           }
 
           break;
@@ -381,13 +633,173 @@ $record = selectRecords($conn, $role, $refNum);
           $package = $record['PackageType'];
 
           if ($docType == "SOA" && $package == "LCL") {
+            echo" 
+            <table>
+              <thead>
+                <tr>
+                  <th>Reimbursable Charges</th>
+                  <th>Amount</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>95% Ocean Freight</td>
+                  <td id='ocean-freight-95'>".htmlspecialchars($record['OceanFreight95'] ?? 'N/A'). "</td>
+                </tr>
+                <tr>
+                  <td>Docs Fee</td>
+                  <td id='docs-fee'>".htmlspecialchars($record['DocsFee'] ?? 'N/A')."</td>
+                </tr>
+                <tr>
+                  <td>LCL Charge</td>
+                  <td id='lcl-charge'>".htmlspecialchars($record['LCLCharge'] ?? 'N/A')."</td>
+                </tr>
+                <tr>
+                  <td>Export Processing</td>
+                  <td id='export-processing'>".htmlspecialchars($record['ExportProcessing'] ?? 'N/A'). "</td>
+                </tr>
+                <tr>
+                 <td>Customs Forms/Stamps</td>
+                 <td id='forms-stamps'>".htmlspecialchars($record['FormsStamps'] ?? 'N/A')."</td>
+               </tr>
+                <tr>
+                 <td>Arrastre/Wharfage/Storage</td>
+                 <td id='arrastrewharf'>".htmlspecialchars($record['ArrastreWharf'] ?? 'N/A')."</td>
+               </tr>
+                <tr>
+                  <td>E2M Fee</td>
+                  <td id='e2m-lodge'>".htmlspecialchars($record['E2MLodge'] ?? 'N/A')."</td>
+                </tr>
+                <tr>
+                  <td>Others</td>
+                  <td id='others'>".htmlspecialchars($record['Others'] ?? 'N/A')."</td>
+                </tr>
+                <tr>
+                  <td>Total</td>
+                  <td id='total'>".htmlspecialchars($record['Total'] ?? 'N/A')."</td>
+                </tr>
+                <tr>
+                  <td id='total'>Notes: ".htmlspecialchars($record['Notes'] ?? 'N/A')."</td>
+                </tr>
+              </tbody>
+            </table>";
 
           }else if ($docType == "SOA" && $package == "FULL") {
-
+            echo" 
+            <table>
+              <thead>
+                <tr>
+                  <th>Reimbursable Charges</th>
+                  <th>Amount</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>95% Ocean Freight</td>
+                  <td id='ocean-freight-95'>".htmlspecialchars($record['OceanFreight95'] ?? 'N/A'). "</td>
+                </tr>
+                <tr>
+                  <td>THC</td>
+                  <td id='thc'>".htmlspecialchars($record['THC'] ?? 'N/A')."</td>
+                </tr>
+                <tr>
+                  <td>Docs Fee</td>
+                  <td id='docs-fee'>".htmlspecialchars($record['DocsFee'] ?? 'N/A')."</td>
+                </tr>
+                <tr>
+                  <td>FAF</td>
+                  <td id='faf'>".htmlspecialchars($record['FAF'] ?? 'N/A')."</td>
+                </tr>
+                <tr>
+                  <td>Seal Fee</td>
+                  <td id='seal-fee'>".htmlspecialchars($record['SealFee'] ?? 'N/A'). "</td>
+                </tr>
+                <tr>
+                 <td>Storage</td>
+                 <td id='storage'>".htmlspecialchars($record['Storage'] ?? 'N/A')."</td>
+               </tr>
+                <tr>
+                  <td>Telex</td>
+                  <td id='telex'>".htmlspecialchars($record['Telex'] ?? 'N/A')."</td>
+                </tr>
+                <tr>
+                  <td>Others</td>
+                  <td id='others'>".htmlspecialchars($record['Others'] ?? 'N/A')."</td>
+                </tr>
+                <tr>
+                  <td>Total</td>
+                  <td id='total'>".htmlspecialchars($record['Total'] ?? 'N/A')."</td>
+                </tr>
+                <tr>
+                  <td id='total'>Notes: ".htmlspecialchars($record['Notes'] ?? 'N/A')."</td>
+                </tr>
+              </tbody>
+            </table>";
           }else if ($docType == "Invoice" && $package == "LCL") {
+            echo "
+            <table>
+             <thead>
+               <tr>
+                 <th>Reimbursable Charges</th>
+                 <th>Amount</th>
+               </tr>
+             </thead>
+             <tbody>
+               <tr>
+                 <td>5% Ocean Freight</td>
+                 <td id='ocean-freight-5'>".htmlspecialchars($record['OceanFreight5'] ?? 'N/A')."</td>
+               </tr>
+               <tr>
+                 <td>Brokerage Fee</td>
+                 <td id='brokerage-fee'>".htmlspecialchars($record['BrokerageFee'] ?? 'N/A')."</td>
+               </tr>
+               <tr>
+                 <td>Others</td>
+                 <td id='others'>".htmlspecialchars($record['Others'] ?? 'N/A')."</td>
+               </tr>
+               <tr>
+                 <td>Total</td>
+                 <td id='total'>".htmlspecialchars($record['Total'] ?? 'N/A')."</td>
+               </tr>
+               <tr>
+                <td>Notes</td>
+                <td id='total'>".htmlspecialchars($record['Notes'] ?? 'N/A')."</td>
+               </tr>
+               </tbody>
+           </table>";
 
           }else if ($docType == "Invoice" && $package == "FULL") {
-
+            echo "
+            <table>
+             <thead>
+               <tr>
+                 <th>Reimbursable Charges</th>
+                 <th>Amount</th>
+               </tr>
+             </thead>
+             <tbody>
+               <tr>
+                 <td>5% Ocean Freight</td>
+                 <td id='ocean-freight-5'>".htmlspecialchars($record['OceanFreight5'] ?? 'N/A')."</td>
+               </tr>
+               <tr>
+                 <td>12% VAT</td>
+                 <td id='vat-12'>".htmlspecialchars($record['Vat12'] ?? 'N/A')."</td>
+               </tr>
+               <tr>
+                 <td>Others</td>
+                 <td id='others'>".htmlspecialchars($record['Others'] ?? 'N/A')."</td>
+               </tr>
+               <tr>
+                 <td>Total</td>
+                 <td id='total'>".htmlspecialchars($record['Total'] ?? 'N/A')."</td>
+               </tr>
+               <tr>
+                <td>Notes</td>
+                <td id='total'>".htmlspecialchars($record['Notes'] ?? 'N/A')."</td>
+               </tr>
+               </tbody>
+           </table>";
           }
 
           break;
@@ -397,13 +809,187 @@ $record = selectRecords($conn, $role, $refNum);
           $package = $record['PackageType'];
 
           if ($docType == "SOA" && $package == "LCL") {
+            echo "
+            <table>
+             <thead>
+               <tr>
+                 <th>Reimbursable Charges</th>
+                 <th>Amount</th>
+               </tr>
+             </thead>
+             <tbody>
+               <tr>
+                 <td>95% Ocean Freight</td>
+                 <td id='ocean-freight-95'>".htmlspecialchars($record['OceanFreight95'] ?? 'N/A')."</td>
+               </tr>
+                <tr>
+                 <td>Advance Shipping Lines</td>
+                 <td id='advance-shipping'>".htmlspecialchars($record['AdvanceShipping'] ?? 'N/A')."</td>
+               </tr>
+               <tr>
+                 <td>Processing</td>
+                 <td id='processing'>".htmlspecialchars($record['Processing'] ?? 'N/A')."</td>
+               </tr>
+               <tr>
+                 <td>Others</td>
+                 <td id='others'>".htmlspecialchars($record['Others'] ?? 'N/A')."</td>
+               </tr>
+               <tr>
+                 <td>Total</td>
+                 <td id='total'>".htmlspecialchars($record['Total'] ?? 'N/A')."</td>
+               </tr>
+               <tr>
+                <td>Notes</td>
+                <td id='total'>".htmlspecialchars($record['Notes'] ?? 'N/A')."</td>
+               </tr>
+               </tbody>
+           </table>";
 
           }else if ($docType == "SOA" && $package == "FULL") {
+            echo" 
+            <table>
+              <thead>
+                <tr>
+                  <th>Reimbursable Charges</th>
+                  <th>Amount</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>95% Ocean Freight</td>
+                  <td id='ocean-freight-95'>".htmlspecialchars($record['OceanFreight95'] ?? 'N/A'). "</td>
+                </tr>
+                <tr>
+                 <td>Arrastre</td>
+                 <td id='arrastre'>".htmlspecialchars($record['ArrastreWharf'] ?? 'N/A')."</td>
+               </tr>
+                <tr>
+                 <td>Wharfage</td>
+                 <td id='wharfage'>".htmlspecialchars($record['Wharfage'] ?? 'N/A')."</td>
+               </tr>
+                <tr>
+                 <td>Processing</td>
+                 <td id='processing'>".htmlspecialchars($record['Processing'] ?? 'N/A')."</td>
+               </tr>
+                <tr>
+                 <td>Customs Forms/Stamps</td>
+                 <td id='forms-stamps'>".htmlspecialchars($record['FormsStamps'] ?? 'N/A')."</td>
+               </tr>
+                <tr>
+                 <td>Photocopy/Notarial</td>
+                 <td id='photocopy-notarial'>".htmlspecialchars($record['PhotocopyNotarial'] ?? 'N/A')."</td>
+               </tr>
+                <tr>
+                  <td>Documentation</td>
+                  <td id='documentation'>".htmlspecialchars($record['Documentation'] ?? 'N/A')."</td>
+                </tr>
+                 <tr>
+                  <td>E2M Lodgement</td>
+                  <td id='e2m-lodge'>".htmlspecialchars($record['E2MLodge'] ?? 'N/A')."</td>
+                </tr>
+                 <tr>
+                  <td>Stuffing (Mano)</td>
+                  <td id='manual-stuffing'>".htmlspecialchars($record['ManualStuffing'] ?? 'N/A')."</td>
+                </tr>
+                <tr>
+                  <td>Handling</td>
+                  <td id='handling'>".htmlspecialchars($record['Handling'] ?? 'N/A')."</td>
+                </tr>
+                <tr>
+                  <td>Others</td>
+                  <td id='others'>".htmlspecialchars($record['Others'] ?? 'N/A')."</td>
+                </tr>
+                <tr>
+                  <td>Total</td>
+                  <td id='total'>".htmlspecialchars($record['Total'] ?? 'N/A')."</td>
+                </tr>
+                <tr>
+                  <td id='total'>Notes: ".htmlspecialchars($record['Notes'] ?? 'N/A')."</td>
+                </tr>
+              </tbody>
+            </table>";
 
           }else if ($docType == "Invoice" && $package == "LCL") {
-
+            echo "
+            <table>
+             <thead>
+               <tr>
+                 <th>Reimbursable Charges</th>
+                 <th>Amount</th>
+               </tr>
+             </thead>
+             <tbody>
+               <tr>
+                 <td>5% Ocean Freight</td>
+                 <td id='ocean-freight-5'>".htmlspecialchars($record['OceanFreight5'] ?? 'N/A')."</td>
+               </tr>
+               <tr>
+                 <td>Brokerage Fee</td>
+                 <td id='brokerage-fee'>".htmlspecialchars($record['BrokerageFee'] ?? 'N/A')."</td>
+               </tr>
+                <tr>
+                 <td>50% Discount</td>
+                 <td id='discount-50'>".htmlspecialchars($record['Discount50'] ?? 'N/A')."</td>
+               </tr>
+                <tr>
+                 <td>12% VAT</td>
+                 <td id='vat-12'>".htmlspecialchars($record['Vat12'] ?? 'N/A')."</td>
+               </tr>
+               <tr>
+                 <td>Others</td>
+                 <td id='others'>".htmlspecialchars($record['Others'] ?? 'N/A')."</td>
+               </tr>
+               <tr>
+                 <td>Total</td>
+                 <td id='total'>".htmlspecialchars($record['Total'] ?? 'N/A')."</td>
+               </tr>
+               <tr>
+                <td>Notes</td>
+                <td id='total'>".htmlspecialchars($record['Notes'] ?? 'N/A')."</td>
+               </tr>
+               </tbody>
+           </table>";
           }else if ($docType == "Invoice" && $package == "FULL") {
-
+            echo "
+            <table>
+             <thead>
+               <tr>
+                 <th>Reimbursable Charges</th>
+                 <th>Amount</th>
+               </tr>
+             </thead>
+             <tbody>
+               <tr>
+                 <td>5% Ocean Freight</td>
+                 <td id='ocean-freight-5'>".htmlspecialchars($record['OceanFreight5'] ?? 'N/A')."</td>
+               </tr>
+               <tr>
+                 <td>Brokerage Fee</td>
+                 <td id='brokerage-fee'>".htmlspecialchars($record['BrokerageFee'] ?? 'N/A')."</td>
+               </tr>
+                <tr>
+                 <td>50% Discount</td>
+                 <td id='discount-50'>".htmlspecialchars($record['Discount50'] ?? 'N/A')."</td>
+               </tr>
+                <tr>
+                 <td>12% VAT</td>
+                 <td id='vat-12'>".htmlspecialchars($record['Vat12'] ?? 'N/A')."</td>
+               </tr>
+               <tr>
+                 <td>Others</td>
+                 <td id='others'>".htmlspecialchars($record['Others'] ?? 'N/A')."</td>
+               </tr>
+               <tr>
+                 <td>Total</td>
+                 <td id='total'>".htmlspecialchars($record['Total'] ?? 'N/A')."</td>
+               </tr>
+               <tr>
+                <td>Notes</td>
+                <td id='total'>".htmlspecialchars($record['Notes'] ?? 'N/A')."</td>
+               </tr>
+               </tbody>
+           </table>";
+           
           }
 
           break;
@@ -429,7 +1015,6 @@ $record = selectRecords($conn, $role, $refNum);
           </tr>
         </tbody>
       </table>
-
 
     </div>
     <div class="info-view">
