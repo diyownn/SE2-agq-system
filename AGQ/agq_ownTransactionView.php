@@ -53,7 +53,7 @@ UNION
 SELECT f.RefNum, f.DocType, c.Company_name
 FROM tbl_expfwd f
 JOIN tbl_company c ON f.Company_name = c.Company_name
-WHERE '$role' = 'Export Forwarding' 
+WHERE '$dept' = 'Export Forwarding' 
 AND c.Company_name = '$company'
 AND f.isArchived = 0
 
