@@ -208,7 +208,7 @@ if (!empty($search_query)) {
         window.addEventListener("load", function() {
             setTimeout(() => {
                 document.getElementById("loader-container").style.display = "none";
-            }, 3000); // Waits 3 seconds before hiding the loader
+            }, 1500); // Waits 1.5 seconds before hiding the loader
         });
 
         function storeCompanySession(companyName) {

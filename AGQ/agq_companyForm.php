@@ -24,7 +24,7 @@
     <div class="container">
         <div class="row d-flex justify-content-center">
             <div class="col-sm-offset-4 col-sm-4" id="border1">
-                <a href="agq_owndash.php" style="text-decoration: none; color: black; font-size: x-large">←</a>
+                <a href="agq_dashCatcher.php" style="text-decoration: none; color: black; font-size: x-large">←</a>
                 <p id="title" class="text-center" style="text-decoration: none; margin-top:0%">COMPANY FORM</p>
 
                 <form action="agq_companyForm.php" method="POST" class="form-content" enctype="multipart/form-data" onsubmit="validate_form()">
