@@ -187,7 +187,7 @@ body {
     cursor: pointer;
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
     transition: background-color 0.3s ease;
-    margin-left: 87%;    
+    margin-left: 83%;    
 }
  
 .add-company:hover {
@@ -199,6 +199,28 @@ body {
     margin-right: 10px;
 }
 
+.add-company .icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    color: black; /* Changed to black */
+}
+.icons {
+    width: 30px;
+    height: 30px;
+    background: #E0E0E0;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .icons svg {
+    width: 14px;
+    height: 14px;
+  }
 
 .search-bar {
     flex: 1;
@@ -492,4 +514,14 @@ body {
 
 .employee-transaction-item:last-child {
     border-bottom: none;
+}
+
+/* Styling for "No records found" message */
+.no-records-message {
+    margin-left: 5px;
+    margin-top: 15px;
+    padding: 15px;
+    color: #555;
+    font-style: italic;
+    display: block;
 }

@@ -122,12 +122,12 @@ if ($result) {
         </div>
         <div>
             <button class="add-company" onclick="window.location.href='agq_choosedocument.php'">
-                <span> CREATE </span>
-                <div class="icon">
-                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 5V19M5 12H19" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                    </svg>
-                </div>
+                <span>CREATE</span>
+                <div class="icons">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 5V19M5 12H19" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </div>
             </button>
         </div>
         <div class="transactions mt-4">
@@ -153,9 +153,6 @@ if ($result) {
                             <?php foreach ($transactions[$normalizedDocType] as $transaction): ?>
                                 <div class="transaction-item d-flex justify-content-between align-items-center">
                                     <div class="d-flex align-items-center">
-                                        <div class="form-check me-2">
-                                            <input class="form-check-input transaction-checkbox" type="checkbox" id="empcheckbox" disabled>
-                                        </div>
                                         <span class="transaction-text" ondblclick="redirectToDocument('<?php echo htmlspecialchars($transaction['RefNum']); ?>', '<?php echo $normalizedDocType; ?>')">
                                             <?php echo htmlspecialchars($transaction['RefNum']); ?> - <?php echo $normalizedDocType; ?>
                                         </span>
@@ -181,7 +178,7 @@ if ($result) {
                                 </div>
                             <?php endforeach; ?>
                         <?php else: ?>
-                            <p>No records found.</p>
+                            <p class="no-records-message">No records found.</p>
                         <?php endif; ?>
                     </div>
                 </div>
@@ -378,7 +375,7 @@ if ($result) {
                         console.log("All Transactions:", data);
 
                         if (!data || Object.keys(data).length === 0 || data.error) {
-                            transactionsContainer.innerHTML = "<p>No transactions found.</p>";
+                            transactionsContainer.innerHTML = "<p class='no-records-message'>No transactions found.</p>";
                             return;
                         }
 
@@ -424,7 +421,7 @@ if ($result) {
                         transactionsContainer.innerHTML = "";
 
                         if (!data || Object.keys(data).length === 0 || data.error) {
-                            transactionsContainer.innerHTML = "<p>No transactions found.</p>";
+                            transactionsContainer.innerHTML = "<p class='no-records-message'>No transactions found.</p>";
                             return;
                         }
 
@@ -525,17 +522,6 @@ if ($result) {
                             let leftSide = document.createElement("div");
                             leftSide.classList.add("d-flex", "align-items-center");
 
-                            let checkboxDiv = document.createElement("div");
-                            checkboxDiv.classList.add("form-check", "me-2");
-
-                            let checkbox = document.createElement("input");
-                            checkbox.classList.add("form-check-input", "transaction-checkbox");
-                            checkbox.type = "checkbox";
-                            checkbox.id = `check-${refNum}`;
-
-                            checkboxDiv.appendChild(checkbox);
-                            leftSide.appendChild(checkboxDiv);
-
                             let transactionText = document.createElement("span");
                             transactionText.classList.add("transaction-text");
                             transactionText.textContent = `${refNum} - ${docType}`;
@@ -573,7 +559,7 @@ if ($result) {
                         });
 
                     } else {
-                        transactionContent.innerHTML = "<p>No records found.</p>";
+                        transactionContent.innerHTML = "<p class='no-records-message'>No records found.</p>";
                     }
 
                     transactionSection.appendChild(transactionHeader);

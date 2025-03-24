@@ -61,6 +61,7 @@ $record = selectRecords($conn, $role, $refNum);
 </head>
 
 <body>
+<a href="agq_employTransactionView.php" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 40px; top: 60px;">←</a>
   <div class="container">
     <div class="document-view">
       <table class="transaction-detials-table">

@@ -182,7 +182,7 @@ if ($result) {
                                 </div>
                             <?php endforeach; ?>
                         <?php else: ?>
-                            <p>No records found.</p>
+                            <p class="no-records-message">No records found.</p>
                         <?php endif; ?>
                     </div>
                 </div>
@@ -366,7 +366,7 @@ if ($result) {
 
 
                         if (!data || Object.keys(data).length === 0 || data.error) {
-                            transactionsContainer.innerHTML = "<p>No transactions found.</p>";
+                            transactionsContainer.innerHTML = "<p class='no-records-message'>No transactions found.</p>";
                             return;
                         }
 
@@ -437,7 +437,7 @@ if ($result) {
 
 
                         if (!data || Object.keys(data).length === 0 || data.error) {
-                            transactionsContainer.innerHTML = "<p>No transactions found.</p>";
+                            transactionsContainer.innerHTML = "<p class='no-records-message'>No transactions found.</p>";
                             return;
                         }
 
@@ -543,7 +543,10 @@ if ($result) {
                                 transactionContent.appendChild(transactionItem);
                             });
                         } else {
-                            transactionContent.innerHTML = "<p>No records found.</p>";
+                            let noRecordsMessage = document.createElement("p");
+                            noRecordsMessage.classList.add("no-records-message");
+                            noRecordsMessage.textContent = "No records found.";
+                            transactionContent.appendChild(noRecordsMessage);
                         }
 
 

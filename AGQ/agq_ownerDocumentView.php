@@ -63,6 +63,8 @@ $record = selectRecords($conn, $dept, $refNum);
 
 
 <body>
+<a href="agq_ownTransactionView.php" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 40px; top: 60px;">←</a>
+
   <!--<div class="top-container">
         <div class="dept-container">
             <div class="header-container">
