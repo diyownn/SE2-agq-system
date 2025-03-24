@@ -474,7 +474,6 @@ body {
   border-bottom: 1px solid #eee;
 }
 
-
 body.loading .top-container,
 body.loading .dashboard-body,
 body.loading .mobile-menu,
@@ -498,7 +497,6 @@ body.loading .hamburger-menu {
     height: 100%;
     border: none;
 }
-
 
 /* Responsive Styles */
 @media screen and (max-width: 1024px) {
