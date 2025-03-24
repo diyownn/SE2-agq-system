@@ -292,8 +292,19 @@ $conn->close();
 
         function validateTextFields(textElement) {
             const allowedSymbols = /^[a-zA-Z0-9!@$%^&()_+\-:/|,~ ]+$/; // Allow letters, numbers, and symbols
+            const reverseTinRegex = /^(?!^[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{4}$).+$/; // Correct regex for TIN format (0000-0000-0000-0000)
             let isValid = true; // Track overall validity
 
+            if (textElement.name === "tin") {
+                // Check TIN-specific validation
+                if (!textElement.value.trim()) {
+                    textElement.setCustomValidity("This field is required");
+                } else if (reverseTinRegex.test(textElement.value)) {
+                    textElement.setCustomValidity("TIN format is invalid. Correct format: 0000-0000-0000-0000");
+                } else {
+                    textElement.setCustomValidity(""); // Reset validation
+                }
+            } else {
                 if (!textElement.value.trim()) {
                     textElement.setCustomValidity("This field is required");
                 } else if (!allowedSymbols.test(textElement.value)) {
@@ -301,16 +312,17 @@ $conn->close();
                 } else {
                     textElement.setCustomValidity(""); // Reset validation
                 }
+            }
 
-                textElement.reportValidity(); // Show validation message
+            textElement.reportValidity(); // Show validation message
 
-                if (!textElement.checkValidity()) {
-                    event.preventDefault(); // Prevent form submission if invalid
-                }
+            if (!textElement.checkValidity()) {
+                event.preventDefault(); // Prevent form submission if invalid
+            }
 
-                textElement.addEventListener("input", function () {
-                    textElement.setCustomValidity(""); // Clear error when user types
-                });
+            textElement.addEventListener("input", function () {
+                textElement.setCustomValidity(""); // Clear error when user types
+            });
 
             return isValid; // Return validity status
         }

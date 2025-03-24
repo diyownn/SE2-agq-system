@@ -387,6 +387,7 @@ $conn->close();
         function validateTextFields(textElement) {
             //const inputs = document.querySelectorAll('input[type="text"]'); // Select all text inputs
             const allowedSymbols = /^[a-zA-Z0-9!@$%^&()_+\-:/|,~ ]+$/; // Allow letters, numbers, and symbols
+            const reverseTinRegex = /^(?!^[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{4}$).+$/; // Correct regex for TIN format (0000-0000-0000-0000)
             let isValid = true; // Track overall validity
 
             //inputs.forEach(input => {
@@ -425,12 +426,23 @@ $conn->close();
                 //     errorElement.style.display = "none"; // Hide error element
                 // }
 
-                if (!textElement.value.trim()) {
-                    textElement.setCustomValidity("This field is required");
-                } else if (!allowedSymbols.test(textElement.value)) {
-                    textElement.setCustomValidity("Only letters, numbers, and these symbols are allowed: ! @ $ % ^ & ( ) _ + / - : | , ~");
-                } else {
-                    textElement.setCustomValidity(""); // Reset validation
+                if (textElement.name === "tin") {
+                    // Check TIN-specific validation
+                    if (!textElement.value.trim()) {
+                        textElement.setCustomValidity("This field is required");
+                    } else if (reverseTinRegex.test(textElement.value)) {
+                        textElement.setCustomValidity("TIN format is invalid. Correct format: 0000-0000-0000-0000");
+                    } else {
+                        textElement.setCustomValidity(""); // Reset validation
+                    }
+                }else {
+                    if (!textElement.value.trim()) {
+                        textElement.setCustomValidity("This field is required");
+                    } else if (!allowedSymbols.test(textElement.value)) {
+                        textElement.setCustomValidity("Only letters, numbers, and these symbols are allowed: ! @ $ % ^ & ( ) _ + / - : | , ~");
+                    } else {
+                        textElement.setCustomValidity(""); // Reset validation
+                    }
                 }
 
                 textElement.reportValidity(); // Show validation message

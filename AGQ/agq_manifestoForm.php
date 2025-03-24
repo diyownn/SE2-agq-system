@@ -174,7 +174,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <form action="agq_manifestoForm.php" method="POST" class="form-content" enctype="multipart/form-data" onsubmit="validate_form()">
                     <img src="<?= htmlspecialchars($imageSrc); ?>" class="d-block mx-auto" id="imgholder"
                         alt="Document Image" style="width: 335px; height: 350px; display: <?= empty($imageSrc) ? 'none' : 'block' ?>;">
-                    <input type="text" name="editedby" id="einput" class="form-control" placeholder="Edited by" onchange="validate_editName()">
+                    <input type="text" name="editedby" id="input3" class="form-control" placeholder="Edited by" onchange="validate_editName()">
 
                     <div id="edit-error"></div>
 
@@ -276,7 +276,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 
         function validate_editName() {
-            var edit = document.getElementById("einput");
+            var edit = document.getElementById("input3");
             const allowedSymbols = /^[a-zA-Z0-9!.@$%^&()_+\-:/|,~ \r\n]*$/; // Allow letters, numbers, symbols, and line breaks
             var nameregex = /^.{3,25}$/; // Maximum character limit
             let isValid = true; // Track overall validity
