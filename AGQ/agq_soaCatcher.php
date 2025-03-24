@@ -1,7 +1,7 @@
 <?php
 session_start();
 $role = isset($_SESSION['department']) ? $_SESSION['department'] : '';
-
+$refNum = isset($_GET['refnum']) ? $_GET['refnum'] : '';
 /*
 require __DIR__ . '/secret/vendor/autoload.php';
 
@@ -10,7 +10,6 @@ use Dotenv\Dotenv;
 $dotenv = Dotenv::createImmutable(__DIR__);
 $dotenv->load();
 */
-
 $key = "0jRw1M89WhVwukjsZiZvhPPsRVFgK/IIQnLOYVEWDdi2TXJjx8QPOAOIxMH7b+uW"; //$_ENV['ENCRYPTION_KEY'];
 echo "Key Loaded: " . $key;
 if (!$key) {
@@ -31,40 +30,68 @@ function decrypt_url($encrypted_url, $key)
     return openssl_decrypt($encrypted_url, 'aes-256-cbc', $key, 0, $iv);
 }
 
-if ($role == 'Export Brokerage') {
+
+if (isset($_GET['refnum'])) {
+    $refNum = $_GET['refNum'];
+    if ($role == 'Export Brokerage') {
+        $original_url = 'http://localhost/SE2-agq-system/AGQ/agq_ebsoaNewDocument.php';
+        $encrypted_url = encrypt_url($original_url, $key);
+        $encoded_url = urlencode($encrypted_url);
+
+        header('Location: agq_ebsoaNewDocument.php?url=' . $encoded_url . '&refNum=' . $refNum);
+        exit;
+    } else if ($role == 'Export Forwarding') {
+        $original_url = 'http://localhost/SE2-agq-system/AGQ/agq_efsoaNewDocument.php';
+        $encrypted_url = encrypt_url($original_url, $key);
+        $encoded_url = urlencode($encrypted_url);
+
+        header('Location: agq_efsoaNewDocument.php?url=' . $encoded_url . '&refNum=' . $refNum);
+        exit;
+    } else if ($role == 'Import Brokerage') {
+        $original_url = 'http://localhost/SE2-agq-system/AGQ/agq_ibsoaNewDocument.php';
+        $encrypted_url = encrypt_url($original_url, $key);
+        $encoded_url = urlencode($encrypted_url);
+
+        header('Location: agq_ibsoaNewDocument.php?url=' . $encoded_url . '&refNum=' . $refNum);
+        exit;
+    } else if ($role == 'Import Forwarding') {
+        $original_url = 'http://localhost/SE2-agq-system/AGQ/agq_ifsoaNewDocument.php';
+        $encrypted_url = encrypt_url($original_url, $key);
+        $encoded_url = urlencode($encrypted_url);
+
+        header('Location: agq_ifsoaNewDocument.php?url=' . $encoded_url . '&refNum=' . $refNum);
+        exit;
+    }
+} else {
 
 
-    $original_url = 'http://localhost/SE2-agq-system/AGQ/agq_ebsoaNewDocument.php';
-    $encrypted_url = encrypt_url($original_url, $key);
-    $encoded_url = urlencode($encrypted_url);
+    if ($role == 'Export Brokerage') {
+        $original_url = 'http://localhost/SE2-agq-system/AGQ/agq_ebsoaNewDocument.php';
+        $encrypted_url = encrypt_url($original_url, $key);
+        $encoded_url = urlencode($encrypted_url);
 
-    header('Location: agq_ebsoaNewDocument.php?url=' . $encoded_url);
-    exit;
-} else if ($role == 'Export Forwarding') {
+        header('Location: agq_ebsoaNewDocument.php?url=' . $encoded_url);
+        exit;
+    } else if ($role == 'Export Forwarding') {
+        $original_url = 'http://localhost/SE2-agq-system/AGQ/agq_efsoaNewDocument.php';
+        $encrypted_url = encrypt_url($original_url, $key);
+        $encoded_url = urlencode($encrypted_url);
 
+        header('Location: agq_efsoaNewDocument.php?url=' . $encoded_url);
+        exit;
+    } else if ($role == 'Import Brokerage') {
+        $original_url = 'http://localhost/SE2-agq-system/AGQ/agq_ibsoaNewDocument.php';
+        $encrypted_url = encrypt_url($original_url, $key);
+        $encoded_url = urlencode($encrypted_url);
 
-    $original_url = 'http://localhost/SE2-agq-system/AGQ/agq_efsoaNewDocument.php';
-    $encrypted_url = encrypt_url($original_url, $key);
-    $encoded_url = urlencode($encrypted_url);
+        header('Location: agq_ibsoaNewDocument.php?url=' . $encoded_url);
+        exit;
+    } else if ($role == 'Import Forwarding') {
+        $original_url = 'http://localhost/SE2-agq-system/AGQ/agq_ifsoaNewDocument.php';
+        $encrypted_url = encrypt_url($original_url, $key);
+        $encoded_url = urlencode($encrypted_url);
 
-    header('Location: agq_efsoaNewDocument.php?url=' . $encoded_url);
-    exit;
-} else if ($role == 'Import Brokerage') {
-
-
-    $original_url = 'http://localhost/SE2-agq-system/AGQ/agq_ibsoaNewDocument.php';
-    $encrypted_url = encrypt_url($original_url, $key);
-    $encoded_url = urlencode($encrypted_url);
-
-    header('Location: agq_ibsoaNewDocument.php?url=' . $encoded_url);
-    exit;
-} else if ($role == 'Import Forwarding') {
-
-
-    $original_url = 'http://localhost/SE2-agq-system/AGQ/agq_ifsoaNewDocument.php';
-    $encrypted_url = encrypt_url($original_url, $key);
-    $encoded_url = urlencode($encrypted_url);
-
-    header('Location: agq_ifsoaNewDocument.php?url=' . $encoded_url);
-    exit;
+        header('Location: agq_ifsoaNewDocument.php?url=' . $encoded_url);
+        exit;
+    }
 }
