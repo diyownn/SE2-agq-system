@@ -32,7 +32,7 @@ function decrypt_url($encrypted_url, $key)
 
 if (
     ($role == 'admin' || $role == 'Admin' || $role == 'owner' || $role == 'Owner') &&
-    (!isset($pword) || $pword != 'agqLogistics')
+    (!isset($pword) || $pword != 'AGQ@2006')
 ) {
     $original_url = 'http://localhost/SOFT%20ENG/owndash.php';
     $encrypted_url = encrypt_url($original_url, $key);
@@ -42,7 +42,7 @@ if (
     exit;
 } elseif (
     ($role == 'Export Forwarding' || $role == 'Import Forwarding' || $role == 'Export Brokerage' || $role == 'Import Brokerage') &&
-    (!isset($pword) || $pword != 'agqFreight')
+    (!isset($pword) || $pword != 'AGQ@2006')
 ) {
     $original_url = 'http://localhost/SOFT%20ENG/employdash.php';
     $encrypted_url = encrypt_url($original_url, $key);
