@@ -96,22 +96,53 @@ if (!empty($search_query)) {
                 <?php echo htmlspecialchars($role); ?>
             </div>
 
-
-            <div class="header-container">
-                <div class="search-container">
-                    <input type="text" class="search-bar" id="search-input" placeholder="Search Companies..." autocomplete="off">
-                    <div id="dropdown" class="dropdown" style="display: none;"></div>
-                    <button class="search-button" id="search-button"> SEARCH </button>
+            <!-- Hamburger Menu for Mobile -->
+                <div class="hamburger-menu" id="hamburger-menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
                 </div>
-                <div class="nav-link-container">
-                    <a href="?logout=true">Logout</a>
+
+                <div class="header-container">
+                    <div class="search-container">
+                        <input type="text" class="search-bar" id="search-input" placeholder="Search Companies..." autocomplete="off">
+                        <div id="dropdown" class="dropdown" style="display: none;"></div>
+                        <button class="search-button" id="search-button"> SEARCH </button>
+                    </div>
+                    <div class="nav-link-container">
+                        <a href="agq_archive.php">Archive</a>
+                        <a href="?logout=true">Logout</a>
+                    </div>
                 </div>
             </div>
         </div>
+
+        <!-- Mobile Menu -->
+        <div class="mobile-menu" id="mobile-menu">
+            <div class="mobile-search-container">
+                <div class="mobile-search-input-wrapper">
+                    <input type="text" id="mobile-search-input" placeholder="Search Companies..." autocomplete="off">
+                    <button class="mobile-search-icon" id="mobile-search-button">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94ae5e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="mobile-nav-links">
+                <a href="agq_archive.php">Archive</a>
+                <a href="?logout=true">Logout</a>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Overlay -->
+        <div class="menu-overlay" id="menu-overlay"></div>
+
+
+            </div>
+        </div>
     </div>
-
-
-
 
     <div class=" dashboard-body">
         <div class="company-head">
@@ -177,9 +208,26 @@ if (!empty($search_query)) {
     document.addEventListener("DOMContentLoaded", function() {
         const searchInput = document.getElementById("search-input");
         const searchButton = document.getElementById("search-button");
-        const dropdown = document.getElementById("dropdown");
+        const mobileSearchInput = document.getElementById("mobile-search-input");
+        const mobileSearchButton = document.getElementById("mobile-search-button");            const dropdown = document.getElementById("dropdown");
         const companyContainerParent = document.getElementById("company-container-parent");
+        const hamburgerMenu = document.getElementById("hamburger-menu");
+        const mobileMenu = document.getElementById("mobile-menu");
+        const menuOverlay = document.getElementById("menu-overlay");
+        
+        hamburgerMenu.addEventListener("click", function() {
+                this.classList.toggle("active");
+                mobileMenu.classList.toggle("active");
+                menuOverlay.style.display = mobileMenu.classList.contains("active") ? "block" : "none";
+                document.body.style.overflow = mobileMenu.classList.contains("active") ? "hidden" : "";
+            });
 
+        menuOverlay.addEventListener("click", function() {
+                hamburgerMenu.classList.remove("active");
+                mobileMenu.classList.remove("active");
+                this.style.display = "none";
+                document.body.style.overflow = "";
+            });
 
         if (!searchInput || !searchButton || !dropdown || !companyContainerParent) {
             console.error("Error: One or more elements not found.");
