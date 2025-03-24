@@ -560,11 +560,11 @@
             the Company's established values of integrity, commitment,
             teamwork, honesty, reliability, and customer dedication.
           </p>
-          <a href="../SOGETWA/AGQ/agq_login.php" class="btn">Fly Now!</a>
+          <a href="../SE2-agq-system/AGQ/agq_login.php" class="btn">Fly Now!</a>
         </div>
         <div class="hero-image">
           <img
-            src="../SOGETWA/pexels-rdne-7464725.jpg"
+            src="../SE2-agq-system/pexels-rdne-7464725.jpg"
             alt="AGQ Freight Logistics Logo" />
         </div>
       </div>

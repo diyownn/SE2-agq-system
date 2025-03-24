@@ -1,5 +1,5 @@
 <?php
-include 'db_connection.php'; // Include your DB connection
+include 'db_agq.php'; // Include your DB connection
 
 if (isset($_GET['refNum'])) {
     $refNum = $_GET['refNum'];
@@ -19,7 +19,7 @@ if (isset($_GET['refNum'])) {
     $stmt->bind_param("sssss", $refNum, $refNum, $refNum, $refNum, $refNum);
     $stmt->execute();
     $result = $stmt->get_result();
-    
+
     if ($row = $result->fetch_assoc()) {
         echo json_encode(["isApproved" => $row['isApproved']]);
     } else {
@@ -29,4 +29,3 @@ if (isset($_GET['refNum'])) {
     $stmt->close();
     $conn->close();
 }
-?>
