@@ -93,7 +93,7 @@ if (isset($_GET['search'])) {
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
-<body style="background-image: url('abg.png'); background-repeat: no-repeat; background-size: cover; background-position: center; background-attachment: fixed;">
+<body style="background-image: url('a3bg.png'); background-repeat: no-repeat; background-size: cover; background-position: center; background-attachment: fixed;">
     <div class="top-container">
         <div class="dept-container">
             <div class="dept-label">
