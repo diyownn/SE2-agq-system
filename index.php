@@ -539,7 +539,7 @@
             <li><a href="#home">Home</a></li>
             <li><a href="#contact">Contact Us</a></li>
             <li><a href="#services">Services</a></li>
-            <li><a href="../SOGETWA/AGQ/agq_login.php" class="login-btn">Login</a></li>
+            <li><a href="../SE2-agq-system/AGQ/agq_login.php" class="login-btn">Login</a></li>
           </ul>
         </nav>
       </div>
