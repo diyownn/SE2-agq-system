@@ -90,6 +90,9 @@ if (!empty($search_query)) {
 
 
 <body style="background-image: url('e3bg.png'); background-repeat: no-repeat; background-size: cover; background-position: center; background-attachment: fixed;">
+<div id="loader-container">
+        <iframe id="loader-frame" src="LOADER.html"></iframe>
+    </div>
     <div class="top-container">
         <div class="dept-container">
             <div class="dept-label">
@@ -185,6 +188,11 @@ if (!empty($search_query)) {
 
 </body>
 <script>
+      window.addEventListener("load", function() {
+            setTimeout(() => {
+                document.getElementById("loader-container").style.display = "none";
+            }, 1500); // Waits 1.5 seconds before hiding the loader
+        });
     function storeCompanySession(companyName) {
         fetch('STORE_SESSION.php', {
                 method: 'POST',
