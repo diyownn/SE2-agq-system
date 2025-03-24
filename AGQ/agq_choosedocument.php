@@ -74,7 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         echo "No session data found. Please log in.";
     }
 }
-
+dasdas 
 $conn->close();
 */
 ?>
@@ -128,8 +128,8 @@ $conn->close();
                 FREIGHT INVOICE
             </button>
         </div>
-    </div>
-
+            </div>
+            
     <script>
         function storeDocumentSession(documentName) {
             fetch('STORE_SESSION.php', {
