@@ -113,7 +113,6 @@ if (!empty($search_query)) {
                         <button class="search-button" id="search-button"> SEARCH </button>
                     </div>
                     <div class="nav-link-container">
-                        <a href="agq_archive.php">Archive</a>
                         <a href="?logout=true">Logout</a>
                     </div>
                 </div>
@@ -135,7 +134,6 @@ if (!empty($search_query)) {
                 <div id="mobile-dropdown" class="dropdown" style="display: none;"></div>
             </div>
             <div class="mobile-nav-links">
-                <a href="agq_archive.php">Archive</a>
                 <a href="?logout=true">Logout</a>
             </div>
         </div>
@@ -222,7 +220,7 @@ window.onpopstate = function() {
 
 // Hamburger menu functionality
 document.addEventListener("DOMContentLoaded", function() {
-    const hamburgerButton = document.getElementById("hamburger-button");
+    const hamburgerButton = document.getElementById("hamburger-menu");
     const mobileMenu = document.getElementById("mobile-menu");
     const menuOverlay = document.getElementById("menu-overlay");
 

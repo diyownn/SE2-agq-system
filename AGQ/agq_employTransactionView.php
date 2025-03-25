@@ -122,7 +122,7 @@ if ($result) {
             <button class="search-button" id="search-button">SEARCH</button>
         </div>
         <div>
-            <button class="add-company" onclick="window.location.href='agq_.php'">
+            <button class="add-company" onclick="window.location.href='agq_choosedocument.php'">
                 <span>CREATE</span>
                 <div class="icons">
                         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -176,6 +176,7 @@ if ($result) {
                                         </button>
 
                                     </div>
+
                                 </div>
                             <?php endforeach; ?>
                         <?php else: ?>
@@ -204,7 +205,7 @@ if ($result) {
         }
 
         function updateCheckButtons() {
-            document.querySelectorAll('.check-btn').forEach(button => {
+            document.querySelectorAll('.btn btn-sm action-btn check-btn').forEach(button => {
                 let refNum = button.id.replace('check-btn-', '');
                 fetch(`APPROVAL_STATUS.php?refNum=${refNum}`)
                     .then(response => response.json())
@@ -412,9 +413,9 @@ if ($result) {
                             Object.entries(docTypes).forEach(([docType, records]) => {
                                 let normalizedDocType = docType.toUpperCase().trim();
 
-                                // Convert non-array records into an array
+                                // ✅ FIX: Convert non-array records into an array
                                 if (!Array.isArray(records)) {
-                                    records = [records]; // Wrap single objects into an array
+                                    records = [records];
                                 }
 
                                 if (!structuredTransactions[department][normalizedDocType]) {
