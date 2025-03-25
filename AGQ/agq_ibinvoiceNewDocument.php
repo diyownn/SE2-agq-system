@@ -3,15 +3,16 @@ require_once "db_agq.php";
 
 session_start();
 
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_GET['refNum']) && !empty($_GET['refNum'])) {
+        $docs = isset($_SESSION['DocType']) ? $_SESSION['DocType'] : '';
         updateRecord($conn, $_POST, [
-            "editDate" => date("Y-m-d"),
-            "docType" => $_SESSION['DocType'],
+            "editDate" => date("Y-m-d H:i:s"),
             "companyName" => $_SESSION['Company_name'],
             "department" => $_SESSION['department']
         ]);
-    } else if (isset($_POST['save'])) {
+    } elseif (isset($_POST['save'])) {
         insertRecord($conn);
     }
     // elseif (isset($_POST['select'])) {
@@ -30,13 +31,13 @@ if (isset($_GET['refNum'])) {
     $stmt->execute();
     $result = $stmt->get_result();
     $row = $result->fetch_assoc();
-
+    
     $packageType = $row['PackageType'] ?? '';
 }
 
 if (isset($_GET['refNum'])) {
-    $refNum = $_GET['refNum'];
 
+    $refNum = $_GET['refNum'];
     $sql = "SELECT * FROM tbl_impbrk WHERE RefNum LIKE ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("s", $refNum);
@@ -51,6 +52,7 @@ if (isset($_GET['refNum'])) {
 
 function updateRecord($conn, $data, $sessionData)
 {
+    $docs = isset($_SESSION['DocType']) ? $_SESSION['DocType'] : '';
     $sql = "UPDATE tbl_impbrk SET 
         `To:` = ?, 
         `Address` = ?, 
@@ -94,7 +96,6 @@ function updateRecord($conn, $data, $sessionData)
         $data['date'],
         $data['vessel'],
         $data['eta'],
-        
         $data['destinationOrigin'],
         $data['er'],
         $data['bhNum'],
@@ -114,26 +115,21 @@ function updateRecord($conn, $data, $sessionData)
         $data['approved_by'],
         $data['edited_by'],
         $sessionData['editDate'],
-        $sessionData['docType'],
+        $docs,
         $sessionData['companyName'],
         $sessionData['department'],
         $data['refNum']
-
     );
 
     if ($stmt->execute()) {
-        // echo "New record inserted successfully!";
-        echo '<script>
-        if (confirm("Document Successfully Edited!\\nReturn to Transactions Page?")) {
-            window.location.href = "agq_transactionCatcher.php";
-        }
-        </script>';
+        return "Record updated successfully!";
     } else {
-        echo "Error: " . $stmt->error;
+        return "Error updating record: " . $stmt->error;
     }
 
     $stmt->close();
 }
+
 
 // Function to insert a record
 function insertRecord($conn)
@@ -257,18 +253,6 @@ function insertRecord($conn)
     <title>Sales Invoice </title>
 
     <script>
-         window.onload = function() {
-            let packageType = "<?php echo $packageType; ?>";
-
-            if (packageType === "LCL") {
-                document.getElementById("lcl").checked = true;
-            } else if (packageType === "Full Container") {
-                document.getElementById("container").checked = true;
-            }
-
-
-            togglePackageField();
-        };
 
         function togglePackageField() {
             document.getElementById("package-details").style.display = "block";
@@ -555,33 +539,33 @@ function insertRecord($conn)
         <div class="header">SALES INVOICE</div>
         <form method="POST" onsubmit="return validateForm(event);">
         <div class="section">
-                <input type="text" maxlength="50" name="to" placeholder="To" onchange="validateTextFields(this)" value="<?= isset($row['To:']) ? htmlspecialchars($row['To:']) : ''; ?>" style="width: 70%">
-                <input type="date" name="date" placeholder="Date" onchange="validateDateFields(this)" value="<?= isset($row['Date']) ? $row['Date'] : ''; ?>" style="width: 28%">
+                <input type="text" maxlength="50" name="to" placeholder="To" value="<?= isset($row['To:']) ? htmlspecialchars($row['To:']) : ''; ?>" onchange="validateTextFields(this)" style="width: 70%">
+                <input type="date" name="date" value="<?= isset($row['Date']) ? $row['Date'] : ''; ?>" onchange="validateDateFields(this)" style="width: 28%">
             </div>
             <div class="section">
-                <input type="text" maxlength="100" name="address" placeholder="Address" onchange="validateTextFields(this)" value="<?= isset($row['Address']) ? htmlspecialchars($row['Address']) : ''; ?>" style="width: 100%">
+                <input type="text" maxlength="100" name="address" placeholder="Address" value="<?= isset($row['Address']) ? htmlspecialchars($row['Address']) : ''; ?>" onchange="validateTextFields(this)" style="width: 100%">
             </div>
             <div class="section">
-                <input type="text" maxlength="20" name="tin" placeholder="TIN" onchange="validateTextFields(this)" value="<?= isset($row['Tin']) ? htmlspecialchars($row['Tin']) : ''; ?>" style="width: 48%">
-                <input type="text" maxlength="30" name="attention" placeholder="Attention" onchange="validateTextFields(this)" value="<?= isset($row['Attention']) ? htmlspecialchars($row['Attention']) : ''; ?>" style="width: 48%">
+                <input type="text" maxlength="20" name="tin" placeholder="TIN" value="<?= isset($row['Tin']) ? htmlspecialchars($row['Tin']) : ''; ?>" onchange="validateTextFields(this)" style="width: 48%">
+                <input type="text" maxlength="30" name="attention" placeholder="Attention" value="<?= isset($row['Attention']) ? htmlspecialchars($row['Attention']) : ''; ?>" onchange="validateTextFields(this)" style="width: 48%">
             </div>
             <div class="section">
-                <input type="text" maxlength="30" name="vessel" placeholder="Vessel" onchange="validateTextFields(this)" value="<?= isset($row['Vessel']) ? htmlspecialchars($row['Vessel']) : ''; ?>" style="width: 32%">
-                <input type="date" name="eta" placeholder="ETD/ETA" onchange="validateDateFields(this)" value="<?= isset($row['ETA']) ? $row['ETA'] : ''; ?>" style="width: 32%">
-                <input type="text" maxlength="20" name="refNum" placeholder="Reference No" onchange="validateTextFields(this)" value="<?= isset($row['RefNum']) ? htmlspecialchars($row['RefNum']) : ''; ?>" style="width: 32%">
+                <input type="text" maxlength="30" name="vessel" placeholder="Vessel" value="<?= isset($row['Vessel']) ? htmlspecialchars($row['Vessel']) : ''; ?>" onchange="validateTextFields(this)" style="width: 32%">
+                <input type="date" name="eta" value="<?= isset($row['ETA']) ? $row['ETA'] : ''; ?>" onchange="validateDateFields(this)" style="width: 32%">
+                <input type="text" maxlength="20" name="refNum" placeholder="Reference No" value="<?= isset($row['RefNum']) ? htmlspecialchars($row['RefNum']) : ''; ?>" onchange="validateTextFields(this)" style="width: 32%">
             </div>
             <div class="section">
-                <input type="text" maxlength="25" name="destinationOrigin" placeholder="Destination/Origin" onchange="validateTextFields(this)" value="<?= isset($row['DestinationOrigin']) ? htmlspecialchars($row['DestinationOrigin']) : ''; ?>" style="width: 48%">
-                <input type="text" maxlength="25" name="er" placeholder="E.R" onchange="validateTextFields(this)" value="<?= isset($row['ER']) ? htmlspecialchars($row['ER']) : ''; ?>" style="width: 22%">
-                <input type="text" maxlength="25" name="bhNum" placeholder="BL/HBL No" onchange="validateTextFields(this)" value="<?= isset($row['BHNum']) ? htmlspecialchars($row['BHNum']) : ''; ?>" style="width: 22%">
+                <input type="text" maxlength="25" name="destinationOrigin" placeholder="Destination/Origin" value="<?= isset($row['DestinationOrigin']) ? htmlspecialchars($row['DestinationOrigin']) : ''; ?>" onchange="validateTextFields(this)" style="width: 48%">
+                <input type="text" maxlength="25" name="er" placeholder="E.R" value="<?= isset($row['ER']) ? htmlspecialchars($row['ER']) : ''; ?>" style="width: 22%">
+                <input type="text" maxlength="25" name="bhNum" placeholder="BL/HBL No" value="<?= isset($row['BHNum']) ? htmlspecialchars($row['BHNum']) : ''; ?>" onchange="validateTextFields(this)" style="width: 22%">
             </div>
             <div class="section">
-                <input type="text" maxlength="30" name="natureOfGoods" placeholder="Nature of Goods" onchange="validateTextFields(this)" value="<?= isset($row['NatureOfGoods']) ? htmlspecialchars($row['NatureOfGoods']) : ''; ?>" style="width: 100%">
+                <input type="text" maxlength="30" name="natureOfGoods" placeholder="Nature of Goods" value="<?= isset($row['NatureOfGoods']) ? htmlspecialchars($row['NatureOfGoods']) : ''; ?>" onchange="validateTextFields(this)" style="width: 100%">
             </div>
             <div class="section">
-                <input type="text" maxlength="100" name="packages" placeholder="Packages" onchange="validateTextFields(this)" value="<?= isset($row['Packages']) ? htmlspecialchars($row['Packages']) : ''; ?>" style="width: 32%">
-                <input type="text" maxlength="20" name="weight" placeholder="Weight/Measurement" onchange="validateTextFields(this)" value="<?= isset($row['Weight']) ? htmlspecialchars($row['Weight']) : ''; ?>" style="width: 32%">
-                <input type="text" maxlength="20" name="volume" placeholder="Volume" onchange="validateTextFields(this)" value="<?= isset($row['Volume']) ? htmlspecialchars($row['Volume']) : ''; ?>" style="width: 32%">
+                <input type="text" maxlength="100" name="packages" placeholder="Packages" value="<?= isset($row['Packages']) ? htmlspecialchars($row['Packages']) : ''; ?>" onchange="validateTextFields(this)" style="width: 32%">
+                <input type="text" maxlength="20" name="weight" placeholder="Weight/Measurement" value="<?= isset($row['Weight']) ? htmlspecialchars($row['Weight']) : ''; ?>" onchange="validateTextFields(this)" style="width: 32%">
+                <input type="text" maxlength="20" name="volume" placeholder="Volume" value="<?= isset($row['Volume']) ? htmlspecialchars($row['Volume']) : ''; ?>" onchange="validateTextFields(this)" style="width: 32%">
             </div>
             <div class="section radio-group">
                 <label>Package Type:</label>
@@ -609,12 +593,12 @@ function insertRecord($conn)
                 <button type="button" onclick="calculateTotal()" class="calc-btn">Calculate</button>
             </div>
             <div class="section">
-                <textarea name="notes" placeholder="Enter notes" onchange="validateNotesField(this)" style="width: 800px; height:100px; flex-direction: column; resize: none;"></textarea>
+                <textarea name="notes" placeholder="Enter notes" onchange="validateNotesField(this)" style="width: 800px; height:100px; flex-direction: column; resize: none;"><?= isset($row['Notes']) ? htmlspecialchars($row['Notes']) : ''; ?></textarea>
             </div>
             <div class="section">
-                <input type="text" maxlength="25" name="prepared_by" placeholder="Prepared by" onchange="validateTextFields(this)" value="<?= isset($row['Prepared_by']) ? htmlspecialchars($row['Prepared_by']) : ''; ?>" style="width: 48%">
-                <input type="text" maxlength="25" name="approved_by" placeholder="Approved by" onchange="validateTextFields(this)" value="<?= isset($row['Approved_by']) ? htmlspecialchars($row['Approved_by']) : ''; ?>" style="width: 48%">
-                <input type="text" maxlength="25" name="edited_by" placeholder="Edited by" onchange="validateTextFields(this)" value="<?= isset($row['Edited_by']) ? htmlspecialchars($row['Edited_by']) : ''; ?>" style="width: 48%">
+                <input type="text" maxlength="25" name="prepared_by" placeholder="Prepared by" value="<?= isset($row['Prepared_by']) ? htmlspecialchars($row['Prepared_by']) : ''; ?>" onchange="validateTextFields(this)" style="width: 48%">
+                <input type="text" maxlength="25" name="approved_by" placeholder="Approved by" value="<?= isset($row['Approved_by']) ? htmlspecialchars($row['Approved_by']) : ''; ?>" onchange="validateTextFields(this)" style="width: 48%">
+                <input type="text" maxlength="25" name="edited_by" placeholder="Edited by" value="<?= isset($row['Edited_by']) ? htmlspecialchars($row['Edited_by']) : ''; ?>" onchange="validateTextFields(this)" style="width: 48%">
             </div>
             <div class="footer">
                 <!-- <button class="save-btn">Save</button> -->
