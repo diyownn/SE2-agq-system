@@ -88,7 +88,7 @@ if (isset($_GET['search'])) {
 <head>
     <meta charset="UTF-8" />
     <link rel="stylesheet" type="text/css" href="../css/archive.css">
-    <link rel="icon" href="images/agq_logo.png" type="image/ico">
+    <link rel="icon" type="image/x-icon" href="../AGQ/images/favicon.ico">
     <title>Archives</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
