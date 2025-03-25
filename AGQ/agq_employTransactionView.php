@@ -95,6 +95,7 @@ if ($result) {
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
 </head>
 
 <body>
@@ -121,7 +122,7 @@ if ($result) {
             <button class="search-button" id="search-button">SEARCH</button>
         </div>
         <div>
-            <button class="add-company" onclick="window.location.href='agq_choosedocument.php'">
+            <button class="add-company" onclick="window.location.href='agq_.php'">
                 <span>CREATE</span>
                 <div class="icons">
                         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -178,7 +179,14 @@ if ($result) {
                                 </div>
                             <?php endforeach; ?>
                         <?php else: ?>
-                            <p class="no-records-message">No records found.</p>
+                            <div class="no-records-container">
+                                <p class="no-records-message">No records found.</p>
+                                <?php if(isset($_GET['search'])): ?>
+                                <button class="return-btn" onclick="clearSearch()">
+                                        <span>Return to Transaction View</span>
+                                    </button>
+                                <?php endif; ?>
+                            </div>
                         <?php endif; ?>
                     </div>
                 </div>
@@ -189,6 +197,11 @@ if ($result) {
         var doctype = "<?php echo isset($_SESSION['DocType']) ? $_SESSION['DocType'] : ''; ?>"
         var role = "<?php echo isset($_SESSION['department']) ? $_SESSION['department'] : ''; ?>";
         var company = "<?php echo isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : ''; ?>";
+
+        function clearSearch() {
+            // Redirect to the transaction view page
+            window.location.href = "agq_transactionCatcher.php";
+        }
 
         function updateCheckButtons() {
             document.querySelectorAll('.check-btn').forEach(button => {
@@ -375,7 +388,10 @@ if ($result) {
                         console.log("All Transactions:", data);
 
                         if (!data || Object.keys(data).length === 0 || data.error) {
-                            transactionsContainer.innerHTML = "<p class='no-records-message'>No transactions found.</p>";
+                            transactionsContainer.innerHTML = `
+                                <div class="no-results-container text-center my-5">
+                                    <p class="no-records-message">No transactions found.</p>
+                                </div>`;
                             return;
                         }
 
@@ -421,7 +437,12 @@ if ($result) {
                         transactionsContainer.innerHTML = "";
 
                         if (!data || Object.keys(data).length === 0 || data.error) {
-                            transactionsContainer.innerHTML = "<p class='no-records-message'>No transactions found.</p>";
+                            // Show no results found message with return button
+                            transactionsContainer.innerHTML = `
+                                <div class="no-results-container text-center my-5">
+                                    <p class="no-records-message">No transactions found.</p>
+                                    <button class="btn btn-sm return-btn" onclick="clearSearch()">Return to Transaction View</button>
+                                </div>`;
                             return;
                         }
 
@@ -433,7 +454,7 @@ if ($result) {
                             Object.entries(docTypes).forEach(([docType, records]) => {
                                 let normalizedDocType = docType.toUpperCase().trim();
 
-                                // ✅ FIX: Convert non-array records into an array
+                                // Convert non-array records into an array
                                 if (!Array.isArray(records)) {
                                     records = [records]; // Wrap single objects into an array
                                 }
@@ -450,7 +471,15 @@ if ($result) {
 
                         generateTransactionHTML(structuredTransactions, transactionsContainer);
                     })
-                    .catch(error => console.error("Error fetching filtered transactions:", error));
+                    .catch(error => {
+                        console.error("Error fetching filtered transactions:", error);
+                        // Show error message with return button
+                        transactionsContainer.innerHTML = `
+                            <div class="no-results-container text-center my-5">
+                                <p class="no-records-message">Error loading transactions.</p>
+                                <button class="btn btn-sm return-btn" onclick="clearSearch()">Return to Transaction View</button>
+                            </div>`;
+                    });
             }
 
             function ensureDocumentTypes(structuredTransactions) {
@@ -471,6 +500,25 @@ if ($result) {
 
             function generateTransactionHTML(transactions, container) {
                 container.innerHTML = "";
+                
+                // Check if we have any transactions at all
+                let hasAnyTransactions = false;
+                Object.values(transactions).forEach(deptTypes => {
+                    Object.values(deptTypes).forEach(records => {
+                        if (Array.isArray(records) && records.length > 0) {
+                            hasAnyTransactions = true;
+                        }
+                    });
+                });
+                
+                if (!hasAnyTransactions) {
+                    container.innerHTML = `
+                        <div class="no-results-container text-center my-5">
+                            <p class="no-records-message">No transactions found.</p>
+                            <button class="btn btn-sm return-btn" onclick="clearSearch()">Return to Transaction View</button>
+                        </div>`;
+                    return;
+                }
 
                 let structuredTransactions = {};
 
@@ -559,7 +607,25 @@ if ($result) {
                         });
 
                     } else {
-                        transactionContent.innerHTML = "<p class='no-records-message'>No records found.</p>";
+                        let noRecordsContainer = document.createElement("div");
+                        noRecordsContainer.classList.add("no-records-container");
+                        
+                        let noRecordsMessage = document.createElement("p");
+                        noRecordsMessage.classList.add("no-records-message");
+                        noRecordsMessage.textContent = "No records found.";
+                        
+                        noRecordsContainer.appendChild(noRecordsMessage);
+                        
+                        // Add return button if this is a search result
+                        if (searchInput.value.trim() !== "") {
+                            let returnButton = document.createElement("button");
+                            returnButton.classList.add("btn", "btn-sm", "return-btn");
+                            returnButton.textContent = "Return to Transaction View";
+                            returnButton.onclick = clearSearch;
+                            noRecordsContainer.appendChild(returnButton);
+                        }
+                        
+                        transactionContent.appendChild(noRecordsContainer);
                     }
 
                     transactionSection.appendChild(transactionHeader);
