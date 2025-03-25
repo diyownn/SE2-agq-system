@@ -122,7 +122,7 @@ if ($result) {
             <button class="search-button" id="search-button">SEARCH</button>
         </div>
         <div>
-            <button class="add-company" onclick="window.location.href='agq_.php'">
+            <button class="add-company" onclick="window.location.href='agq_choosedocument.php'">
                 <span>CREATE</span>
                 <div class="icons">
                         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -280,9 +280,10 @@ if ($result) {
                     url = "agq_soaCatcher.php?refNum=" + encodeURIComponent(refnum);
                     break;
                 default:
-                    url = "agq_manifestoUpdate.php?refnum=" + encodeURIComponent(refnum);
+                    url = "agq_manifestoView.php?refnum=" + encodeURIComponent(refnum);
                     break;
             }
+
 
 
             window.location.href = url;
