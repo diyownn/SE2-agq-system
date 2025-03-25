@@ -112,6 +112,8 @@ if ($result) {
 
 
 <body>
+
+
     <div class="top-container">
         <div class="dept-container">
             <div class="header-container">
@@ -170,11 +172,10 @@ if ($result) {
                                         <?php echo htmlspecialchars($transaction['RefNum']); ?> - <?php echo $normalizedDocType; ?>
                                     </span>
                                     <div class="checkbox-container">
-                                        <input type="checkbox" id="transaction-checkbox"
+                                        <input type="checkbox" id="tx-<?php echo htmlspecialchars($transaction['RefNum']); ?>"
                                             class="transaction-checkbox"
                                             data-refnum="<?php echo htmlspecialchars($transaction['RefNum']); ?>"
                                             data-docType="<?php echo htmlspecialchars($normalizedDocType); ?>"
-                                            data-dept="<?php echo htmlspecialchars($dept); ?>"
                                             onclick="updateApprovalStatus(this)">
                                     </div>
                                 </div>
@@ -196,7 +197,6 @@ if ($result) {
     </div>
 
 
-
     <script>
         var role = "<?php echo isset($_SESSION['department']) ? $_SESSION['department'] : ''; ?>";
         var company = "<?php echo isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : ''; ?>";
@@ -214,40 +214,11 @@ if ($result) {
                 window.location.href = "agq_documentCatcher.php?refnum=" + encodeURIComponent(refnum) + '&doctype=' + encodeURIComponent(doctype);
             }
         }
-        console.log(document.querySelector(".transaction-checkbox"));
-
-        window.onload = function() {
-            const checkboxes = document.querySelectorAll(".transaction-checkbox");
-
-            checkboxes.forEach(checkbox => {
-                let refNum = checkbox.getAttribute("data-refnum");
-                let docType = checkbox.getAttribute("data-docType");
-                let dept = checkbox.getAttribute("data-dept"); // Add this
-
-                console.log(`Fetching for RefNum: ${refNum}, DocType: ${docType}, Dept: ${dept}`);
-
-                fetch(`APPROVAL_STATUS.php?refNum=${refNum}&docType=${docType}&dept=${dept}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        console.log(`Response for ${refNum}:`, data); // Log response
-                        if (data.success && data.isApproved == 1) {
-                            checkbox.checked = true;
-                        } else {
-                            checkbox.checked = false;
-                        }
-                    })
-                    .catch(error => console.error(`Error fetching approval status for RefNum: ${refNum}, DocType: ${docType}, Dept: ${dept}`, error));
-            });
-        };
-
-
 
         function updateApprovalStatus(checkbox) {
-            console.log("Checkbox clicked:", checkbox);
-
             let refNum = checkbox.getAttribute("data-refnum");
             let docType = checkbox.getAttribute("data-docType");
-            let isApproved = checkbox.checked ? 1 : 0;
+            let isApproved = checkbox.checked ? 1 : 0; // Set to 1 if checked, 0 if unchecked
 
             fetch("UPDATE_APPROVAL.php", {
                     method: "POST",
@@ -397,7 +368,73 @@ if ($result) {
 
 
             function fetchAllTransactions() {
-                location.reload();
+                fetch("FETCH_TRANSACTIONS.php")
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log("All Transactions:", data);
+
+
+                        if (!data || Object.keys(data).length === 0 || data.error) {
+                            transactionsContainer.innerHTML = `
+                                <div class="no-results-container text-center my-5">
+                                    <p class="no-records-message">No transactions found.</p>
+                                </div>`;
+                            return;
+                        }
+
+
+                        let structuredTransactions = {};
+
+
+                        // Process API response
+                        Object.entries(data).forEach(([department, docTypes]) => {
+                            if (!structuredTransactions[department]) {
+                                structuredTransactions[department] = {};
+                            }
+
+
+                            Object.entries(docTypes).forEach(([docType, records]) => {
+                                if (!Array.isArray(records)) {
+                                    console.warn(`Skipping non-array records for ${docType}:`, records);
+                                    return;
+                                }
+
+
+                                let normalizedDocType = docType.toUpperCase().trim();
+
+
+                                if (!structuredTransactions[department][normalizedDocType]) {
+                                    structuredTransactions[department][normalizedDocType] = [];
+                                }
+
+
+                                records.forEach(record => {
+                                    let refNum = record.RefNum || "No RefNum";
+                                    structuredTransactions[department][normalizedDocType].push(refNum);
+                                });
+                            });
+                        });
+
+
+                        // Ensure SOA, Invoice, and Manifesto (if Import Forwarding) exist in all departments
+                        Object.keys(structuredTransactions).forEach(department => {
+                            if (!structuredTransactions[department]["SOA"]) {
+                                structuredTransactions[department]["SOA"] = [];
+                            }
+                            if (!structuredTransactions[department]["INVOICE"]) {
+                                structuredTransactions[department]["INVOICE"] = [];
+                            }
+                            if (department == "Import Forwarding" || dept == "Import Forwarding") {
+                                if (!structuredTransactions[department]["MANIFESTO"]) {
+                                    structuredTransactions[department]["MANIFESTO"] = [];
+                                }
+                            }
+                        });
+
+
+                        generateTransactionHTML(structuredTransactions, transactionsContainer);
+                    })
+                    .catch(error => console.error("Error fetching all transactions:", error));
             }
 
 
@@ -628,10 +665,9 @@ if ($result) {
 
         console.log("Role:", role);
         console.log("Company:", company);
-        console.log("Selected Department:", dept);
+        console.log("Selected Department:", dep);
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
 </body>
 
 
