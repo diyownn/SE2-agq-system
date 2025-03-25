@@ -140,6 +140,7 @@ $result = $conn->query($query);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Members of the Company</title>
     <link rel="stylesheet" href="motc.css">
+    <link rel="icon" href="images/agq_logo.png" type="image/ico">
 </head>
 
 <body>
