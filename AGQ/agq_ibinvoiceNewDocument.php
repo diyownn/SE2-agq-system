@@ -122,7 +122,13 @@ function updateRecord($conn, $data, $sessionData)
     );
 
     if ($stmt->execute()) {
-        return "Record updated successfully!";
+        ?>'<script>
+        if (confirm("Document Successfully Edited!\\nReturn to Transactions Page?")) {
+            window.location.href = "agq_transactionCatcher.php";
+        }
+            </script>'
+        <?php
+        return;
     } else {
         return "Error updating record: " . $stmt->error;
     }
@@ -390,7 +396,7 @@ function insertRecord($conn)
         }
 
         function validateTextFields(textElement) {
-            const allowedSymbols = /^[a-zA-Z0-9!@$%^&()_+\-:/|,~ ]+$/; // Allow letters, numbers, and symbols
+            const allowedSymbols = /^[a-zA-Z0-9\$%\-\/\., ]+$/; // Allow letters, numbers, and only $ % / . , -
             const reverseTinRegex = /^(?!^[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{4}$).+$/; // Correct regex for TIN format (0000-0000-0000-0000)
             let isValid = true; // Track overall validity
 
@@ -407,7 +413,7 @@ function insertRecord($conn)
                 if (!textElement.value.trim()) {
                     textElement.setCustomValidity("This field is required");
                 } else if (!allowedSymbols.test(textElement.value)) {
-                    textElement.setCustomValidity("Only letters, numbers, and these symbols are allowed: ! @ $ % ^ & ( ) _ + / - : | , ~");
+                    textElement.setCustomValidity("Only letters, numbers, and these symbols are allowed: $ % / - , .");
                 } else {
                     textElement.setCustomValidity(""); // Reset validation
                 }
@@ -428,29 +434,31 @@ function insertRecord($conn)
 
 
         function validateNotesField(notesInput) {
-            const allowedSymbols = /^[a-zA-Z0-9!.@$%^&()_+\-:/|,~ \r\n]*$/; // Allow letters, numbers, symbols, and line breaks
+            const allowedSymbols = /^[a-zA-Z0-9\$%\-\/\., ]+$/; // Allow letters, numbers, and only $ % / . , -
             const maxLength = 500; // Maximum character limit
-            let isValid = true; // Track overall validity
 
-            if (!allowedSymbols.test(notesInput.value)) {
-                notesInput.setCustomValidity("Only letters, numbers, and these symbols are allowed: ! @ $ % ^ & ( ) _ + / - : | , ~");
+            if (!notesInput.value.trim()) {
+                // If the field is empty
+                notesInput.setCustomValidity(""); // Clear validation for empty values (optional)
+            } else if (!allowedSymbols.test(notesInput.value)) {
+                // Check for invalid symbols
+                notesInput.setCustomValidity("Only letters, numbers, and these symbols are allowed: $ % / - , .");
             } else if (notesInput.value.length > maxLength) {
+                // Check for length exceeding the limit
                 notesInput.setCustomValidity("Notes cannot exceed 500 characters");
             } else {
+                // Everything is valid
                 notesInput.setCustomValidity(""); // Reset validation
             }
 
             notesInput.reportValidity(); // Show validation message
 
-            if (!notesInput.checkValidity()) {
-                event.preventDefault(); // Prevent form submission if invalid
-            }
-
+            // Clear the custom validation message when the user starts typing
             notesInput.addEventListener("input", function () {
-                notesInput.setCustomValidity(""); // Clear error when user types
+                notesInput.setCustomValidity(""); 
             });
-            
-            return isValid; // Return validity status
+
+            return notesInput.checkValidity(); // Return true if valid, false otherwise
         }
 
 
@@ -538,7 +546,7 @@ function insertRecord($conn)
 <div class="container">
         <div class="header">SALES INVOICE</div>
         <form method="POST" onsubmit="return validateForm(event);">
-        <div class="section">
+            <div class="section">
                 <input type="text" maxlength="50" name="to" placeholder="To" value="<?= isset($row['To:']) ? htmlspecialchars($row['To:']) : ''; ?>" onchange="validateTextFields(this)" style="width: 70%">
                 <input type="date" name="date" value="<?= isset($row['Date']) ? $row['Date'] : ''; ?>" onchange="validateDateFields(this)" style="width: 28%">
             </div>

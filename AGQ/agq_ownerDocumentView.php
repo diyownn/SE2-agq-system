@@ -232,7 +232,7 @@ $record = selectRecords($conn, $dept, $refNum);
               </tbody>
             </table>";
 
-          }else if ($docType == "SOA" && $package == "FULL") {
+          }else if ($docType == "SOA" && $package == "Full Container") {
             echo" 
             <table>
               <thead>
@@ -338,7 +338,7 @@ $record = selectRecords($conn, $dept, $refNum);
                 </tr>
                 </tbody>
             </table>";
-          }else if ($docType == "Invoice" && $package == "FULL") {
+          }else if ($docType == "Invoice" && $package == "Full Container") {
             echo "
             <table>
              <thead>
@@ -460,7 +460,7 @@ $record = selectRecords($conn, $dept, $refNum);
                </tbody>
            </table>";
 
-          }else if ($docType == "SOA" && $package == "FULL") {
+          }else if ($docType == "SOA" && $package == "Full Container") {
             echo "
             <table>
              <thead>
@@ -611,7 +611,7 @@ $record = selectRecords($conn, $dept, $refNum);
                </tbody>
            </table>";
 
-          }else if ($docType == "Invoice" && $package == "FULL") {
+          }else if ($docType == "Invoice" && $package == "Full Container") {
             echo "
             <table>
              <thead>
@@ -711,7 +711,7 @@ $record = selectRecords($conn, $dept, $refNum);
               </tbody>
             </table>";
 
-          }else if ($docType == "SOA" && $package == "FULL") {
+          }else if ($docType == "SOA" && $package == "Full Container") {
             echo" 
             <table>
               <thead>
@@ -795,7 +795,7 @@ $record = selectRecords($conn, $dept, $refNum);
                </tbody>
            </table>";
 
-          }else if ($docType == "Invoice" && $package == "FULL") {
+          }else if ($docType == "Invoice" && $package == "Full Container") {
             echo "
             <table>
              <thead>
@@ -872,7 +872,7 @@ $record = selectRecords($conn, $dept, $refNum);
                </tbody>
            </table>";
 
-          }else if ($docType == "SOA" && $package == "FULL") {
+          }else if ($docType == "SOA" && $package == "Full Container") {
             echo" 
             <table>
               <thead>
@@ -976,7 +976,7 @@ $record = selectRecords($conn, $dept, $refNum);
                </tr>
                </tbody>
            </table>";
-          }else if ($docType == "Invoice" && $package == "FULL") {
+          }else if ($docType == "Invoice" && $package == "Full Container") {
             echo "
             <table>
              <thead>
