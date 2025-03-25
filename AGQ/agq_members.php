@@ -226,38 +226,6 @@ $result = $conn->query($query);
             document.getElementById("userModal").style.display = "none";
         }
 
-        function deleteUser(userId) {
-            if (confirm("Are you sure you want to delete this user?")) {
-                fetch("agq_members.php?delete_id=" + encodeURIComponent(userId))
-                    .then(response => response.json())
-                    .then(data => {
-                        alert(data.message);
-                        if (data.success) {
-                            document.querySelector(`tr[data-user-id="${userId}"]`).remove();
-                        }
-                    })
-                    .catch(error => console.error('Error deleting user:', error));
-            }
-        }
-
-        document.getElementById("userForm").addEventListener("submit", function(event) {
-            event.preventDefault();
-            let formData = new FormData(this);
-
-            fetch("agq_members.php", {
-                    method: "POST",
-                    body: formData
-                })
-                .then(response => response.json())
-                .then(data => {
-                    alert(data.message);
-                    if (data.success) {
-                        addRowToTable(data.user);
-                        closeModal();
-                    }
-                })
-                .catch(error => console.error('Error submitting form:', error));
-        });
 
         function addRowToTable(user) {
             const tableBody = document.getElementById("userTableBody");
@@ -299,45 +267,116 @@ $result = $conn->query($query);
                 console.error(`Element with ID '${id}' not found.`);
             }
         }
-
-
-        // Handle form submission
-        document.getElementById("userForm").addEventListener("submit", function(event) {
-            event.preventDefault();
-            let formData = new FormData(this);
-
-            fetch("agq_members.php", {
-                    method: "POST",
-                    body: formData
-                })
+       
+    </script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+function deleteUser(userId) {
+    // Use SweetAlert2 for confirmation
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete this user!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // User confirmed, proceed with deletion
+            fetch("agq_members.php?delete_id=" + encodeURIComponent(userId))
                 .then(response => response.json())
                 .then(data => {
-                    console.log("Response Data:", data); // Debugging log
-                    let modalErrors = document.getElementById("modalErrors");
-
-                    if (!data.success) {
-                        if (data.errors && data.errors.length > 0) {
-                            modalErrors.innerHTML = data.errors.map(err => `<p>${err}</p>`).join('');
-                            modalErrors.style.display = "block";
-                        } else {
-                            modalErrors.innerHTML = "<p>An unknown error occurred.</p>";
-                            modalErrors.style.display = "block";
-                        }
+                    if (data.success) {
+                        // Show success message with SweetAlert2
+                        Swal.fire({
+                            title: 'Deleted!',
+                            text: data.message,
+                            icon: 'success'
+                        });
+                        // Remove the row from the table
+                        document.querySelector(`tr[data-user-id="${userId}"]`).remove();
                     } else {
-                        modalErrors.style.display = "none"; // Hide previous errors
-                        closeModal();
+                        // Show error message with SweetAlert2
+                        Swal.fire({
+                            title: 'Error!',
+                            text: data.message,
+                            icon: 'error'
+                        });
                     }
                 })
                 .catch(error => {
-                    console.error('Error submitting form:', error);
-                    let modalErrors = document.getElementById("modalErrors");
-                    if (modalErrors) {
-                        modalErrors.innerHTML = "<p>Failed to submit. Please try again.</p>";
-                        modalErrors.style.display = "block";
-                    }
+                    console.error('Error deleting user:', error);
+                    // Show error message with SweetAlert2
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'Failed to delete user. Please try again.',
+                        icon: 'error'
+                    });
                 });
+        }
+    });
+}
+</script>
+
+<script>
+document.getElementById("userForm").addEventListener("submit", function(event) {
+    event.preventDefault();
+    let formData = new FormData(this);
+    let modalErrors = document.getElementById("modalErrors");
+
+    fetch("agq_members.php", {
+        method: "POST",
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log("Response Data:", data); // Debugging log
+        
+        if (!data.success) {
+            if (data.errors && data.errors.length > 0) {
+                // Display validation errors in the modal
+                modalErrors.innerHTML = data.errors.map(err => `<p>${err}</p>`).join('');
+                modalErrors.style.display = "block";
+            } else {
+                // Display a generic error using SweetAlert2
+                Swal.fire({
+                    title: 'Error!',
+                    text: data.message || 'An unknown error occurred.',
+                    icon: 'error'
+                });
+                closeModal();
+            }
+        } else {
+            // Success! Close modal and show success message
+            modalErrors.style.display = "none";
+            closeModal();
+            
+            // Show success message with SweetAlert2
+            Swal.fire({
+                title: 'Success!',
+                text: data.message,
+                icon: 'success'
+            });
+            
+            // Add the new user to the table
+            addRowToTable(data.user);
+        }
+    })
+    .catch(error => {
+        console.error('Error submitting form:', error);
+        
+        // Display network or other errors with SweetAlert2
+        Swal.fire({
+            title: 'Error!',
+            text: 'Failed to submit. Please try again.',
+            icon: 'error'
         });
-    </script>
+        
+        closeModal();
+    });
+});
+</script>
 
 </body>
 

@@ -142,12 +142,15 @@ $record = selectRecords($conn, $role, $refNum);
       <?php 
 
       $dept = $record['Department'];
+      $docType = $record['DocType'];
+      $_SESSION['DocType'] = $docType;
 
       switch ($dept) {
 
         case "Import Forwarding";
           $docType = $record['DocType'];
           $package = $record['PackageType'];
+          
 
           if ($docType == "SOA" && $package == "LCL") {
             echo" 
