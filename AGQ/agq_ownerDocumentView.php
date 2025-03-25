@@ -62,7 +62,7 @@ $record = selectRecords($conn, $dept, $refNum);
 </head>
 
 
-<body>
+<body style="background-image: url('vdbg.png'); background-repeat: no-repeat; background-size: cover; background-position: center; background-attachment: fixed;">
 <a href="agq_ownTransactionView.php" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 40px; top: 60px;">←</a>
 
   <!--<div class="top-container">

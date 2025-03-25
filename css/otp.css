@@ -167,10 +167,20 @@ body {
 
 
 .container {
-    padding: 40px;
-    max-width: 900px;
-    background: white;
-    border-radius: 10px;
+    background-color: transparent !important;
+    background: transparent !important;
+}
+
+.transaction {
+    background-color: rgba(255, 255, 255, 0.7);
+}
+
+.transaction-header {
+    background-color: #c3d2a2;
+}
+
+.transaction-content {
+    background-color: rgba(255, 255, 255, 0.9);
 }
 
 

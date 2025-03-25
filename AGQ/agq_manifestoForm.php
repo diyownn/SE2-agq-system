@@ -163,7 +163,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <!-- Website Icon -->
 <link rel="icon" type="image/x-icon" href="../AGQ/images/favicon.ico">
 
-<body style="background-color: white; background-image:none">
+<body style="background-image: url('manifbg.png'); background-repeat: no-repeat; background-size: cover; background-position: center; background-attachment: fixed;">
     <a href="agq_choosedocument.php" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 39%; top: 55px;">←</a>
 
     <div class="container">

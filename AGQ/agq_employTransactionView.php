@@ -98,7 +98,7 @@ if ($result) {
     
 </head>
 
-<body>
+<body style="background-image: url('otvbg.png'); background-repeat: no-repeat; background-size: cover; background-position: center; background-attachment: fixed;">
 
     <div class="top-container">
         <div class="dept-container">

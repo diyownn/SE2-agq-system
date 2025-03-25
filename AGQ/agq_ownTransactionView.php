@@ -2,34 +2,28 @@
 require 'db_agq.php';
 session_start();
 
-
-$url = isset($_GET['url']) ? $_GET['url'] : ''; // Fixed this line to properly check the URL
+$url = isset($_GET['url']) ? $_GET['url'] : '';
 $role = isset($_SESSION['department']) ? $_SESSION['department'] : '';
 $dept = isset($_SESSION['SelectedDepartment']) ? $_SESSION['SelectedDepartment'] : '';
 $company = isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : '';
-
 
 if (!$role) {
     header("Location: UNAUTHORIZED.php?error=401r");
 }
 
-
 if (!$company) {
     header("Location: UNAUTHORIZED.php?error=401c");
 }
 
-
 if (!$dept) {
     header("Location: UNAUTHORIZED.php?error=401d");
 }
-
 
 // Changed this condition to check if URL is empty, not just if it's set
 if ($url === '') {
     // Removed this redirect to avoid unauthorized page
     // header("Location: UNAUTHORIZED.php?error=401u");
 }
-
 
 $query = "
 SELECT i.RefNum, i.DocType, c.Company_name
@@ -89,14 +83,10 @@ if ($result) {
         ];
     }
 }
-
-
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
-
 
 <head>
     <meta charset="UTF-8">
@@ -110,9 +100,7 @@ if ($result) {
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
-
-<body>
-
+<body style="background-image: url('otvbg.png'); background-repeat: no-repeat; background-size: cover; background-position: center; background-attachment: fixed;">
 
     <div class="top-container">
         <div class="dept-container">
@@ -130,10 +118,7 @@ if ($result) {
         </div>
     </div>
 
-
-
     <a href="agq_chooseDepartment.php" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 20px; top: 50px;">←</a>
-
 
     <div class="container py-3">
         <div class="search-container d-flex flex-wrap justify-content-center">
@@ -142,23 +127,18 @@ if ($result) {
             <button class="search-button" id="search-button">SEARCH</button>
         </div>
 
-
         <div class="transactions mt-4">
             <?php
             $docTypes = ['SOA', 'Invoice'];
             $labels = ['SOA', 'INVOICE'];
-
 
             if ($dept === 'Import Forwarding' || $role === 'Import Forwarding') {
                 $docTypes[] = 'Manifesto';
                 $labels[] = 'MANIFESTO';
             }
 
-
             $docTypeLabels = array_combine(array_map('strtoupper', $docTypes), $labels);
             ?>
-
-
 
             <?php foreach ($docTypes as $docType): ?>
                 <div class="transaction">
@@ -195,7 +175,6 @@ if ($result) {
             <?php endforeach; ?>
         </div>
     </div>
-
 
     <script>
         var role = "<?php echo isset($_SESSION['department']) ? $_SESSION['department'] : ''; ?>";
@@ -674,6 +653,5 @@ if ($result) {
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-
 
 </html>

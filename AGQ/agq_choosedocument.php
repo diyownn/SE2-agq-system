@@ -97,7 +97,7 @@ $conn->close();
 
 <link rel="icon" href="images/agq_logo.png" type="image/ico">
 
-<body>
+<body style="background-image: url('cdobg.png'); background-repeat: no-repeat; background-size: cover; background-position: center; background-attachment: fixed;">
     <div class="top-container">
         <div class="dept-container">
             <div class="header-container">

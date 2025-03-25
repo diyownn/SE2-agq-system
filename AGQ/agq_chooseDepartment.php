@@ -25,10 +25,11 @@ if (!$company) {
     <title>Company Departments</title>
     <link rel="stylesheet" href="../css/cd.css">
     <link rel="icon" href="images/agq_logo.png" type="image/ico">
+
 </head>
 
 <body>
-
+<body style="background-image: url('cdbg.png'); background-repeat: no-repeat; background-size: cover; background-position: center; background-attachment: fixed;">
     <div class="top-container">
         <div class="dept-container">
             <div class="header-container">
@@ -52,10 +53,9 @@ if (!$company) {
                 <a href="#" class="box" onclick="storeDepartmentSession('Import Brokerage')">Import Brokerage</a>
                 <a href="#" class="box" onclick="storeDepartmentSession('Export Brokerage')">Export Brokerage</a>
             </div>
-
         </div>
     </div>
-</body>
+
 <script>
     function storeDepartmentSession(departmentName) {
         fetch('STORE_SESSION.php', {
@@ -73,5 +73,5 @@ if (!$company) {
             .catch(error => console.error("Error:", error));
     }
 </script>
-
+</body>
 </html>

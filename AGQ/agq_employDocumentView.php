@@ -60,7 +60,7 @@ $record = selectRecords($conn, $role, $refNum);
   <link rel="stylesheet" type="text/css" href="../css/employdocu.css">
 </head>
 
-<body>
+<body style="background-image: url('vdbg.png'); background-repeat: no-repeat; background-size: cover; background-position: center; background-attachment: fixed;">
 <a href="agq_transactionCatcher.php" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 40px; top: 60px;">←</a>
   <div class="container">
     <div class="document-view">

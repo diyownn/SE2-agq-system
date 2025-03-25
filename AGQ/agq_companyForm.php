@@ -20,7 +20,8 @@
 <!-- Website Icon -->
 <link rel="icon" href="images/agq_logo.png" type="image/ico">
 
-<body style="background-color: white; background-image:none">
+
+<body style="background-image: url('cbg.png'); background-repeat: no-repeat; background-size: cover; background-position: center; background-attachment: fixed;">
     <div class="container">
         <div class="row d-flex justify-content-center">
             <div class="col-sm-offset-4 col-sm-4" id="border1">
