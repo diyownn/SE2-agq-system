@@ -94,7 +94,7 @@ function insertRecord($conn)
     if ($stmt->execute()) {
         // echo "New record inserted successfully!";
         echo '<script>
-        if (confirm("Document Successfully Created!\\nDo you want to view it?")) {
+        if (confirm("Document Successfully Created!\\nReturn to Transactions Page?")) {
             window.location.href = "agq_transactionCatcher.php";
         }
             </script>';

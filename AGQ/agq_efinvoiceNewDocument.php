@@ -118,7 +118,12 @@ function updateRecord($conn, $data, $sessionData)
     );
 
     if ($stmt->execute()) {
-        ?><script>alert("Document Successfully Edited.");</script><?php
+        ?>'<script>
+        if (confirm("Document Successfully Edited!\\nReturn to Transactions Page?")) {
+            window.location.href = "agq_transactionCatcher.php";
+        }
+            </script>'
+        <?php
         return;
     } else {
         return "Error updating record: " . $stmt->error;
@@ -194,7 +199,7 @@ function insertRecord($conn)
 
     if ($stmt->execute()) {
         echo '<script>
-        if (confirm("Document Successfully Created!\\nDo you want to view it?")) {
+        if (confirm("Document Successfully Created!\\nReturn to Transactions Page?")) {
             window.location.href = "agq_transactionCatcher.php";
         }
             </script>';
