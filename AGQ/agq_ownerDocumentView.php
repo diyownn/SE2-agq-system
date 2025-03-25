@@ -167,6 +167,8 @@ $record = selectRecords($conn, $dept, $refNum);
       <?php 
 
       $dept = $record['Department'];
+      $docType = $record['DocType'];
+      $_SESSION['DocType'] = $docType;
 
       switch ($dept) {
 
