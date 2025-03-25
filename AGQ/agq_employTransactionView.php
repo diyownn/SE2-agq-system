@@ -175,6 +175,7 @@ if ($result) {
                                         </button>
 
                                     </div>
+
                                 </div>
                             <?php endforeach; ?>
                         <?php else: ?>
@@ -191,7 +192,7 @@ if ($result) {
         var company = "<?php echo isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : ''; ?>";
 
         function updateCheckButtons() {
-            document.querySelectorAll('.check-btn').forEach(button => {
+            document.querySelectorAll('.btn btn-sm action-btn check-btn').forEach(button => {
                 let refNum = button.id.replace('check-btn-', '');
                 fetch(`APPROVAL_STATUS.php?refNum=${refNum}`)
                     .then(response => response.json())
@@ -266,7 +267,7 @@ if ($result) {
                     url = "agq_soaCatcher.php?refNum=" + encodeURIComponent(refnum);
                     break;
                 default:
-                    url = "agq_login.php";
+                    url = "agq_manifestoUpdate.php?refnum=" + encodeURIComponent(refnum);
                     break;
             }
 
@@ -369,47 +370,7 @@ if ($result) {
             }
 
             function fetchAllTransactions() {
-                fetch("FETCH_TRANSACTIONS.php")
-                    .then(response => response.json())
-                    .then(data => {
-                        console.log("All Transactions:", data);
-
-                        if (!data || Object.keys(data).length === 0 || data.error) {
-                            transactionsContainer.innerHTML = "<p class='no-records-message'>No transactions found.</p>";
-                            return;
-                        }
-
-                        let structuredTransactions = {};
-
-                        transactionsContainer.innerHTML = "";
-                        Object.entries(data).forEach(([department, docTypes]) => {
-                            if (!structuredTransactions[department]) {
-                                structuredTransactions[department] = {};
-                            }
-
-                            Object.entries(docTypes).forEach(([docType, records]) => {
-                                let normalizedDocType = docType.toUpperCase().trim();
-
-                                // Convert non-array records into an array
-                                if (!Array.isArray(records)) {
-                                    records = [records]; // Wrap single objects into an array
-                                }
-
-                                if (!structuredTransactions[department][normalizedDocType]) {
-                                    structuredTransactions[department][normalizedDocType] = [];
-                                }
-
-                                records.forEach(record => {
-                                    let refNum = record.RefNum || "No RefNum";
-                                    structuredTransactions[department][normalizedDocType].push(refNum);
-                                });
-                            });
-                        });
-
-                        ensureDocumentTypes(structuredTransactions);
-                        generateTransactionHTML(structuredTransactions, transactionsContainer);
-                    })
-                    .catch(error => console.error("Error fetching all transactions:", error));
+                location.reload();
             }
 
             function fetchFilteredTransactions(query) {
@@ -433,9 +394,9 @@ if ($result) {
                             Object.entries(docTypes).forEach(([docType, records]) => {
                                 let normalizedDocType = docType.toUpperCase().trim();
 
-                                // ✅ FIX: Convert non-array records into an array
+
                                 if (!Array.isArray(records)) {
-                                    records = [records]; // Wrap single objects into an array
+                                    records = [records];
                                 }
 
                                 if (!structuredTransactions[department][normalizedDocType]) {

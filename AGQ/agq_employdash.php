@@ -222,7 +222,7 @@ window.onpopstate = function() {
 
 // Hamburger menu functionality
 document.addEventListener("DOMContentLoaded", function() {
-    const hamburgerButton = document.getElementById("hamburger-button");
+    const hamburgerButton = document.getElementById("hamburger-menu");
     const mobileMenu = document.getElementById("mobile-menu");
     const menuOverlay = document.getElementById("menu-overlay");
 
