@@ -325,22 +325,28 @@ if ($result) {
                         // Identify the correct department key dynamically
                         let departmentKey = Object.keys(data).find(key => Array.isArray(data[key]));
                         let transactions = departmentKey ? data[departmentKey] : [];
-
-                        if (transactions.length > 0) {
-                            transactions.forEach(item => {
+                        
+                        // Check if the search query directly matches any RefNum
+                        let exactMatches = transactions.filter(item => 
+                            (item.RefNum && item.RefNum.toLowerCase().includes(query))
+                        );
+                        
+                        // Only show dropdown if we have exact matches to RefNum
+                        if (exactMatches.length > 0) {
+                            exactMatches.forEach(item => {
                                 let refNum = item.RefNum || "Unknown RefNum";
                                 let docType = item.DocType || "No DocType";
-                                let isArchived = item.ArchivedStatus === "Archived"; // Check archived status
+                                let isArchived = item.ArchivedStatus === "Archived";
 
                                 let div = document.createElement("div");
                                 div.classList.add("dropdown-item");
                                 div.style.display = "flex";
-                                div.style.justifyContent = "space-between"; // Aligns left and right
+                                div.style.justifyContent = "space-between";
                                 div.style.padding = "10px 15px";
 
                                 if (isArchived) {
                                     div.style.cursor = "not-allowed";
-                                    div.style.opacity = "0.5"; // Make archived items appear faded
+                                    div.style.opacity = "0.5";
                                 } else {
                                     div.onclick = function() {
                                         searchInput.value = refNum;
@@ -349,15 +355,14 @@ if ($result) {
                                 }
 
                                 div.innerHTML = `
-                            <span><strong>${refNum}</strong> - ${docType}</span>
-                            <span style="color: red; font-weight: bold;">${isArchived ? "Archived" : ""}</span>
-                        `;
+                                    <span><strong>${refNum}</strong> - ${docType}</span>
+                                    <span style="color: red; font-weight: bold;">${isArchived ? "Archived" : ""}</span>
+                                `;
 
                                 dropdown.appendChild(div);
                             });
 
-                            // Show dropdown only if there are matching results
-                            dropdown.style.display = dropdown.children.length > 0 ? "block" : "none";
+                            dropdown.style.display = "block";
                         } else {
                             dropdown.style.display = "none";
                         }
