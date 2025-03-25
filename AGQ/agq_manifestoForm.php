@@ -161,7 +161,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <link rel="stylesheet" type="text/css" href="agq.css">
 </head>
 <!-- Website Icon -->
-<link rel="icon" href="images/agq_logo.png" type="image/ico">
+<link rel="icon" type="image/x-icon" href="../AGQ/images/favicon.ico">
 
 <body style="background-color: white; background-image:none">
     <a href="agq_choosedocument.php" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 39%; top: 55px;">←</a>
