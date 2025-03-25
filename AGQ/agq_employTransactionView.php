@@ -176,6 +176,7 @@ if ($result) {
                                         </button>
 
                                     </div>
+
                                 </div>
                             <?php endforeach; ?>
                         <?php else: ?>
@@ -204,7 +205,7 @@ if ($result) {
         }
 
         function updateCheckButtons() {
-            document.querySelectorAll('.check-btn').forEach(button => {
+            document.querySelectorAll('.btn btn-sm action-btn check-btn').forEach(button => {
                 let refNum = button.id.replace('check-btn-', '');
                 fetch(`APPROVAL_STATUS.php?refNum=${refNum}`)
                     .then(response => response.json())
@@ -279,7 +280,7 @@ if ($result) {
                     url = "agq_soaCatcher.php?refNum=" + encodeURIComponent(refnum);
                     break;
                 default:
-                    url = "agq_login.php";
+                    url = "agq_manifestoUpdate.php?refnum=" + encodeURIComponent(refnum);
                     break;
             }
 
@@ -411,9 +412,9 @@ if ($result) {
                             Object.entries(docTypes).forEach(([docType, records]) => {
                                 let normalizedDocType = docType.toUpperCase().trim();
 
-                                // Convert non-array records into an array
+                                // ✅ FIX: Convert non-array records into an array
                                 if (!Array.isArray(records)) {
-                                    records = [records]; // Wrap single objects into an array
+                                    records = [records];
                                 }
 
                                 if (!structuredTransactions[department][normalizedDocType]) {
