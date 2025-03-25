@@ -61,32 +61,31 @@
     <?php
     require_once "db_agq.php";
 
+
     if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['compPic']['tmp_name']) && isset($_POST['compName'])) {
-        $company_picture = file_get_contents($_FILES['compPic']['tmp_name']);
         $company_name = $_POST['compName'];
-        $companyid = (string)random_int(1000000000, 9999999999); 
+        $companyid = (string)random_int(1000000000, 9999999999);
+        $company_picture = file_get_contents($_FILES['compPic']['tmp_name']);
 
         $stmt = $conn->prepare("INSERT INTO tbl_company (CompanyID, Company_name, Company_picture) VALUES (?, ?, ?)");
         if (!$stmt) {
             die("Preparation failed: " . $conn->error);
         }
 
-        $stmt->bind_param("ssb", $companyid, $company_name, $company_picture);
-        //$stmt->send_long_data(4, $company_picture);
+        // Use "sss" (string, string, string) and bind the data as a string
+        $stmt->bind_param("sss", $companyid, $company_name, $company_picture);
+        $stmt->send_long_data(2, $company_picture); // Send BLOB data
 
         if ($stmt->execute()) {
-    ?>
-            <script>
-                Swal.fire({
-                    icon: "success",
-                    title: "Company Added!",
-                });
-            </script>
-    <?php
+            echo '<script>
+            Swal.fire({
+                icon: "success",
+                title: "Company Added!",
+            });
+        </script>';
         } else {
             echo "Error uploading company: " . $stmt->error;
         }
-
 
         $stmt->close();
         $conn->close();
@@ -103,8 +102,8 @@
         function validate_form() {
             var val_cimg = validate_compImg();
             var val_cname = validate_compName();
-            
-           return val_cimg && val_cname;
+
+            return val_cimg && val_cname;
         }
 
         function validate_compImg() {
@@ -127,7 +126,7 @@
                 event.preventDefault(); // Prevent form submission if invalid
             }
 
-            fileInput.addEventListener("input", function () {
+            fileInput.addEventListener("input", function() {
                 fileInput.setCustomValidity(""); // Clear error when user types
             });
 
@@ -152,7 +151,7 @@
                 event.preventDefault(); // Prevent form submission if invalid
             }
 
-            fileInput.addEventListener("input", function () {
+            fileInput.addEventListener("input", function() {
                 fileInput.setCustomValidity(""); // Clear error when user types
             });
             return isValid;
@@ -175,19 +174,19 @@
             } else if (!nameregex.test(comp.value)) {
                 comp.setCustomValidity("Company Name must be 2-25 characters");
 
-            }else {
+            } else {
                 comp.setCustomValidity(""); // Reset validation
-                }
+            }
 
-                comp.reportValidity(); // Show validation message
+            comp.reportValidity(); // Show validation message
 
-                if (!comp.checkValidity()) {
-                    event.preventDefault(); // Prevent form submission if invalid
-                }
+            if (!comp.checkValidity()) {
+                event.preventDefault(); // Prevent form submission if invalid
+            }
 
-                comp.addEventListener("input", function () {
-                    comp.setCustomValidity(""); // Clear error when user types
-                });
+            comp.addEventListener("input", function() {
+                comp.setCustomValidity(""); // Clear error when user types
+            });
 
             return isValid;
 
