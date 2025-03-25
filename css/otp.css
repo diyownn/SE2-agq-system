@@ -85,7 +85,7 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    height: 120px;
+    height: 90px;
     width: 100%;
 }
  
@@ -167,7 +167,6 @@ body {
 
 
 .container {
-    margin: 50px auto;
     padding: 40px;
     max-width: 900px;
     background: white;
@@ -244,7 +243,6 @@ body {
     border-radius: 0 50px 50px 0;
     cursor: pointer;
 }
-
 
 .transactions {
     display: flex;
@@ -526,4 +524,38 @@ body {
     color: #555;
     font-style: italic;
     display: block;
+}
+
+.no-results-container {
+    padding: 20px;
+    text-align: left;
+}
+        
+.no-records-container {
+    text-align: left;
+    padding: 10px;
+}
+        
+.return-btn {
+    background-color: #8BAD5F;
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    cursor: pointer;
+    border-radius: 30px;
+    margin-top: 15px;
+    margin-left: 15px;
+    transition: all 0.3s;
+    font-weight: 500;
+    font-size: 14px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+        
+.return-btn:hover {
+    background-color: #7a9851;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }

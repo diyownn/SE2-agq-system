@@ -108,8 +108,6 @@ if ($result) {
     <link rel="icon" href="images/agq_logo.png" type="image/ico">
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-
 </head>
 
 
@@ -183,7 +181,14 @@ if ($result) {
                                 </div>
                             <?php endforeach; ?>
                         <?php else: ?>
-                            <p class="no-records-message">No records found.</p>
+                            <div class="no-records-container">
+                                <p class="no-records-message">No records found.</p>
+                                <?php if(isset($_GET['search'])): ?>
+                                <button class="return-btn" onclick="clearSearch()">
+                                    <span>Return to Transaction View</span>
+                                </button>
+                                <?php endif; ?>
+                            </div>
                         <?php endif; ?>
                     </div>
                 </div>
@@ -197,7 +202,10 @@ if ($result) {
         var company = "<?php echo isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : ''; ?>";
         var dept = "<?php echo isset($_SESSION['SelectedDepartment']) ? $_SESSION['SelectedDepartment'] : ''; ?>";
 
-
+        function clearSearch() {
+            // Redirect to the transaction view page
+            window.location.href = "agq_transactionCatcher.php";
+        }
 
         function redirectToDocument(refnum, doctype) {
             if (!refnum || !doctype) {
@@ -367,7 +375,10 @@ if ($result) {
 
 
                         if (!data || Object.keys(data).length === 0 || data.error) {
-                            transactionsContainer.innerHTML = "<p class='no-records-message'>No transactions found.</p>";
+                            transactionsContainer.innerHTML = `
+                                <div class="no-results-container text-center my-5">
+                                    <p class="no-records-message">No transactions found.</p>
+                                </div>`;
                             return;
                         }
 
@@ -438,7 +449,13 @@ if ($result) {
 
 
                         if (!data || Object.keys(data).length === 0 || data.error) {
-                            transactionsContainer.innerHTML = "<p class='no-records-message'>No transactions found.</p>";
+                            transactionsContainer.innerHTML = `
+                                <div class="no-results-container text-center my-5">
+                                    <p class="no-records-message">No transactions found.</p>
+                                    <button class="return-btn" onclick="clearSearch()">
+                                        <span>Return to Transaction View</span>
+                                    </button>
+                                </div>`;
                             return;
                         }
 
@@ -468,12 +485,43 @@ if ($result) {
 
                         generateTransactionHTML(structuredTransactions, transactionsContainer);
                     })
-                    .catch(error => console.error("Error fetching filtered transactions:", error));
+                    .catch(error => {
+                        console.error("Error fetching filtered transactions:", error);
+                        // Show error message with return button
+                        transactionsContainer.innerHTML = `
+                            <div class="no-results-container text-center my-5">
+                                <p class="no-records-message">Error loading transactions.</p>
+                                <button class="return-btn" onclick="clearSearch()">
+                                    <span>Return to Transaction View</span>
+                                </button>
+                            </div>`;
+                    });
             }
 
 
             function generateTransactionHTML(transactions, container) {
                 container.innerHTML = "";
+                
+                // Check if we have any transactions at all
+                let hasAnyTransactions = false;
+                Object.values(transactions).forEach(deptTypes => {
+                    Object.values(deptTypes).forEach(records => {
+                        if (Array.isArray(records) && records.length > 0) {
+                            hasAnyTransactions = true;
+                        }
+                    });
+                });
+                
+                if (!hasAnyTransactions && searchInput.value.trim() !== "") {
+                    container.innerHTML = `
+                        <div class="no-results-container text-center my-5">
+                            <p class="no-records-message">No transactions found.</p>
+                            <button class="return-btn" onclick="clearSearch()">
+                                <span>Return to Transaction View</span>
+                            </button>
+                        </div>`;
+                    return;
+                }
 
 
                 Object.entries(transactions).forEach(([department, docTypes]) => {
@@ -544,10 +592,24 @@ if ($result) {
                                 transactionContent.appendChild(transactionItem);
                             });
                         } else {
+                            let noRecordsContainer = document.createElement("div");
+                            noRecordsContainer.classList.add("no-records-container");
+                            
                             let noRecordsMessage = document.createElement("p");
                             noRecordsMessage.classList.add("no-records-message");
                             noRecordsMessage.textContent = "No records found.";
-                            transactionContent.appendChild(noRecordsMessage);
+                            noRecordsContainer.appendChild(noRecordsMessage);
+                            
+                            // Add return button if this is a search result
+                            if (searchInput.value.trim() !== "") {
+                                let returnButton = document.createElement("button");
+                                returnButton.classList.add("return-btn");
+                                returnButton.innerHTML = "<span>Return to Transaction View</span>";
+                                returnButton.onclick = clearSearch;
+                                noRecordsContainer.appendChild(returnButton);
+                            }
+                            
+                            transactionContent.appendChild(noRecordsContainer);
                         }
 
 
