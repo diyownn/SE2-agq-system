@@ -85,7 +85,7 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    height: 120px;
+    height: 90px;
     width: 100%;
 }
  
@@ -167,7 +167,6 @@ body {
 
 
 .container {
-    margin: 50px auto;
     padding: 40px;
     max-width: 900px;
     background: white;
