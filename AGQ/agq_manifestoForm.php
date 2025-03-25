@@ -2,7 +2,7 @@
 require_once "db_agq.php";
 session_start();
 
-$refNum = $_GET['refnum'] ?? null; // Check if refnum exists for edit mode
+$refNum = $_GET['refnum'] ?? null; 
 $editedBy = $_GET['editedby'] ?? '';
 $docType = "Manifesto";
 $department = $_SESSION['department'] ?? '';

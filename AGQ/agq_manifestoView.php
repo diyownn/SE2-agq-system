@@ -58,7 +58,7 @@ $conn->close();
 </head>
 
 <body style="background-color: white; background-image:none">
-<a href="agq_transactionCatcher.php" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 39%; top: 55px;">←</a>
+    <a href="agq_transactionCatcher.php" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 39%; top: 55px;">←</a>
     <div class="container">
         <div class="row d-flex justify-content-center">
             <div class="col-sm-offset-4 col-sm-4" id="border1">
@@ -67,22 +67,80 @@ $conn->close();
                 <p class="text-center"><strong>Document ID:</strong> <?= htmlspecialchars($row['RefNum']); ?></p>
                 <p class="text-center"><strong>Document Type:</strong> <?= htmlspecialchars($row['DocType']); ?></p>
 
-                <form action="agq_manifestoForm.php?refnum=<?= urlencode($row['RefNum']); ?>&createdby=<?= urlencode($row['Edited_by'] ?? ''); ?>" method="GET">
+                <form id="deleteForm" action="ARCHIVE_HANDLE.php?action=archive&refnum" method="POST">
+                    <input type="hidden" name="refnum" value="<?= htmlspecialchars($row['RefNum']); ?>">
                     <img src="<?= htmlspecialchars($imageSrc); ?>" class="d-block mx-auto" id="imgholder"
                         alt="Document Image" style="width: 335px; height: 350px">
                     <div class="d-flex justify-content-center">
                         <button type="button" id="button1" style="margin-top: 12%; margin-bottom: 0%;"
-                            onclick="window.location.href='agq_manifestoForm.php?refnum=<?php echo htmlspecialchars($documentID);?>'">
-                            Edit
+                            onclick="confirmDelete('<?= htmlspecialchars($row['RefNum']); ?>')">
+                            Delete
                         </button>
                     </div>
                 </form>
+
             </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function confirmDelete(refnum) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, archive it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    archiveDocument(refnum);
+                }
+            });
+        }
+
+        function archiveDocument(refnum) {
+            fetch("ARCHIVE_HANDLE.php?action=archive", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    },
+                    body: `RefNum=${encodeURIComponent(refnum)}`
+                })
+                .then(response => response.json()) // Expect JSON response
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            icon: "success",
+                            title: "Archived!",
+                            text: data.message || "The document has been successfully archived.",
+                            confirmButtonColor: "#27ae60"
+                        }).then(() => {
+                            location.reload(); // Reload the page after successful archive
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Error",
+                            text: data.message || "Failed to archive the document.",
+                            confirmButtonColor: "#d33"
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    Swal.fire({
+                        icon: "error",
+                        title: "Error",
+                        text: "Failed to communicate with the server.",
+                        confirmButtonColor: "#d33"
+                    });
+                });
+        }
+    </script>
 </body>
 
 </html>
