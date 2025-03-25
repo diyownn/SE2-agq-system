@@ -382,50 +382,7 @@ if ($result) {
             }
 
             function fetchAllTransactions() {
-                fetch("FETCH_TRANSACTIONS.php")
-                    .then(response => response.json())
-                    .then(data => {
-                        console.log("All Transactions:", data);
-
-                        if (!data || Object.keys(data).length === 0 || data.error) {
-                            transactionsContainer.innerHTML = `
-                                <div class="no-results-container text-center my-5">
-                                    <p class="no-records-message">No transactions found.</p>
-                                </div>`;
-                            return;
-                        }
-
-                        let structuredTransactions = {};
-
-                        transactionsContainer.innerHTML = "";
-                        Object.entries(data).forEach(([department, docTypes]) => {
-                            if (!structuredTransactions[department]) {
-                                structuredTransactions[department] = {};
-                            }
-
-                            Object.entries(docTypes).forEach(([docType, records]) => {
-                                let normalizedDocType = docType.toUpperCase().trim();
-
-                                // Convert non-array records into an array
-                                if (!Array.isArray(records)) {
-                                    records = [records]; // Wrap single objects into an array
-                                }
-
-                                if (!structuredTransactions[department][normalizedDocType]) {
-                                    structuredTransactions[department][normalizedDocType] = [];
-                                }
-
-                                records.forEach(record => {
-                                    let refNum = record.RefNum || "No RefNum";
-                                    structuredTransactions[department][normalizedDocType].push(refNum);
-                                });
-                            });
-                        });
-
-                        ensureDocumentTypes(structuredTransactions);
-                        generateTransactionHTML(structuredTransactions, transactionsContainer);
-                    })
-                    .catch(error => console.error("Error fetching all transactions:", error));
+               location.reload();
             }
 
             function fetchFilteredTransactions(query) {
