@@ -279,9 +279,10 @@ if ($result) {
                     url = "agq_soaCatcher.php?refNum=" + encodeURIComponent(refnum);
                     break;
                 default:
-                    url = "agq_login.php";
+                    url = "agq_manifestoView.php?refnum=" + encodeURIComponent(refnum);
                     break;
             }
+
 
 
             window.location.href = url;
