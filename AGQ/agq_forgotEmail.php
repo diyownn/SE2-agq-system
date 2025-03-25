@@ -18,8 +18,8 @@
 
 </head>
     <!-- Website Icon -->
-    <link rel="icon" href="images/agq_logo.png" type="image/ico">
-<body>
+    <link rel="icon" type="image/x-icon" href="../AGQ/images/favicon.ico">
+    <body>
     <div class="container">
         <div class="row d-flex justify-content-center">
             <div class="col-sm-offset-4 col-sm-4" id="border">
