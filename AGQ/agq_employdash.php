@@ -86,7 +86,7 @@ if (!empty($search_query)) {
 
 
 </head>
-<link rel="icon" href="images/agq_logo.png" type="image/ico">
+<link rel="icon" type="image/x-icon" href="../AGQ/images/favicon.ico">
 
 
 <body style="background-image: url('e3bg.png'); background-repeat: no-repeat; background-size: cover; background-position: center; background-attachment: fixed;">
