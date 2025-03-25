@@ -24,7 +24,7 @@
     <link rel="stylesheet" type="text/css" href="agq.css">
 
     <!-- Website Icon -->
-    <link rel="icon" type="image/x-icon" href="/AGQ/images/favicon.ico">
+    <link rel="icon" type="image/x-icon" href="../AGQ/images/favicon.ico">
 
 </head>
 
