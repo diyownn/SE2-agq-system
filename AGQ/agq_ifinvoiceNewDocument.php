@@ -552,7 +552,7 @@ function insertRecord($conn)
     <div class="container">
         <div class="header">SALES INVOICE</div>
         <form method="POST" onsubmit="return validateForm(event);">
-        <div class="section">
+            <div class="section">
                 <input type="text" maxlength="50" name="to" placeholder="To" value="<?= isset($row['To:']) ? htmlspecialchars($row['To:']) : ''; ?>" onchange="validateTextFields(this)" style="width: 70%">
                 <input type="date" name="date" value="<?= isset($row['Date']) ? $row['Date'] : ''; ?>" onchange="validateDateFields(this)" style="width: 28%">
             </div>
