@@ -210,7 +210,7 @@ function storeCompanySession(companyName) {
         .then(response => response.text())
         .then(data => {
             console.log("Session stored:", data);
-            window.location.href = "agq_chooseDepartment.php";
+            window.location.href = "agq_transactionCatcher.php";
         })
         .catch(error => console.error("Error:", error));
 }

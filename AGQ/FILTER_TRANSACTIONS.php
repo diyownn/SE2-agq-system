@@ -26,7 +26,7 @@ $tables = [
 $table = $tables[$role] ?? null;
 $selectedDeptTable = $tables[$dept] ?? null;
 
-// If search query is provided
+// If search query is provided      
 if (!empty($search_query)) {
     $like_query = "%{$search_query}%";
     
