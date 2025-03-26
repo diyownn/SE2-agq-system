@@ -196,7 +196,7 @@ $result = $conn->query($query);
                 <input type="text" id="name" name="name"  onchange="return validate_name()">
 
                 <label for="email">EMAIL</label>
-                <input type="email" id="email" name="email" onchange="return validate_email()">
+                <input type="email" maxlength="100" id="email" name="email" onchange="return validate_email()">
 
 
                 <label for="department">DEPARTMENT</label>

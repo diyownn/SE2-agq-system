@@ -29,7 +29,7 @@
 
                 <form action="agq_forgotEmail.php" method="post" class="form-content" enctype="multipart/form-data" onsubmit="return validate_email()">
                     <label for="inputs" class="form-label" id="labels">Enter email</label>
-                    <input type="text" name="email" id="inputs" class="form-control" onchange="return validate_email()">
+                    <input type="text" maxlength="100" name="email" id="inputs" class="form-control" onchange="return validate_email()">
                     <div id="email-error"></div>
 
                     <div class="d-flex justify-content-center">
