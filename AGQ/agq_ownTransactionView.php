@@ -156,6 +156,7 @@ if ($result) {
                                             class="transaction-checkbox"
                                             data-refnum="<?php echo htmlspecialchars($transaction['RefNum']); ?>"
                                             data-docType="<?php echo htmlspecialchars($normalizedDocType); ?>"
+                                            data-dept="<?php echo htmlspecialchars($dept); ?>"
                                             onclick="updateApprovalStatus(this)">
                                     </div>
                                 </div>
@@ -163,10 +164,10 @@ if ($result) {
                         <?php else: ?>
                             <div class="no-records-container">
                                 <p class="no-records-message">No records found.</p>
-                                <?php if(isset($_GET['search'])): ?>
-                                <button class="return-btn" onclick="clearSearch()">
-                                    <span>Return to Transaction View</span>
-                                </button>
+                                <?php if (isset($_GET['search'])): ?>
+                                    <button class="return-btn" onclick="clearSearch()">
+                                        <span>Return to Transaction View</span>
+                                    </button>
                                 <?php endif; ?>
                             </div>
                         <?php endif; ?>
@@ -192,6 +193,40 @@ if ($result) {
             } else {
                 window.location.href = "agq_documentCatcher.php?refnum=" + encodeURIComponent(refnum) + '&doctype=' + encodeURIComponent(doctype);
             }
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            updateCheckButtons();
+        });
+
+        function updateCheckButtons() {
+            document.querySelectorAll('.transaction-checkbox').forEach(button => {
+                let RefNum = button.dataset.refnum; // Extract from data attribute
+                let DocType = button.dataset.doctype; // Extract docType from data attribute
+                let Dept = button.dataset.dept || ''; // If dept is missing, set a default value
+
+                if (!RefNum || !DocType || !Dept) {
+                    console.error(`Missing parameters: refNum=${RefNum}, docType=${DocType}, dept=${Dept}`);
+                    return;
+                }
+
+                let requestUrl = `APPROVAL_STATUS.php?refNum=${encodeURIComponent(RefNum)}&docType=${encodeURIComponent(DocType)}&dept=${encodeURIComponent(Dept)}`;
+
+                console.log(`Fetching approval status for RefNum: ${RefNum}`);
+                console.log(`Request URL: ${requestUrl}`);
+
+                fetch(requestUrl)
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log(`Response Data for RefNum ${RefNum}:`, data);
+                        if (data.success && data.isApproved == 1) {
+                            button.checked = true;
+                        } else {
+                            button.checked = false;
+                        }
+                    })
+                    .catch(error => console.error(`Error fetching approval status for RefNum ${RefNum}:`, error));
+            });
         }
 
         function updateApprovalStatus(checkbox) {
@@ -288,12 +323,12 @@ if ($result) {
                         // Identify the correct department key dynamically
                         let departmentKey = Object.keys(data).find(key => Array.isArray(data[key]));
                         let transactions = departmentKey ? data[departmentKey] : [];
-                        
+
                         // Check if the search query directly matches any RefNum
-                        let exactMatches = transactions.filter(item => 
+                        let exactMatches = transactions.filter(item =>
                             (item.RefNum && item.RefNum.toLowerCase().includes(query))
                         );
-                        
+
                         // Only show dropdown if we have exact matches to RefNum
                         if (exactMatches.length > 0) {
                             exactMatches.forEach(item => {
@@ -485,7 +520,7 @@ if ($result) {
 
             function generateTransactionHTML(transactions, container) {
                 container.innerHTML = "";
-                
+
                 // Check if we have any transactions at all
                 let hasAnyTransactions = false;
                 Object.values(transactions).forEach(deptTypes => {
@@ -495,7 +530,7 @@ if ($result) {
                         }
                     });
                 });
-                
+
                 if (!hasAnyTransactions && searchInput.value.trim() !== "") {
                     container.innerHTML = `
                         <div class="no-results-container text-center my-5">
@@ -578,12 +613,12 @@ if ($result) {
                         } else {
                             let noRecordsContainer = document.createElement("div");
                             noRecordsContainer.classList.add("no-records-container");
-                            
+
                             let noRecordsMessage = document.createElement("p");
                             noRecordsMessage.classList.add("no-records-message");
                             noRecordsMessage.textContent = "No records found.";
                             noRecordsContainer.appendChild(noRecordsMessage);
-                            
+
                             // Add return button if this is a search result
                             if (searchInput.value.trim() !== "") {
                                 let returnButton = document.createElement("button");
@@ -592,7 +627,7 @@ if ($result) {
                                 returnButton.onclick = clearSearch;
                                 noRecordsContainer.appendChild(returnButton);
                             }
-                            
+
                             transactionContent.appendChild(noRecordsContainer);
                         }
 

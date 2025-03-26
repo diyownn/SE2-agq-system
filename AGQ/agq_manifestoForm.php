@@ -2,7 +2,7 @@
 require_once "db_agq.php";
 session_start();
 
-$refNum = $_GET['refnum'] ?? null; 
+$refNum = $_GET['refnum'] ?? null;
 $editedBy = $_GET['editedby'] ?? '';
 $docType = "Manifesto";
 $department = $_SESSION['department'] ?? '';
@@ -163,8 +163,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <!-- Website Icon -->
 <link rel="icon" type="image/x-icon" href="../AGQ/images/favicon.ico">
 
-<body style="background-image: url('manifbg.png'); background-repeat: no-repeat; background-size: cover; background-position: center; background-attachment: fixed;">
-    <a href="agq_choosedocument.php" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 39%; top: 55px;">←</a>
+<body style="background-color: white; background-image:none">
+    <a href="#" onclick="redirection('<?php echo htmlspecialchars(($refNum)); ?>')" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 39%; top: 55px;">←</a>
 
     <div class="container">
         <div class="row d-flex justify-content-center">
@@ -209,6 +209,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 
     <script>
+        function redirection(refnum) {
+            if (!refnum || refnum === 'null' || refnum.trim() === '') {
+                window.location.href = "agq_chooseDocument.php";
+            } else {
+                window.location.href = "agq_transactionCatcher.php";
+            }
+        }
+
         function previewImage(event) {
             var imgDisplay = document.getElementById("imgholder");
             imgDisplay.src = URL.createObjectURL(event.target.files[0]);
@@ -218,8 +226,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         function validate_form() {
             var val_cimg = validate_manImg();
             var val_cname = validate_editName();
-            
-           return val_cimg && val_cname;
+
+            return val_cimg && val_cname;
         }
 
         function validate_manImg() {
@@ -242,7 +250,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 event.preventDefault(); // Prevent form submission if invalid
             }
 
-            fileInput.addEventListener("input", function () {
+            fileInput.addEventListener("input", function() {
                 fileInput.setCustomValidity(""); // Clear error when user types
             });
 
@@ -267,7 +275,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 event.preventDefault(); // Prevent form submission if invalid
             }
 
-            fileInput.addEventListener("input", function () {
+            fileInput.addEventListener("input", function() {
                 fileInput.setCustomValidity(""); // Clear error when user types
             });
             return isValid;
@@ -290,19 +298,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             } else if (!nameregex.test(edit.value)) {
                 edit.setCustomValidity("Name must be 3-25 characters");
 
-            }else {
+            } else {
                 edit.setCustomValidity(""); // Reset validation
-                }
+            }
 
-                edit.reportValidity(); // Show validation message
+            edit.reportValidity(); // Show validation message
 
-                if (!edit.checkValidity()) {
-                    event.preventDefault(); // Prevent form submission if invalid
-                }
+            if (!edit.checkValidity()) {
+                event.preventDefault(); // Prevent form submission if invalid
+            }
 
-                edit.addEventListener("input", function () {
-                    edit.setCustomValidity(""); // Clear error when user types
-                });
+            edit.addEventListener("input", function() {
+                edit.setCustomValidity(""); // Clear error when user types
+            });
 
             return isValid;
 

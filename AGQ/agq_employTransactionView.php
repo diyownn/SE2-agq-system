@@ -118,7 +118,7 @@ if ($result) {
     <div class="container py-3">
         <div class="search-container d-flex flex-wrap justify-content-center">
             <input type="text" class="search-bar form-control" id="search-input" placeholder="Search Transaction Details...">
-            <div id="dropdown" class="dropdown" id="dropdown" style="display: none;"></div>
+            <div id="dropdown" class="dropdown" style="display: none;"></div>
             <button class="search-button" id="search-button">SEARCH</button>
         </div>
         <div>
@@ -199,13 +199,14 @@ if ($result) {
         var role = "<?php echo isset($_SESSION['department']) ? $_SESSION['department'] : ''; ?>";
         var company = "<?php echo isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : ''; ?>";
 
+        // Function to clear search and reload the page
         function clearSearch() {
-            // Redirect to the transaction view page
-            window.location.href = "agq_transactionCatcher.php";
+            document.getElementById("search-input").value = "";
+            location.reload();
         }
 
         function updateCheckButtons() {
-            document.querySelectorAll('.btn btn-sm action-btn check-btn').forEach(button => {
+            document.querySelectorAll('.btn.btn-sm.action-btn.check-btn').forEach(button => {
                 let refNum = button.id.replace('check-btn-', '');
                 fetch(`APPROVAL_STATUS.php?refNum=${refNum}`)
                     .then(response => response.json())
@@ -223,7 +224,6 @@ if ($result) {
         // Run the function when the page loads
         document.addEventListener("DOMContentLoaded", updateCheckButtons);
 
-
         function archiveDocument(refnum) {
             fetch("ARCHIVE_HANDLE.php?action=archive", {
                     method: "POST",
@@ -240,6 +240,9 @@ if ($result) {
                             title: "Archived!",
                             text: data.message || "The document has been successfully archived.",
                             confirmButtonColor: "#27ae60"
+                        }).then(() => {
+                            // Reload the page after archiving
+                            location.reload();
                         });
                     } else {
                         Swal.fire({
@@ -261,12 +264,11 @@ if ($result) {
                 });
         }
 
-
         function redirectToDocument(refnum, doctype) {
             if (!refnum || !doctype) {
                 return;
             } else {
-                window.location.href = "agq_documentCatcher.php?refnum=" + encodeURIComponent(refnum) + '&doctype=' + encodeURIComponent(doctype);;
+                window.location.href = "agq_documentCatcher.php?refnum=" + encodeURIComponent(refnum) + '&doctype=' + encodeURIComponent(doctype);
             }
         }
 
@@ -283,12 +285,8 @@ if ($result) {
                     url = "agq_manifestoView.php?refnum=" + encodeURIComponent(refnum);
                     break;
             }
-
-
-
             window.location.href = url;
         }
-
 
         document.body.addEventListener("click", function(event) {
             let header = event.target.closest(".transaction-header");
@@ -301,25 +299,42 @@ if ($result) {
             }
         });
 
+        document.addEventListener("DOMContentLoaded", function() {
+            let searchInput = document.getElementById("search-input");
+            let searchButton = document.getElementById("search-button");
+            let dropdown = document.getElementById("dropdown");
+            let transactionsContainer = document.querySelector(".transactions");
 
+            if (!searchInput || !searchButton || !transactionsContainer) {
+                console.error("Error: One or more elements not found.");
+                return;
+            }
 
-        let searchInput = document.getElementById("search-input");
-        let dropdown = document.getElementById("dropdown");
+            // Variable to track previous search value
+            let previousSearchValue = "";
 
-        if (searchInput) {
-            searchInput.addEventListener("input", function() {
-                let query = this.value.trim().toLowerCase();
-
-                if (!query) {
+            // Function to handle search input changes
+            function handleSearchInputChange() {
+                let currentValue = searchInput.value.trim();
+                
+                // If value was something before and now it's empty, reload the page
+                if (previousSearchValue !== "" && currentValue === "") {
+                    location.reload();
+                    return;
+                }
+                
+                previousSearchValue = currentValue;
+                
+                // Show/hide dropdown based on search content
+                if (!currentValue) {
                     dropdown.style.display = "none";
                     return;
                 }
 
-                fetch("FETCH_Transactions.php?search=" + encodeURIComponent(query))
+                // Dropdown functionality
+                fetch("FETCH_Transactions.php?search=" + encodeURIComponent(currentValue))
                     .then(response => response.json())
                     .then(data => {
-                        console.log("API Response:", JSON.stringify(data, null, 2));
-
                         dropdown.innerHTML = "";
 
                         // Identify the correct department key dynamically
@@ -328,7 +343,7 @@ if ($result) {
                         
                         // Check if the search query directly matches any RefNum
                         let exactMatches = transactions.filter(item => 
-                            (item.RefNum && item.RefNum.toLowerCase().includes(query))
+                            (item.RefNum && item.RefNum.toLowerCase().includes(currentValue))
                         );
                         
                         // Only show dropdown if we have exact matches to RefNum
@@ -371,97 +386,9 @@ if ($result) {
                         console.error("Error fetching search results:", error);
                         dropdown.style.display = "none";
                     });
-            });
-        }
-
-
-
-
-
-        document.addEventListener("DOMContentLoaded", function() {
-            let searchInput = document.getElementById("search-input");
-            let searchButton = document.getElementById("search-button");
-            let transactionsContainer = document.querySelector(".transactions"); // Main container
-
-            if (!searchInput || !searchButton || !transactionsContainer) {
-                console.error("Error: One or more elements not found.");
-                return;
             }
-
-            function fetchAllTransactions() {
-               location.reload();
-            }
-
-            function fetchFilteredTransactions(query) {
-                fetch("FILTER_TRANSACTIONS.php?search=" + encodeURIComponent(query))
-                    .then(response => response.json())
-                    .then(data => {
-                        console.log("Filtered API Response:", data);
-
-                        transactionsContainer.innerHTML = "";
-
-                        if (!data || Object.keys(data).length === 0 || data.error) {
-                            // Show no results found message with return button
-                            transactionsContainer.innerHTML = `
-                                <div class="no-results-container text-center my-5">
-                                    <p class="no-records-message">No transactions found.</p>
-                                    <button class="btn btn-sm return-btn" onclick="clearSearch()">Return to Transaction View</button>
-                                </div>`;
-                            return;
-                        }
-
-                        let structuredTransactions = {};
-
-                        Object.entries(data).forEach(([department, docTypes]) => {
-                            structuredTransactions[department] = {};
-
-                            Object.entries(docTypes).forEach(([docType, records]) => {
-                                let normalizedDocType = docType.toUpperCase().trim();
-
-                                // ✅ FIX: Convert non-array records into an array
-                                if (!Array.isArray(records)) {
-                                    records = [records];
-                                }
-
-                                if (!structuredTransactions[department][normalizedDocType]) {
-                                    structuredTransactions[department][normalizedDocType] = [];
-                                }
-
-                                records.forEach(item => {
-                                    structuredTransactions[department][normalizedDocType].push(item.RefNum);
-                                });
-                            });
-                        });
-
-                        generateTransactionHTML(structuredTransactions, transactionsContainer);
-                    })
-                    .catch(error => {
-                        console.error("Error fetching filtered transactions:", error);
-                        // Show error message with return button
-                        transactionsContainer.innerHTML = `
-                            <div class="no-results-container text-center my-5">
-                                <p class="no-records-message">Error loading transactions.</p>
-                                <button class="btn btn-sm return-btn" onclick="clearSearch()">Return to Transaction View</button>
-                            </div>`;
-                    });
-            }
-
-            function ensureDocumentTypes(structuredTransactions) {
-                Object.keys(structuredTransactions).forEach(department => {
-                    if (!structuredTransactions[department]["SOA"]) {
-                        structuredTransactions[department]["SOA"] = [];
-                    }
-                    if (!structuredTransactions[department]["INVOICE"]) {
-                        structuredTransactions[department]["INVOICE"] = [];
-                    }
-                    if (role === "Import Forwarding") {
-                        if (!structuredTransactions[department]["MANIFESTO"]) {
-                            structuredTransactions[department]["MANIFESTO"] = [];
-                        }
-                    }
-                });
-            }
-
+            
+            // Function to generate transaction HTML from filtered results
             function generateTransactionHTML(transactions, container) {
                 container.innerHTML = "";
                 
@@ -546,6 +473,14 @@ if ($result) {
                             let actions = document.createElement("div");
                             actions.classList.add("transaction-actions");
 
+                            // Check button will be shown based on isApproved status fetched later
+                            let checkBtn = document.createElement("button");
+                            checkBtn.classList.add("btn", "btn-sm", "action-btn", "check-btn");
+                            checkBtn.id = `check-btn-${refNum}`;
+                            checkBtn.title = "Complete";
+                            checkBtn.innerHTML = '<i class="bi bi-check2"></i>';
+                            checkBtn.style.display = "none"; // Initially hidden, will be shown if approved
+
                             let editBtn = document.createElement("button");
                             editBtn.classList.add("btn", "btn-sm", "action-btn", "edit-btn");
                             editBtn.title = "Edit";
@@ -562,12 +497,23 @@ if ($result) {
                                 archiveDocument(refNum);
                             };
 
+                            actions.appendChild(checkBtn);
                             actions.appendChild(editBtn);
                             actions.appendChild(archiveBtn);
 
                             transactionItem.appendChild(leftSide);
                             transactionItem.appendChild(actions);
                             transactionContent.appendChild(transactionItem);
+
+                            // Fetch approval status to determine if check button should be shown
+                            fetch(`APPROVAL_STATUS.php?refNum=${refNum}`)
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.isApproved == 1) {
+                                        checkBtn.style.display = "block";
+                                    }
+                                })
+                                .catch(error => console.error('Error:', error));
                         });
 
                     } else {
@@ -598,11 +544,68 @@ if ($result) {
                 });
             }
 
+            // Function to fetch filtered transactions based on search query
+            function fetchFilteredTransactions(query) {
+                fetch("FILTER_TRANSACTIONS.php?search=" + encodeURIComponent(query))
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log("Filtered API Response:", data);
+
+                        transactionsContainer.innerHTML = "";
+
+                        if (!data || Object.keys(data).length === 0 || data.error) {
+                            // Show no results found message with return button
+                            transactionsContainer.innerHTML = `
+                                <div class="no-results-container text-center my-5">
+                                    <p class="no-records-message">No transactions found.</p>
+                                    <button class="btn btn-sm return-btn" onclick="clearSearch()">Return to Transaction View</button>
+                                </div>`;
+                            return;
+                        }
+
+                        let structuredTransactions = {};
+
+                        Object.entries(data).forEach(([department, docTypes]) => {
+                            structuredTransactions[department] = {};
+
+                            Object.entries(docTypes).forEach(([docType, records]) => {
+                                let normalizedDocType = docType.toUpperCase().trim();
+
+                                // Convert non-array records into an array
+                                if (!Array.isArray(records)) {
+                                    records = [records];
+                                }
+
+                                if (!structuredTransactions[department][normalizedDocType]) {
+                                    structuredTransactions[department][normalizedDocType] = [];
+                                }
+
+                                records.forEach(item => {
+                                    structuredTransactions[department][normalizedDocType].push(item.RefNum);
+                                });
+                            });
+                        });
+
+                        generateTransactionHTML(structuredTransactions, transactionsContainer);
+                    })
+                    .catch(error => {
+                        console.error("Error fetching filtered transactions:", error);
+                        // Show error message with return button
+                        transactionsContainer.innerHTML = `
+                            <div class="no-results-container text-center my-5">
+                                <p class="no-records-message">Error loading transactions.</p>
+                                <button class="btn btn-sm return-btn" onclick="clearSearch()">Return to Transaction View</button>
+                            </div>`;
+                    });
+            }
+            
+            // Add event listeners for search functionality
+            searchInput.addEventListener("input", handleSearchInputChange);
+            
             searchButton.addEventListener("click", function() {
                 let query = searchInput.value.trim();
-
                 if (query === "") {
-                    fetchAllTransactions();
+                    location.reload();
                 } else {
                     fetchFilteredTransactions(query);
                 }
@@ -614,8 +617,14 @@ if ($result) {
                     searchButton.click();
                 }
             });
-        });
 
+            // Close dropdown when clicking outside
+            document.addEventListener("click", function(event) {
+                if (!searchInput.contains(event.target) && !dropdown.contains(event.target)) {
+                    dropdown.style.display = "none";
+                }
+            });
+        });
 
         function downloadDocument(refNum, department) {
             const encodedRefNum = encodeURIComponent(refNum);
@@ -631,7 +640,6 @@ if ($result) {
                 }
             }, 3000);
         }
-
 
         console.log("DocType:", doctype);
         console.log("Role:", role);
