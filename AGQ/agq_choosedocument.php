@@ -126,7 +126,7 @@ $conn->close();
                 STATEMENT OF ACCOUNT
             </button>
             <button class="document-type-freight-invoice" id="invoice" onclick="storeDocumentSession('Invoice')">
-                FREIGHT INVOICE
+                SALES INVOICE
             </button>
         </div>
             </div>
