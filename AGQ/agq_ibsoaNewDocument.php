@@ -166,9 +166,6 @@ $conn->close();
     <link rel="icon" type="image/x-icon" href="../AGQ/images/favicon.ico">
     <link rel="stylesheet" type="text/css" href="../css/forms.css">
     <title>Statement of Account</title>
-
-    <a href="agq_choosedocument.php" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 20px; top: 20px;">←</a>
-
     <script>
         function togglePackageField() {
             document.getElementById("package-details").style.display = "block";
@@ -484,7 +481,7 @@ $conn->close();
 </head>
 
     <body>
-    <a href="agq_choosedocument.php" onclick="redirection('<?php echo $refNum; ?>')" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 20px; top: 20px;">←</a>
+    <a href="#" onclick="redirection('<?php echo $refNum; ?>')" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 20px; top: 20px;">←</a>
         <div class="container">
             <div class="header">STATEMENT OF ACCOUNT</div>
             <form method="POST" onsubmit="return validateForm(event);">

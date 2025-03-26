@@ -560,7 +560,7 @@ function insertRecord($conn)
     
 </head>
 <body>
-<a href="agq_choosedocument.php" onclick="redirection('<?php echo $refNum; ?>')" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 20px; top: 20px;">←</a>
+<a href="#" onclick="redirection('<?php echo $refNum; ?>')" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 20px; top: 20px;">←</a>
 
     <div class="container">
         <div class="header">SALES INVOICE</div>
