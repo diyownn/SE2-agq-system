@@ -221,7 +221,7 @@ if ($result) {
             });
         }
 
-        // Run the function when the page loads
+       
         document.addEventListener("DOMContentLoaded", updateCheckButtons);
 
         function archiveDocument(refnum) {
