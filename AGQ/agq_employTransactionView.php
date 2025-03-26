@@ -95,7 +95,7 @@ if ($result) {
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    
+
 </head>
 
 <body style="background-image: url('otvbg.png'); background-repeat: no-repeat; background-size: cover; background-position: center; background-attachment: fixed;">
@@ -125,10 +125,10 @@ if ($result) {
             <button class="add-company" onclick="window.location.href='agq_choosedocument.php'">
                 <span>CREATE</span>
                 <div class="icons">
-                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M12 5V19M5 12H19" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                        </svg>
-                    </div>
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 5V19M5 12H19" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </div>
             </button>
         </div>
         <div class="transactions mt-4">
@@ -182,8 +182,8 @@ if ($result) {
                         <?php else: ?>
                             <div class="no-records-container">
                                 <p class="no-records-message">No records found.</p>
-                                <?php if(isset($_GET['search'])): ?>
-                                <button class="return-btn" onclick="clearSearch()">
+                                <?php if (isset($_GET['search'])): ?>
+                                    <button class="return-btn" onclick="clearSearch()">
                                         <span>Return to Transaction View</span>
                                     </button>
                                 <?php endif; ?>
@@ -206,7 +206,7 @@ if ($result) {
         }
 
         function updateCheckButtons() {
-            document.querySelectorAll('.btn.btn-sm.action-btn.check-btn').forEach(button => {
+            document.querySelectorAll('btn btn-sm action-btn check-btn').forEach(button => {
                 let refNum = button.id.replace('check-btn-', '');
                 fetch(`APPROVAL_STATUS.php?refNum=${refNum}`)
                     .then(response => response.json())
@@ -316,15 +316,15 @@ if ($result) {
             // Function to handle search input changes
             function handleSearchInputChange() {
                 let currentValue = searchInput.value.trim();
-                
+
                 // If value was something before and now it's empty, reload the page
                 if (previousSearchValue !== "" && currentValue === "") {
                     location.reload();
                     return;
                 }
-                
+
                 previousSearchValue = currentValue;
-                
+
                 // Show/hide dropdown based on search content
                 if (!currentValue) {
                     dropdown.style.display = "none";
@@ -340,12 +340,12 @@ if ($result) {
                         // Identify the correct department key dynamically
                         let departmentKey = Object.keys(data).find(key => Array.isArray(data[key]));
                         let transactions = departmentKey ? data[departmentKey] : [];
-                        
+
                         // Check if the search query directly matches any RefNum
-                        let exactMatches = transactions.filter(item => 
+                        let exactMatches = transactions.filter(item =>
                             (item.RefNum && item.RefNum.toLowerCase().includes(currentValue))
                         );
-                        
+
                         // Only show dropdown if we have exact matches to RefNum
                         if (exactMatches.length > 0) {
                             exactMatches.forEach(item => {
@@ -387,11 +387,11 @@ if ($result) {
                         dropdown.style.display = "none";
                     });
             }
-            
+
             // Function to generate transaction HTML from filtered results
             function generateTransactionHTML(transactions, container) {
                 container.innerHTML = "";
-                
+
                 // Check if we have any transactions at all
                 let hasAnyTransactions = false;
                 Object.values(transactions).forEach(deptTypes => {
@@ -401,7 +401,7 @@ if ($result) {
                         }
                     });
                 });
-                
+
                 if (!hasAnyTransactions) {
                     container.innerHTML = `
                         <div class="no-results-container text-center my-5">
@@ -473,13 +473,13 @@ if ($result) {
                             let actions = document.createElement("div");
                             actions.classList.add("transaction-actions");
 
-                            // Check button will be shown based on isApproved status fetched later
+                            
                             let checkBtn = document.createElement("button");
                             checkBtn.classList.add("btn", "btn-sm", "action-btn", "check-btn");
-                            checkBtn.id = `check-btn-${refNum}`;
+                            checkBtn.id = `check-btn-<?php echo htmlspecialchars($transaction['RefNum']); ?>`;
                             checkBtn.title = "Complete";
                             checkBtn.innerHTML = '<i class="bi bi-check2"></i>';
-                            checkBtn.style.display = "none"; // Initially hidden, will be shown if approved
+                            checkBtn.style.display = "none"; 
 
                             let editBtn = document.createElement("button");
                             editBtn.classList.add("btn", "btn-sm", "action-btn", "edit-btn");
@@ -519,13 +519,13 @@ if ($result) {
                     } else {
                         let noRecordsContainer = document.createElement("div");
                         noRecordsContainer.classList.add("no-records-container");
-                        
+
                         let noRecordsMessage = document.createElement("p");
                         noRecordsMessage.classList.add("no-records-message");
                         noRecordsMessage.textContent = "No records found.";
-                        
+
                         noRecordsContainer.appendChild(noRecordsMessage);
-                        
+
                         // Add return button if this is a search result
                         if (searchInput.value.trim() !== "") {
                             let returnButton = document.createElement("button");
@@ -534,7 +534,7 @@ if ($result) {
                             returnButton.onclick = clearSearch;
                             noRecordsContainer.appendChild(returnButton);
                         }
-                        
+
                         transactionContent.appendChild(noRecordsContainer);
                     }
 
@@ -598,16 +598,17 @@ if ($result) {
                             </div>`;
                     });
             }
-            
+
             // Add event listeners for search functionality
             searchInput.addEventListener("input", handleSearchInputChange);
-            
+
             searchButton.addEventListener("click", function() {
                 let query = searchInput.value.trim();
                 if (query === "") {
                     location.reload();
                 } else {
                     fetchFilteredTransactions(query);
+                    updateCheckButtons();
                 }
             });
 
