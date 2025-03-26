@@ -58,6 +58,8 @@ $record = selectRecords($conn, $role, $refNum);
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" type="text/css" href="../css/employdocu.css">
+  <link rel="icon" type="image/x-icon" href="../AGQ/images/favicon.ico">
+
 </head>
 
 <body style="background-image: url('vdbg.png'); background-repeat: no-repeat; background-size: cover; background-position: center; background-attachment: fixed;">

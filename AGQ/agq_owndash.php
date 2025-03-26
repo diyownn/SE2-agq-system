@@ -80,7 +80,7 @@ if (!empty($search_query)) {
 
 
 <html>
-<link rel="icon" href="images/agq_logo.png" type="image/ico">
+<link rel="icon" type="image/x-icon" href="../AGQ/images/favicon.ico">
 
 
 <head>

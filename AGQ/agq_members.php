@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $errors = [];
 
     // Validate name (only letters and spaces)
-    if (empty($name) || !preg_match("/^[a-zA-Z\s]+$/", $name)) {
+    if (empty($name) || !preg_match("/^[a-zA-Z\s ]+$/", $name)) {
         $errors[] = "Name must contain only letters and spaces.";
     }
 
@@ -140,7 +140,7 @@ $result = $conn->query($query);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Members of the Company</title>
     <link rel="stylesheet" href="motc.css">
-    <link rel="icon" href="images/agq_logo.png" type="image/ico">
+    <link rel="icon" type="image/x-icon" href="../AGQ/images/favicon.ico">
 </head>
 
 <body>
@@ -225,34 +225,31 @@ $result = $conn->query($query);
 
         function validate_name() {
             var nPass = document.getElementById("name");
-            const allowedSymbols = /^[a-zA-Z0-9.]*$/; 
+            const allowedSymbols = /^[a-zA-Z0-9. ]*$/; // Added space to allowed characters
             var passregex = /^.{3,100}$/;
             let isValid = true; // Track overall validity
-            //var nPass_error = document.getElementById("pass-error");
 
             if (!nPass.value.trim()) {
                 nPass.setCustomValidity("Please enter your name");
             } else if (!allowedSymbols.test(nPass.value)) {
-                nPass.setCustomValidity("Alphanumeric and/or a period input only.");
+                nPass.setCustomValidity("Alphanumeric characters, spaces, and/or a period only.");
             } else if (!passregex.test(nPass.value)) {
-                nPass.setCustomValidity("Name must be atleast 3 characters");
-
-            }else {
+                nPass.setCustomValidity("Name must be at least 3 characters");
+            } else {
                 nPass.setCustomValidity(""); // Reset validation
-                }
+            }
 
-                nPass.reportValidity(); // Show validation message
+            nPass.reportValidity(); // Show validation message
 
-                if (!nPass.checkValidity()) {
-                    event.preventDefault(); // Prevent form submission if invalid
-                }
+            if (!nPass.checkValidity()) {
+                event.preventDefault(); // Prevent form submission if invalid
+            }
 
-                nPass.addEventListener("input", function () {
-                    nPass.setCustomValidity(""); // Clear error when user types
-                });
+            nPass.addEventListener("input", function () {
+                nPass.setCustomValidity(""); // Clear error when user types
+            });
 
             return isValid;
-
         }
 
         function validate_email() {
