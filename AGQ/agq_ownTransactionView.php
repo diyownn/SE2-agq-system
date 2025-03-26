@@ -387,73 +387,7 @@ if ($result) {
 
 
             function fetchAllTransactions() {
-                fetch("FETCH_TRANSACTIONS.php")
-                    .then(response => response.json())
-                    .then(data => {
-                        console.log("All Transactions:", data);
-
-
-                        if (!data || Object.keys(data).length === 0 || data.error) {
-                            transactionsContainer.innerHTML = `
-                                <div class="no-results-container text-center my-5">
-                                    <p class="no-records-message">No transactions found.</p>
-                                </div>`;
-                            return;
-                        }
-
-
-                        let structuredTransactions = {};
-
-
-                        // Process API response
-                        Object.entries(data).forEach(([department, docTypes]) => {
-                            if (!structuredTransactions[department]) {
-                                structuredTransactions[department] = {};
-                            }
-
-
-                            Object.entries(docTypes).forEach(([docType, records]) => {
-                                if (!Array.isArray(records)) {
-                                    console.warn(`Skipping non-array records for ${docType}:`, records);
-                                    return;
-                                }
-
-
-                                let normalizedDocType = docType.toUpperCase().trim();
-
-
-                                if (!structuredTransactions[department][normalizedDocType]) {
-                                    structuredTransactions[department][normalizedDocType] = [];
-                                }
-
-
-                                records.forEach(record => {
-                                    let refNum = record.RefNum || "No RefNum";
-                                    structuredTransactions[department][normalizedDocType].push(refNum);
-                                });
-                            });
-                        });
-
-
-                        // Ensure SOA, Invoice, and Manifesto (if Import Forwarding) exist in all departments
-                        Object.keys(structuredTransactions).forEach(department => {
-                            if (!structuredTransactions[department]["SOA"]) {
-                                structuredTransactions[department]["SOA"] = [];
-                            }
-                            if (!structuredTransactions[department]["INVOICE"]) {
-                                structuredTransactions[department]["INVOICE"] = [];
-                            }
-                            if (department == "Import Forwarding" || dept == "Import Forwarding") {
-                                if (!structuredTransactions[department]["MANIFESTO"]) {
-                                    structuredTransactions[department]["MANIFESTO"] = [];
-                                }
-                            }
-                        });
-
-
-                        generateTransactionHTML(structuredTransactions, transactionsContainer);
-                    })
-                    .catch(error => console.error("Error fetching all transactions:", error));
+                location.reload();
             }
 
 
@@ -533,55 +467,46 @@ if ($result) {
 
                 if (!hasAnyTransactions && searchInput.value.trim() !== "") {
                     container.innerHTML = `
-                        <div class="no-results-container text-center my-5">
-                            <p class="no-records-message">No transactions found.</p>
-                            <button class="return-btn" onclick="clearSearch()">
-                                <span>Return to Transaction View</span>
-                            </button>
-                        </div>`;
+            <div class="no-results-container text-center my-5">
+                <p class="no-records-message">No transactions found.</p>
+                <button class="return-btn" onclick="clearSearch()">
+                    <span>Return to Transaction View</span>
+                </button>
+            </div>`;
                     return;
                 }
-
 
                 Object.entries(transactions).forEach(([department, docTypes]) => {
                     let departmentSection = document.createElement("div");
                     departmentSection.classList.add("department-section");
 
-
                     const order = ["SOA", "INVOICE"];
                     let orderWithManifesto = ["SOA", "INVOICE", "MANIFESTO"];
 
-                    let sortedOrder = (department == "Import Forwarding" || dept == "Import Forwarding") ? orderWithManifesto : order;
+                    let sortedOrder = (department === "Import Forwarding") ? orderWithManifesto : order;
 
                     let sortedDocTypes = Object.keys(docTypes).sort((a, b) => {
                         let indexA = sortedOrder.indexOf(a.toUpperCase());
                         let indexB = sortedOrder.indexOf(b.toUpperCase());
 
-
                         if (indexA === -1) indexA = sortedOrder.length;
                         if (indexB === -1) indexB = sortedOrder.length;
-
 
                         return indexA - indexB;
                     });
 
-
                     sortedDocTypes.forEach(docType => {
                         let refs = docTypes[docType];
 
-
                         let transactionSection = document.createElement("div");
                         transactionSection.classList.add("transaction");
-
 
                         let transactionHeader = document.createElement("div");
                         transactionHeader.classList.add("transaction-header");
                         transactionHeader.innerHTML = `${docType} <span class="icon">&#x25BC;</span>`;
 
-
                         let transactionContent = document.createElement("div");
                         transactionContent.classList.add("transaction-content");
-
 
                         if (Array.isArray(refs) && refs.length > 0) {
                             refs.forEach(refNum => {
@@ -589,21 +514,21 @@ if ($result) {
                                 transactionItem.classList.add("transaction-item", "d-flex", "justify-content-between");
                                 transactionItem.setAttribute("ondblclick", `redirectToDocument('${refNum}', '${docType}')`);
 
-
                                 let transactionText = document.createElement("span");
                                 transactionText.textContent = `${refNum} - ${docType}`;
-
 
                                 let checkboxContainer = document.createElement("div");
                                 checkboxContainer.classList.add("checkbox-container");
 
-
-                                // Single checkbox instead of two
+                                // Creating checkbox with necessary attributes
                                 let checkbox = document.createElement("input");
                                 checkbox.type = "checkbox";
                                 checkbox.id = `tx-${refNum}`;
                                 checkbox.classList.add("transaction-checkbox");
-
+                                checkbox.setAttribute("data-refnum", "<?php echo htmlspecialchars($transaction['RefNum']); ?>");
+                                checkbox.setAttribute("data-docType", "<?php echo htmlspecialchars($normalizedDocType); ?>");
+                                checkbox.setAttribute("data-dept", "<?php echo htmlspecialchars($dept); ?>");
+                                checkbox.setAttribute("onclick", "updateApprovalStatus(this)");
 
                                 checkboxContainer.appendChild(checkbox);
                                 transactionItem.appendChild(transactionText);
@@ -619,7 +544,6 @@ if ($result) {
                             noRecordsMessage.textContent = "No records found.";
                             noRecordsContainer.appendChild(noRecordsMessage);
 
-                            // Add return button if this is a search result
                             if (searchInput.value.trim() !== "") {
                                 let returnButton = document.createElement("button");
                                 returnButton.classList.add("return-btn");
@@ -631,15 +555,14 @@ if ($result) {
                             transactionContent.appendChild(noRecordsContainer);
                         }
 
-
                         transactionSection.appendChild(transactionHeader);
                         transactionSection.appendChild(transactionContent);
                         departmentSection.appendChild(transactionSection);
                     });
 
-
                     container.appendChild(departmentSection);
                 });
+                updateCheckButtons();
             }
 
 
