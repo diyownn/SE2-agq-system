@@ -39,20 +39,21 @@ if (isset($_GET['refNum'])) {
         header('Location: agq_ebinvoiceNewDocument.php?url=' . $encoded_url . '&refNum=' . $refNum);
         exit;
     } else if ($role == 'Export Forwarding') {
-        $original_url = 'agq_ebinvoiceNewDocument.php';
+        $original_url = 'agq_efinvoiceNewDocument.php';
         $encrypted_url = encrypt_url($original_url, $key);
         $encoded_url = urlencode($encrypted_url);
 
         header('Location: agq_efinvoiceNewDocument.php?url=' . $encoded_url . '&refNum=' . $refNum);
         exit;
     } else if ($role == 'Import Brokerage') {
-        $original_url = 'agq_ebinvoiceNewDocument.php';
+        $original_url = 'agq_ibinvoiceNewDocument.php';
         $encrypted_url = encrypt_url($original_url, $key);
         $encoded_url = urlencode($encrypted_url);
 
         header('Location: agq_ibinvoiceNewDocument.php?url=' . $encoded_url . '&refNum=' . $refNum);
+        exit;
     } else if ($role == 'Import Forwarding') {
-        $original_url = 'agq_ebinvoiceNewDocument.php';
+        $original_url = 'agq_ifinvoiceNewDocument.php';
         $encrypted_url = encrypt_url($original_url, $key);
         $encoded_url = urlencode($encrypted_url);
 
