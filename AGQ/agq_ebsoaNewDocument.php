@@ -22,22 +22,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // }
 }
 
-if (isset($_GET['refNum'])) {
-    $refNum = $_GET['refNum'];
-
-    $sql = "SELECT PackageType FROM tbl_expbrk WHERE RefNum = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("s", $refNum);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $row = $result->fetch_assoc();
-    
-    $packageType = $row['PackageType'] ?? '';
-}
+$refNum = isset($_GET['refNum']) && !empty($_GET['refNum']) ? $_GET['refNum'] : "";
 
 if (isset($_GET['refNum'])) {
-
-    $refNum = $_GET['refNum'];
     $sql = "SELECT * FROM tbl_expbrk WHERE RefNum LIKE ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("s", $refNum);
@@ -137,12 +124,12 @@ function updateRecord($conn, $data, $sessionData)
     );
 
     if ($stmt->execute()) {
-        ?>'<script>
-        if (confirm("Document Successfully Edited!\\nReturn to Transactions Page?")) {
-            window.location.href = "agq_transactionCatcher.php";
-        }
-            </script>'
-        <?php
+?>'<script>
+    if (confirm("Document Successfully Edited!\\nReturn to Transactions Page?")) {
+        window.location.href = "agq_transactionCatcher.php";
+    }
+</script>'
+<?php
         return;
     } else {
         return "Error updating record: " . $stmt->error;
@@ -348,10 +335,10 @@ function insertRecord($conn)
                     `;
 
                     // <div class="charges">
-                        //     <div class = "col">
-                        //         <input type="text" name="charge_type[]" value="${charge}" readonly style="width:360px; flex-direction: column">
-                        //         <input type="number" name="${inputName}" id = "${inputName}" placeholder="Enter amount" style="width:360px; flex-direction: column">
-                        //     </div>
+                    //     <div class = "col">
+                    //         <input type="text" name="charge_type[]" value="${charge}" readonly style="width:360px; flex-direction: column">
+                    //         <input type="number" name="${inputName}" id = "${inputName}" placeholder="Enter amount" style="width:360px; flex-direction: column">
+                    //     </div>
                     // </div>
 
                     // const chargesContainer = row.querySelector(".charges");
@@ -437,7 +424,7 @@ function insertRecord($conn)
             //     errorElement.style.display = "none";
             //     colContainer.insertAdjacentElement("afterend", errorElement);
             // }
-m
+            m
             // // Validate input value
             // const value = parseFloat(inputElement.value) || 0; // Default to 0 if empty
             // if (value > maxAmount) {
@@ -461,7 +448,7 @@ m
                 inputElement.preventDefault(); // Prevent form submission if invalid
             }
 
-            inputElement.addEventListener("input", function () {
+            inputElement.addEventListener("input", function() {
                 inputElement.setCustomValidity(""); // Clear error when user types
             });
         }
@@ -471,50 +458,50 @@ m
             const maxAmount = 16500000;
             let isValid = true;
 
-           // inputs.forEach(input => {
-                const value = parseFloat(chargeElement.value) || 0;
-                // if (!colContainer) {
-                //     console.error("Error: .col container not found for input", input);
-                //     return;
-                // }
+            // inputs.forEach(input => {
+            const value = parseFloat(chargeElement.value) || 0;
+            // if (!colContainer) {
+            //     console.error("Error: .col container not found for input", input);
+            //     return;
+            // }
 
-                // // Check for error div or create it dynamically
-                // let errorDiv = colContainer.nextElementSibling;
-                // if (!errorDiv) {
-                //     errorDiv = document.createElement("div");
-                //     errorDiv.id = `${input.name}-error`;
-                //     errorDiv.className = "invalid-feedback";
-                //     errorDiv.style.marginTop = "5px";
-                //     errorDiv.style.display = "none";
-                //     colContainer.insertAdjacentElement("afterend", errorDiv);
-                // }
+            // // Check for error div or create it dynamically
+            // let errorDiv = colContainer.nextElementSibling;
+            // if (!errorDiv) {
+            //     errorDiv = document.createElement("div");
+            //     errorDiv.id = `${input.name}-error`;
+            //     errorDiv.className = "invalid-feedback";
+            //     errorDiv.style.marginTop = "5px";
+            //     errorDiv.style.display = "none";
+            //     colContainer.insertAdjacentElement("afterend", errorDiv);
+            // }
 
-                // // Perform validation
-                // const value = parseFloat(input.value) || 0; // Default to 0 if input is empty
-                // if (value > maxAmount) {
-                //     input.classList.add("is-invalid");
-                //     errorDiv.innerHTML = `*Value cannot exceed ${maxAmount.toLocaleString()}`;
-                //     errorDiv.style.display = "block";
-                //     isValid = false;
-                // } else {
-                //     input.classList.remove("is-invalid");
-                //     errorDiv.style.display = "none";
-                // }
-                if (value > maxAmount) {
-                    chargeElement.setCustomValidity("Value cannot exceed 16,500,000");
-                } else {
-                    chargeElement.setCustomValidity(""); // Reset validation
-                }
+            // // Perform validation
+            // const value = parseFloat(input.value) || 0; // Default to 0 if input is empty
+            // if (value > maxAmount) {
+            //     input.classList.add("is-invalid");
+            //     errorDiv.innerHTML = `*Value cannot exceed ${maxAmount.toLocaleString()}`;
+            //     errorDiv.style.display = "block";
+            //     isValid = false;
+            // } else {
+            //     input.classList.remove("is-invalid");
+            //     errorDiv.style.display = "none";
+            // }
+            if (value > maxAmount) {
+                chargeElement.setCustomValidity("Value cannot exceed 16,500,000");
+            } else {
+                chargeElement.setCustomValidity(""); // Reset validation
+            }
 
-                chargeElement.reportValidity(); // Show validation message
+            chargeElement.reportValidity(); // Show validation message
 
-                if (!chargeElement.checkValidity()) {
-                    event.preventDefault(); // Prevent form submission if invalid
-                }
+            if (!chargeElement.checkValidity()) {
+                event.preventDefault(); // Prevent form submission if invalid
+            }
 
-                chargeElement.addEventListener("input", function () {
-                    chargeElement.setCustomValidity(""); // Clear error when user types
-                });
+            chargeElement.addEventListener("input", function() {
+                chargeElement.setCustomValidity(""); // Clear error when user types
+            });
             //});
 
             return isValid;
@@ -527,69 +514,69 @@ m
             let isValid = true; // Track overall validity
 
             //inputs.forEach(input => {
-                // // Exclude the readonly input and the one named "notes"
-                // if (input.readOnly || input.name === "notes") {
-                //     return; // Skip validation for these inputs
-                // }
+            // // Exclude the readonly input and the one named "notes"
+            // if (input.readOnly || input.name === "notes") {
+            //     return; // Skip validation for these inputs
+            // }
 
-                // const errorElementId = input.name + "-error"; // Unique error element ID
-                // let errorElement = input.nextElementSibling; // Locate the error element directly below the input
+            // const errorElementId = input.name + "-error"; // Unique error element ID
+            // let errorElement = input.nextElementSibling; // Locate the error element directly below the input
 
-                // // Create an error element dynamically if it doesn't exist
-                // if (!errorElement || errorElement.className !== "invalid-feedback") {
-                //     errorElement = document.createElement("div");
-                //     errorElement.id = errorElementId;
-                //     errorElement.className = "invalid-feedback";
-                //     input.insertAdjacentElement("afterend", errorElement); // Place the error element below the input
-                // }
+            // // Create an error element dynamically if it doesn't exist
+            // if (!errorElement || errorElement.className !== "invalid-feedback") {
+            //     errorElement = document.createElement("div");
+            //     errorElement.id = errorElementId;
+            //     errorElement.className = "invalid-feedback";
+            //     input.insertAdjacentElement("afterend", errorElement); // Place the error element below the input
+            // }
 
-                // // Check if the field is empty
-                // if (input.value.trim() === "") {
-                //     input.classList.add("is-invalid"); // Add invalid class to input
-                //     errorElement.innerHTML = "*This field is required"; // Set error message
-                //     errorElement.style.display = "block"; // Show error element
-                //     isValid = false; // Mark form as invalid
-                // } 
-                // // Check if the input contains only allowed symbols, letters, or numbers
-                // else if (!allowedSymbols.test(input.value)) {
-                //     input.classList.add("is-invalid"); // Add invalid class
-                //     const errorText = "*Only letters, numbers, and these symbols are allowed: ! @ $ % ^ & ( ) _ + / - : | , ~";
-                //     errorElement.innerHTML = errorText; // Set error message
-                //     errorElement.style.display = "block"; // Show error element
-                //     isValid = false; // Mark form as invalid
-                // } else {
-                //     input.classList.remove("is-invalid"); // Remove invalid class
-                //     errorElement.style.display = "none"; // Hide error element
-                // }
+            // // Check if the field is empty
+            // if (input.value.trim() === "") {
+            //     input.classList.add("is-invalid"); // Add invalid class to input
+            //     errorElement.innerHTML = "*This field is required"; // Set error message
+            //     errorElement.style.display = "block"; // Show error element
+            //     isValid = false; // Mark form as invalid
+            // } 
+            // // Check if the input contains only allowed symbols, letters, or numbers
+            // else if (!allowedSymbols.test(input.value)) {
+            //     input.classList.add("is-invalid"); // Add invalid class
+            //     const errorText = "*Only letters, numbers, and these symbols are allowed: ! @ $ % ^ & ( ) _ + / - : | , ~";
+            //     errorElement.innerHTML = errorText; // Set error message
+            //     errorElement.style.display = "block"; // Show error element
+            //     isValid = false; // Mark form as invalid
+            // } else {
+            //     input.classList.remove("is-invalid"); // Remove invalid class
+            //     errorElement.style.display = "none"; // Hide error element
+            // }
 
-                if (textElement.name === "tin") {
-                    // Check TIN-specific validation
-                    if (!textElement.value.trim()) {
-                        textElement.setCustomValidity("This field is required");
-                    } else if (reverseTinRegex.test(textElement.value)) {
-                        textElement.setCustomValidity("TIN format is invalid. Correct format: xxx-xxx-xxx-xxx");
-                    } else {
-                        textElement.setCustomValidity(""); // Reset validation
-                    }
-                }else {
-                    if (!textElement.value.trim()) {
-                        textElement.setCustomValidity("This field is required");
-                    } else if (!allowedSymbols.test(textElement.value)) {
-                        textElement.setCustomValidity("Only letters, numbers, and these symbols are allowed: $ % / - , .");
-                    } else {
-                        textElement.setCustomValidity(""); // Reset validation
-                    }
+            if (textElement.name === "tin") {
+                // Check TIN-specific validation
+                if (!textElement.value.trim()) {
+                    textElement.setCustomValidity("This field is required");
+                } else if (reverseTinRegex.test(textElement.value)) {
+                    textElement.setCustomValidity("TIN format is invalid. Correct format: xxx-xxx-xxx-xxx");
+                } else {
+                    textElement.setCustomValidity(""); // Reset validation
                 }
-
-                textElement.reportValidity(); // Show validation message
-
-                if (!textElement.checkValidity()) {
-                    event.preventDefault(); // Prevent form submission if invalid
+            } else {
+                if (!textElement.value.trim()) {
+                    textElement.setCustomValidity("This field is required");
+                } else if (!allowedSymbols.test(textElement.value)) {
+                    textElement.setCustomValidity("Only letters, numbers, and these symbols are allowed: $ % / - , .");
+                } else {
+                    textElement.setCustomValidity(""); // Reset validation
                 }
+            }
 
-                textElement.addEventListener("input", function () {
-                    textElement.setCustomValidity(""); // Clear error when user types
-                });
+            textElement.reportValidity(); // Show validation message
+
+            if (!textElement.checkValidity()) {
+                event.preventDefault(); // Prevent form submission if invalid
+            }
+
+            textElement.addEventListener("input", function() {
+                textElement.setCustomValidity(""); // Clear error when user types
+            });
             //});
 
             return isValid; // Return validity status
@@ -617,18 +604,18 @@ m
             notesInput.reportValidity(); // Show validation message
 
             // Clear the custom validation message when the user starts typing
-            notesInput.addEventListener("input", function () {
-                notesInput.setCustomValidity(""); 
+            notesInput.addEventListener("input", function() {
+                notesInput.setCustomValidity("");
             });
 
             return notesInput.checkValidity(); // Return true if valid, false otherwise
         }
 
         function validateDateFields(dateElement) {
-        //const dateInputs = document.querySelectorAll('input[type="date"]'); // Select all date inputs
-        let isValid = true; // Track overall validity
+            //const dateInputs = document.querySelectorAll('input[type="date"]'); // Select all date inputs
+            let isValid = true; // Track overall validity
 
-        //dateInputs.forEach(input => {
+            //dateInputs.forEach(input => {
             //const errorElementId = input.name + "-error"; // Unique error element ID
             // let errorElement = input.nextElementSibling; // Locate the error element directly below the input
 
@@ -663,16 +650,16 @@ m
                 event.preventDefault(); // Prevent form submission if invalid
             }
 
-            dateElement.addEventListener("input", function () {
+            dateElement.addEventListener("input", function() {
                 dateElement.setCustomValidity(""); // Clear error when user types
             });
-        //});
+            //});
 
-        return isValid; // Return validity status
-    }
+            return isValid; // Return validity status
+        }
 
 
-    function validateForm(event) {
+        function validateForm(event) {
             let isValid = true;
 
             // Validate number fields
@@ -713,35 +700,35 @@ m
             return isValid; // Return the overall validity
         }
 
-    function calculateTotal() {
-        let total = 0;
-        const numberInputs = document.querySelectorAll('#charges-table input[type="number"]');
-        
-        numberInputs.forEach(input => {
-            if (input.value && !isNaN(input.value)) {
-                total += parseFloat(input.value);
-            }
-        });
-        
-        document.getElementById("total").value = total.toFixed(2);
-    }
+        function calculateTotal() {
+            let total = 0;
+            const numberInputs = document.querySelectorAll('#charges-table input[type="number"]');
 
-    function redirection(refnum) {
+            numberInputs.forEach(input => {
+                if (input.value && !isNaN(input.value)) {
+                    total += parseFloat(input.value);
+                }
+            });
+
+            document.getElementById("total").value = total.toFixed(2);
+        }
+
+        function redirection(refnum) {
             if (!refnum || refnum === "") {
                 window.location.href = "agq_choosedocument.php";
             } else {
                 window.location.href = "agq_transactionCatcher.php";
             }
-    }
+        }
     </script>
 </head>
 
 <body>
-<a href="#" onclick="redirection('<?php echo $refNum; ?>')" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 20px; top: 20px;">←</a>
+    <a href="#" onclick="redirection('<?php echo htmlspecialchars($refNum, ENT_QUOTES, 'UTF-8'); ?>')" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 20px; top: 20px;">←</a>
     <div class="container">
         <div class="header">STATEMENT OF ACCOUNT</div>
         <form method="POST" onsubmit="return validateForm(event);">
-        <div class="section">
+            <div class="section">
                 <input type="text" maxlength="50" name="to" placeholder="To" value="<?= isset($row['To:']) ? htmlspecialchars($row['To:']) : ''; ?>" onchange="validateTextFields(this)" style="width: 70%">
                 <input type="date" name="date" value="<?= isset($row['Date']) ? $row['Date'] : ''; ?>" onchange="validateDateFields(this)" style="width: 28%">
             </div>

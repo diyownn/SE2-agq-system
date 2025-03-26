@@ -15,6 +15,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // }
 }
 
+$refNum = isset($_GET['refNum']) && !empty($_GET['refNum']) ? $_GET['refNum'] : "";
+
 // Function to insert a record
 function insertRecord($conn)
 {
@@ -481,7 +483,7 @@ $conn->close();
 </head>
 
     <body>
-    <a href="#" onclick="redirection('<?php echo $refNum; ?>')" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 20px; top: 20px;">←</a>
+    <a href="#" onclick="redirection('<?php echo htmlspecialchars($refNum, ENT_QUOTES, 'UTF-8'); ?>')" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 20px; top: 20px;">←</a>
         <div class="container">
             <div class="header">STATEMENT OF ACCOUNT</div>
             <form method="POST" onsubmit="return validateForm(event);">

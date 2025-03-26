@@ -21,21 +21,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // }
 }
 
-if (isset($_GET['refNum'])) {
-    $refNum = $_GET['refNum'];
 
-    $sql = "SELECT PackageType FROM tbl_expbrk WHERE RefNum = ?";
+$refNum = isset($_GET['refNum']) && !empty($_GET['refNum']) ? $_GET['refNum'] : "";
+
+
+if (!empty($refNum)) {
+    $sql = "SELECT * FROM tbl_expbrk WHERE RefNum LIKE ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("s", $refNum);
     $stmt->execute();
     $result = $stmt->get_result();
     $row = $result->fetch_assoc();
-    
-    $packageType = $row['PackageType'] ?? '';
+    $stmt->close();
 }
 
 if (isset($_GET['refNum'])) {
-
     $refNum = $_GET['refNum'];
     $sql = "SELECT * FROM tbl_expbrk WHERE RefNum LIKE ?";
     $stmt = $conn->prepare($sql);
@@ -547,7 +547,7 @@ function insertRecord($conn)
     
 </head>
 <body>
-    <a href="#" onclick="redirection('<?php echo $refNum; ?>')" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 20px; top: 20px;">←</a>
+    <a href="#"  onclick="redirection('<?php echo htmlspecialchars($refNum, ENT_QUOTES, 'UTF-8'); ?>')" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 20px; top: 20px;">←</a>
         
     <div class="container">
         <div class="header">SALES INVOICE</div>
