@@ -111,7 +111,7 @@
                 $role = $row['Department'];
                 $pword = $row['Password'];
 
-                $_SESSION['dept'] = $role;
+                $_SESSION['department'] = $role;
 
                 // Reset login attempts counter on successful login
                 $_SESSION['login_attempts'] = 0;
