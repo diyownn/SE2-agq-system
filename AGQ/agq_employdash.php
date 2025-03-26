@@ -347,7 +347,12 @@ function setupSearchDropdown(inputId, dropdownId, buttonId) {
     // Search button click handler
     searchButton.addEventListener("click", () => {
         let query = searchInput.value.trim();
-        let url = query ? `FILTER_COMPANY.php?query=${encodeURIComponent(query)}` : "FILTER_COMPANY.php";
+        if (!query) {
+            // If search is empty, do nothing
+            return;
+        }
+        
+        let url = `FILTER_COMPANY.php?query=${encodeURIComponent(query)}`;
         fetchCompanies(url);
     });
 
