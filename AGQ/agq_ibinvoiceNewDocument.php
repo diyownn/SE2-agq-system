@@ -397,7 +397,7 @@ function insertRecord($conn)
 
         function validateTextFields(textElement) {
             const allowedSymbols = /^[a-zA-Z0-9\$%\-\/\., ]+$/; // Allow letters, numbers, and only $ % / . , -
-            const reverseTinRegex = /^(?!^[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{4}$).+$/; // Correct regex for TIN format (0000-0000-0000-0000)
+            const reverseTinRegex = /^(?!^[0-9]{3}-[0-9]{3}-[0-9]{3}-[0-9]{3}$).+$/; // Correct regex for TIN format (0000-0000-0000-0000)
             let isValid = true; // Track overall validity
 
             if (textElement.name === "tin") {
@@ -405,7 +405,7 @@ function insertRecord($conn)
                 if (!textElement.value.trim()) {
                     textElement.setCustomValidity("This field is required");
                 } else if (reverseTinRegex.test(textElement.value)) {
-                    textElement.setCustomValidity("TIN format is invalid. Correct format: 0000-0000-0000-0000");
+                    textElement.setCustomValidity("TIN format is invalid. Correct format: xxx-xxx-xxx-xxx");
                 } else {
                     textElement.setCustomValidity(""); // Reset validation
                 }
@@ -538,11 +538,21 @@ function insertRecord($conn)
             
             document.getElementById("total").value = total.toFixed(2);
         }
+
+        function redirection(refnum) {
+            if (!refnum || refnum === "") {
+                window.location.href = "agq_choosedocument.php";
+            } else {
+                window.location.href = "agq_transactionCatcher.php";
+            }
+        }
     </script>
+        
+
         
 </head>
 <body>
-<a href="agq_choosedocument.php" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 20px; top: 20px;">←</a>
+<a href="agq_choosedocument.php" onclick="redirection('<?php echo $refNum; ?>')" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 20px; top: 20px;">←</a>
 <div class="container">
         <div class="header">SALES INVOICE</div>
         <form method="POST" onsubmit="return validateForm(event);">
