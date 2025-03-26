@@ -193,10 +193,10 @@ $result = $conn->query($query);
             <form id="userForm">
 
                 <label for="name">NAME</label>
-                <input type="text" id="name" name="name" required>
+                <input type="text" id="name" name="name"  onchange="return validate_name()">
 
                 <label for="email">EMAIL</label>
-                <input type="email" id="email" name="email" required>
+                <input type="email" id="email" name="email" onchange="return validate_email()">
 
 
                 <label for="department">DEPARTMENT</label>
@@ -209,12 +209,83 @@ $result = $conn->query($query);
                     <option value="Import Forwarding">Import Forwarding</option>
                 </select>
 
-
-
-                <button type="submit">SAVE</button>
+                <button type="submit"  onchange="return validate_form()">SAVE</button>
             </form>
         </div>
     </div>
+
+    <script>
+
+        function validate_form() {
+            var val_name = validate_name();
+            var val_pass = validate_password();
+
+            return val_email && val_pass;
+        }
+
+        function validate_name() {
+            var nPass = document.getElementById("name");
+            const allowedSymbols = /^[a-zA-Z0-9.]*$/; 
+            var passregex = /^.{3,100}$/;
+            let isValid = true; // Track overall validity
+            //var nPass_error = document.getElementById("pass-error");
+
+            if (!nPass.value.trim()) {
+                nPass.setCustomValidity("Please enter your name");
+            } else if (!allowedSymbols.test(nPass.value)) {
+                nPass.setCustomValidity("Alphanumeric and/or a period input only.");
+            } else if (!passregex.test(nPass.value)) {
+                nPass.setCustomValidity("Name must be atleast 3 characters");
+
+            }else {
+                nPass.setCustomValidity(""); // Reset validation
+                }
+
+                nPass.reportValidity(); // Show validation message
+
+                if (!nPass.checkValidity()) {
+                    event.preventDefault(); // Prevent form submission if invalid
+                }
+
+                nPass.addEventListener("input", function () {
+                    nPass.setCustomValidity(""); // Clear error when user types
+                });
+
+            return isValid;
+
+        }
+
+        function validate_email() {
+            var email = document.getElementById("email");
+            var emailregex = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9_.+-]+$/;
+            //var email_error = document.getElementById("email-error");
+            let isValid = true; // Track overall validity
+
+
+            if (!email.value.trim()) {
+                email.setCustomValidity("Please enter your email address");
+
+            } else if (!emailregex.test(email.value)) {
+                email.setCustomValidity("Email should be in the format xxx@xxx");
+
+            } else {
+                email.setCustomValidity(""); // Reset validation
+            }
+
+            email.reportValidity(); // Show validation message
+
+            if (!email.checkValidity()) {
+                event.preventDefault(); // Prevent form submission if invalid
+            }
+
+            email.addEventListener("input", function () {
+                email.setCustomValidity(""); // Clear error when user types
+            });
+
+            return isValid; // Return validity status
+        }
+
+    </script>
 
     <script>
         function openModal() {
