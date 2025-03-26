@@ -65,16 +65,15 @@
 
     if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['compPic']['tmp_name']) && isset($_POST['compName'])) {
         $company_name = $_POST['compName'];
-        $companyid = (string)random_int(1000000000, 9999999999);
         $company_picture = file_get_contents($_FILES['compPic']['tmp_name']);
 
-        $stmt = $conn->prepare("INSERT INTO tbl_company (CompanyID, Company_name, Company_picture) VALUES (?, ?, ?)");
+        $stmt = $conn->prepare("INSERT INTO tbl_company (Company_name, Company_picture) VALUES ( ?, ?)");
         if (!$stmt) {
             die("Preparation failed: " . $conn->error);
         }
 
         // Use "sss" (string, string, string) and bind the data as a string
-        $stmt->bind_param("sss", $companyid, $company_name, $company_picture);
+        $stmt->bind_param("ss",  $company_name, $company_picture);
         $stmt->send_long_data(2, $company_picture); // Send BLOB data
 
         if ($stmt->execute()) {

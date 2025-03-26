@@ -21,6 +21,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // }
 }
 
+$refNum = isset($_GET['refNum']) && !empty($_GET['refNum']) ? $_GET['refNum'] : "";
+
 if (isset($_GET['refNum'])) {
     $refNum = $_GET['refNum'];
 
@@ -30,7 +32,7 @@ if (isset($_GET['refNum'])) {
     $stmt->execute();
     $result = $stmt->get_result();
     $row = $result->fetch_assoc();
-    
+
     $packageType = $row['PackageType'] ?? '';
 }
 
@@ -128,12 +130,12 @@ function updateRecord($conn, $data, $sessionData)
     );
 
     if ($stmt->execute()) {
-        ?>'<script>
-        if (confirm("Document Successfully Edited!\\nReturn to Transactions Page?")) {
-            window.location.href = "agq_transactionCatcher.php";
-        }
-            </script>'
-        <?php
+?>'<script>
+    if (confirm("Document Successfully Edited!\\nReturn to Transactions Page?")) {
+        window.location.href = "agq_transactionCatcher.php";
+    }
+</script>'
+<?php
         return;
     } else {
         return "Error updating record: " . $stmt->error;
@@ -193,9 +195,9 @@ function insertRecord($conn)
         $_POST['weight'],
         $_POST['volume'],
         $_POST['package'],
-	    $_POST['others_amount'],
-	    $_POST['notes'],
-       	$_POST['5oceanfreight'],
+        $_POST['others_amount'],
+        $_POST['notes'],
+        $_POST['5oceanfreight'],
         $_POST['lclcharge'],
         $_POST['docsfee'],
         $_POST['documentation'],
@@ -260,25 +262,26 @@ function insertRecord($conn)
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/x-icon" href="../AGQ/images/favicon.ico">
     <link rel="stylesheet" type="text/css" href="../css/forms.css">
     <title>Sales Invoice </title>
-    
+
     <script>
         function togglePackageField() {
             document.getElementById("package-details").style.display = "block";
             updateReimbursableCharges();
         }
-    
+
         function updateReimbursableCharges() {
             const lclSelected = document.getElementById("lcl").checked;
             const containerSelected = document.getElementById("container").checked;
             const chargesTable = document.getElementById("charges-table");
             chargesTable.innerHTML = ""; // Clear existing charges
-    
+
             if (lclSelected) {
                 const lclCharges = [
                     "5 Ocean Freight",
@@ -302,14 +305,14 @@ function insertRecord($conn)
                 generateFixedCharges(containerCharges, true);
             }
         }
-    
+
         function generateFixedCharges(charges) {
             const chargesTable = document.getElementById("charges-table");
-    
+
             charges.forEach(charge => {
                 const row = document.createElement("div");
                 row.className = "table-row";
-    
+
                 if (charge === "Additional Charges") {
                     row.innerHTML = `
                         <select onchange="handleChargeSelection(this)">
@@ -324,27 +327,27 @@ function insertRecord($conn)
                         <input type="number" name="${inputName}" placeholder="Enter amount" onchange ="validateChargeAmount(this)">
                     `;
                 }
-    
+
                 chargesTable.appendChild(row);
             });
         }
-    
+
         function handleChargeSelection(selectElement) {
             const selectedCharge = selectElement.value;
             if (!selectedCharge) return; // Do nothing if default is selected
-    
+
             // Prevent duplicate entries
             const existingEntries = document.querySelectorAll(".added-charge");
             for (let entry of existingEntries) {
                 if (entry.dataset.charge === selectedCharge) return;
             }
-    
+
             // Add new charge field
             const chargesTable = document.getElementById("charges-table");
             const newRow = document.createElement("div");
             newRow.className = "table-row added-charge";
             newRow.dataset.charge = selectedCharge; // Store charge type
-    
+
             let inputName = selectedCharge.toLowerCase() + "_amount";
 
             newRow.innerHTML = `
@@ -352,17 +355,18 @@ function insertRecord($conn)
                 <input type="number" name="${inputName}" placeholder="Enter amount" onchange="validateChargeInput(this)">
                 <button onclick="removeCharge(this)">Remove</button>
             `;
-    
+
             chargesTable.appendChild(newRow);
 
             selectElement.value = "";
         }
+
         function removeCharge(button) {
             button.parentElement.remove(); // Remove the selected charge row
         }
 
         function validateChargeInput(inputElement) {
-            const maxAmount = 16500000; 
+            const maxAmount = 16500000;
             const value = parseFloat(inputElement.value) || 0;
 
             if (value > maxAmount) {
@@ -377,7 +381,7 @@ function insertRecord($conn)
                 inputElement.preventDefault(); // Prevent form submission if invalid
             }
 
-            inputElement.addEventListener("input", function () {
+            inputElement.addEventListener("input", function() {
                 inputElement.setCustomValidity(""); // Clear error when user types
             });
         }
@@ -387,22 +391,22 @@ function insertRecord($conn)
             let isValid = true;
 
             const value = parseFloat(chargeElement.value) || 0;
-                
-                if (value > maxAmount) {
-                    chargeElement.setCustomValidity("Value cannot exceed 16,500,000");
-                } else {
-                    chargeElement.setCustomValidity(""); // Reset validation
-                }
 
-                chargeElement.reportValidity(); // Show validation message
+            if (value > maxAmount) {
+                chargeElement.setCustomValidity("Value cannot exceed 16,500,000");
+            } else {
+                chargeElement.setCustomValidity(""); // Reset validation
+            }
 
-                if (!chargeElement.checkValidity()) {
-                    event.preventDefault(); // Prevent form submission if invalid
-                }
+            chargeElement.reportValidity(); // Show validation message
 
-                chargeElement.addEventListener("input", function () {
-                    chargeElement.setCustomValidity(""); // Clear error when user types
-                });
+            if (!chargeElement.checkValidity()) {
+                event.preventDefault(); // Prevent form submission if invalid
+            }
+
+            chargeElement.addEventListener("input", function() {
+                chargeElement.setCustomValidity(""); // Clear error when user types
+            });
 
             return isValid;
         }
@@ -437,7 +441,7 @@ function insertRecord($conn)
                 event.preventDefault(); // Prevent form submission if invalid
             }
 
-            textElement.addEventListener("input", function () {
+            textElement.addEventListener("input", function() {
                 textElement.setCustomValidity(""); // Clear error when user types
             });
 
@@ -466,8 +470,8 @@ function insertRecord($conn)
             notesInput.reportValidity(); // Show validation message
 
             // Clear the custom validation message when the user starts typing
-            notesInput.addEventListener("input", function () {
-                notesInput.setCustomValidity(""); 
+            notesInput.addEventListener("input", function() {
+                notesInput.setCustomValidity("");
             });
 
             return notesInput.checkValidity(); // Return true if valid, false otherwise
@@ -488,7 +492,7 @@ function insertRecord($conn)
                 event.preventDefault(); // Prevent form submission if invalid
             }
 
-            dateElement.addEventListener("input", function () {
+            dateElement.addEventListener("input", function() {
                 dateElement.setCustomValidity(""); // Clear error when user types
             });
 
@@ -539,13 +543,13 @@ function insertRecord($conn)
         function calculateTotal() {
             let total = 0;
             const numberInputs = document.querySelectorAll('#charges-table input[type="number"]');
-            
+
             numberInputs.forEach(input => {
                 if (input.value && !isNaN(input.value)) {
                     total += parseFloat(input.value);
                 }
             });
-            
+
             document.getElementById("total").value = total.toFixed(2);
         }
 
@@ -557,10 +561,11 @@ function insertRecord($conn)
             }
         }
     </script>
-    
+
 </head>
+
 <body>
-<a href="#" onclick="redirection('<?php echo $refNum; ?>')" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 20px; top: 20px;">←</a>
+    <a href="#" onclick="redirection('<?php echo htmlspecialchars($refNum, ENT_QUOTES, 'UTF-8'); ?>')" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 20px; top: 20px;">←</a>
 
     <div class="container">
         <div class="header">SALES INVOICE</div>
@@ -631,8 +636,9 @@ function insertRecord($conn)
                 <!-- <button class="save-btn">Save</button> -->
                 <input type="submit" name="save" class="save-btn" value="Save">
             </div>
-                
+
         </form>
     </div>
 </body>
+
 </html>
