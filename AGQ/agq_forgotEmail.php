@@ -29,7 +29,7 @@
 
                 <form action="agq_forgotEmail.php" method="post" class="form-content" enctype="multipart/form-data" onsubmit="return validate_email()">
                     <label for="inputs" class="form-label" id="labels">Enter email</label>
-                    <input type="text" name="email" id="inputs" class="form-control" onchange="return validate_email()">
+                    <input type="text" maxlength="100" name="email" id="inputs" class="form-control" onchange="return validate_email()">
                     <div id="email-error"></div>
 
                     <div class="d-flex justify-content-center">
@@ -97,35 +97,35 @@
     }
 ?>
     <script>
-         function validate_email() {
+          function validate_email() {
             var email = document.getElementById("inputs");
-            var email_error = document.getElementById("email-error");
+            var emailregex = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9_.+-]+$/;
+            //var email_error = document.getElementById("email-error");
+            let isValid = true; // Track overall validity
 
-            if (email.value == '') {
-                email.classList.add("is-invalid");
-                error_text = "*Please enter your email address";
-                email_error.innerHTML = error_text;
-                email_error.classList.add("invalid-feedback");
 
-                return false;
+            if (!email.value.trim()) {
+                email.setCustomValidity("Please enter your email address");
+
+            } else if (!emailregex.test(email.value)) {
+                email.setCustomValidity("Email should be in the format xxx@xxx");
+
             } else {
-                var emailregex = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9_.+-]+$/;
-
-                if (!emailregex.test(email.value)) {
-                    email.classList.add("is-invalid");
-                    error_text = "*Email should be in the format xxx@xxx";
-                    email_error.innerHTML = error_text;
-                    email_error.classList.add("invalid-feedback");
-
-                    return false;
-                }
-
-                email.classList.remove("is-invalid");
-                email_error.innerHTML = "";
-                email_error.classList.remove("invalid-feedback");
-
-                return true;
+                email.setCustomValidity(""); // Reset validation
             }
+
+            email.reportValidity(); // Show validation message
+
+            if (!email.checkValidity()) {
+                event.preventDefault(); // Prevent form submission if invalid
+            }
+
+            email.addEventListener("input", function () {
+                email.setCustomValidity(""); // Clear error when user types
+            });
+
+            return isValid; // Return validity status
+
         }
     </script>
 
