@@ -1,7 +1,7 @@
 <?php
 session_start();
 $role = isset($_SESSION['department']) ? $_SESSION['department'] : '';
-$refNum = isset($_GET['refnum']) ? $_GET['refnum'] : '';
+//$refNum = isset($_GET['refnum']) ? $_GET['refnum'] : '';
 /*
 require __DIR__ . '/secret/vendor/autoload.php';
 
@@ -16,7 +16,6 @@ if (!$key) {
     die("Location: UNAUTHORIZED.php?error=401k ");
 }
 
-
 function encrypt_url($url, $key)
 {
     $iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length('aes-256-cbc'));
@@ -30,32 +29,31 @@ function decrypt_url($encrypted_url, $key)
     return openssl_decrypt($encrypted_url, 'aes-256-cbc', $key, 0, $iv);
 }
 
-
-if (isset($_GET['refnum'])) {
+if (isset($_GET['refNum'])) {
     $refNum = $_GET['refNum'];
     if ($role == 'Export Brokerage') {
-        $original_url = 'http://localhost/SE2-agq-system/AGQ/agq_ebsoaNewDocument.php';
+        $original_url = 'agq_ebsoaNewDocument.php';
         $encrypted_url = encrypt_url($original_url, $key);
         $encoded_url = urlencode($encrypted_url);
 
         header('Location: agq_ebsoaNewDocument.php?url=' . $encoded_url . '&refNum=' . $refNum);
         exit;
     } else if ($role == 'Export Forwarding') {
-        $original_url = 'http://localhost/SE2-agq-system/AGQ/agq_efsoaNewDocument.php';
+        $original_url = 'agq_efsoaNewDocument.php';
         $encrypted_url = encrypt_url($original_url, $key);
         $encoded_url = urlencode($encrypted_url);
 
         header('Location: agq_efsoaNewDocument.php?url=' . $encoded_url . '&refNum=' . $refNum);
         exit;
     } else if ($role == 'Import Brokerage') {
-        $original_url = 'http://localhost/SE2-agq-system/AGQ/agq_ibsoaNewDocument.php';
+        $original_url = 'agq_ibsoaNewDocument.php';
         $encrypted_url = encrypt_url($original_url, $key);
         $encoded_url = urlencode($encrypted_url);
 
         header('Location: agq_ibsoaNewDocument.php?url=' . $encoded_url . '&refNum=' . $refNum);
         exit;
     } else if ($role == 'Import Forwarding') {
-        $original_url = 'http://localhost/SE2-agq-system/AGQ/agq_ifsoaNewDocument.php';
+        $original_url = 'agq_ifsoaNewDocument.php';
         $encrypted_url = encrypt_url($original_url, $key);
         $encoded_url = urlencode($encrypted_url);
 

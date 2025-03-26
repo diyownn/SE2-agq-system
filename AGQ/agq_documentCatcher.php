@@ -44,7 +44,7 @@ if ($docType == 'MANIFESTO') {
     exit;
 } else {
 
-    if (($role == 'Admin' || $role == 'admin' || $role == 'owner' || $role == 'Owner') && $pword != 'agqLogistics') {
+    if (($role == 'Admin' || $role == 'admin' || $role == 'owner' || $role == 'Owner') && $pword != 'AGQ@2006') {
 
         $original_url = 'http://localhost/SOFT%20ENG/agq_ownDocumentView.php';
         $encrypted_url = encrypt_url($original_url, $key);
