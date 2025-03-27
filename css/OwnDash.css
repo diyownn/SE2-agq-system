@@ -58,6 +58,7 @@ body {
   background-color: rgb(144, 174, 94);
   color: white;
   font-size: 14px;
+  font-weight: bold;
   text-align: start;
   padding: 10px 1px;
   width: fit-content;
@@ -109,6 +110,12 @@ body {
   font-weight: bold;
   height: 44px;
   box-sizing: border-box;
+  transition: box-shadow 0.3s ease;
+}
+
+.search-bar:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(144, 174, 94, 0.3);
 }
 
 .search-button {
@@ -122,11 +129,19 @@ body {
   height: 44px; 
   cursor: pointer;
   flex-shrink: 0;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .search-button:hover {
-  opacity: 1;
   background-color: rgb(99, 133, 46);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.search-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .dropdown {
@@ -173,7 +188,29 @@ body {
   text-decoration: none;
   color: #94ae5e;
   font-weight: bold;
-  font-size: 14px; 
+  font-size: 14px;
+  position: relative;
+  padding-bottom: 3px;
+  transition: color 0.3s ease;
+}
+
+.nav-link-container a::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: 0;
+  left: 0;
+  background-color: #63852e;
+  transition: width 0.3s ease;
+}
+
+.nav-link-container a:hover {
+  color: #63852e;
+}
+
+.nav-link-container a:hover::after {
+  width: 100%;
 }
 
 .dashboard-body {
@@ -199,19 +236,27 @@ body {
   font-weight: bold;
   cursor: pointer;
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
-  transition: background-color 0.3s ease;      
+  transition: all 0.3s ease;
 }
 
 .add-company:hover {
   background-color: #63852e;
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.add-company:active {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
 }
 
 .add-company span {
-  color: black;
+  color: white;
   margin-right: 10px;
+  transition: color 0.3s ease;
 }
-  
-.icon {
+
+.add-company .icon {
   width: 30px;
   height: 30px;
   background: #E0E0E0;
@@ -219,6 +264,15 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+  transition: background-color 0.3s ease;
+}
+
+.add-company:hover .icon {
+  background-color: #ffffff;
+}
+
+.add-company:hover .icon svg path {
+  stroke: #63852e;
 }
 
 .icon svg {
@@ -235,7 +289,6 @@ body {
   padding-right: 50px;
 }
   
-
 .company-container-row {
   display: flex;
   flex-direction: row;
@@ -245,7 +298,6 @@ body {
   margin: 20px 0px 40px 0;
   width: 100%;
 }
-
 
 .company-button {
   flex: 0 0 calc(20% - 72px); 
@@ -260,16 +312,17 @@ body {
   border-style: none;
   border-radius: 25px;
   cursor: pointer;
-  transition: box-shadow 0.15s,
-              opacity 0.1s;
+  transition: all 0.25s ease;
 }
   
 .company-container:hover {
   box-shadow: 0px 0px 20px rgb(135, 164, 89);
+  transform: translateY(-5px);
 }
   
 .company-container:active {
   opacity: 0.7;
+  transform: translateY(-2px);
 }
   
 .company-title {
@@ -293,6 +346,7 @@ body {
   cursor: pointer;
   z-index: 1001;
   transition: all 0.3s ease;
+  margin-top: 15px;
 }
 
 .hamburger-menu span {
@@ -346,6 +400,7 @@ body {
 .mobile-search-container {
   margin-bottom: 25px;
   width: 100%;
+  margin-top: 20px;
 }
 
 .mobile-search-input-wrapper {
@@ -362,6 +417,15 @@ body {
   border: none;
   cursor: pointer;
   padding: 0;
+  transition: transform 0.3s ease;
+}
+
+.mobile-search-icon:hover {
+  transform: scale(1.2);
+}
+
+.mobile-search-icon:hover svg {
+  stroke: #63852e;
 }
 
 #mobile-search-input {
@@ -374,6 +438,12 @@ body {
   font-weight: bold;
   height: 44px;
   box-sizing: border-box;
+  transition: box-shadow 0.3s ease;
+}
+
+#mobile-search-input:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(144, 174, 94, 0.3);
 }
 
 .mobile-nav-links {
@@ -389,6 +459,28 @@ body {
   font-size: 16px;
   padding: 10px 0;
   border-bottom: 1px solid #f0f0f0;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.mobile-nav-links a::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: -1px;
+  left: 0;
+  background-color: #63852e;
+  transition: width 0.3s ease;
+}
+
+.mobile-nav-links a:hover {
+  color: #63852e;
+  padding-left: 5px;
+}
+
+.mobile-nav-links a:hover::after {
+  width: 100%;
 }
 
 .menu-overlay {
@@ -441,6 +533,12 @@ body {
   font-size: 24px;
   cursor: pointer;
   color: #94ae5e;
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.mobile-nav-close:hover {
+  color: #63852e;
+  transform: scale(1.1);
 }
 
 .mobile-search {
@@ -452,11 +550,25 @@ body {
   border-radius: 50px;
   width: 100%;
   margin-bottom: 10px;
+  transition: all 0.3s ease;
+}
+
+.mobile-search .search-bar:focus {
+  outline: none;
+  border-color: #94ae5e;
+  box-shadow: 0 0 0 2px rgba(144, 174, 94, 0.3);
 }
 
 .mobile-search .search-button {
   width: 100%;
   border-radius: 50px;
+  transition: all 0.3s ease;
+}
+
+.mobile-search .search-button:hover {
+  background-color: #63852e;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .mobile-links {
@@ -472,6 +584,28 @@ body {
   font-size: 16px;
   padding: 10px 0;
   border-bottom: 1px solid #eee;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.mobile-links a::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: -1px;
+  left: 0;
+  background-color: #63852e;
+  transition: width 0.3s ease;
+}
+
+.mobile-links a:hover {
+  color: #63852e;
+  padding-left: 5px;
+}
+
+.mobile-links a:hover::after {
+  width: 100%;
 }
 
 body.loading .top-container,

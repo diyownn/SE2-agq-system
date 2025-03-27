@@ -94,6 +94,7 @@ if ($result) {
     <title>Transactions</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../css/otp.css">
+    <link rel="stylesheet" href="../css/home-icon.css">
     <link rel="icon" type="image/x-icon" href="../AGQ/images/favicon.ico">
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -105,7 +106,14 @@ if ($result) {
         <div class="dept-container">
             <div class="header-container">
                 <div class="dept-label">
-                    <?php echo htmlspecialchars($role); ?>
+                    <a href="agq_dashCatcher.php" class="home-link">
+                        <!-- Home Icon SVG -->
+                        <svg class="home-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                        </svg>
+                        <?php echo htmlspecialchars($role); ?>
+                    </a>
                 </div>
                 <div class="company-label">
                     <?php echo htmlspecialchars($company); ?>
@@ -181,9 +189,10 @@ if ($result) {
         var company = "<?php echo isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : ''; ?>";
         var dept = "<?php echo isset($_SESSION['SelectedDepartment']) ? $_SESSION['SelectedDepartment'] : ''; ?>";
 
+        // Function to clear search and redirect to the transaction view page
         function clearSearch() {
-            // Redirect to the transaction view page
-            window.location.href = "agq_transactionCatcher.php";
+            document.getElementById("search-input").value = "";
+            window.location.href = "agq_ownTransactionView.php";
         }
 
         function redirectToDocument(refnum, doctype) {
@@ -302,17 +311,28 @@ if ($result) {
 
         let searchInput = document.getElementById("search-input");
         let dropdown = document.getElementById("dropdown");
+        
+        // Variable to track previous search value
+        let previousSearchValue = "";
 
         if (searchInput) {
             searchInput.addEventListener("input", function() {
-                let query = this.value.trim().toLowerCase();
+                let currentValue = this.value.trim().toLowerCase();
+                
+                // If value was something before and now it's empty, redirect to transaction view
+                if (previousSearchValue !== "" && currentValue === "") {
+                    clearSearch();
+                    return;
+                }
+                
+                previousSearchValue = currentValue;
 
-                if (!query) {
+                if (!currentValue) {
                     dropdown.style.display = "none";
                     return;
                 }
 
-                fetch("FETCH_Transactions.php?search=" + encodeURIComponent(query))
+                fetch("FETCH_Transactions.php?search=" + encodeURIComponent(currentValue))
                     .then(response => response.json())
                     .then(data => {
                         console.log("API Response:", JSON.stringify(data, null, 2));
@@ -325,7 +345,7 @@ if ($result) {
 
                         // Check if the search query directly matches any RefNum
                         let exactMatches = transactions.filter(item =>
-                            (item.RefNum && item.RefNum.toLowerCase().includes(query))
+                            (item.RefNum && item.RefNum.toLowerCase().includes(currentValue))
                         );
 
                         // Only show dropdown if we have exact matches to RefNum
@@ -371,24 +391,20 @@ if ($result) {
             });
         }
 
-
-
         document.addEventListener("DOMContentLoaded", function() {
             let searchInput = document.getElementById("search-input");
             let searchButton = document.getElementById("search-button");
             let transactionsContainer = document.querySelector(".transactions"); // Main container
-
 
             if (!searchInput || !searchButton || !transactionsContainer) {
                 console.error("Error: One or more elements not found.");
                 return;
             }
 
-
+            // Function to fetch all transactions (reload page)
             function fetchAllTransactions() {
-                location.reload();
+                clearSearch();
             }
-
 
             function fetchFilteredTransactions(query) {
                 fetch("FILTER_TRANSACTIONS.php?search=" + encodeURIComponent(query))
@@ -396,9 +412,7 @@ if ($result) {
                     .then(data => {
                         console.log("Filtered API Response:", data);
 
-
                         transactionsContainer.innerHTML = "";
-
 
                         if (!data || Object.keys(data).length === 0 || data.error) {
                             transactionsContainer.innerHTML = `
@@ -411,29 +425,23 @@ if ($result) {
                             return;
                         }
 
-
                         let structuredTransactions = {};
-
 
                         Object.entries(data).forEach(([department, docTypes]) => {
                             structuredTransactions[department] = {};
 
-
                             Object.entries(docTypes).forEach(([docType, refArray]) => {
                                 let normalizedDocType = docType.toUpperCase().trim();
-
 
                                 if (!structuredTransactions[department][normalizedDocType]) {
                                     structuredTransactions[department][normalizedDocType] = [];
                                 }
-
 
                                 refArray.forEach(item => {
                                     structuredTransactions[department][normalizedDocType].push(item.RefNum);
                                 });
                             });
                         });
-
 
                         generateTransactionHTML(structuredTransactions, transactionsContainer);
                     })
@@ -449,7 +457,6 @@ if ($result) {
                             </div>`;
                     });
             }
-
 
             function generateTransactionHTML(transactions, container) {
                 container.innerHTML = "";
@@ -524,9 +531,9 @@ if ($result) {
                                 checkbox.type = "checkbox";
                                 checkbox.id = `tx-${refNum}`;
                                 checkbox.classList.add("transaction-checkbox");
-                                checkbox.setAttribute("data-refnum", "<?php echo htmlspecialchars($transaction['RefNum']); ?>");
+                                checkbox.setAttribute("data-refnum", refNum);
                                 checkbox.setAttribute("data-docType", docType);
-                                checkbox.setAttribute("data-dept", "<?php echo htmlspecialchars($dept); ?>");
+                                checkbox.setAttribute("data-dept", dept);
                                 checkbox.setAttribute("onclick", "updateApprovalStatus(this)");
 
                                 checkboxContainer.appendChild(checkbox);
@@ -564,10 +571,8 @@ if ($result) {
                 updateCheckButtons();
             }
 
-
             searchButton.addEventListener("click", function() {
                 let query = searchInput.value.trim();
-
 
                 if (query === "") {
                     fetchAllTransactions();
@@ -577,24 +582,26 @@ if ($result) {
                 }
             });
 
-
             searchInput.addEventListener("keydown", function(event) {
                 if (event.key === "Enter") {
                     event.preventDefault();
                     searchButton.click();
                 }
             });
+            
+            // Close dropdown when clicking outside
+            document.addEventListener("click", function(event) {
+                if (!searchInput.contains(event.target) && !dropdown.contains(event.target)) {
+                    dropdown.style.display = "none";
+                }
+            });
         });
-
 
         function downloadDocument(refNum, department) {
             const encodedRefNum = encodeURIComponent(refNum);
             const encodedDepartment = encodeURIComponent(department);
 
-
             const newWindow = window.open(`/Download/GENERATE_EXCEL.php?request=${encodedRefNum}&user=${encodedDepartment}`, '_blank');
-
-
           
             setTimeout(() => {
                 if (newWindow) {
@@ -602,7 +609,6 @@ if ($result) {
                 }
             }, 3000);
         }
-
 
         console.log("Role:", role);
         console.log("Company:", company);
