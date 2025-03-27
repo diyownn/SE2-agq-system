@@ -139,6 +139,25 @@ body {
     width: 100%; /* Expand the underline on hover */
 }
 
+/* Styles for the home icon in the header */
+.home-link {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: inherit;
+}
+
+.home-icon {
+    margin-right: 8px;
+    width: 20px;
+    height: 20px;
+}
+
+/* Optional hover effect to enhance clickability */
+.home-link:hover {
+    opacity: 0.8;
+}
+
 .company-label {
     background-color: rgb(160, 184, 117);
     color: white;

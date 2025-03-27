@@ -94,6 +94,7 @@ if ($result) {
     <title>Transactions</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../css/otp.css">
+    <link rel="stylesheet" href="../css/home-icon.css">
     <link rel="icon" type="image/x-icon" href="../AGQ/images/favicon.ico">
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -105,7 +106,14 @@ if ($result) {
         <div class="dept-container">
             <div class="header-container">
                 <div class="dept-label">
-                <a href="agq_dashCatcher.php"><?php echo htmlspecialchars($role); ?></a>
+                    <a href="agq_dashCatcher.php" class="home-link">
+                        <!-- Home Icon SVG -->
+                        <svg class="home-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                        </svg>
+                        <?php echo htmlspecialchars($role); ?>
+                    </a>
                 </div>
                 <div class="company-label">
                     <?php echo htmlspecialchars($company); ?>
