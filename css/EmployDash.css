@@ -57,6 +57,7 @@ body {
   background-color: rgb(144, 174, 94);
   color: white;
   font-size: 14px;
+  font-weight: bold;
   text-align: start;
   padding: 10px 1px;
   width: fit-content;
