@@ -95,9 +95,9 @@ body {
     font-weight: bold;
     font-size: 14px;
     text-align: start;
-    padding: 9px 1px;
+    padding: 8px 1px;
     width: fit-content;
-    min-width: 140px;
+    min-width: 200px;
     position: absolute;
     top: 0;
     left: 0;
@@ -163,9 +163,9 @@ body {
     color: white;
     font-size: 14px;
     text-align: start;
-    padding: 10px 1px;
+    padding: 9px 1px;
     width: fit-content;
-    min-width: 140px;
+    min-width: 230px;
     position: absolute;
     top: 0;
     left: 125px;
@@ -185,11 +185,11 @@ body {
     color: white;
     font-size: 14px;
     text-align: start;
-    padding: 10px 1px;
+    padding: 9px 1px;
     width: fit-content;
     min-width: 200px;
     position: absolute;
-    padding-left: 20px;
+    padding-left: 50px;
     top: 0;
     left: 240px;
     border-radius: 0 25px  25px 0;
