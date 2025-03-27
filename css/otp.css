@@ -165,10 +165,10 @@ body {
     text-align: start;
     padding: 9px 1px;
     width: fit-content;
-    min-width: 230px;
+    min-width: 130px;
     position: absolute;
     top: 0;
-    left: 125px;
+    left: 180px;
     border-radius: 0 25px  25px 0;
     display: flex;
     align-items: center;
