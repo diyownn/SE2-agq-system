@@ -57,7 +57,7 @@ $conn->close();
     <link rel="icon" href="images/agq_logo.png" type="image/ico">
 </head>
 
-<body style="background-color: white; background-image:none">
+<body style="background-image: url('manifbg.png'); background-repeat: no-repeat; background-size: cover; background-position: center; background-attachment: fixed;">
     <a href="agq_transactionCatcher.php" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 39%; top: 55px;">←</a>
     <div class="container">
         <div class="row d-flex justify-content-center">
