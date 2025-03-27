@@ -196,7 +196,7 @@ body {
     cursor: pointer;
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
     transition: background-color 0.3s ease;
-    margin-left: 83%;    
+    margin-left: 71%;    
 }
  
 .add-company:hover {
