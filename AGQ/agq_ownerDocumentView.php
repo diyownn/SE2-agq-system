@@ -1062,7 +1062,7 @@ $record = selectRecords($conn, $dept, $refNum);
         <p class="date"><strong>Date Modified:</strong> <?php echo htmlspecialchars($record['EditDate'] ?? 'N/A'); ?></p>
         <p class="date"><strong>Modified By:</strong> <?php echo htmlspecialchars($record['Edited_by'] ?? 'N/A'); ?></p>
         <div class="comment-box">
-          <textarea id="textbox" id="comments" maxlength="250" oninput="updateCounter()"> <?php echo htmlspecialchars($record['Comment'] ?? 'N/A'); ?></textarea>
+          <textarea id="textbox" id="comments" maxlength="250" onchange="validateCommentField(this)" oninput="updateCounter()"> <?php echo htmlspecialchars($record['Comment'] ?? 'N/A'); ?></textarea>
           <div class="counter" id="counter">0/250</div>
           <div class="button-container" id="save-button">
             <button class="save-button" onclick="saveComment('<?php echo htmlspecialchars($refNum, ENT_QUOTES); ?>')">Save</button>
@@ -1071,6 +1071,34 @@ $record = selectRecords($conn, $dept, $refNum);
       </div>
     </div>
     <script>
+       function validateCommentField(comment) {
+            const allowedSymbols = /^[a-zA-Z0-9\$%\-\/\., \n]+$/; // Allow letters, numbers, $ % / . , - and newlines
+            const maxLength = 500; // Maximum character limit
+
+            if (!comment.value.trim()) {
+                // If the field is empty
+                comment.setCustomValidity(""); // Clear validation for empty values (optional)
+            } else if (!allowedSymbols.test(comment.value)) {
+                // Check for invalid symbols
+                comment.setCustomValidity("Only letters, numbers, and these symbols are allowed: $ % / - , . Newline is also allowed.");
+            } else if (comment.value.length > maxLength) {
+                // Check for length exceeding the limit
+                comment.setCustomValidity("Notes cannot exceed 255 characters");
+            } else {
+                // Everything is valid
+                comment.setCustomValidity(""); // Reset validation
+            }
+
+            comment.reportValidity(); // Show validation message
+
+            // Clear the custom validation message when the user starts typing
+            comment.addEventListener("input", function() {
+              comment.setCustomValidity("");
+            });
+
+            return comment.checkValidity(); // Return true if valid, false otherwise
+        }
+        
       function updateCounter() {
         let textbox = document.getElementById("textbox");
         let counter = document.getElementById("counter");
