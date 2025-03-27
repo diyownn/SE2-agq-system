@@ -2,7 +2,18 @@
 require_once "db_agq.php";
 
 session_start();
+$url = isset($_GET['url']);
+$role = isset($_SESSION['department']) ? $_SESSION['department'] : '';
 
+
+if (!$url) {
+    header("Location: UNAUTHORIZED.php?error=401u");
+}
+
+
+if (!$role) {
+    header("Location: UNAUTHORIZED.php?error=401r");
+}
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_GET['refNum']) && !empty($_GET['refNum'])) {

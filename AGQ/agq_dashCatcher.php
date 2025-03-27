@@ -1,15 +1,15 @@
 <?php
 session_start();
-/*
+
 require __DIR__ . '/secret/vendor/autoload.php';
 
 use Dotenv\Dotenv;
 
 $dotenv = Dotenv::createImmutable(__DIR__);
 $dotenv->load();
-*/
-$key = "0jRw1M89WhVwukjsZiZvhPPsRVFgK/IIQnLOYVEWDdi2TXJjx8QPOAOIxMH7b+uW"; //$_ENV['ENCRYPTION_KEY'];
-echo "Key Loaded: " . $key;
+
+$key = $_ENV['ENCRYPTION_KEY'];
+
 if (!$key) {
     die("Location: UNAUTHORIZED.php?error=401k");
 }
@@ -34,7 +34,7 @@ if (
     ($role == 'admin' || $role == 'Admin' || $role == 'owner' || $role == 'Owner') &&
     (!isset($pword) || $pword != 'AGQ@2006')
 ) {
-    $original_url = 'http://localhost/SOFT%20ENG/owndash.php';
+    $original_url = 'http://localhost/SE2-agq-system/AGQ/owndash.php';
     $encrypted_url = encrypt_url($original_url, $key);
     $encoded_url = urlencode($encrypted_url);
 
@@ -44,7 +44,7 @@ if (
     ($role == 'Export Forwarding' || $role == 'Import Forwarding' || $role == 'Export Brokerage' || $role == 'Import Brokerage') &&
     (!isset($pword) || $pword != 'AGQ@2006')
 ) {
-    $original_url = 'http://localhost/SOFT%20ENG/employdash.php';
+    $original_url = 'http://localhost/SE2-agq-system/AGQ/employdash.php';
     $encrypted_url = encrypt_url($original_url, $key);
     $encoded_url = urlencode($encrypted_url);
 

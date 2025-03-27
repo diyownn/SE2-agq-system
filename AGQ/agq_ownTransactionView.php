@@ -311,20 +311,20 @@ if ($result) {
 
         let searchInput = document.getElementById("search-input");
         let dropdown = document.getElementById("dropdown");
-        
+
         // Variable to track previous search value
         let previousSearchValue = "";
 
         if (searchInput) {
             searchInput.addEventListener("input", function() {
                 let currentValue = this.value.trim().toLowerCase();
-                
+
                 // If value was something before and now it's empty, redirect to transaction view
                 if (previousSearchValue !== "" && currentValue === "") {
                     clearSearch();
                     return;
                 }
-                
+
                 previousSearchValue = currentValue;
 
                 if (!currentValue) {
@@ -426,12 +426,21 @@ if ($result) {
                         }
 
                         let structuredTransactions = {};
+                        let records = [];
+                        let hasArchivedRecords = false;
 
                         Object.entries(data).forEach(([department, docTypes]) => {
                             structuredTransactions[department] = {};
 
                             Object.entries(docTypes).forEach(([docType, refArray]) => {
                                 let normalizedDocType = docType.toUpperCase().trim();
+
+                                let filteredRecords = records.filter(item => item.ArchivedStatus !== "Archived");
+                                if (hasArchivedRecords) {
+                                    console.log("There are archived records.");
+                                } else {
+                                    console.log("No archived records found.");
+                                }
 
                                 if (!structuredTransactions[department][normalizedDocType]) {
                                     structuredTransactions[department][normalizedDocType] = [];
@@ -588,7 +597,7 @@ if ($result) {
                     searchButton.click();
                 }
             });
-            
+
             // Close dropdown when clicking outside
             document.addEventListener("click", function(event) {
                 if (!searchInput.contains(event.target) && !dropdown.contains(event.target)) {
@@ -602,7 +611,7 @@ if ($result) {
             const encodedDepartment = encodeURIComponent(department);
 
             const newWindow = window.open(`/Download/GENERATE_EXCEL.php?request=${encodedRefNum}&user=${encodedDepartment}`, '_blank');
-          
+
             setTimeout(() => {
                 if (newWindow) {
                     newWindow.close();

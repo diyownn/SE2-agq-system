@@ -3,15 +3,24 @@ require 'db_agq.php';
 session_start();
 
 $role = isset($_SESSION['department']) ? $_SESSION['department'] : '';
+$url = isset($_GET['url']);
 
 
+
+if (!$url) {
+    header("Location: UNAUTHORIZED.php?error=401u");
+}
+
+
+if (!$role) {
+    header("Location: UNAUTHORIZED.php?error=401r");
+}
 $sqlArchive = "SELECT RefNum FROM tbl_archive";
 $resultArchive = $conn->query($sqlArchive);
 
 if ($resultArchive && $resultArchive->num_rows > 0) {
     while ($row = $resultArchive->fetch_assoc()) {
         $refNum = $row['RefNum'];
-
 
         $tables = ["tbl_impfwd", "tbl_impbrk", "tbl_expfwd", "tbl_expbrk"];
         $shouldDelete = false;
@@ -176,7 +185,14 @@ if (isset($_GET['search'])) {
         }
 
         function deleteDocument() {
-            let refNum = document.getElementById("edit-input").value.trim();
+            let editInput = document.getElementById("edit-input");
+            if (!editInput) {
+                console.error("Error: Input field not found.");
+                Swal.fire("Error", "Input field not found.", "error");
+                return;
+            }
+
+            let refNum = editInput.value.trim();
             if (!refNum) {
                 Swal.fire("Error", "Please enter a Reference Number.", "error");
                 return;
@@ -192,15 +208,28 @@ if (isset($_GET['search'])) {
                 confirmButtonText: "Yes, delete it!"
             }).then((result) => {
                 if (result.isConfirmed) {
+                    // 🔹 FIX: Properly define formData before using it
+                    let formData = new URLSearchParams();
+                    formData.append("RefNum", refNum);
+
                     fetch("ARCHIVE_HANDLE.php?action=delete", {
                             method: "POST",
                             headers: {
                                 "Content-Type": "application/x-www-form-urlencoded"
                             },
-                            body: "RefNum=" + encodeURIComponent(refNum)
+                            body: formData.toString()
+                        })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error("Network response was not ok. Status: " + response.status);
+                            }
+                            return response.json();
                         })
                         .then(response => response.json())
-                        .then(data => {
+                        .then(data => { // 🔹 Ensure data is always checked before use
+                            if (!data) {
+                                throw new Error("Invalid JSON response");
+                            }
                             Swal.fire({
                                 title: data.success ? "Deleted!" : "Error!",
                                 text: data.message,
@@ -213,12 +242,13 @@ if (isset($_GET['search'])) {
                             });
                         })
                         .catch(error => {
-                            console.error("Error:", error);
-                            Swal.fire("Error", "An error occurred. Please try again.", "error");
+                            console.error("Fetch Error:", error);
+                            Swal.fire("Error", "An error occurred while processing your request. Please try again.", "error");
                         });
                 }
             });
         }
+
 
         function restoreDocument() {
             let refNum = document.getElementById("edit-input").value.trim();
@@ -240,25 +270,24 @@ if (isset($_GET['search'])) {
                     fetch("ARCHIVE_HANDLE.php?action=restore", {
                             method: "POST",
                             headers: {
-                                "Content-Type": "application/x-www-form-urlencoded"
+                                "Content-Type": "application/json"
                             },
-                            body: "RefNum=" + encodeURIComponent(refNum)
+                            body: JSON.stringify({
+                                RefNum: refNum
+                            })
                         })
                         .then(response => response.json())
                         .then(data => {
-                            Swal.fire({
-                                title: data.success ? "Restored!" : "Error!",
-                                text: data.message,
-                                icon: data.success ? "success" : "error",
-                            }).then(() => {
-                                if (data.success) {
-                                    closeModal();
-                                    location.reload();
-                                }
-                            });
+                            Swal.fire(data.success ? "Restored!" : "Error!", data.message, data.success ? "success" : "error")
+                                .then(() => {
+                                    if (data.success) {
+                                        closeModal();
+                                        location.reload();
+                                    }
+                                });
                         })
                         .catch(error => {
-                            console.error("Error:", error);
+                            console.error("Error:", error, data.message);
                             Swal.fire("Error", "An error occurred. Please try again.", "error");
                         });
                 }
