@@ -15,11 +15,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } elseif (isset($_POST['save'])) {
         insertRecord($conn);
     }
-    // elseif (isset($_POST['select'])) {
-    //     selectRecords($conn);
-    // } elseif (isset($_POST['delete'])) {
-    //     deleteRecord($conn, $_POST['RefNum']);
-    // }
 }
 
 $refNum = isset($_GET['refNum']) && !empty($_GET['refNum']) ? $_GET['refNum'] : "";
@@ -124,15 +119,37 @@ function updateRecord($conn, $data, $sessionData)
     );
 
     if ($stmt->execute()) {
-?>'<script>
-    if (confirm("Document Successfully Edited!\\nReturn to Transactions Page?")) {
-        window.location.href = "agq_transactionCatcher.php";
-    }
-</script>'
-<?php
+        echo '<script>
+            document.addEventListener("DOMContentLoaded", function() {
+                Swal.fire({
+                    title: "Success!",
+                    text: "Document Successfully Edited!",
+                    icon: "success",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Return to Transactions Page",
+                    cancelButtonText: "Stay Here"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = "agq_transactionCatcher.php";
+                    }
+                });
+            });
+        </script>';
         return;
     } else {
-        return "Error updating record: " . $stmt->error;
+        echo '<script>
+            document.addEventListener("DOMContentLoaded", function() {
+                Swal.fire({
+                    title: "Error!",
+                    text: "Error updating record: ' . $stmt->error . '",
+                    icon: "error",
+                    confirmButtonText: "OK"
+                });
+            });
+        </script>';
+        return;
     }
 
     $stmt->close();
@@ -156,7 +173,16 @@ function insertRecord($conn)
     $checkStmt->store_result();
 
     if ($checkStmt->num_rows > 0) {
-        echo '<script>alert("Reference Number already exist. Please create the document again.");</script>';
+        echo '<script>
+            document.addEventListener("DOMContentLoaded", function() {
+                Swal.fire({
+                    title: "Error!",
+                    text: "Reference Number already exists. Please create the document again.",
+                    icon: "error",
+                    confirmButtonText: "OK"
+                });
+            });
+        </script>';
         $checkStmt->close();
         return; // Stop execution if RefNum exists
     }
@@ -215,49 +241,38 @@ function insertRecord($conn)
     );
 
     if ($stmt->execute()) {
-        // echo "New record inserted successfully!";
         echo '<script>
-        if (confirm("Document Successfully Created!\\nReturn to Transactions Page?")) {
-            window.location.href = "agq_transactionCatcher.php";
-        }
-            </script>';
+            document.addEventListener("DOMContentLoaded", function() {
+                Swal.fire({
+                    title: "Success!",
+                    text: "Document Successfully Created!",
+                    icon: "success",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Return to Transactions Page",
+                    cancelButtonText: "Stay Here"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = "agq_transactionCatcher.php";
+                    }
+                });
+            });
+        </script>';
     } else {
-        echo "Error: " . $stmt->error;
+        echo '<script>
+            document.addEventListener("DOMContentLoaded", function() {
+                Swal.fire({
+                    title: "Error!",
+                    text: "Error: ' . $stmt->error . '",
+                    icon: "error",
+                    confirmButtonText: "OK"
+                });
+            });
+        </script>';
     }
     $stmt->close();
 }
-
-// Function to select all records
-// function selectRecords($conn)
-// {
-//     $sql = "SELECT * FROM your_table";
-//     $stmt = $conn->prepare($sql);
-//     $stmt->execute();
-//     $result = $stmt->get_result();
-
-//     echo "<h2>Database Records:</h2>";
-//     while ($row = $result->fetch_assoc()) {
-//         echo "<pre>" . print_r($row, true) . "</pre>";
-//     }
-//     $stmt->close();
-// }
-
-// // Function to delete a record by RefNum
-// function deleteRecord($conn, $refNum)
-// {
-//     $sql = "DELETE FROM your_table WHERE RefNum = ?";
-//     $stmt = $conn->prepare($sql);
-//     $stmt->bind_param("s", $refNum);
-
-//     if ($stmt->execute()) {
-//         echo "Record deleted successfully!";
-//     } else {
-//         echo "Error: " . $stmt->error;
-//     }
-//     $stmt->close();
-// }
-
-//$conn->close();
 
 ?>
 
@@ -270,6 +285,15 @@ function insertRecord($conn)
     <link rel="icon" type="image/x-icon" href="../AGQ/images/favicon.ico">
     <link rel="stylesheet" type="text/css" href="../css/forms.css">
     <title>Statement of Account</title>
+    <!-- Add SweetAlert2 library -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Ensure SweetAlert2 is fully loaded -->
+    <script>
+        // Make sure SweetAlert2 is available globally
+        if (typeof Swal === 'undefined') {
+            console.error('SweetAlert2 is not loaded properly');
+        }
+    </script>
     <script>
         function togglePackageField() {
             document.getElementById("package-details").style.display = "block";
@@ -326,35 +350,11 @@ function insertRecord($conn)
                         </select>
                     `;
                 } else {
-
                     const inputName = charge.toLowerCase().replace(/\s+/g, '').replace('/', '');
                     row.innerHTML = `
                         <input type="text" name="charge_type[]" value="${charge}" readonly> 
                         <input type="number" name="${inputName}" placeholder="Enter amount" onchange ="validateChargeAmount(this)">
-                        
                     `;
-
-                    // <div class="charges">
-                    //     <div class = "col">
-                    //         <input type="text" name="charge_type[]" value="${charge}" readonly style="width:360px; flex-direction: column">
-                    //         <input type="number" name="${inputName}" id = "${inputName}" placeholder="Enter amount" style="width:360px; flex-direction: column">
-                    //     </div>
-                    // </div>
-
-                    // const chargesContainer = row.querySelector(".charges");
-                    // const colContainer = chargesContainer.querySelector(".col");
-
-                    // // Create the error message div
-                    // const errorDiv = document.createElement("div");
-                    // errorDiv.id = `${inputName}-error`; // Unique error element ID
-                    // errorDiv.className = "invalid-feedback"; // Styling for the error div
-                    // errorDiv.style.marginTop = "5px"; // Add spacing between .col and error message
-                    // errorDiv.style.display = "none"; // Initially hidden
-                    // errorDiv.innerHTML = `*Error message placeholder for ${charge}`; // Example error message
-
-                    // // Insert the error div after .col
-                    // colContainer.insertAdjacentElement("afterend", errorDiv);
-
                 }
 
                 chargesTable.appendChild(row);
@@ -386,14 +386,6 @@ function insertRecord($conn)
                 <button type="button" onclick="removeCharge(this)">Remove</button>
             `;
 
-            // <div class="charges">
-            //         <div class="col">
-            //             <input type="text" value="${selectedCharge}" readonly style="width:360px; flex-direction: column">
-            //             <input type="number" name="${inputName}" placeholder="Enter amount" style="width:288px; flex-direction: column" onchange="validateChargeInput(this)">
-            //             <button type="button" onclick="removeCharge(this)">Remove</button>
-            //         </div>
-            //     </div>
-
             chargesTable.appendChild(newRow); // Append the new row to the table
 
             // Reset the dropdown value to allow reselecting the same charge
@@ -410,31 +402,7 @@ function insertRecord($conn)
 
         function validateChargeInput(inputElement) {
             const maxAmount = 16500000; // Set a max allowable amount
-            // const colContainer = inputElement.closest(".col");
-            //const errorElementId = `${inputElement.name}-error`; // Unique error element ID
-            // let errorElement = colContainer.nextElementSibling;
             const value = parseFloat(inputElement.value) || 0;
-
-            // Create the error element if it doesn't exist
-            // if (!errorElement) {
-            //     errorElement = document.createElement("div");
-            //     errorElement.id = errorElementId;
-            //     errorElement.className = "invalid-feedback";
-            //     errorElement.style.marginTop = "5px";
-            //     errorElement.style.display = "none";
-            //     colContainer.insertAdjacentElement("afterend", errorElement);
-            // }
-            m
-            // // Validate input value
-            // const value = parseFloat(inputElement.value) || 0; // Default to 0 if empty
-            // if (value > maxAmount) {
-            //     inputElement.classList.add("is-invalid");
-            //     errorElement.innerHTML = `*Value cannot exceed ${maxAmount.toLocaleString()}`;
-            //     errorElement.style.display = "block"; // Show error message
-            // } else {
-            //     inputElement.classList.remove("is-invalid");
-            //     errorElement.style.display = "none"; // Hide error message
-            // }
 
             if (value > maxAmount) {
                 inputElement.setCustomValidity("Value cannot exceed 16,500,000");
@@ -454,39 +422,10 @@ function insertRecord($conn)
         }
 
         function validateChargeAmount(chargeElement) {
-            //const inputs = document.querySelectorAll('input[type="number"]');
             const maxAmount = 16500000;
             let isValid = true;
 
-            // inputs.forEach(input => {
             const value = parseFloat(chargeElement.value) || 0;
-            // if (!colContainer) {
-            //     console.error("Error: .col container not found for input", input);
-            //     return;
-            // }
-
-            // // Check for error div or create it dynamically
-            // let errorDiv = colContainer.nextElementSibling;
-            // if (!errorDiv) {
-            //     errorDiv = document.createElement("div");
-            //     errorDiv.id = `${input.name}-error`;
-            //     errorDiv.className = "invalid-feedback";
-            //     errorDiv.style.marginTop = "5px";
-            //     errorDiv.style.display = "none";
-            //     colContainer.insertAdjacentElement("afterend", errorDiv);
-            // }
-
-            // // Perform validation
-            // const value = parseFloat(input.value) || 0; // Default to 0 if input is empty
-            // if (value > maxAmount) {
-            //     input.classList.add("is-invalid");
-            //     errorDiv.innerHTML = `*Value cannot exceed ${maxAmount.toLocaleString()}`;
-            //     errorDiv.style.display = "block";
-            //     isValid = false;
-            // } else {
-            //     input.classList.remove("is-invalid");
-            //     errorDiv.style.display = "none";
-            // }
             if (value > maxAmount) {
                 chargeElement.setCustomValidity("Value cannot exceed 16,500,000");
             } else {
@@ -502,52 +441,14 @@ function insertRecord($conn)
             chargeElement.addEventListener("input", function() {
                 chargeElement.setCustomValidity(""); // Clear error when user types
             });
-            //});
 
             return isValid;
         }
 
         function validateTextFields(textElement) {
-            //const inputs = document.querySelectorAll('input[type="text"]'); // Select all text inputs
             const allowedSymbols = /^[a-zA-Z0-9\$%\-\/\., ]+$/; // Allow letters, numbers, and only $ % / . , -
             const reverseTinRegex = /^(?!^[0-9]{3}-[0-9]{3}-[0-9]{3}-[0-9]{3}$).+$/; // Correct regex for TIN format (0000-0000-0000-0000)
             let isValid = true; // Track overall validity
-
-            //inputs.forEach(input => {
-            // // Exclude the readonly input and the one named "notes"
-            // if (input.readOnly || input.name === "notes") {
-            //     return; // Skip validation for these inputs
-            // }
-
-            // const errorElementId = input.name + "-error"; // Unique error element ID
-            // let errorElement = input.nextElementSibling; // Locate the error element directly below the input
-
-            // // Create an error element dynamically if it doesn't exist
-            // if (!errorElement || errorElement.className !== "invalid-feedback") {
-            //     errorElement = document.createElement("div");
-            //     errorElement.id = errorElementId;
-            //     errorElement.className = "invalid-feedback";
-            //     input.insertAdjacentElement("afterend", errorElement); // Place the error element below the input
-            // }
-
-            // // Check if the field is empty
-            // if (input.value.trim() === "") {
-            //     input.classList.add("is-invalid"); // Add invalid class to input
-            //     errorElement.innerHTML = "*This field is required"; // Set error message
-            //     errorElement.style.display = "block"; // Show error element
-            //     isValid = false; // Mark form as invalid
-            // } 
-            // // Check if the input contains only allowed symbols, letters, or numbers
-            // else if (!allowedSymbols.test(input.value)) {
-            //     input.classList.add("is-invalid"); // Add invalid class
-            //     const errorText = "*Only letters, numbers, and these symbols are allowed: ! @ $ % ^ & ( ) _ + / - : | , ~";
-            //     errorElement.innerHTML = errorText; // Set error message
-            //     errorElement.style.display = "block"; // Show error element
-            //     isValid = false; // Mark form as invalid
-            // } else {
-            //     input.classList.remove("is-invalid"); // Remove invalid class
-            //     errorElement.style.display = "none"; // Hide error element
-            // }
 
             if (textElement.name === "tin") {
                 // Check TIN-specific validation
@@ -577,7 +478,6 @@ function insertRecord($conn)
             textElement.addEventListener("input", function() {
                 textElement.setCustomValidity(""); // Clear error when user types
             });
-            //});
 
             return isValid; // Return validity status
         }
@@ -612,31 +512,7 @@ function insertRecord($conn)
         }
 
         function validateDateFields(dateElement) {
-            //const dateInputs = document.querySelectorAll('input[type="date"]'); // Select all date inputs
             let isValid = true; // Track overall validity
-
-            //dateInputs.forEach(input => {
-            //const errorElementId = input.name + "-error"; // Unique error element ID
-            // let errorElement = input.nextElementSibling; // Locate the error element directly below the input
-
-            // // Create an error element dynamically if it doesn't exist
-            // if (!errorElement || errorElement.className !== "invalid-feedback") {
-            //     errorElement = document.createElement("div");
-            //     errorElement.id = errorElementId;
-            //     errorElement.className = "invalid-feedback";
-            //     input.insertAdjacentElement("afterend", errorElement); // Place the error element below the input
-            // }
-
-            // // Check if the field is empty
-            // if (input.value.trim() === "") {
-            //     input.classList.add("is-invalid"); // Add invalid class to input
-            //     errorElement.innerHTML = "*This field is required"; // Set error message
-            //     errorElement.style.display = "block"; // Show error element
-            //     isValid = false; // Mark as invalid
-            // } else {
-            //     input.classList.remove("is-invalid"); // Remove invalid class
-            //     errorElement.style.display = "none"; // Hide error element
-            // }
 
             if (!dateElement.value.trim()) {
                 dateElement.setCustomValidity("This field is required");
@@ -653,13 +529,11 @@ function insertRecord($conn)
             dateElement.addEventListener("input", function() {
                 dateElement.setCustomValidity(""); // Clear error when user types
             });
-            //});
 
-            return isValid; // Return validity status
-        }
+        return isValid; // Return validity status
+    }
 
-
-        function validateForm(event) {
+    function validateForm(event) {
             let isValid = true;
 
             // Validate number fields
@@ -703,28 +577,57 @@ function insertRecord($conn)
         function calculateTotal() {
             let total = 0;
             const numberInputs = document.querySelectorAll('#charges-table input[type="number"]');
-
+            
             numberInputs.forEach(input => {
                 if (input.value && !isNaN(input.value)) {
                     total += parseFloat(input.value);
                 }
             });
-
+            
             document.getElementById("total").value = total.toFixed(2);
         }
 
         function redirection(refnum) {
             if (!refnum || refnum === "") {
-                window.location.href = "agq_choosedocument.php";
+                // Using SweetAlert2 for navigation confirmation
+                Swal.fire({
+                    title: 'Leave this page?',
+                    text: "Any unsaved changes will be lost.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, leave page',
+                    cancelButtonText: 'Stay here'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = "agq_choosedocument.php";
+                    }
+                });
             } else {
-                window.location.href = "agq_transactionCatcher.php";
+                // Using SweetAlert2 for navigation confirmation
+                Swal.fire({
+                    title: 'Leave this page?',
+                    text: "Any unsaved changes will be lost.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, leave page',
+                    cancelButtonText: 'Stay here'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = "agq_transactionCatcher.php";
+                    }
+                });
             }
+            return false; // Prevent default link behavior
         }
     </script>
 </head>
 
 <body>
-    <a href="#" onclick="redirection('<?php echo htmlspecialchars($refNum, ENT_QUOTES, 'UTF-8'); ?>')" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 20px; top: 20px;">←</a>
+    <a href="#" onclick="return redirection('<?php echo htmlspecialchars($refNum, ENT_QUOTES, 'UTF-8'); ?>')" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 20px; top: 20px;">←</a>
     <div class="container">
         <div class="header">STATEMENT OF ACCOUNT</div>
         <form method="POST" onsubmit="return validateForm(event);">
@@ -791,11 +694,25 @@ function insertRecord($conn)
                 <input type="text" maxlength="25" name="edited_by" placeholder="Edited by" value="<?= isset($row['Edited_by']) ? htmlspecialchars($row['Edited_by']) : ''; ?>" onchange="validateTextFields(this)" style="width: 48%">
             </div>
             <div class="footer">
-                <!-- <button class="save-btn">Save</button> -->
                 <input type="submit" name="save" class="save-btn" value="Save">
             </div>
         </form>
     </div>
+    
+    <script>
+        // Initialize package field on page load if needed
+        window.onload = function() {
+            // Check if a package type is already selected (useful for edit mode)
+            <?php if (isset($row['PackageType']) && $row['PackageType']): ?>
+                const packageType = "<?= htmlspecialchars($row['PackageType']); ?>";
+                if (packageType === "LCL") {
+                    document.getElementById("lcl").checked = true;
+                } else if (packageType === "Full Container") {
+                    document.getElementById("container").checked = true;
+                }
+                togglePackageField();
+            <?php endif; ?>
+        }
+    </script>
 </body>
-
 </html>
