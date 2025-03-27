@@ -32,7 +32,7 @@ body {
     text-align: start;
     padding: 8px 1px;
     width: fit-content;
-    min-width: 140px;
+    min-width: 200px;
     position: absolute;
     top: 0;
     left: 0;
@@ -105,7 +105,7 @@ body {
     min-width: 140px;
     position: absolute;
     top: 0;
-    left: 125px;
+    left: 180px;
     border-radius: 0 25px 25px 0;
     display: flex;
     align-items: center;
