@@ -18,7 +18,7 @@
     <link rel="stylesheet" type="text/css" href="agq.css">
 </head>
 <!-- Website Icon -->
-<link rel="icon" href="images/agq_logo.png" type="image/ico">
+<link rel="icon" type="image/x-icon" href="../AGQ/images/favicon.ico">
 
 
 <body style="background-image: url('cbg.png'); background-repeat: no-repeat; background-size: cover; background-position: center; background-attachment: fixed;">

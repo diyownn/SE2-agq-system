@@ -560,7 +560,7 @@
             the Company's established values of integrity, commitment,
             teamwork, honesty, reliability, and customer dedication.
           </p>
-          <a href="../SE2-agq-system/AGQ/agq_login.php" class="btn">Fly Now!</a>
+          <a href="../SE2-agq-system/AGQ/agq_login.php" class="btn">Login</a>
         </div>
         <div class="hero-image">
           <img
