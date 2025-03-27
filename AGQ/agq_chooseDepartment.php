@@ -34,7 +34,7 @@ if (!$company) {
         <div class="dept-container">
             <div class="header-container">
                 <div class="dept-label">
-                    <?php echo htmlspecialchars($role); ?>
+                <a href="agq_dashCatcher.php"><?php echo htmlspecialchars($role); ?></a>
                 </div>
                 <div class="company-label">
                     <?php echo htmlspecialchars($company); ?>

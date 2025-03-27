@@ -459,7 +459,7 @@ function insertRecord($conn)
 
 
         function validateNotesField(notesInput) {
-            const allowedSymbols = /^[a-zA-Z0-9\$%\-\/\., ]+$/; // Allow letters, numbers, and only $ % / . , -
+            const allowedSymbols = /^[a-zA-Z0-9\$%\-\/\., \n]+$/; // Allow letters, numbers, $ % / . , - and newlines
             const maxLength = 500; // Maximum character limit
 
             if (!notesInput.value.trim()) {
@@ -467,7 +467,7 @@ function insertRecord($conn)
                 notesInput.setCustomValidity(""); // Clear validation for empty values (optional)
             } else if (!allowedSymbols.test(notesInput.value)) {
                 // Check for invalid symbols
-                notesInput.setCustomValidity("Only letters, numbers, and these symbols are allowed: $ % / - , .");
+                notesInput.setCustomValidity("Only letters, numbers, and these symbols are allowed: $ % / - , . Newline is also allowed.");
             } else if (notesInput.value.length > maxLength) {
                 // Check for length exceeding the limit
                 notesInput.setCustomValidity("Notes cannot exceed 500 characters");
@@ -479,8 +479,8 @@ function insertRecord($conn)
             notesInput.reportValidity(); // Show validation message
 
             // Clear the custom validation message when the user starts typing
-            notesInput.addEventListener("input", function () {
-                notesInput.setCustomValidity(""); 
+            notesInput.addEventListener("input", function() {
+                notesInput.setCustomValidity("");
             });
 
             return notesInput.checkValidity(); // Return true if valid, false otherwise
