@@ -106,7 +106,7 @@ $conn->close();
         }
 
         function archiveDocument(refnum) {
-            fetch("ARCHIVE_HANDLE.php?action=archive", {
+            fetch("ARCHIVE_HANDLE.php?action=delete", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/x-www-form-urlencoded"
