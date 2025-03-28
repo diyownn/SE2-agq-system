@@ -3,11 +3,25 @@ require_once "db_agq.php"; // Ensure this file contains a valid $conn connection
 
 session_start();
 
-$documentID = isset($_GET['refnum']) ? $_GET['refnum'] : null;
+$documentID = isset($_GET['refNum']) ? $_GET['refNum'] : null;
 $role = isset($_SESSION['department']) ? $_SESSION['department'] : '';
 $dept = isset($_SESSION['SelectedDepartment']) ? $_SESSION['SelectedDepartment'] : '';
 $company = isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : '';
 $documentType = "Manifesto";
+
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_document'])) {
+    $refnum = $_POST['refnum'];
+
+    $stmt = $conn->prepare("DELETE FROM tbl_document WHERE refnum = ?");
+    $success = $stmt->execute([$refnum]);
+
+    echo json_encode([
+        'success' => $success,
+        'message' => $success ? "Document deleted successfully." : "Failed to delete document."
+    ]);
+    exit;
+}
 
 if ($dept) {
     $stmt = $conn->prepare("SELECT RefNum, DocType, Document_picture 
@@ -86,9 +100,6 @@ $conn->close();
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-
-    
-
         function confirmDelete(refnum) {
             Swal.fire({
                 title: 'Are you sure?',
@@ -97,13 +108,35 @@ $conn->close();
                 showCancelButton: true,
                 confirmButtonColor: '#d33',
                 cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Yes, archive it!'
+                confirmButtonText: 'Yes, delete it!'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    archiveDocument(refnum);
+                    fetch('', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded'
+                            },
+                            body: `delete_document=true&refnum=${refnum}`
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                Swal.fire('Deleted!', data.message, 'success').then(() => {
+                                    window.location.href="agq_transactionCatcher.php";
+                                });
+                            } else {
+                                Swal.fire('Error!', data.message, 'error');
+                            }
+                        })
+                        .catch(error => {
+                            Swal.fire('Error!', 'Something went wrong.', 'error');
+                        });
                 }
             });
+
+           
         }
+
 
         function archiveDocument(refnum) {
             fetch("ARCHIVE_HANDLE.php?action=delete", {

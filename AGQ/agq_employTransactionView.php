@@ -175,6 +175,7 @@ if ($result) {
 
                                         <button class="btn btn-sm action-btn edit-btn" id="edit-btn" title="Edit"
                                             onclick="redirectToDocument2('<?php echo htmlspecialchars($transaction['RefNum']); ?>', '<?php echo $normalizedDocType; ?>')">
+
                                             <i class="bi bi-pencil"></i>
                                         </button>
                                         <button class="btn btn-sm action-btn archive-btn" id="archive-btn" title="Archive"
@@ -296,7 +297,7 @@ if ($result) {
                     url = "agq_soaCatcher.php?refNum=" + encodeURIComponent(refnum);
                     break;
                 default:
-                    url = "agq_manifestoView.php?refnum=" + encodeURIComponent(refnum);
+                    url = "agq_manifestoView.php?refNum=" + encodeURIComponent(refnum);
                     break;
             }
             window.location.href = url;
