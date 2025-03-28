@@ -3,7 +3,7 @@
 require 'db_agq.php';
 session_start();
 
-$refNum = isset($_GET['refnum']) ? $_GET['refnum'] : '';
+$refNum = isset($_GET['refNum']) ? $_GET['refNum'] : '';
 $url = isset($_GET['url']) ? $_GET['url'] : '';
 $role = isset($_SESSION['department']) ? $_SESSION['department'] : '';
 $company = isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : '';
