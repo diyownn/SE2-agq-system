@@ -11,7 +11,6 @@ if (!$url) {
     header("Location: UNAUTHORIZED.php?error=401u");
 }
 
-
 if (!$role) {
     header("Location: UNAUTHORIZED.php?error=401r");
 }
