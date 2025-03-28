@@ -3,6 +3,7 @@ require 'db_agq.php';
 
 session_start();
 
+$refNum = isset($_GET['refNum']) && !empty($_GET['refNum']) ? $_GET['refNum'] : "";
 $url = isset($_GET['url']);
 $role = isset($_SESSION['department']) ? $_SESSION['department'] : '';
 
@@ -10,7 +11,6 @@ $role = isset($_SESSION['department']) ? $_SESSION['department'] : '';
 if (!$url) {
     header("Location: UNAUTHORIZED.php?error=401u");
 }
-
 
 if (!$role) {
     header("Location: UNAUTHORIZED.php?error=401r");
@@ -30,7 +30,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 
 
-$refNum = isset($_GET['refNum']) && !empty($_GET['refNum']) ? $_GET['refNum'] : "";
 
 
 if (!empty($refNum)) {
@@ -183,7 +182,7 @@ function insertRecord($conn)
     $checkStmt->store_result();
 
     if ($checkStmt->num_rows > 0) {
-        ?>
+?>
         <script>
             // Using SweetAlert2 for duplicate reference number
             Swal.fire({
@@ -193,7 +192,7 @@ function insertRecord($conn)
                 confirmButtonText: 'OK'
             });
         </script>
-        <?php
+<?php
         $checkStmt->close();
         return; // Stop execution if RefNum exists
     }
@@ -281,6 +280,7 @@ function insertRecord($conn)
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -301,20 +301,20 @@ function insertRecord($conn)
             document.getElementById("package-details").style.display = "block";
             updateReimbursableCharges();
         }
-    
+
         function updateReimbursableCharges() {
             const lclSelected = document.getElementById("lcl").checked;
             const containerSelected = document.getElementById("container").checked;
             const chargesTable = document.getElementById("charges-table");
             chargesTable.innerHTML = ""; // Clear existing charges
-    
+
             if (lclSelected) {
                 const lclCharges = [
                     "5 Ocean Freight",
                     "Brokerage Fee",
                     "50 discount",
                     "12 VAT",
-                    "Additional Charges" 
+                    "Additional Charges"
                 ];
                 generateFixedCharges(lclCharges);
             } else if (containerSelected) {
@@ -328,14 +328,14 @@ function insertRecord($conn)
                 generateFixedCharges(containerCharges, true);
             }
         }
-    
+
         function generateFixedCharges(charges) {
             const chargesTable = document.getElementById("charges-table");
-    
+
             charges.forEach(charge => {
                 const row = document.createElement("div");
                 row.className = "table-row";
-    
+
                 if (charge === "Additional Charges") {
                     row.innerHTML = `
                         <select onchange="handleChargeSelection(this)">
@@ -350,27 +350,27 @@ function insertRecord($conn)
                         <input type="number" name="${inputName}" placeholder="Enter amount" onchange ="validateChargeAmount(this)">
                     `;
                 }
-    
+
                 chargesTable.appendChild(row);
             });
         }
-    
+
         function handleChargeSelection(selectElement) {
             const selectedCharge = selectElement.value;
             if (!selectedCharge) return; // Do nothing if default is selected
-    
+
             // Prevent duplicate entries
             const existingEntries = document.querySelectorAll(".added-charge");
             for (let entry of existingEntries) {
                 if (entry.dataset.charge === selectedCharge) return;
             }
-    
+
             // Add new charge field
             const chargesTable = document.getElementById("charges-table");
             const newRow = document.createElement("div");
             newRow.className = "table-row added-charge";
             newRow.dataset.charge = selectedCharge; // Store charge type
-    
+
             let inputName = selectedCharge.toLowerCase() + "_amount";
 
             newRow.innerHTML = `
@@ -378,12 +378,13 @@ function insertRecord($conn)
                 <input type="number" name="${inputName}" placeholder="Enter amount" onchange="validateChargeInput(this)">
                 <button onclick="removeCharge(this)">Remove</button>
             `;
-    
+
             chargesTable.appendChild(newRow);
 
             selectElement.value = ""; // Clears the dropdown selection after adding a charge
 
         }
+
         function removeCharge(button) {
             button.parentElement.remove(); // Remove the selected charge row
         }
@@ -404,7 +405,7 @@ function insertRecord($conn)
                 inputElement.preventDefault(); // Prevent form submission if invalid
             }
 
-            inputElement.addEventListener("input", function () {
+            inputElement.addEventListener("input", function() {
                 inputElement.setCustomValidity(""); // Clear error when user types
             });
         }
@@ -413,22 +414,22 @@ function insertRecord($conn)
             const maxAmount = 16500000;
             let isValid = true;
 
-                const value = parseFloat(chargeElement.value) || 0;
-                if (value > maxAmount) {
-                    chargeElement.setCustomValidity("Value cannot exceed 16,500,000");
-                } else {
-                    chargeElement.setCustomValidity(""); // Reset validation
-                }
+            const value = parseFloat(chargeElement.value) || 0;
+            if (value > maxAmount) {
+                chargeElement.setCustomValidity("Value cannot exceed 16,500,000");
+            } else {
+                chargeElement.setCustomValidity(""); // Reset validation
+            }
 
-                chargeElement.reportValidity(); // Show validation message
+            chargeElement.reportValidity(); // Show validation message
 
-                if (!chargeElement.checkValidity()) {
-                    event.preventDefault(); // Prevent form submission if invalid
-                }
+            if (!chargeElement.checkValidity()) {
+                event.preventDefault(); // Prevent form submission if invalid
+            }
 
-                chargeElement.addEventListener("input", function () {
-                    chargeElement.setCustomValidity(""); // Clear error when user types
-                });
+            chargeElement.addEventListener("input", function() {
+                chargeElement.setCustomValidity(""); // Clear error when user types
+            });
 
             return isValid;
         }
@@ -463,7 +464,7 @@ function insertRecord($conn)
                 event.preventDefault(); // Prevent form submission if invalid
             }
 
-            textElement.addEventListener("input", function () {
+            textElement.addEventListener("input", function() {
                 textElement.setCustomValidity(""); // Clear error when user types
             });
 
@@ -514,14 +515,14 @@ function insertRecord($conn)
                 event.preventDefault(); // Prevent form submission if invalid
             }
 
-            dateElement.addEventListener("input", function () {
+            dateElement.addEventListener("input", function() {
                 dateElement.setCustomValidity(""); // Clear error when user types
             });
 
-        return isValid; // Return validity status
-    }
+            return isValid; // Return validity status
+        }
 
-    function validateForm(event) {
+        function validateForm(event) {
             let isValid = true;
 
             // Validate number fields
@@ -565,13 +566,13 @@ function insertRecord($conn)
         function calculateTotal() {
             let total = 0;
             const numberInputs = document.querySelectorAll('#charges-table input[type="number"]');
-            
+
             numberInputs.forEach(input => {
                 if (input.value && !isNaN(input.value)) {
                     total += parseFloat(input.value);
                 }
             });
-            
+
             document.getElementById("total").value = total.toFixed(2);
         }
 
@@ -612,15 +613,16 @@ function insertRecord($conn)
             return false; // Prevent default link behavior
         }
     </script>
-    
+
 </head>
+
 <body>
-    <a href="#"  onclick="return redirection('<?php echo htmlspecialchars($refNum, ENT_QUOTES, 'UTF-8'); ?>')" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 20px; top: 20px;">←</a>
-        
+    <a href="#" onclick="return redirection('<?php echo htmlspecialchars($refNum, ENT_QUOTES, 'UTF-8'); ?>')" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 20px; top: 20px;">←</a>
+
     <div class="container">
         <div class="header">SALES INVOICE</div>
         <form method="POST" onsubmit="return validateForm(event);">
-        <div class="section">
+            <div class="section">
                 <input type="text" maxlength="50" name="to" placeholder="To" value="<?= isset($row['To:']) ? htmlspecialchars($row['To:']) : ''; ?>" onchange="validateTextFields(this)" style="width: 70%">
                 <input type="date" name="date" value="<?= isset($row['Date']) ? $row['Date'] : ''; ?>" onchange="validateDateFields(this)" style="width: 28%">
             </div>
@@ -686,8 +688,9 @@ function insertRecord($conn)
                 <!-- <button class="save-btn">Save</button> -->
                 <input type="submit" name="save" class="save-btn" value="Save">
             </div>
-                
+
         </form>
     </div>
 </body>
+
 </html>

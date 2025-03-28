@@ -24,6 +24,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $name = trim($_POST['name']);
     $email = filter_var(trim($_POST['email']), FILTER_SANITIZE_EMAIL);
     $password = "AGQ@2006";
+    $defaultPassword = password_hash($password, PASSWORD_BCRYPT);
+    $_SESSION['defPass'] = $defaultPassword;
     $department = htmlspecialchars(trim($_POST['department']));
     $otp = null;
 
@@ -65,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     // Insert into database
     $stmt = $conn->prepare("INSERT INTO tbl_user (UserID, Name, Email, Password, Department, Otp) VALUES (?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("sssssi", $UserID, $name, $email, $password, $department, $otp);
+    $stmt->bind_param("sssssi", $UserID, $name, $email, $defaultPassword, $department, $otp);
 
     if ($stmt->execute()) {
         $stmt = $conn->prepare("SELECT UserID, Name, Email, Department FROM tbl_user WHERE UserID = ?");
