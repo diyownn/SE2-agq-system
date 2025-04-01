@@ -2,7 +2,7 @@
 require_once "db_agq.php";
 session_start();
 
-$refNum = $_GET['refnum'] ?? null;
+$refNum = $_GET['refNum'] ?? null;
 $editedBy = $_GET['editedby'] ?? '';
 $docType = "Manifesto";
 $department = $_SESSION['department'] ?? '';
@@ -126,7 +126,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     timer: 1500, 
                     showConfirmButton: false
                 }).then(() => {
-                    window.location.href = "agq_manifestoView.php?refnum=' . htmlspecialchars($refNum) . '";
+                    window.location.href = "agq_manifestoView.php?refNum=' . htmlspecialchars($refNum) . '";
                 });
             });
           </script>';

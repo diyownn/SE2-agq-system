@@ -3,7 +3,7 @@
 require 'db_agq.php';
 session_start();
 
-$refNum = isset($_GET['refnum']) ? $_GET['refnum'] : '';
+$refNum = isset($_GET['refNum']) ? $_GET['refNum'] : '';
 $url = isset($_GET['url']) ? $_GET['url'] : '';
 $dept = isset($_SESSION['SelectedDepartment']) ? $_SESSION['SelectedDepartment'] : '';
 $company = isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : '';
@@ -1119,7 +1119,7 @@ $record = selectRecords($conn, $dept, $refNum);
             headers: {
               "Content-Type": "application/x-www-form-urlencoded"
             },
-            body: "comment=" + encodeURIComponent(comment) + "&refnum=" + encodeURIComponent(refnum)
+            body: "comment=" + encodeURIComponent(comment) + "&refNum=" + encodeURIComponent(refnum)
           })
           .then(response => response.text())
           .then(data => {

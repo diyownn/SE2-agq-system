@@ -9,20 +9,6 @@ $dept = isset($_SESSION['SelectedDepartment']) ? $_SESSION['SelectedDepartment']
 $company = isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : '';
 $documentType = "Manifesto";
 
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_document'])) {
-    $refnum = $_POST['refnum'];
-
-    $stmt = $conn->prepare("DELETE FROM tbl_document WHERE refnum = ?");
-    $success = $stmt->execute([$refnum]);
-
-    echo json_encode([
-        'success' => $success,
-        'message' => $success ? "Document deleted successfully." : "Failed to delete document."
-    ]);
-    exit;
-}
-
 if ($dept) {
     $stmt = $conn->prepare("SELECT RefNum, DocType, Document_picture 
                             FROM tbl_document 
@@ -48,6 +34,19 @@ if ($result->num_rows > 0) {
 } else {
     $imageSrc = "images/default-placeholder.png";
     $row = ['RefNum' => '', 'DocType' => 'Not Found'];
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_document'])) {
+    $refnum = $_POST['refNum'];
+
+    $stmt = $conn->prepare("DELETE FROM tbl_document WHERE RefNum = ?");
+    $success = $stmt->execute([$refnum]);
+
+    echo json_encode([
+        'success' => $success,
+        'message' => $success ? "Document deleted successfully." : "Failed to delete document."
+    ]);
+    exit;
 }
 
 $stmt->close();
@@ -116,7 +115,7 @@ $conn->close();
                             headers: {
                                 'Content-Type': 'application/x-www-form-urlencoded'
                             },
-                            body: `delete_document=true&refnum=${refnum}`
+                            body: `delete_document=true&refNum=${refnum}`
                         })
                         .then(response => response.json())
                         .then(data => {

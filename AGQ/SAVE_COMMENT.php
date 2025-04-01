@@ -9,9 +9,9 @@ if (!isset($_SESSION['SelectedDepartment'])) {
 
 $dept = $_SESSION['SelectedDepartment']; // Assign the department from session
 
-if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["comment"]) && isset($_POST["refnum"])) {
+if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["comment"]) && isset($_POST["refNum"])) {
     $comment = trim($_POST["comment"]); // Trim to avoid whitespace-only comments
-    $refNum = trim($_POST["refnum"]);
+    $refNum = trim($_POST["refNum"]);
 
     if (empty($comment) || empty($refNum)) {
         die("Error: Comment or RefNum is empty.");

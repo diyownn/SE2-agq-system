@@ -192,14 +192,14 @@ if ($result) {
         // Function to clear search and redirect to the transaction view page
         function clearSearch() {
             document.getElementById("search-input").value = "";
-            window.location.href = "agq_ownTransactionView.php";
+            location.reload();
         }
 
         function redirectToDocument(refnum, doctype) {
             if (!refnum || !doctype) {
                 return;
             } else {
-                window.location.href = "agq_documentCatcher.php?refnum=" + encodeURIComponent(refnum) + '&doctype=' + encodeURIComponent(doctype);
+                window.location.href = "agq_documentCatcher.php?refNum=" + encodeURIComponent(refnum) + '&doctype=' + encodeURIComponent(doctype);
             }
         }
 

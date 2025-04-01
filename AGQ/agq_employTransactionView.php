@@ -283,7 +283,7 @@ if ($result) {
             if (!refnum || !doctype) {
                 return;
             } else {
-                window.location.href = "agq_documentCatcher.php?refnum=" + encodeURIComponent(refnum) + '&doctype=' + encodeURIComponent(doctype);
+                window.location.href = "agq_documentCatcher.php?refNum=" + encodeURIComponent(refnum) + '&doctype=' + encodeURIComponent(doctype);
             }
         }
 
@@ -593,12 +593,12 @@ if ($result) {
                                     records = [records];
                                 }
 
-                                let filteredRecords = records.filter(item => item.ArchivedStatus !== "Archived");
-                                if (hasArchivedRecords) {
-                                    console.log("There are archived records.");
-                                } else {
-                                    console.log("No archived records found.");
-                                }
+                                // let filteredRecords = records.filter(item => item.ArchivedStatus !== "Archived");
+                                // if (hasArchivedRecords) {
+                                //     console.log("There are archived records.");
+                                // } else {
+                                //     console.log("No archived records found.");
+                                // }
 
 
                                 if (!structuredTransactions[department][normalizedDocType]) {
@@ -608,6 +608,8 @@ if ($result) {
                                 records.forEach(item => {
                                     structuredTransactions[department][normalizedDocType].push(item.RefNum);
                                 });
+
+                                updateCheckButtons();
                             });
                         });
 

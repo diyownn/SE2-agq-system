@@ -2,7 +2,7 @@
 session_start();
 $role = isset($_SESSION['department']) ? $_SESSION['department'] : '';
 
-$refnum = isset($_GET['refnum']) ? htmlspecialchars($_GET['refnum']) : '';
+$refnum = isset($_GET['refNum']) ? htmlspecialchars($_GET['refNum']) : '';
 $docType = isset($_GET['doctype']) ? htmlspecialchars($_GET['doctype']) : '';
 
 require __DIR__ . '/secret/vendor/autoload.php';
@@ -38,7 +38,7 @@ if ($docType == 'MANIFESTO') {
     $encrypted_url = encrypt_url($original_url, $key);
     $encoded_url = urlencode($encrypted_url);
 
-    header('Location: agq_manifestoView.php?url=' . $encoded_url . '&refnum=' . $refnum);
+    header('Location: agq_manifestoView.php?url=' . $encoded_url . '&refNum=' . urlencode($refnum));
     exit;
 } else {
 
@@ -48,7 +48,7 @@ if ($docType == 'MANIFESTO') {
         $encrypted_url = encrypt_url($original_url, $key);
         $encoded_url = urlencode($encrypted_url);
 
-        header('Location: agq_ownerDocumentView.php?url=' . $encoded_url . '&refnum=' . $refnum);
+        header('Location: agq_ownerDocumentView.php?url=' . $encoded_url . '&refNum=' . urlencode($refnum));
         exit;
     } else if (($role == 'Export Forwarding' || $role == 'Import Forwarding' || $role == 'Export Brokerage' || $role == 'Import Brokerage') && $pword != 'agqFreight') {
 
@@ -57,7 +57,7 @@ if ($docType == 'MANIFESTO') {
         $encrypted_url = encrypt_url($original_url, $key);
         $encoded_url = urlencode($encrypted_url);
 
-        header('Location: agq_employDocumentView.php?url=' . $encoded_url . '&refnum=' . $refnum);
+        header('Location: agq_employDocumentView.php?url=' . $encoded_url . '&refNum=' . urlencode($refnum));
         exit;
     }
 }

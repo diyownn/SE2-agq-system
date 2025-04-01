@@ -22,7 +22,7 @@ if ($conn->connect_error) {
 // $refnum = $_GET['request'] ?? null;
 // $dept = $_GET['user'] ?? null;
 
-$refNum = isset($_GET['refnum']) ? $_GET['refnum'] : '';
+$refNum = isset($_GET['refNum']) ? $_GET['refNum'] : '';
 //$refNum = "EB229340";
 $dept = isset($_SESSION['department']) ? $_SESSION['department'] : '';
 

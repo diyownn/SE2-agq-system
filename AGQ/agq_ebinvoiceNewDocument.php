@@ -3,7 +3,6 @@ require 'db_agq.php';
 
 session_start();
 
-$refNum = isset($_GET['refNum']) && !empty($_GET['refNum']) ? $_GET['refNum'] : "";
 $url = isset($_GET['url']);
 $role = isset($_SESSION['department']) ? $_SESSION['department'] : '';
 
@@ -30,6 +29,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 
 
+$refNum = isset($_GET['refNum']) && !empty($_GET['refNum']) ? $_GET['refNum'] : "";
 
 
 if (!empty($refNum)) {
@@ -691,6 +691,22 @@ function insertRecord($conn)
 
         </form>
     </div>
+
+    <script>
+        // Initialize package field on page load if needed
+        window.onload = function() {
+            // Check if a package type is already selected (useful for edit mode)
+            <?php if (isset($row['PackageType']) && $row['PackageType']): ?>
+                const packageType = "<?= htmlspecialchars($row['PackageType']); ?>";
+                if (packageType === "LCL") {
+                    document.getElementById("lcl").checked = true;
+                } else if (packageType === "Full Container") {
+                    document.getElementById("container").checked = true;
+                }
+                togglePackageField();
+            <?php endif; ?>
+        };
+    </script>
 </body>
 
 </html>

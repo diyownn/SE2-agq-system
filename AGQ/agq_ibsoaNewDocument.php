@@ -170,7 +170,7 @@ function updateRecord($conn, $data, $sessionData)
         $data['iedentryencoding'],
         $data['earlygatein'],
         $data['tabs'],
-        $data['DocsFee'],
+        $data['docsfee'],
         $data['detentioncharges'],
         $data['containerdeposit'],
         $data['latecollection'],
@@ -284,7 +284,7 @@ function insertRecord($conn)
         $_POST['iedentryencoding'],
         $_POST['earlygatein'],
         $_POST['tabs'],
-        $_POST['DocsFee'],
+        $_POST['docsfee'],
         $_POST['detentioncharges'],
         $_POST['containerdeposit'],
         $_POST['latecollection'],
@@ -743,6 +743,22 @@ function insertRecord($conn)
             </div>
             </form>
         </div>
+
+        <script>
+        // Initialize package field on page load if needed
+        window.onload = function() {
+            // Check if a package type is already selected (useful for edit mode)
+            <?php if (isset($row['PackageType']) && $row['PackageType']): ?>
+                const packageType = "<?= htmlspecialchars($row['PackageType']); ?>";
+                if (packageType === "LCL") {
+                    document.getElementById("lcl").checked = true;
+                } else if (packageType === "Full Container") {
+                    document.getElementById("container").checked = true;
+                }
+                togglePackageField();
+            <?php endif; ?>
+        };
+    </script>
     </body>
 
 </html>

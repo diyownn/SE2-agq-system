@@ -1,7 +1,7 @@
 <?php
 session_start();
 $role = isset($_SESSION['department']) ? $_SESSION['department'] : '';
-$refNum = isset($_GET['refnum']) ? $_GET['refnum'] : '';
+$refnum = isset($_GET['refNum']) ? $_GET['refNum'] : '';
 
 require __DIR__ . '/secret/vendor/autoload.php';
 
