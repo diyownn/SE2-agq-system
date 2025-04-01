@@ -101,7 +101,10 @@
 
                 $role = $row['Department'];
                 $pword = $row['Password'];
+                $name = $row['Name'];
+
                 $_SESSION['department'] = $role;
+                $_SESSION['name'] = $name;
 
                 $_SESSION['login_attempts'] = 0; // Reset login attempts
                 $_SESSION['lockout_start'] = 0; // Reset lockout time

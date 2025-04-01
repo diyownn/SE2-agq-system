@@ -18,8 +18,9 @@ if (!$role) {
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_GET['refNum']) && !empty($_GET['refNum'])) {
         $docs = isset($_SESSION['DocType']) ? $_SESSION['DocType'] : '';
+        date_default_timezone_set('Asia/Manila');
         updateRecord($conn, $_POST, [
-            "editDate" => date("Y-m-d H:i:s"),
+           "editDate" => date("Y-m-d H:i:s"),
             "companyName" => $_SESSION['Company_name'],
             "department" => $_SESSION['department']
         ]);
@@ -57,6 +58,7 @@ if (isset($_GET['refNum'])) {
 
 function updateRecord($conn, $data, $sessionData)
 {
+    $name = isset($_SESSION['name']) ? $_SESSION['name'] : 'no name';
     $docs = isset($_SESSION['DocType']) ? $_SESSION['DocType'] : '';
     $sql = "UPDATE tbl_expbrk SET 
         `To:` = ?, 
@@ -118,7 +120,7 @@ function updateRecord($conn, $data, $sessionData)
         $data['total'],
         $data['prepared_by'],
         $data['approved_by'],
-        $data['edited_by'],
+        $name,
         $sessionData['editDate'],
         $docs,
         $sessionData['companyName'],
@@ -167,11 +169,12 @@ function updateRecord($conn, $data, $sessionData)
 // Function to insert a record
 function insertRecord($conn)
 {
+    $name = isset($_SESSION['name']) ? $_SESSION['name'] : 'no name';
     $docType = isset($_SESSION['DocType']) ? $_SESSION['DocType'] : null;
     $department = isset($_SESSION['department']) ? $_SESSION['department'] : null;
     $companyName = isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : null;
     date_default_timezone_set('Asia/Manila');
-    $editDate = date('Y-m-d');
+    $editDate = date('Y-m-d H:i:s');
 
     // Check if RefNum already exists
     $refNum = $_POST['refNum'];
@@ -235,7 +238,7 @@ function insertRecord($conn)
         $_POST['total'],
         $_POST['prepared_by'],
         $_POST['approved_by'],
-        $_POST['edited_by'],
+        $name,
         $editDate,
         $docType,        // Session variable
         $companyName,    // Session variable
@@ -473,7 +476,7 @@ function insertRecord($conn)
 
 
         function validateNotesField(notesInput) {
-            const allowedSymbols = /^[a-zA-Z0-9\$%\-\/\., \n]+$/; // Allow letters, numbers, $ % / . , - and newlines
+            const allowedSymbols = /^[a-zA-Z0-9\$%\-\/\., \n#*]+$/; // Allow letters, numbers, $ % / . , - and newlines
             const maxLength = 500; // Maximum character limit
 
             if (!notesInput.value.trim()) {
@@ -481,7 +484,7 @@ function insertRecord($conn)
                 notesInput.setCustomValidity(""); // Clear validation for empty values (optional)
             } else if (!allowedSymbols.test(notesInput.value)) {
                 // Check for invalid symbols
-                notesInput.setCustomValidity("Only letters, numbers, and these symbols are allowed: $ % / - , . Newline is also allowed.");
+                notesInput.setCustomValidity("Only letters, numbers, and these symbols are allowed: $ % / - , . # * Newline is also allowed.");
             } else if (notesInput.value.length > maxLength) {
                 // Check for length exceeding the limit
                 notesInput.setCustomValidity("Notes cannot exceed 500 characters");
@@ -682,7 +685,6 @@ function insertRecord($conn)
             <div class="section">
                 <input type="text" maxlength="25" name="prepared_by" placeholder="Prepared by" value="<?= isset($row['Prepared_by']) ? htmlspecialchars($row['Prepared_by']) : ''; ?>" onchange="validateTextFields(this)" style="width: 48%">
                 <input type="text" maxlength="25" name="approved_by" placeholder="Approved by" value="<?= isset($row['Approved_by']) ? htmlspecialchars($row['Approved_by']) : ''; ?>" onchange="validateTextFields(this)" style="width: 48%">
-                <input type="text" maxlength="25" name="edited_by" placeholder="Edited by" value="<?= isset($row['Edited_by']) ? htmlspecialchars($row['Edited_by']) : ''; ?>" onchange="validateTextFields(this)" style="width: 48%">
             </div>
             <div class="footer">
                 <!-- <button class="save-btn">Save</button> -->

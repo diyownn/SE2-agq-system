@@ -92,7 +92,7 @@ $record = selectRecords($conn, $role, $refNum);
           </tr>
           <tr>
             <td>Date</td>
-            <td id="date"><?php echo htmlspecialchars($record['Date'] ?? 'N/A'); ?></td>
+            <td id="date"><?php echo isset($record['Date']) ? htmlspecialchars(date("d F, Y", strtotime($record['Date']))) : 'N/A'; ?></td>
           </tr>
           <tr>
             <td>Vessel</td>
@@ -100,7 +100,7 @@ $record = selectRecords($conn, $role, $refNum);
           </tr>
           <tr>
             <td>ETD/ETA</td>
-            <td id="etd-eta"><?php echo htmlspecialchars($record['ETA'] ?? 'N/A'); ?></td>
+            <td id="etd-eta"><?php echo isset($record['ETA']) ? htmlspecialchars(date("F d, Y", strtotime($record['ETA']))) : 'N/A'; ?></td>
           </tr>
           <tr>
             <td>Ref No.</td>
@@ -1032,9 +1032,9 @@ $record = selectRecords($conn, $role, $refNum);
       <div class="docu-information">
         <p class="ref-number"><?php echo htmlspecialchars($refNum) ?? 'N/A'; ?></p>
         <p class="document-type"><?php echo htmlspecialchars($record['DocType'] ?? 'N/A'); ?></p>
-        <p class="date"><strong>Date Created:</strong> <?php echo htmlspecialchars($record['Date'] ?? 'N/A'); ?></p>
+        <p class="date"><strong>Date Created:</strong> <?php echo htmlspecialchars(date("d F, Y", strtotime($record['Date'])) ?? 'N/A'); ?></p>
         <p class="date"><strong>Created By:</strong> <?php echo htmlspecialchars($record['Prepared_by'] ?? 'N/A'); ?></p>
-        <p class="date"><strong>Date Modified:</strong> <?php echo htmlspecialchars($record['EditDate'] ?? 'N/A'); ?></p>
+        <p class="date"><strong>Date Modified:</strong> <?php echo htmlspecialchars(date("F d, Y h:i A", strtotime($record['EditDate'])) ?? 'N/A'); ?></p>
         <p class="date"><strong>Modified By:</strong> <?php echo htmlspecialchars($record['Edited_by'] ?? 'N/A'); ?></p>
       </div>
 

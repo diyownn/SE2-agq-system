@@ -26,11 +26,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } elseif (isset($_POST['save'])) {
         insertRecord($conn);
     }
-    // elseif (isset($_POST['select'])) {
-    //     selectRecords($conn);
-    // } elseif (isset($_POST['delete'])) {
-    //     deleteRecord($conn, $_POST['RefNum']);
-    // }
 }
 
 $refNum = isset($_GET['refNum']) && !empty($_GET['refNum']) ? $_GET['refNum'] : "";
@@ -188,15 +183,37 @@ function updateRecord($conn, $data, $sessionData)
     );
 
     if ($stmt->execute()) {
-        ?>'<script>
-        if (confirm("Document Successfully Edited!\\nReturn to Transactions Page?")) {
-            window.location.href = "agq_transactionCatcher.php";
-        }
-            </script>'
-        <?php
+        echo '<script>
+            document.addEventListener("DOMContentLoaded", function() {
+                Swal.fire({
+                    title: "Success!",
+                    text: "Document Successfully Edited!",
+                    icon: "success",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Return to Transactions Page",
+                    cancelButtonText: "Stay Here"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = "agq_transactionCatcher.php";
+                    }
+                });
+            });
+        </script>';
         return;
     } else {
-        return "Error updating record: " . $stmt->error;
+        echo '<script>
+        document.addEventListener("DOMContentLoaded", function() {
+            Swal.fire({
+                title: "Error!",
+                text: "Error updating record: ' . $stmt->error . '",
+                icon: "error",
+                confirmButtonText: "OK"
+            });
+        });
+    </script>';
+    return;
     }
 
     $stmt->close();
@@ -221,7 +238,16 @@ function insertRecord($conn)
     $checkStmt->store_result();
 
     if ($checkStmt->num_rows > 0) {
-        echo '<script>alert("Reference Number already exist. Please create the document again.");</script>';
+        echo '<script>
+        document.addEventListener("DOMContentLoaded", function() {
+            Swal.fire({
+                title: "Error!",
+                text: "Reference Number already exists. Please create the document again.",
+                icon: "error",
+                confirmButtonText: "OK"
+            });
+        });
+        </script>';
         $checkStmt->close();
         return; // Stop execution if RefNum exists
     }
@@ -302,47 +328,39 @@ function insertRecord($conn)
 
     if ($stmt->execute()) {
         echo '<script>
-        if (confirm("Document Successfully Created!\\nReturn to Transactions Page?")) {
-            window.location.href = "agq_transactionCatcher.php";
-        }
+            document.addEventListener("DOMContentLoaded", function() {
+                Swal.fire({
+                    title: "Success!",
+                    text: "Document Successfully Created!",
+                    icon: "success",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Return to Transactions Page",
+                    cancelButtonText: "Stay Here"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = "agq_transactionCatcher.php";
+                    }
+                });
+            });
         </script>';
     } else {
-        echo "Error: " . $stmt->error;
+        echo '<script>
+        document.addEventListener("DOMContentLoaded", function() {
+            Swal.fire({
+                title: "Error!",
+                text: "Error: ' . $stmt->error . '",
+                icon: "error",
+                confirmButtonText: "OK"
+            });
+        });
+    </script>';
     }
     $stmt->close();
 }
 
-// Function to select records
-// function selectRecords($conn)
-// {
-//     $sql = "SELECT * FROM tbl_impbrk";
-//     $stmt = $conn->prepare($sql);
-//     $stmt->execute();
-//     $result = $stmt->get_result();
 
-//     echo "<h2>Database Records:</h2>";
-//     while ($row = $result->fetch_assoc()) {
-//         echo "<pre>" . print_r($row, true) . "</pre>";
-//     }
-//     $stmt->close();
-// }
-
-// // Function to delete a record
-// function deleteRecord($conn, $RefNum)
-// {
-//     $sql = "DELETE FROM tbl_impbrk WHERE RefNum = ?";
-//     $stmt = $conn->prepare($sql);
-//     $stmt->bind_param("s", $RefNum);
-
-//     if ($stmt->execute()) {
-//         echo "Record deleted successfully!";
-//     } else {
-//         echo "Error deleting record: " . $stmt->error;
-//     }
-//     $stmt->close();
-// }
-
-//$conn->close();
 ?>
 
 <!DOCTYPE html>
@@ -354,6 +372,15 @@ function insertRecord($conn)
     <link rel="icon" type="image/x-icon" href="../AGQ/images/favicon.ico">
     <link rel="stylesheet" type="text/css" href="../css/forms.css">
     <title>Statement of Account</title>
+     <!-- Add SweetAlert2 library -->
+     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Ensure SweetAlert2 is fully loaded -->
+    <script>
+        // Make sure SweetAlert2 is available globally
+        if (typeof Swal === 'undefined') {
+            console.error('SweetAlert2 is not loaded properly');
+        }
+    </script>
     <script>
         function togglePackageField() {
             document.getElementById("package-details").style.display = "block";
@@ -658,20 +685,57 @@ function insertRecord($conn)
         });
         
         document.getElementById("total").value = total.toFixed(2);
+
+          // Show SweetAlert2 notification with calculated total
+          Swal.fire({
+                title: 'Total Calculated',
+                text: `The total amount is ${total.toFixed(2)}`,
+                icon: 'info',
+                confirmButtonText: 'OK'
+            });
     }
 
     function redirection(refnum) {
             if (!refnum || refnum === "") {
-                window.location.href = "agq_choosedocument.php";
+                // Using SweetAlert2 for navigation confirmation
+                Swal.fire({
+                    title: 'Leave this page?',
+                    text: "Any unsaved changes will be lost.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, leave page',
+                    cancelButtonText: 'Stay here'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = "agq_choosedocument.php";
+                    }
+                });
             } else {
-                window.location.href = "agq_transactionCatcher.php";
+                // Using SweetAlert2 for navigation confirmation
+                Swal.fire({
+                    title: 'Leave this page?',
+                    text: "Any unsaved changes will be lost.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, leave page',
+                    cancelButtonText: 'Stay here'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = "agq_transactionCatcher.php";
+                    }
+                });
             }
+            return false; // Prevent default link behavior
         }
     </script>
 </head>
 
     <body>
-    <a href="#" onclick="redirection('<?php echo htmlspecialchars($refNum, ENT_QUOTES, 'UTF-8'); ?>')" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 20px; top: 20px;">←</a>
+    <a href="#" onclick="return redirection('<?php echo htmlspecialchars($refNum, ENT_QUOTES, 'UTF-8'); ?>')" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 20px; top: 20px;">←</a>
         <div class="container">
             <div class="header">STATEMENT OF ACCOUNT</div>
             <form method="POST" onsubmit="return validateForm(event);">
