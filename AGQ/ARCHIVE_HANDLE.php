@@ -16,7 +16,6 @@ $role = $_SESSION['department'] ?? null;
 $dept = $_SESSION['SelectedDepartment'] ?? null;
 $company = $_SESSION['Company_name'] ?? null;
 
-// Mapping tables to roles
 $tables = [
     "Export Brokerage"  => "tbl_expbrk",
     "Export Forwarding" => "tbl_expfwd",
@@ -37,6 +36,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_GET["action"])) {
 
     if (!$refNum) {
         exit(json_encode(["success" => false, "message" => "Reference Number is required."]));
+        
     }
 
     switch ($action) {
@@ -109,7 +109,7 @@ function deleteDocument($conn, $refNum)
     }
 
     echo json_encode(!empty($deletedFrom) ?
-        ["success" => true, "message" => "Deleted from: " . implode(", ", $deletedFrom)] :
+        ["success" => true, "message" => "Deleted"] :
         ["success" => false, "message" => "No matching record found."]);
 }
 

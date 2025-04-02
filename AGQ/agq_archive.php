@@ -2,92 +2,61 @@
 require 'db_agq.php';
 session_start();
 
-$role = isset($_SESSION['department']) ? $_SESSION['department'] : '';
-$url = isset($_GET['url']);
+$role = "Admin";
+$dept = isset($_SESSION['SelectedDepartment']) && !empty($_SESSION['SelectedDepartment']) ? $_SESSION['SelectedDepartment'] : 'Import Forwarding';
 
 
-
-if (!$url) {
-    header("Location: UNAUTHORIZED.php?error=401u");
-}
+$searchq = isset($_GET['search']) ? $_GET['search'] : '';
 
 if (!$role) {
     header("Location: UNAUTHORIZED.php?error=401r");
 }
-$sqlArchive = "SELECT RefNum FROM tbl_archive";
-$resultArchive = $conn->query($sqlArchive);
+// Retrieve search term if provided
+$search_term = isset($_GET['search']) ? '%' . $conn->real_escape_string($_GET['search']) . '%' : '';
 
-if ($resultArchive && $resultArchive->num_rows > 0) {
-    while ($row = $resultArchive->fetch_assoc()) {
-        $refNum = $row['RefNum'];
+// Build query based on department and search term
+$query = "SELECT * FROM tbl_archive";
+$conditions = []; // Array to store WHERE conditions
+$params = []; // Array to store bind parameters
+$types = ""; // Parameter types for bind_param
 
-        $tables = ["tbl_impfwd", "tbl_impbrk", "tbl_expfwd", "tbl_expbrk"];
-        $shouldDelete = false;
+// Apply department filter
+if (!empty($dept)) {
+    $conditions[] = "Department LIKE ?";
+    $params[] = '%' . $dept . '%'; // Wildcard for LIKE
+    $types .= "s"; // String type
+}
 
-        foreach ($tables as $table) {
-            $sqlCheck = "SELECT RefNum FROM $table WHERE RefNum = ? AND isArchived != 1";
-            $stmtCheck = $conn->prepare($sqlCheck);
+// Apply search filter
+if (!empty($search_term)) {
+    $conditions[] = "(Company_name LIKE ? OR RefNum LIKE ?)";
+    $params[] = $search_term;
+    $params[] = $search_term;
+    $types .= "ss";
+}
 
-            if (!$stmtCheck) {
-                die(json_encode(["success" => false, "message" => "SQL Error: " . $conn->error]));
-            }
+// Append WHERE conditions if any exist
+if (!empty($conditions)) {
+    $query .= " WHERE " . implode(" AND ", $conditions);
+}
 
-            $stmtCheck->bind_param("s", $refNum);
-            $stmtCheck->execute();
-            $stmtCheck->store_result();
+// Prepare and execute the query
+$stmt = $conn->prepare($query);
+if (!empty($params)) {
+    $stmt->bind_param($types, ...$params);
+}
+$stmt->execute();
+$result = $stmt->get_result();
 
-            if ($stmtCheck->num_rows > 0) {
-                $shouldDelete = true;
-            }
-
-            $stmtCheck->close();
-            if ($shouldDelete) break;
-        }
-
-        if ($shouldDelete) {
-            $sqlDelete = "DELETE FROM tbl_archive WHERE RefNum = ?";
-            $stmtDelete = $conn->prepare($sqlDelete);
-
-            if (!$stmtDelete) {
-                die(json_encode(["success" => false, "message" => "SQL Error: " . $conn->error]));
-            }
-
-            $stmtDelete->bind_param("s", $refNum);
-            $stmtDelete->execute();
-            $stmtDelete->close();
-        }
+// Fetch results
+$archived = [];
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $archived[] = $row;
     }
 }
 
 
-if (isset($_GET['search'])) {
-    $searchTerm = "%" . $_GET['search'] . "%";
-    $stmt = $conn->prepare("SELECT archive_id, RefNum, Company_name, Department, archive_date FROM tbl_archive 
-                            WHERE archive_id LIKE ? OR RefNum LIKE ? OR Company_name LIKE ? OR Department LIKE ?");
-    if (!$stmt) {
-        die(json_encode(["success" => false, "message" => "SQL Error: " . $conn->error]));
-    }
-
-    $stmt->bind_param("ssss", $searchTerm, $searchTerm, $searchTerm, $searchTerm);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    $archived = [];
-    while ($archive = $result->fetch_assoc()) {
-        $archived[] = $archive;
-    }
-
-    echo json_encode(["success" => true, "archived" => $archived]);
-    exit;
-} else {
-    $query = "SELECT archive_id, RefNum, Company_name, Department, archive_date FROM tbl_archive";
-    $result = $conn->query($query);
-
-    $archived = [];
-    while ($archive = $result->fetch_assoc()) {
-        $archived[] = $archive;
-    }
-}
 ?>
 
 <!DOCTYPE html>
@@ -114,8 +83,10 @@ if (isset($_GET['search'])) {
     <a href="agq_dashCatcher.php" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 20px; top: 50px;">←</a>
 
     <div class="search-container">
-        <input type="text" class="search-input" placeholder="Search archives..." />
-        <button class="search-button" id="search-button">SEARCH</button>
+        <form class="searchcont method=" GET" action="agq_archive.php">
+            <input type="text" class="search-input" name="search" id="searchInput" placeholder="Search archives..." />
+            <button class="search-button" type="submit">SEARCH</button>
+        </form>
     </div>
 
     <div class="header-container">
@@ -124,6 +95,13 @@ if (isset($_GET['search'])) {
             <h1>ARCHIVES</h1>
         </div>
         <div class="undo-button-container">
+            <select id="departmentFilter" class="department-dropdown" onchange="updateDepartment(this.value)">
+                <option value="" disabled <?php echo empty($dept) ? 'selected' : ''; ?>>All Departments</option>
+                <option value="Import Forwarding" <?php echo ($dept == 'Import Forwarding') ? 'selected' : ''; ?>>Import Forwarding</option>
+                <option value="Import Brokerage" <?php echo ($dept == 'Import Brokerage') ? 'selected' : ''; ?>>Import Brokerage</option>
+                <option value="Export Forwarding" <?php echo ($dept == 'Export Forwarding') ? 'selected' : ''; ?>>Export Forwarding</option>
+                <option value="Export Brokerage" <?php echo ($dept == 'Export Brokerage') ? 'selected' : ''; ?>>Export Brokerage</option>
+            </select>
             <button class="undo-button" onclick="openModal()">EDIT</button>
         </div>
     </div>
@@ -151,7 +129,7 @@ if (isset($_GET['search'])) {
                     echo "<td>" . htmlspecialchars($row["Company_name"]) . "</td>";
                     echo "<td>" . htmlspecialchars($row["RefNum"]) . "</td>";
                     echo "<td>" . htmlspecialchars($row["Department"]) . "</td>";
-                    echo "<td>" .  $formatted_date  . "</td>";
+                    echo "<td>" . $formatted_date . "</td>";
                     echo "</tr>";
                 }
                 ?>
@@ -171,10 +149,33 @@ if (isset($_GET['search'])) {
     </div>
 
     <script>
+        function updateDepartment(selectedDept) {
+
+            let xhr = new XMLHttpRequest();
+            xhr.open("POST", "STORE_SESSION.php", true);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+
+            xhr.send("selected_department=" + encodeURIComponent(selectedDept));
+
+
+            xhr.onload = function() {
+                if (xhr.status == 200) {
+                    console.log("Department updated to: " + selectedDept);
+
+                    location.reload();
+                }
+            };
+        }
+
         function openModal() {
             let modal = document.getElementById("archiveModal");
             modal.style.display = "flex"; // Make modal visible
             setTimeout(() => modal.classList.add("show"), 10); // Trigger animation
+
+            let editInput = document.getElementById("edit-input");
+            editInput.value = ""; // Clear previous input
+            editInput.focus(); // Set focus on input
         }
 
         function closeModal() {
@@ -207,7 +208,7 @@ if (isset($_GET['search'])) {
                 confirmButtonText: "Yes, delete it!"
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // 🔹 FIX: Properly define formData before using it
+
                     let formData = new URLSearchParams();
                     formData.append("RefNum", refNum);
 
@@ -222,16 +223,14 @@ if (isset($_GET['search'])) {
                             if (!response.ok) {
                                 throw new Error("Network response was not ok. Status: " + response.status);
                             }
-                            return response.json();
+                            return response.json(); // only call response.json() once
                         })
-                        .then(response => response.json())
                         .then(data => { // 🔹 Ensure data is always checked before use
                             if (!data) {
                                 throw new Error("Invalid JSON response");
                             }
                             Swal.fire({
                                 title: data.success ? "Deleted!" : "Error!",
-                                text: data.message,
                                 icon: data.success ? "success" : "error",
                             }).then(() => {
                                 if (data.success) {
@@ -249,13 +248,9 @@ if (isset($_GET['search'])) {
         }
 
 
+
         function restoreDocument() {
             let refNum = document.getElementById("edit-input").value.trim();
-            if (!refNum) {
-                Swal.fire("Error", "Please enter a Reference Number.", "error");
-                return;
-            }
-
             Swal.fire({
                 title: "Are you sure?",
                 text: "You are about to restore this document.",
@@ -265,15 +260,16 @@ if (isset($_GET['search'])) {
                 cancelButtonColor: "#d33",
                 confirmButtonText: "Yes, restore it!"
             }).then((result) => {
+
+                let formData = new URLSearchParams();
+                formData.append("RefNum", refNum);
                 if (result.isConfirmed) {
                     fetch("ARCHIVE_HANDLE.php?action=restore", {
                             method: "POST",
                             headers: {
-                                "Content-Type": "application/json"
+                                "Content-Type": "application/x-www-form-urlencoded"
                             },
-                            body: JSON.stringify({
-                                RefNum: refNum
-                            })
+                            body: formData.toString()
                         })
                         .then(response => response.json())
                         .then(data => {
