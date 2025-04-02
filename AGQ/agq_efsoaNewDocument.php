@@ -2,6 +2,7 @@
 require 'db_agq.php';
 
 session_start();
+
 $url = isset($_GET['url']);
 $role = isset($_SESSION['department']) ? $_SESSION['department'] : '';
 
@@ -10,13 +11,14 @@ if (!$url) {
     header("Location: UNAUTHORIZED.php?error=401u");
 }
 
-
 if (!$role) {
     header("Location: UNAUTHORIZED.php?error=401r");
 }
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_GET['refNum']) && !empty($_GET['refNum'])) {
         $docs = isset($_SESSION['DocType']) ? $_SESSION['DocType'] : '';
+        date_default_timezone_set('Asia/Manila');
         updateRecord($conn, $_POST, [
             "editDate" => date("Y-m-d H:i:s"),
             "companyName" => $_SESSION['Company_name'],
@@ -27,11 +29,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
-
 $refNum = isset($_GET['refNum']) && !empty($_GET['refNum']) ? $_GET['refNum'] : "";
 
-if (isset($_GET['refNum'])) {
+if (!empty($refNum)) {
+    $sql = "SELECT * FROM tbl_expfwd WHERE RefNum LIKE ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("s", $refNum);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $row = $result->fetch_assoc();
+    $stmt->close();
+}
 
+if (isset($_GET['refNum'])) {
     $refNum = $_GET['refNum'];
     $sql = "SELECT * FROM tbl_expfwd WHERE RefNum LIKE ?";
     $stmt = $conn->prepare($sql);
@@ -46,15 +56,18 @@ if (isset($_GET['refNum'])) {
 
 function updateRecord($conn, $data, $sessionData)
 {
+    $name = isset($_SESSION['name']) ? $_SESSION['name'] : 'no name';
     $docs = isset($_SESSION['DocType']) ? $_SESSION['DocType'] : '';
+    $refNum = isset($_GET['refNum']) && !empty($_GET['refNum']) ? $_GET['refNum'] : "";
+
     $sql = "UPDATE tbl_expfwd SET 
         `To:` = ?, 
         `Address` = ?, 
         Tin = ?, 
         Attention = ?, 
-        `Date` = ?, 
         Vessel = ?, 
         ETA = ?, 
+        RefNum = ?,
         DestinationOrigin = ?, 
         ER = ?, 
         BHNum = ?, 
@@ -90,14 +103,14 @@ function updateRecord($conn, $data, $sessionData)
     $stmt = $conn->prepare($sql);
 
     $stmt->bind_param(
-        "sssssssssssssssisiiiiiiiiiiiiissssssss",
+        "sssssssssssssssdsdddddddddddddssssssss",
         $data['to'],
         $data['address'],
         $data['tin'],
         $data['attention'],
-        $data['date'],
         $data['vessel'],
         $data['eta'],
+        $data['refNum'],
         $data['destinationOrigin'],
         $data['er'],
         $data['bhNum'],
@@ -123,12 +136,12 @@ function updateRecord($conn, $data, $sessionData)
         $data['total'],
         $data['prepared'],
         $data['approved'],
-        $data['edited'],
+        $name,
         $sessionData['editDate'],
         $docs,
         $sessionData['companyName'],
         $sessionData['department'],
-        $data['refNum']
+        $refNum
     );
 
     if ($stmt->execute()) {
@@ -171,11 +184,14 @@ function updateRecord($conn, $data, $sessionData)
 // Function to insert a record
 function insertRecord($conn)
 {
+    $name = isset($_SESSION['name']) ? $_SESSION['name'] : 'no name';
     $docType = isset($_SESSION['DocType']) ? $_SESSION['DocType'] : null;
     $department = isset($_SESSION['department']) ? $_SESSION['department'] : null;
     $companyName = isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : null;
+    
     date_default_timezone_set('Asia/Manila');
-    $editDate = date('Y-m-d');
+    $createDate = date('Y-m-d');
+    $editDate = date('Y-m-d H:i:s');
 
     $refNum = $_POST['refNum'];
     $checkSql = "SELECT RefNum FROM tbl_expbrk WHERE RefNum = ?";
@@ -210,12 +226,12 @@ function insertRecord($conn)
 
     $stmt = $conn->prepare($sql);
     $stmt->bind_param(
-        "ssssssssssssssssiisiiiiiiiiiiiisssssss",
+        "ssssssssssssssssddsddddddddddddsssssss",
         $_POST['to'],
         $_POST['address'],
         $_POST['tin'],
         $_POST['attention'],
-        $_POST['date'],
+        $createDate,
         $_POST['vessel'],
         $_POST['eta'],
         $_POST['refNum'],
@@ -244,7 +260,7 @@ function insertRecord($conn)
         $_POST['total'],
         $_POST['prepared'],
         $_POST['approved'],
-        $_POST['edited'],
+        $name,
         $editDate,
         $docType,        // Session variable
         $companyName,    // Session variable
@@ -366,8 +382,8 @@ function insertRecord($conn)
 
                     const inputName = charge.toLowerCase().replace(/\s+/g, '').replace('/', '');
                     row.innerHTML = `
-                        <input type="text" name="charge_type[]" value="${charge}" readonly>
-                        <input type="number" name="${inputName}" placeholder="Enter amount" onchange ="validateChargeAmount(this)">
+                        <input type="text" value="${charge}" readonly>
+                        <input type="number" name="${inputName}" step="0.01" placeholder="Enter amount" onchange="validateChargeAmount(this)">
                     `;
                 }
 
@@ -395,7 +411,7 @@ function insertRecord($conn)
 
             newRow.innerHTML = `
                 <input type="text" value="${selectedCharge}" readonly>
-                <input type="number" name="${inputName}" placeholder="Enter amount" onchange="validateChargeInput(this)">
+                <input type="number" name="${inputName}" step="0.01" placeholder="Enter amount" onchange="validateChargeInput(this)">
                 <button type="button" onclick="removeCharge(this)">Remove</button>
             `;
 
@@ -409,47 +425,37 @@ function insertRecord($conn)
         }
 
         function validateChargeInput(inputElement) {
-            const maxAmount = 16500000; 
             const value = parseFloat(inputElement.value) || 0;
+            const maxAmount = 16500000;
 
+            // Check for maximum allowed amount
             if (value > maxAmount) {
                 inputElement.setCustomValidity("Value cannot exceed 16,500,000");
+            } else if (!/^\d+(\.\d{1,2})?$/.test(inputElement.value)) {
+                // Regex ensures value is a number with up to 2 decimal places
+                inputElement.setCustomValidity("Please enter a valid amount (up to 2 decimal places)");
             } else {
-                inputElement.setCustomValidity(""); // Reset validation
+                inputElement.setCustomValidity(""); // Clear validation
             }
 
-            inputElement.reportValidity(); // Show validation message
-
-            if (!inputElement.checkValidity()) {
-                inputElement.preventDefault(); // Prevent form submission if invalid
-            }
-
-            inputElement.addEventListener("input", function () {
-                inputElement.setCustomValidity(""); // Clear error when user types
-            });
+            inputElement.reportValidity();
         }
 
         function validateChargeAmount(chargeElement) {
             const maxAmount = 16500000;
-            let isValid = true;
-
             const value = parseFloat(chargeElement.value) || 0;
-                
+            let isValid = true; // Track overall validity
+
             if (value > maxAmount) {
                 chargeElement.setCustomValidity("Value cannot exceed 16,500,000");
+            } else if (!/^\d+(\.\d{1,2})?$/.test(chargeElement.value)) {
+                // Regex ensures value is a number with up to 2 decimal places
+                chargeElement.setCustomValidity("Please enter a valid amount (up to 2 decimal places)");
             } else {
                 chargeElement.setCustomValidity(""); // Reset validation
             }
 
             chargeElement.reportValidity(); // Show validation message
-
-            if (!chargeElement.checkValidity()) {
-                event.preventDefault(); // Prevent form submission if invalid
-            }
-
-            chargeElement.addEventListener("input", function () {
-                chargeElement.setCustomValidity(""); // Clear error when user types
-            });
 
             return isValid;
         }
@@ -492,7 +498,7 @@ function insertRecord($conn)
         }
 
         function validateNotesField(notesInput) {
-            const allowedSymbols = /^[a-zA-Z0-9\$%\-\/\., \n]+$/; // Allow letters, numbers, $ % / . , - and newlines
+            const allowedSymbols = /^[a-zA-Z0-9\$%\-\/\., \n#*]+$/; // Allow letters, numbers, $ % / . , - and newlines
             const maxLength = 500; // Maximum character limit
 
             if (!notesInput.value.trim()) {
@@ -500,7 +506,7 @@ function insertRecord($conn)
                 notesInput.setCustomValidity(""); // Clear validation for empty values (optional)
             } else if (!allowedSymbols.test(notesInput.value)) {
                 // Check for invalid symbols
-                notesInput.setCustomValidity("Only letters, numbers, and these symbols are allowed: $ % / - , . Newline is also allowed.");
+                notesInput.setCustomValidity("Only letters, numbers, and these symbols are allowed: $ % / - , . # * Newline is also allowed.");
             } else if (notesInput.value.length > maxLength) {
                 // Check for length exceeding the limit
                 notesInput.setCustomValidity("Notes cannot exceed 500 characters");
@@ -649,9 +655,6 @@ function insertRecord($conn)
         <form method="POST" onsubmit="return validateForm(event);">
             <div class="section">
                 <input type="text" maxlength="50" name="to" placeholder="To" value="<?= isset($row['To:']) ? htmlspecialchars($row['To:']) : ''; ?>" onchange="validateTextFields(this)" style="width: 70%">
-                <input type="date" name="date" value="<?= isset($row['Date']) ? $row['Date'] : ''; ?>" onchange="validateDateFields(this)" style="width: 28%">
-            </div>
-            <div class="section">
                 <input type="text" maxlength="100" name="address" placeholder="Address" value="<?= isset($row['Address']) ? htmlspecialchars($row['Address']) : ''; ?>" onchange="validateTextFields(this)" style="width: 100%">
             </div>
             <div class="section">
@@ -670,8 +673,6 @@ function insertRecord($conn)
             </div>
             <div class="section">
                 <input type="text" maxlength="30" name="natureOfGoods" placeholder="Nature of Goods" value="<?= isset($row['NatureOfGoods']) ? htmlspecialchars($row['NatureOfGoods']) : ''; ?>" onchange="validateTextFields(this)" style="width: 100%">
-            </div>
-            <div class="section">
                 <input type="text" maxlength="100" name="packages" placeholder="Packages" value="<?= isset($row['Packages']) ? htmlspecialchars($row['Packages']) : ''; ?>" onchange="validateTextFields(this)" style="width: 32%">
                 <input type="text" maxlength="20" name="weight" placeholder="Weight/Measurement" value="<?= isset($row['Weight']) ? htmlspecialchars($row['Weight']) : ''; ?>" onchange="validateTextFields(this)" style="width: 32%">
                 <input type="text" maxlength="20" name="volume" placeholder="Volume" value="<?= isset($row['Volume']) ? htmlspecialchars($row['Volume']) : ''; ?>" onchange="validateTextFields(this)" style="width: 32%">
@@ -707,7 +708,6 @@ function insertRecord($conn)
             <div class="section">
                 <input type="text" maxlength="25" name="prepared_by" placeholder="Prepared by" value="<?= isset($row['Prepared_by']) ? htmlspecialchars($row['Prepared_by']) : ''; ?>" onchange="validateTextFields(this)" style="width: 48%">
                 <input type="text" maxlength="25" name="approved_by" placeholder="Approved by" value="<?= isset($row['Approved_by']) ? htmlspecialchars($row['Approved_by']) : ''; ?>" onchange="validateTextFields(this)" style="width: 48%">
-                <input type="text" maxlength="25" name="edited_by" placeholder="Edited by" value="<?= isset($row['Edited_by']) ? htmlspecialchars($row['Edited_by']) : ''; ?>" onchange="validateTextFields(this)" style="width: 48%">
             </div>
             <div class="footer">
                 <input type="submit" name="save" class="save-btn" value="Save">

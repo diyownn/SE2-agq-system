@@ -10,12 +10,12 @@ $company = isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : '';
 $documentType = "Manifesto";
 
 if ($dept) {
-    $stmt = $conn->prepare("SELECT RefNum, DocType, Document_picture 
+    $stmt = $conn->prepare("SELECT RefNum, DocType, Document_picture, Edited_by, EditDate 
                             FROM tbl_document 
                             WHERE RefNum = ? AND DocType = ? AND Department = ? AND Company_name = ?");
     $stmt->bind_param("ssss", $documentID, $documentType, $dept, $company);
 } else {
-    $stmt = $conn->prepare("SELECT RefNum, DocType, Document_picture 
+    $stmt = $conn->prepare("SELECT RefNum, DocType, Document_picture, Edited_by, EditDate 
                             FROM tbl_document 
                             WHERE RefNum = ? AND DocType = ? AND Company_name = ?");
     $stmt->bind_param("sss", $documentID, $documentType, $company);
@@ -79,13 +79,17 @@ $conn->close();
 
                 <p class="text-center"><strong>Document ID:</strong> <?= htmlspecialchars($row['RefNum']); ?></p>
                 <p class="text-center"><strong>Document Type:</strong> <?= htmlspecialchars($row['DocType']); ?></p>
-
+                
                 <form id="deleteForm" action="ARCHIVE_HANDLE.php?action=archive&refnum" method="POST">
                     <input type="hidden" name="refnum" value="<?= htmlspecialchars($row['RefNum']); ?>">
                     <img src="<?= htmlspecialchars($imageSrc); ?>" class="d-block mx-auto" id="imgholder"
                         alt="Document Image" style="width: 335px; height: 350px">
+
+                    <p class="text-center" style="margin-top: 5%;"><strong>Created by:</strong> <?= htmlspecialchars($row['Edited_by']); ?></p>
+                    <p class="text-center"><strong>Date:</strong> <?= htmlspecialchars(date("F d, Y h:i A", strtotime($row['EditDate'])) ?? 'N/A'); ?></p>
+
                     <div class="d-flex justify-content-center">
-                        <button type="button" id="button1" style="margin-top: 12%; margin-bottom: 0%;"
+                        <button type="button" id="button1" style="margin-top: 6%; margin-bottom: 0%;"
                             onclick="confirmDelete('<?= htmlspecialchars($row['RefNum']); ?>')">
                             Delete
                         </button>

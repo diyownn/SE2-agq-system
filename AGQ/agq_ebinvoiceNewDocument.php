@@ -20,7 +20,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $docs = isset($_SESSION['DocType']) ? $_SESSION['DocType'] : '';
         date_default_timezone_set('Asia/Manila');
         updateRecord($conn, $_POST, [
-           "editDate" => date("Y-m-d H:i:s"),
+            "editDate" => date("Y-m-d H:i:s"),
             "companyName" => $_SESSION['Company_name'],
             "department" => $_SESSION['department']
         ]);
@@ -29,9 +29,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
-
 $refNum = isset($_GET['refNum']) && !empty($_GET['refNum']) ? $_GET['refNum'] : "";
-
 
 if (!empty($refNum)) {
     $sql = "SELECT * FROM tbl_expbrk WHERE RefNum LIKE ?";
@@ -60,14 +58,16 @@ function updateRecord($conn, $data, $sessionData)
 {
     $name = isset($_SESSION['name']) ? $_SESSION['name'] : 'no name';
     $docs = isset($_SESSION['DocType']) ? $_SESSION['DocType'] : '';
+    $refNum = isset($_GET['refNum']) && !empty($_GET['refNum']) ? $_GET['refNum'] : "";
+
     $sql = "UPDATE tbl_expbrk SET 
         `To:` = ?, 
         `Address` = ?, 
         Tin = ?, 
-        Attention = ?, 
-        `Date` = ?, 
+        Attention = ?,  
         Vessel = ?, 
         ETA = ?, 
+        RefNum = ?,
         DestinationOrigin = ?, 
         ER = ?, 
         BHNum = ?, 
@@ -95,14 +95,14 @@ function updateRecord($conn, $data, $sessionData)
     $stmt = $conn->prepare($sql);
 
     $stmt->bind_param(
-        "sssssssssssssssisiiiiissssssss",
+        "sssssssssssssssdsdddddssssssss",
         $data['to'],
         $data['address'],
         $data['tin'],
         $data['attention'],
-        $data['date'],
         $data['vessel'],
         $data['eta'],
+        $data['refNum'],
         $data['destinationOrigin'],
         $data['er'],
         $data['bhNum'],
@@ -125,7 +125,7 @@ function updateRecord($conn, $data, $sessionData)
         $docs,
         $sessionData['companyName'],
         $sessionData['department'],
-        $data['refNum']
+        $refNum
     );
 
     if ($stmt->execute()) {
@@ -173,7 +173,9 @@ function insertRecord($conn)
     $docType = isset($_SESSION['DocType']) ? $_SESSION['DocType'] : null;
     $department = isset($_SESSION['department']) ? $_SESSION['department'] : null;
     $companyName = isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : null;
+    
     date_default_timezone_set('Asia/Manila');
+    $createDate = date('Y-m-d');
     $editDate = date('Y-m-d H:i:s');
 
     // Check if RefNum already exists
@@ -212,12 +214,12 @@ function insertRecord($conn)
 
     $stmt = $conn->prepare($sql);
     $stmt->bind_param(
-        "ssssssssssssssssisiiiiisssssss",
+        "ssssssssssssssssdsdddddsssssss",
         $_POST['to'],
         $_POST['address'],
         $_POST['tin'],
         $_POST['attention'],
-        $_POST['date'],
+        $createDate,
         $_POST['vessel'],
         $_POST['eta'],
         $_POST['refNum'],
@@ -350,8 +352,9 @@ function insertRecord($conn)
                     const inputName = charge.toLowerCase().replace(/\s+/g, '').replace('/', '');
                     row.innerHTML = `
                         <input type="text" value="${charge}" readonly>
-                        <input type="number" name="${inputName}" placeholder="Enter amount" onchange ="validateChargeAmount(this)">
+                        <input type="number" name="${inputName}" step="0.01" placeholder="Enter amount" onchange="validateChargeAmount(this)">
                     `;
+
                 }
 
                 chargesTable.appendChild(row);
@@ -378,9 +381,10 @@ function insertRecord($conn)
 
             newRow.innerHTML = `
                 <input type="text" value="${selectedCharge}" readonly>
-                <input type="number" name="${inputName}" placeholder="Enter amount" onchange="validateChargeInput(this)">
-                <button onclick="removeCharge(this)">Remove</button>
+                <input type="number" name="${inputName}" step="0.01" placeholder="Enter amount" onchange="validateChargeInput(this)">
+                <button type="button" onclick="removeCharge(this)">Remove</button>
             `;
+
 
             chargesTable.appendChild(newRow);
 
@@ -393,46 +397,37 @@ function insertRecord($conn)
         }
 
         function validateChargeInput(inputElement) {
-            const maxAmount = 16500000; // Set a max allowable amount
             const value = parseFloat(inputElement.value) || 0;
+            const maxAmount = 16500000;
 
+            // Check for maximum allowed amount
             if (value > maxAmount) {
                 inputElement.setCustomValidity("Value cannot exceed 16,500,000");
+            } else if (!/^\d+(\.\d{1,2})?$/.test(inputElement.value)) {
+                // Regex ensures value is a number with up to 2 decimal places
+                inputElement.setCustomValidity("Please enter a valid amount (up to 2 decimal places)");
             } else {
-                inputElement.setCustomValidity(""); // Reset validation
+                inputElement.setCustomValidity(""); // Clear validation
             }
 
-            inputElement.reportValidity(); // Show validation message
-
-            if (!inputElement.checkValidity()) {
-                inputElement.preventDefault(); // Prevent form submission if invalid
-            }
-
-            inputElement.addEventListener("input", function() {
-                inputElement.setCustomValidity(""); // Clear error when user types
-            });
+            inputElement.reportValidity();
         }
 
         function validateChargeAmount(chargeElement) {
             const maxAmount = 16500000;
-            let isValid = true;
-
             const value = parseFloat(chargeElement.value) || 0;
+            let isValid = true; // Track overall validity
+
             if (value > maxAmount) {
                 chargeElement.setCustomValidity("Value cannot exceed 16,500,000");
+            } else if (!/^\d+(\.\d{1,2})?$/.test(chargeElement.value)) {
+                // Regex ensures value is a number with up to 2 decimal places
+                chargeElement.setCustomValidity("Please enter a valid amount (up to 2 decimal places)");
             } else {
                 chargeElement.setCustomValidity(""); // Reset validation
             }
 
             chargeElement.reportValidity(); // Show validation message
-
-            if (!chargeElement.checkValidity()) {
-                event.preventDefault(); // Prevent form submission if invalid
-            }
-
-            chargeElement.addEventListener("input", function() {
-                chargeElement.setCustomValidity(""); // Clear error when user types
-            });
 
             return isValid;
         }
@@ -577,6 +572,13 @@ function insertRecord($conn)
             });
 
             document.getElementById("total").value = total.toFixed(2);
+
+            Swal.fire({
+                title: 'Total Calculated',
+                text: `The total amount is ${total.toFixed(2)}`,
+                icon: 'info',
+                confirmButtonText: 'OK'
+            });
         }
 
         function redirection(refnum) {
@@ -627,9 +629,6 @@ function insertRecord($conn)
         <form method="POST" onsubmit="return validateForm(event);">
             <div class="section">
                 <input type="text" maxlength="50" name="to" placeholder="To" value="<?= isset($row['To:']) ? htmlspecialchars($row['To:']) : ''; ?>" onchange="validateTextFields(this)" style="width: 70%">
-                <input type="date" name="date" value="<?= isset($row['Date']) ? $row['Date'] : ''; ?>" onchange="validateDateFields(this)" style="width: 28%">
-            </div>
-            <div class="section">
                 <input type="text" maxlength="100" name="address" placeholder="Address" value="<?= isset($row['Address']) ? htmlspecialchars($row['Address']) : ''; ?>" onchange="validateTextFields(this)" style="width: 100%">
             </div>
             <div class="section">
@@ -648,8 +647,6 @@ function insertRecord($conn)
             </div>
             <div class="section">
                 <input type="text" maxlength="30" name="natureOfGoods" placeholder="Nature of Goods" value="<?= isset($row['NatureOfGoods']) ? htmlspecialchars($row['NatureOfGoods']) : ''; ?>" onchange="validateTextFields(this)" style="width: 100%">
-            </div>
-            <div class="section">
                 <input type="text" maxlength="100" name="packages" placeholder="Packages" value="<?= isset($row['Packages']) ? htmlspecialchars($row['Packages']) : ''; ?>" onchange="validateTextFields(this)" style="width: 32%">
                 <input type="text" maxlength="20" name="weight" placeholder="Weight/Measurement" value="<?= isset($row['Weight']) ? htmlspecialchars($row['Weight']) : ''; ?>" onchange="validateTextFields(this)" style="width: 32%">
                 <input type="text" maxlength="20" name="volume" placeholder="Volume" value="<?= isset($row['Volume']) ? htmlspecialchars($row['Volume']) : ''; ?>" onchange="validateTextFields(this)" style="width: 32%">
