@@ -86,70 +86,56 @@
 
         $email = $_POST['email'];
         $pass = $_POST['password'];
+        //$hashedPassword = password_hash($pass, PASSWORD_BCRYPT);
 
-        if ($_SESSION['login_attempts'] >= 5) {
-            $_SESSION['lockout_start'] = time();
-            echo "<script>
-                    Swal.fire({
-                        position: 'center',
-                        icon: 'error',
-                        title: 'Account Locked',
-                        text: 'Due to numerous failed attempts, you have been locked out for 5 minutes.',
-                        showConfirmButton: false,
-                        timer: 5000
-                    }).then(() => {
-                        disableInputField();
-                    });
-                  </script>";
-        } else {
-            $loginVerify = "SELECT * FROM tbl_user WHERE Email = '$email' AND Password = '$pass'";
-            $queryVerify = $conn->query($loginVerify);
+        $loginVerify = "SELECT * FROM tbl_user WHERE Email = '$email'";
+        $queryVerify = $conn->query($loginVerify);
 
-            if ($queryVerify->num_rows > 0) {
+        if ($queryVerify->num_rows > 0) {
+            $row = $queryVerify->fetch_assoc();
+            $storedHashedPassword = $row['Password']; // Retrieve hashed password
 
-                $row = $queryVerify->fetch_assoc();
+            if (password_verify($pass, $storedHashedPassword)) {
+                // Password is correct
+                $defPass = isset($_SESSION['defPass']) ? $_SESSION['defPass'] : '';
+
                 $role = $row['Department'];
                 $pword = $row['Password'];
+                $name = $row['Name'];
 
                 $_SESSION['department'] = $role;
+                $_SESSION['name'] = $name;
 
-                // Reset login attempts counter on successful login
-                $_SESSION['login_attempts'] = 0;
-                $_SESSION['lockout_start'] = 0; // Reset lockout start time
+                $_SESSION['login_attempts'] = 0; // Reset login attempts
+                $_SESSION['lockout_start'] = 0; // Reset lockout time
 
-                
-                if ($pword == "AGQ@2006") {
+                if (password_verify("AGQ@2006", $storedHashedPassword)) {
                     $otp = rand(100000, 999999);
-
-                    $otpQuery = "UPDATE tbl_user SET Otp = '$otp' WHERE Email = '$email' AND Password = '$pass'";
+                
+                    $otpQuery = "UPDATE tbl_user SET Otp = '$otp' WHERE Email = '$email'";
                     $conn->query($otpQuery);
-
+                
                     $_SESSION['email'] = $email;
                     emailVerification($email, $otp);
-                }else{
+                } else {
                     $_SESSION['department'] = $role;
                     header("location: agq_dashCatcher.php");
                 }
-
-
             } else {
                 $_SESSION['login_attempts']++;
                 $_SESSION['last_attempt_time'] = time();
 
-    ?>
-                <script>
-                    Swal.fire({
-                        position: "center",
-                        icon: "error",
-                        title: "Invalid Log In",
-                        text: "Account does not Exist or Email and Password does not match.",
-                        showConfirmButton: false,
-                        timer: 5000
-                    });
-                </script>
-    <?php
+                echo "<script>
+                        Swal.fire({
+                            position: 'center',
+                            icon: 'error',
+                            title: 'Invalid Log In',
+                            text: 'Account does not Exist or Email and Password does not match.',
+                            showConfirmButton: false,
+                            timer: 5000
+                        });
+                    </script>";
             }
-
 
             $conn->close();
         }

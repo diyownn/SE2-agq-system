@@ -78,8 +78,9 @@
     (isset($_POST['rePword']) && $_POST['rePword'] != NULL)) {
 
         $finalPass = $_POST['rePword'];
+        $hashedFinal = password_hash($finalPass, PASSWORD_BCRYPT);
 
-        $reset_pass = "Update tbl_user set Password = '".$finalPass."' where Email = '".$email."'";
+        $reset_pass = "Update tbl_user set Password = '".$hashedFinal."' where Email = '".$email."'";
         $conn->query($reset_pass);
 
         ?>

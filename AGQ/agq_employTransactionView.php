@@ -100,7 +100,7 @@ if ($result) {
 
 <body style="background-image: url('otvbg.png'); background-repeat: no-repeat; background-size: cover; background-position: center; background-attachment: fixed;">
 
-<div class="top-container">
+    <div class="top-container">
         <div class="dept-container">
             <div class="header-container">
                 <div class="dept-label">
@@ -175,6 +175,7 @@ if ($result) {
 
                                         <button class="btn btn-sm action-btn edit-btn" id="edit-btn" title="Edit"
                                             onclick="redirectToDocument2('<?php echo htmlspecialchars($transaction['RefNum']); ?>', '<?php echo $normalizedDocType; ?>')">
+
                                             <i class="bi bi-pencil"></i>
                                         </button>
                                         <button class="btn btn-sm action-btn archive-btn" id="archive-btn" title="Archive"
@@ -213,22 +214,29 @@ if ($result) {
         }
 
         function updateCheckButtons() {
-            document.querySelectorAll('btn btn-sm action-btn check-btn').forEach(button => {
+            document.querySelectorAll('check-btn').forEach(button => { // Fixed querySelectorAll
                 let refNum = button.id.replace('check-btn-', '');
+
+                console.log(`Fetching approval status for RefNum: ${refNum}`); // Debugging output
+
                 fetch(`APPROVAL_STATUS.php?refNum=${refNum}`)
                     .then(response => response.json())
                     .then(data => {
+                        console.log(`Response for RefNum ${refNum}:`, data); // Debugging output
+
                         if (data.isApproved == 1) {
                             button.style.display = "block";
+                            console.log(`Check button for RefNum ${refNum} is now visible.`);
                         } else {
                             button.style.display = "none";
+                            console.log(`Check button for RefNum ${refNum} is hidden.`);
                         }
                     })
-                    .catch(error => console.error('Error:', error));
+                    .catch(error => console.error(`Error fetching approval status for RefNum ${refNum}:`, error));
             });
         }
 
-       
+
         document.addEventListener("DOMContentLoaded", updateCheckButtons);
 
         function archiveDocument(refnum) {
@@ -275,7 +283,7 @@ if ($result) {
             if (!refnum || !doctype) {
                 return;
             } else {
-                window.location.href = "agq_documentCatcher.php?refnum=" + encodeURIComponent(refnum) + '&doctype=' + encodeURIComponent(doctype);
+                window.location.href = "agq_documentCatcher.php?refNum=" + encodeURIComponent(refnum) + '&doctype=' + encodeURIComponent(doctype);
             }
         }
 
@@ -289,7 +297,7 @@ if ($result) {
                     url = "agq_soaCatcher.php?refNum=" + encodeURIComponent(refnum);
                     break;
                 default:
-                    url = "agq_manifestoView.php?refnum=" + encodeURIComponent(refnum);
+                    url = "agq_manifestoView.php?refNum=" + encodeURIComponent(refnum);
                     break;
             }
             window.location.href = url;
@@ -322,7 +330,7 @@ if ($result) {
 
             // Function to handle search input changes
             function handleSearchInputChange() {
-                let currentValue = searchInput.value.trim();
+                let currentValue = searchInput.value.trim().toLowerCase();
 
                 // If value was something before and now it's empty, reload the page
                 if (previousSearchValue !== "" && currentValue === "") {
@@ -337,11 +345,13 @@ if ($result) {
                     dropdown.style.display = "none";
                     return;
                 }
-
+                console.log(currentValue);
                 // Dropdown functionality
                 fetch("FETCH_Transactions.php?search=" + encodeURIComponent(currentValue))
                     .then(response => response.json())
                     .then(data => {
+
+                        console.log(currentValue);
                         dropdown.innerHTML = "";
 
                         // Identify the correct department key dynamically
@@ -480,13 +490,13 @@ if ($result) {
                             let actions = document.createElement("div");
                             actions.classList.add("transaction-actions");
 
-                            
+
                             let checkBtn = document.createElement("button");
                             checkBtn.classList.add("btn", "btn-sm", "action-btn", "check-btn");
                             checkBtn.id = `check-btn-<?php echo htmlspecialchars($transaction['RefNum']); ?>`;
                             checkBtn.title = "Complete";
                             checkBtn.innerHTML = '<i class="bi bi-check2"></i>';
-                            checkBtn.style.display = "none"; 
+                            checkBtn.style.display = "none";
 
                             let editBtn = document.createElement("button");
                             editBtn.classList.add("btn", "btn-sm", "action-btn", "edit-btn");
@@ -583,6 +593,14 @@ if ($result) {
                                     records = [records];
                                 }
 
+                                // let filteredRecords = records.filter(item => item.ArchivedStatus !== "Archived");
+                                // if (hasArchivedRecords) {
+                                //     console.log("There are archived records.");
+                                // } else {
+                                //     console.log("No archived records found.");
+                                // }
+
+
                                 if (!structuredTransactions[department][normalizedDocType]) {
                                     structuredTransactions[department][normalizedDocType] = [];
                                 }
@@ -590,6 +608,8 @@ if ($result) {
                                 records.forEach(item => {
                                     structuredTransactions[department][normalizedDocType].push(item.RefNum);
                                 });
+
+                                updateCheckButtons();
                             });
                         });
 
@@ -604,6 +624,7 @@ if ($result) {
                                 <button class="btn btn-sm return-btn" onclick="clearSearch()">Return to Transaction View</button>
                             </div>`;
                     });
+                updateCheckButtons();
             }
 
             // Add event listeners for search functionality

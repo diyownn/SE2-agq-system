@@ -3,19 +3,19 @@ require_once "db_agq.php"; // Ensure this file contains a valid $conn connection
 
 session_start();
 
-$documentID = isset($_GET['refnum']) ? $_GET['refnum'] : null;
+$documentID = isset($_GET['refNum']) ? $_GET['refNum'] : null;
 $role = isset($_SESSION['department']) ? $_SESSION['department'] : '';
 $dept = isset($_SESSION['SelectedDepartment']) ? $_SESSION['SelectedDepartment'] : '';
 $company = isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : '';
 $documentType = "Manifesto";
 
 if ($dept) {
-    $stmt = $conn->prepare("SELECT RefNum, DocType, Document_picture 
+    $stmt = $conn->prepare("SELECT RefNum, DocType, Document_picture, Edited_by, EditDate 
                             FROM tbl_document 
                             WHERE RefNum = ? AND DocType = ? AND Department = ? AND Company_name = ?");
     $stmt->bind_param("ssss", $documentID, $documentType, $dept, $company);
 } else {
-    $stmt = $conn->prepare("SELECT RefNum, DocType, Document_picture 
+    $stmt = $conn->prepare("SELECT RefNum, DocType, Document_picture, Edited_by, EditDate 
                             FROM tbl_document 
                             WHERE RefNum = ? AND DocType = ? AND Company_name = ?");
     $stmt->bind_param("sss", $documentID, $documentType, $company);
@@ -34,6 +34,19 @@ if ($result->num_rows > 0) {
 } else {
     $imageSrc = "images/default-placeholder.png";
     $row = ['RefNum' => '', 'DocType' => 'Not Found'];
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_document'])) {
+    $refnum = $_POST['refNum'];
+
+    $stmt = $conn->prepare("DELETE FROM tbl_document WHERE RefNum = ?");
+    $success = $stmt->execute([$refnum]);
+
+    echo json_encode([
+        'success' => $success,
+        'message' => $success ? "Document deleted successfully." : "Failed to delete document."
+    ]);
+    exit;
 }
 
 $stmt->close();
@@ -66,13 +79,17 @@ $conn->close();
 
                 <p class="text-center"><strong>Document ID:</strong> <?= htmlspecialchars($row['RefNum']); ?></p>
                 <p class="text-center"><strong>Document Type:</strong> <?= htmlspecialchars($row['DocType']); ?></p>
-
+                
                 <form id="deleteForm" action="ARCHIVE_HANDLE.php?action=archive&refnum" method="POST">
                     <input type="hidden" name="refnum" value="<?= htmlspecialchars($row['RefNum']); ?>">
                     <img src="<?= htmlspecialchars($imageSrc); ?>" class="d-block mx-auto" id="imgholder"
                         alt="Document Image" style="width: 335px; height: 350px">
+
+                    <p class="text-center" style="margin-top: 5%;"><strong>Created by:</strong> <?= htmlspecialchars($row['Edited_by']); ?></p>
+                    <p class="text-center"><strong>Date:</strong> <?= htmlspecialchars(date("F d, Y h:i A", strtotime($row['EditDate'])) ?? 'N/A'); ?></p>
+
                     <div class="d-flex justify-content-center">
-                        <button type="button" id="button1" style="margin-top: 12%; margin-bottom: 0%;"
+                        <button type="button" id="button1" style="margin-top: 6%; margin-bottom: 0%;"
                             onclick="confirmDelete('<?= htmlspecialchars($row['RefNum']); ?>')">
                             Delete
                         </button>
@@ -86,9 +103,6 @@ $conn->close();
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-
-    
-
         function confirmDelete(refnum) {
             Swal.fire({
                 title: 'Are you sure?',
@@ -97,13 +111,35 @@ $conn->close();
                 showCancelButton: true,
                 confirmButtonColor: '#d33',
                 cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Yes, archive it!'
+                confirmButtonText: 'Yes, delete it!'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    archiveDocument(refnum);
+                    fetch('', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded'
+                            },
+                            body: `delete_document=true&refNum=${refnum}`
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                Swal.fire('Deleted!', data.message, 'success').then(() => {
+                                    window.location.href="agq_transactionCatcher.php";
+                                });
+                            } else {
+                                Swal.fire('Error!', data.message, 'error');
+                            }
+                        })
+                        .catch(error => {
+                            Swal.fire('Error!', 'Something went wrong.', 'error');
+                        });
                 }
             });
+
+           
         }
+
 
         function archiveDocument(refnum) {
             fetch("ARCHIVE_HANDLE.php?action=delete", {

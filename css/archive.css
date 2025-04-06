@@ -30,6 +30,10 @@ body {
   width: 100%;
 }
 
+.searchcont{
+  width: 100%;
+}
+
 .dept-label {
   background-color: rgb(144, 174, 94);
   color: white;

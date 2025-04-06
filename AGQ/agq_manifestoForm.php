@@ -2,13 +2,13 @@
 require_once "db_agq.php";
 session_start();
 
-$refNum = $_GET['refnum'] ?? null;
+$refNum = $_GET['refNum'] ?? null;
 $editedBy = $_GET['editedby'] ?? '';
 $docType = "Manifesto";
 $department = $_SESSION['department'] ?? '';
 $companyName = $_SESSION['Company_name'] ?? '';
 date_default_timezone_set('Asia/Manila');
-$editDate = date('Y-m-d');
+$editDate = date('Y-m-d H:i:s');
 
 $imageSrc = "";
 
@@ -33,23 +33,27 @@ if ($refNum) {
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $refNum = random_int(1000000000, 9999999999);
-    $editedBy = trim($_POST['editedby'] ?? '');
+    $name = isset($_SESSION['name']) ? $_SESSION['name'] : 'no name';
+
+    date_default_timezone_set('Asia/Manila');
+    $editDate = date('Y-m-d H:i:s');
+
     $hasError = false;
 
     // Backend validation for security
-    if (empty($editedBy)) {
-        echo '<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>';
-        echo '<script>
-            document.addEventListener("DOMContentLoaded", function() {
-                Swal.fire({
-                    icon: "error",
-                    title: "Missing Input",
-                    text: "Please enter the edited by field."
-                });
-            });
-          </script>';
-        $hasError = true;
-    }
+    // if (empty($name)) {
+    //     echo '<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>';
+    //     echo '<script>
+    //         document.addEventListener("DOMContentLoaded", function() {
+    //             Swal.fire({
+    //                 icon: "error",
+    //                 title: "Missing Input",
+    //                 text: "Please enter the edited by field."
+    //             });
+    //         });
+    //       </script>';
+    //     $hasError = true;
+    // }
 
     if (!isset($_FILES['manPic']) || $_FILES['manPic']['error'] !== 0) {
         echo '<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>';
@@ -114,7 +118,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         die("Preparation failed: " . $conn->error);
     }
 
-    $stmt->bind_param("sssssss", $refNum, $docType, $targetFilePath, $editedBy, $editDate, $companyName, $department);
+    $stmt->bind_param("sssssss", $refNum, $docType, $targetFilePath, $name, $editDate, $companyName, $department);
 
     if ($stmt->execute()) {
         echo '<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>';
@@ -126,7 +130,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     timer: 1500, 
                     showConfirmButton: false
                 }).then(() => {
-                    window.location.href = "agq_manifestoView.php?refnum=' . htmlspecialchars($refNum) . '";
+                    window.location.href = "agq_manifestoView.php?refNum=' . htmlspecialchars($refNum) . '";
                 });
             });
           </script>';
@@ -171,13 +175,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <div class="col-sm-offset-4 col-sm-4" id="border1">
                 <p id="title" class="text-center" style="text-decoration: none; margin-top:0%">MANIFESTO</p>
 
-                <form action="agq_manifestoForm.php" method="POST" class="form-content" enctype="multipart/form-data" onsubmit="validate_form()">
+                <form action="agq_manifestoForm.php" method="POST" class="form-content" enctype="multipart/form-data" onsubmit="validate_manImg()">
                     <img src="<?= htmlspecialchars($imageSrc); ?>" class="d-block mx-auto" id="imgholder"
                         alt="Document Image" style="width: 335px; height: 350px; display: <?= empty($imageSrc) ? 'none' : 'block' ?>;">
-                    <input type="text" name="editedby" id="input3" class="form-control" placeholder="Edited by" onchange="validate_editName()">
-
-                    <div id="edit-error"></div>
-
 
                     <div class="d-flex justify-content-center">
                         <label class="file-upload d-flex justify-content-center">
@@ -209,25 +209,55 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 
     <script>
+        // function redirection(refnum) {
+        //     if (!refnum || refnum === 'null' || refnum.trim() === '') {
+        //         window.location.href = "agq_chooseDocument.php";
+        //     } else {
+        //         window.location.href = "agq_transactionCatcher.php";
+        //     }
+        // }
+
         function redirection(refnum) {
-            if (!refnum || refnum === 'null' || refnum.trim() === '') {
-                window.location.href = "agq_chooseDocument.php";
+            if (!refnum || refnum === "") {
+                // Using SweetAlert2 for navigation confirmation
+                Swal.fire({
+                    title: 'Leave this page?',
+                    text: "Any unsaved changes will be lost.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, leave page',
+                    cancelButtonText: 'Stay here'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = "agq_choosedocument.php";
+                    }
+                });
             } else {
-                window.location.href = "agq_transactionCatcher.php";
+                // Using SweetAlert2 for navigation confirmation
+                Swal.fire({
+                    title: 'Leave this page?',
+                    text: "Any unsaved changes will be lost.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, leave page',
+                    cancelButtonText: 'Stay here'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = "agq_transactionCatcher.php";
+                    }
+                });
             }
+            return false; // Prevent default link behavior
         }
 
         function previewImage(event) {
             var imgDisplay = document.getElementById("imgholder");
             imgDisplay.src = URL.createObjectURL(event.target.files[0]);
             imgDisplay.style.display = "block"; // Show the image
-        }
-
-        function validate_form() {
-            var val_cimg = validate_manImg();
-            var val_cname = validate_editName();
-
-            return val_cimg && val_cname;
         }
 
         function validate_manImg() {
@@ -278,40 +308,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             fileInput.addEventListener("input", function() {
                 fileInput.setCustomValidity(""); // Clear error when user types
             });
-            return isValid;
-
-        }
-
-
-        function validate_editName() {
-            var edit = document.getElementById("input3");
-            const allowedSymbols = /^[a-zA-Z0-9!.@$%^&()_+\-:/|,~ \r\n]*$/; // Allow letters, numbers, symbols, and line breaks
-            var nameregex = /^.{3,25}$/; // Maximum character limit
-            let isValid = true; // Track overall validity
-
-            //var comp_error = document.getElementById("name-error");
-
-            if (!edit.value.trim()) {
-                edit.setCustomValidity("Please enter the company name");
-            } else if (!allowedSymbols.test(edit.value)) {
-                edit.setCustomValidity("Only letters, numbers, and these symbols are allowed: ! @ $ % ^ & ( ) _ + / - : | , ~");
-            } else if (!nameregex.test(edit.value)) {
-                edit.setCustomValidity("Name must be 3-25 characters");
-
-            } else {
-                edit.setCustomValidity(""); // Reset validation
-            }
-
-            edit.reportValidity(); // Show validation message
-
-            if (!edit.checkValidity()) {
-                event.preventDefault(); // Prevent form submission if invalid
-            }
-
-            edit.addEventListener("input", function() {
-                edit.setCustomValidity(""); // Clear error when user types
-            });
-
             return isValid;
 
         }

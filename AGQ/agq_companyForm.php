@@ -77,12 +77,20 @@
         $stmt->send_long_data(2, $company_picture); // Send BLOB data
 
         if ($stmt->execute()) {
+            echo '<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>';
             echo '<script>
-            Swal.fire({
-                icon: "success",
-                title: "Company Added!",
+            document.addEventListener("DOMContentLoaded", function() {
+                Swal.fire({
+                    icon: "success",
+                    title: "Company Added!",
+                    text: "Returning to Dashboard",
+                    timer: 1500, 
+                    showConfirmButton: false
+                }).then(() => {
+                    window.location.href = "agq_dashCatcher.php";
+                });
             });
-        </script>';
+          </script>';
         } else {
             echo "Error uploading company: " . $stmt->error;
         }
