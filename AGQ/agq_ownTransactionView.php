@@ -134,6 +134,14 @@ if ($result) {
             <button class="search-button" id="search-button">SEARCH</button>
         </div>
 
+        <select id="departmentFilter" class="department-dropdown" onchange="updateDepartment(this.value)">
+            <option value="" disabled <?php echo empty($dept) ? 'selected' : ''; ?>>All Departments</option>
+            <option value="Import Forwarding" <?php echo ($dept == 'Import Forwarding') ? 'selected' : ''; ?>>Import Forwarding</option>
+            <option value="Import Brokerage" <?php echo ($dept == 'Import Brokerage') ? 'selected' : ''; ?>>Import Brokerage</option>
+            <option value="Export Forwarding" <?php echo ($dept == 'Export Forwarding') ? 'selected' : ''; ?>>Export Forwarding</option>
+            <option value="Export Brokerage" <?php echo ($dept == 'Export Brokerage') ? 'selected' : ''; ?>>Export Brokerage</option>
+        </select>
+
         <div class="transactions mt-4">
             <?php
             $docTypes = ['SOA', 'Invoice'];
@@ -189,7 +197,26 @@ if ($result) {
         var company = "<?php echo isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : ''; ?>";
         var dept = "<?php echo isset($_SESSION['SelectedDepartment']) ? $_SESSION['SelectedDepartment'] : ''; ?>";
 
-        // Function to clear search and redirect to the transaction view page
+
+        function updateDepartment(selectedDept) {
+
+            let xhr = new XMLHttpRequest();
+            xhr.open("POST", "STORE_SESSION.php", true);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+
+            xhr.send("selected_department=" + encodeURIComponent(selectedDept));
+
+
+            xhr.onload = function() {
+                if (xhr.status == 200) {
+                    console.log("Department updated to: " + selectedDept);
+
+                    location.reload();
+                }
+            };
+        }
+
         function clearSearch() {
             document.getElementById("search-input").value = "";
             location.reload();
