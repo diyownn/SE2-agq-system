@@ -10,6 +10,30 @@ body {
     flex-direction: column;
 }
 
+/* Add this to your motc.css file */
+.department-dropdown {
+    width: 200px; /* Set a reasonable fixed width */
+    padding: 5px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    background-color: white;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+/* Adjust the table header styling */
+#userTable th {
+    padding: 10px;
+    text-align: left;
+    background-color: #f2f2f2;
+    position: relative;
+}
+
+/* Make the column that contains the dropdown wider */
+#userTable th:nth-child(4) {
+    min-width: 220px; /* Should be slightly larger than dropdown width */
+}
+
 /* Header Section */
 .header {
     display: flex;

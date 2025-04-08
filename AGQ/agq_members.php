@@ -155,7 +155,16 @@ $result = $conn->query($query);
                             <th>User ID</th>
                             <th>Name</th>
                             <th>Email</th>
-                            <th>Department</th>
+                            <th>
+                                <select id="departmentFilter" class="department-dropdown" onchange="updateDepartment(this.value)">
+                                    <option value="">All Departments</option>
+                                    <option value="Import Forwarding">Import Forwarding</option>
+                                    <option value="Import Brokerage">Import Brokerage</option>
+                                    <option value="Export Forwarding">Export Forwarding</option>
+                                    <option value="Export Brokerage">Export Brokerage</option>
+                                    <option value="Admin">Admin</option>
+                                </select>
+                            </th>
                             <th>Delete</th>
                         </tr>
                     </thead>
@@ -299,19 +308,37 @@ $result = $conn->query($query);
                 tableBody.appendChild(row);
             }
 
+            function updateDepartment(department) {
+                // Use the searchUser function but pass the department value
+                fetch("agq_members.php?search=" + encodeURIComponent(department))
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById("userTableBody").innerHTML = data.users.map(user => `
+                <tr data-user-id="${user.UserID}">
+                    <td>${user.UserID}</td>
+                    <td>${user.Name}</td>
+                    <td>${user.Email}</td>
+                    <td>${user.Department}</td>
+                    <td><button class="delete-btn" onclick='deleteUser("${user.UserID}")'>Delete</button></td>
+                </tr>
+            `).join('');
+                    });
+            }
+
+            // Keep the original searchUser function for the search bar
             function searchUser() {
                 fetch("agq_members.php?search=" + encodeURIComponent(document.getElementById('searchInput').value))
                     .then(response => response.json())
                     .then(data => {
                         document.getElementById("userTableBody").innerHTML = data.users.map(user => `
-                        <tr data-user-id="${user.UserID}">
-                            <td>${user.UserID}</td>
-                            <td>${user.Name}</td>
-                            <td>${user.Email}</td>
-                            <td>${user.Department}</td>
-                            <td><button class="delete-btn" onclick='deleteUser("${user.UserID}")'>Delete</button></td>
-                        </tr>
-                    `).join('');
+                <tr data-user-id="${user.UserID}">
+                    <td>${user.UserID}</td>
+                    <td>${user.Name}</td>
+                    <td>${user.Email}</td>
+                    <td>${user.Department}</td>
+                    <td><button class="delete-btn" onclick='deleteUser("${user.UserID}")'>Delete</button></td>
+                </tr>
+            `).join('');
                     });
             }
 
