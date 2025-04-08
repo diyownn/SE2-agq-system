@@ -268,7 +268,7 @@ function insertRecord($conn)
 
     $stmt = $conn->prepare($sql);
     $stmt->bind_param(
-        "ssssssssssssssssddddddddddddddddddddddddddddddddsssssss",
+        "ssssssssssssssssdsddddddddddddddddddddddddddddddddsssssss",
         $_POST['to'],
         $_POST['address'],
         $_POST['tin'],
