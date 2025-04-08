@@ -258,7 +258,7 @@ function insertRecord($conn)
 
     $sql = "INSERT INTO tbl_impbrk (
         `To:`, `Address`, Tin, Attention, `Date`, Vessel, ETA, RefNum, DestinationOrigin, ER, BHNum,
-        NatureOfGoods, Packages, `Weight`, Measurement, PackageType, Others, Notes, OceanFreight95, Forwarder, WarehouseCharge, 
+        NatureOfGoods, Packages, `Weight`, Volume, PackageType, Others, Notes, OceanFreight95, Forwarder, WarehouseCharge, 
         ELodge, Processing, FormsStamps, PhotocopyNotarial, Documentation, DeliveryExpense, Miscellaneous, 
         Door2Door, ArrastreWharf, THC, AISL, GOFast, AdditionalProcessing, ExtraHandlingFee, ClearanceExpenses, 
         HaulingTrucking, AdditionalContainer, Handling, StuffingPlant, IED, EarlyGateIn, TABS, DocsFee, 
