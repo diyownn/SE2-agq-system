@@ -1,6 +1,8 @@
 <?php
 include 'db_agq.php'; // Database connection
 session_start();
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
 
 header("Content-Type: application/json");
 $data = json_decode(file_get_contents("php://input"), true);
@@ -12,6 +14,7 @@ $docType = isset($data['docType']) ? strtoupper(trim($data['docType'])) : null;
 $isApproved = isset($data['isApproved']) ? (int) $data['isApproved'] : null;
 $dept = isset($data['dept']) ? trim($data['dept']) : (isset($_SESSION['SelectedDepartment']) ? trim($_SESSION['SelectedDepartment']) : '');
 error_log("Department received: " . $dept);
+$signature = isset($data['signature']) ? $data['signature'] : null;
 
 // ✅ Check for missing parameters
 $missingParams = [];
@@ -32,6 +35,55 @@ $tables = [
     "Export Forwarding" => "tbl_expfwd",
     "Import Brokerage"  => "tbl_impbrk",
 ];
+
+$approvedBy = null;
+if ($signature) {
+    // Store the base64 signature directly in Approved_by column
+    $approvedBy = $signature;
+}
+
+// ✅ Validate the department and choose the appropriate table
+if (!isset($tables[$dept])) {
+    echo json_encode(["success" => false, "message" => "Invalid department: $dept"]);
+    exit;
+}
+
+$validTable = $tables[$dept];
+
+// ✅ Check if the document exists in the chosen table
+$checkQuery = "SELECT 1 FROM `$validTable` WHERE RefNum = ? AND Company_name = ? LIMIT 1";
+$checkStmt = $conn->prepare($checkQuery);
+
+if (!$checkStmt) {
+    echo json_encode(["success" => false, "message" => "SQL Error: " . $conn->error]);
+    exit;
+}
+
+$checkStmt->bind_param("ss", $refNum, $company);
+$checkStmt->execute();
+$result = $checkStmt->get_result();
+$documentExists = $result->num_rows > 0;
+$checkStmt->close();
+
+// ✅ If no document is found, return an error
+if (!$documentExists) {
+    echo json_encode(["success" => false, "message" => "Document not found in '$validTable'"]);
+    exit;
+}
+
+// ✅ Proceed with updating the 'Approved_by' field with the signature
+$updateQuery = "UPDATE `$validTable` SET Approved_by = ? WHERE RefNum = ? AND Company_name = ?";
+$stmt = $conn->prepare($updateQuery);
+
+if (!$stmt) {
+    echo json_encode(["success" => false, "message" => "SQL Error: " . $conn->error]);
+    exit;
+}
+
+$stmt->bind_param("sss", $approvedBy, $refNum, $company);
+$success = $stmt->execute();
+$stmt->close();
+
 
 // ✅ If docType is 'MANIFESTO', update `tbl_document` instead
 if ($docType === "MANIFESTO") {
