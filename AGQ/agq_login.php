@@ -125,7 +125,7 @@
                     $_SESSION['email'] = $email;
 
                     // Call the email verification function
-                    emailVerification($email, $otp);
+                    emailVerification($email, $otp, $name);
 
                     $otpStmt->close();
                 } else {
