@@ -60,36 +60,39 @@
     </div>
 
 
-<?php
-    session_start(); 
+    <?php
+    session_start();
     require_once "db_agq.php";
     include "agq_mailer.php";
 
+    // Initialize session variables if not set
     if (!isset($_SESSION['login_attempts'])) {
-        $_SESSION['login_attempts'] = 0; 
+        $_SESSION['login_attempts'] = 0;
     }
     if (!isset($_SESSION['last_attempt_time'])) {
-        $_SESSION['last_attempt_time'] = time(); 
+        $_SESSION['last_attempt_time'] = time();
     }
     if (!isset($_SESSION['lockout_start'])) {
         $_SESSION['lockout_start'] = 0;
     }
 
-    if (time() - $_SESSION['last_attempt_time'] > 300) { //Reset in seconds
+    // Reset attempts and lockout start if 300 seconds have passed
+    if (time() - $_SESSION['last_attempt_time'] > 300) {
         $_SESSION['login_attempts'] = 1;
-        $_SESSION['lockout_start'] = 0; // Reset lockout start time
+        $_SESSION['lockout_start'] = 0;
     }
 
     if ((isset($_POST['email']) && $_POST['email'] != NULL) &&
         (isset($_POST['password']) && $_POST['password'] != NULL)
     ) {
-
         $email = $_POST['email'];
         $pass = $_POST['password'];
-        //$hashedPassword = password_hash($pass, PASSWORD_BCRYPT);
 
-        $loginVerify = "SELECT * FROM tbl_user WHERE Email = '$email'";
-        $queryVerify = $conn->query($loginVerify);
+        // Prepare and execute the SELECT query to verify email
+        $stmt = $conn->prepare("SELECT * FROM tbl_user WHERE Email = ?");
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
+        $queryVerify = $stmt->get_result();
 
         if ($queryVerify->num_rows > 0) {
             $row = $queryVerify->fetch_assoc();
@@ -100,28 +103,38 @@
                 $defPass = isset($_SESSION['defPass']) ? $_SESSION['defPass'] : '';
 
                 $role = $row['Department'];
-                $pword = $row['Password'];
                 $name = $row['Name'];
+                
 
+                // Set session variables
                 $_SESSION['department'] = $role;
                 $_SESSION['name'] = $name;
+                
 
                 $_SESSION['login_attempts'] = 0; // Reset login attempts
                 $_SESSION['lockout_start'] = 0; // Reset lockout time
 
                 if (password_verify("AGQ@2006", $storedHashedPassword)) {
                     $otp = rand(100000, 999999);
-                
-                    $otpQuery = "UPDATE tbl_user SET Otp = '$otp' WHERE Email = '$email'";
-                    $conn->query($otpQuery);
-                
+
+                    // Prepare and execute the UPDATE query for OTP
+                    $otpStmt = $conn->prepare("UPDATE tbl_user SET Otp = ? WHERE Email = ?");
+                    $otpStmt->bind_param("is", $otp, $email);
+                    $otpStmt->execute();
+
                     $_SESSION['email'] = $email;
+
+                    // Call the email verification function
                     emailVerification($email, $otp);
+
+                    $otpStmt->close();
                 } else {
                     $_SESSION['department'] = $role;
                     header("location: agq_dashCatcher.php");
+                    exit;
                 }
             } else {
+                // Password is incorrect
                 $_SESSION['login_attempts']++;
                 $_SESSION['last_attempt_time'] = time();
 
@@ -136,12 +149,28 @@
                         });
                     </script>";
             }
-
-            $conn->close();
+        } else {
+            // Email not found
+            echo "<script>
+                    Swal.fire({
+                        position: 'center',
+                        icon: 'error',
+                        title: 'Invalid Log In',
+                        text: 'Account does not Exist or Email and Password does not match.',
+                        showConfirmButton: false,
+                        timer: 5000
+                    });
+                </script>";
         }
+
+        // Close the prepared statement
+        $stmt->close();
     }
 
-    ?>
+    // Close the database connection
+    $conn->close();
+
+?>
 
     <!-- Bootstrap Popper -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
@@ -189,32 +218,6 @@
 
             return isValid; // Return validity status
 
-
-            // if (email.value == '') {
-            //     email.classList.add("is-invalid");
-            //     error_text = "*Please enter your email address";
-            //     email_error.innerHTML = error_text;
-            //     email_error.classList.add("invalid-feedback");
-
-            //     return false;
-            // } else {
-            //     var emailregex = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9_.+-]+$/;
-
-            //     if (!emailregex.test(email.value)) {
-            //         email.classList.add("is-invalid");
-            //         error_text = "*Email should be in the format xxx@xxx";
-            //         email_error.innerHTML = error_text;
-            //         email_error.classList.add("invalid-feedback");
-
-            //         return false;
-            //     }
-
-            //     email.classList.remove("is-invalid");
-            //     email_error.innerHTML = "";
-            //     email_error.classList.remove("invalid-feedback");
-
-            //     return true;
-            // }
         }
 
         function validate_password() {

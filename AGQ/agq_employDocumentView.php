@@ -7,6 +7,33 @@ $refNum = isset($_GET['refNum']) ? $_GET['refNum'] : '';
 $url = isset($_GET['url']) ? $_GET['url'] : '';
 $role = isset($_SESSION['department']) ? $_SESSION['department'] : '';
 $company = isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : '';
+$name = isset($_SESSION['name']) ? $_SESSION['name'] : '';
+
+$stmt = $conn->prepare("SELECT Privilege FROM tbl_user WHERE Name = ?");
+$stmt->bind_param("s", $name);
+$stmt->execute();
+$result = $stmt->get_result();
+
+if ($result->num_rows > 0) {
+    $row = $result->fetch_assoc();
+    $priv = $row['Privilege'];
+    $_SESSION['Priv'] = $priv;
+}
+
+echo $priv;
+
+if ($priv == "Read-Only") {
+    echo "<script>
+            document.addEventListener('DOMContentLoaded', function() {
+                var editBtn = document.getElementById('edit-btn');
+                var dlBtn = document.getElementById('dl-btn');
+                if (editBtn && dlBtn) {
+                    editBtn.disabled = true; // Disable the button
+                    dlBtn.disabled = true; // Disable the button
+                }
+            });
+          </script>";
+}
 
 if (!$url) {
   header("Location: UNAUTHORIZED.php?error=401u");
@@ -1042,10 +1069,10 @@ $record = selectRecords($conn, $role, $refNum);
       <div class="comment-box">
         <textarea id="textbox" maxlength="250" oninput="updateCounter()" readonly><?php echo htmlspecialchars($record['Comment'] ?? 'N/A'); ?></textarea>
         <div class="button-container">
-          <button class="edit-button" onclick="redirectToDocument2('<?php echo htmlspecialchars($refNum); ?>', '<?php echo htmlspecialchars($record['DocType'] ?? ''); ?>')">
+          <button class="edit-button" id="edit-btn" onclick="redirectToDocument2('<?php echo htmlspecialchars($refNum); ?>', '<?php echo htmlspecialchars($record['DocType'] ?? ''); ?>')">
             Edit
           </button>
-          <button class="download-button" onclick="downloadDocument('<?php echo htmlspecialchars($refNum); ?>')">Download</button>
+          <button class="download-button" id="dl-btn" onclick="downloadDocument('<?php echo htmlspecialchars($refNum); ?>')">Download</button>
         </div>
       </div>
     </div>

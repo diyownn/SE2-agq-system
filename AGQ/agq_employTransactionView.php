@@ -5,7 +5,51 @@ session_start();
 $url = isset($_GET['url']);
 $role = isset($_SESSION['department']) ? $_SESSION['department'] : '';
 $company = isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : '';
+$name = isset($_SESSION['name']) ? $_SESSION['name'] : '';
 
+$stmt = $conn->prepare("SELECT Privilege FROM tbl_user WHERE Name = ?");
+$stmt->bind_param("s", $name);
+$stmt->execute();
+$result = $stmt->get_result();
+
+if ($result->num_rows > 0) {
+    $row = $result->fetch_assoc();
+    $priv = $row['Privilege'];
+    $_SESSION['Priv'] = $priv;
+}
+
+echo $priv;
+
+if ($priv == "Read-Only") {
+    echo "<script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Select all edit and archive buttons dynamically
+                var editButtons = document.querySelectorAll('.edit-btn');
+                var archiveButtons = document.querySelectorAll('.archive-btn');
+                
+                // Disable the single create button directly
+                var createBtn = document.getElementById('create-btn');
+
+                // Disable all edit buttons
+                editButtons.forEach(function(button) {
+                    button.disabled = true; // Disable button
+                  
+                });
+
+                // Disable all archive buttons
+                archiveButtons.forEach(function(button) {
+                    button.disabled = true; // Disable button
+                   
+                });
+
+                // Disable the create button directly
+                if (createBtn) {
+                    createBtn.disabled = true; // Disable button
+                  
+                }
+            });
+          </script>";
+}
 
 if (!$role) {
     header("Location: UNAUTHORIZED.php?error=401r");
@@ -129,7 +173,7 @@ if ($result) {
             <button class="search-button" id="search-button">SEARCH</button>
         </div>
         <div>
-            <button class="add-company" onclick="window.location.href='agq_choosedocument.php'">
+            <button class="add-company" id="create-btn" onclick="window.location.href='agq_choosedocument.php'">
                 <span>CREATE</span>
                 <div class="icons">
                     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

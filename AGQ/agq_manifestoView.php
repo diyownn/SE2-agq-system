@@ -8,6 +8,31 @@ $role = isset($_SESSION['department']) ? $_SESSION['department'] : '';
 $dept = isset($_SESSION['SelectedDepartment']) ? $_SESSION['SelectedDepartment'] : '';
 $company = isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : '';
 $documentType = "Manifesto";
+$name = isset($_SESSION['name']) ? $_SESSION['name'] : '';
+
+$stmt = $conn->prepare("SELECT Privilege FROM tbl_user WHERE Name = ?");
+$stmt->bind_param("s", $name);
+$stmt->execute();
+$result = $stmt->get_result();
+
+if ($result->num_rows > 0) {
+    $row = $result->fetch_assoc();
+    $priv = $row['Privilege'];
+    $_SESSION['Priv'] = $priv;
+}
+
+echo $priv;
+
+if ($priv == "Read-Only") {
+    echo "<script>
+            document.addEventListener('DOMContentLoaded', function() {
+                var delBtn = document.getElementById('button1');
+                if (delBtn) {
+                    delBtn.disabled = true; // Disable the button
+                }
+            });
+          </script>";
+}
 
 if ($dept) {
     $stmt = $conn->prepare("SELECT RefNum, DocType, Document_picture, Edited_by, EditDate 

@@ -129,6 +129,14 @@ th {
     font-size: 14px;
 }
 
+.department-dropdown {
+    background-color: white;
+    font-weight: bold;
+    color: black;
+    text-transform: uppercase;
+    font-size: 14px;
+}
+
 td {
     background-color: white;
     height: 25px;
@@ -219,6 +227,19 @@ button {
     cursor: pointer;
     margin-top: 15px;
     border-radius: 5px;
+}
+
+.delete-btn {
+        background-color: #9e6262;
+        color: white;
+        border: none;
+        padding: 10px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        margin-top: 15px;
+        border-radius: 5px;
+    
 }
 
 button:hover {

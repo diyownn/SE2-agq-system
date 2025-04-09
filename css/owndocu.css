@@ -251,3 +251,11 @@ textarea {
         padding-top: 0;
     }
 }
+
+button:disabled {
+    opacity: 0.5; /* Make the button look faded */
+    cursor: not-allowed; /* Change the cursor to indicate it can't be clicked */
+    background-color: #ccc; /* Optionally, change the background color */
+    border: 1px solid #999; /* Adjust border color for a disabled look */
+    color: #666; /* Optionally, adjust text color */
+}
