@@ -114,8 +114,8 @@ if (isset($_GET['priv_id']) && isset($_GET['new_privilege'])) {
         }
 
         $stmt->close();
+        exit;
     }
-    exit;
 }
 
 // Handle deletion
