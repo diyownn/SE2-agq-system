@@ -1049,7 +1049,15 @@ $record = selectRecords($conn, $role, $refNum);
           </tr>
           <tr>
             <td>Approved By</td>
-            <td id="approved-by"><?php echo htmlspecialchars($record['Approved_by'] ?? 'N/A'); ?></td>
+            <td id="approved-by">
+              <?php
+              if (!empty($record['Approved_by'])) {
+                  echo '<img src="' . htmlspecialchars($record['Approved_by']) . '" alt="Signature" style="max-width: 150px; border: 1px solid #ccc;" />';
+              } else {
+                  echo 'N/A';
+              }
+              ?>
+            </td>
           </tr>
         </tbody>
       </table>
