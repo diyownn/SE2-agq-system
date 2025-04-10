@@ -37,14 +37,33 @@ $dept = isset($_SESSION['department']) ? $_SESSION['department'] : '';
 switch ($dept) {
 
     case "Import Forwarding":
+
+        $outputFormat = 'pdf'; // Default to PDF
+
         $templateFile = __DIR__ . '/templates/agq_ImportForwardingTemplate.xls';
-        $spreadsheet = IOFactory::load($templateFile);
 
-        $SOALCL = $spreadsheet->getSheetByName("SOA_LCL");
-        $SOAFULL = $spreadsheet->getSheetByName("SOA_FULL");
-        $INVOICELCL = $spreadsheet->getSheetByName("SI_LCL");
-        $INVOICEFULL = $spreadsheet->getSheetByName("SI_FULL");
+        // Check if Dompdf is available - if not, we'll use Excel
+        if (!class_exists('\Dompdf\Dompdf')) {
+            $outputFormat = 'excel';
+            error_log("Dompdf not available - using Excel format instead");
+        }
 
+        if (!file_exists($templateFile)) {
+            die("Error: Template file not found at: $templateFile");
+        }
+
+        try {
+            $spreadsheet = IOFactory::load($templateFile);
+
+            $SOALCL = $spreadsheet->getSheetByName("SOA_LCL");
+            $SOAFULL = $spreadsheet->getSheetByName("SOA_FULL");
+            $INVOICELCL = $spreadsheet->getSheetByName("SI_LCL");
+            $INVOICEFULL = $spreadsheet->getSheetByName("SI_FULL");
+        } catch (Exception $e) {
+            die("Error loading template: " . $e->getMessage());
+        }
+
+        
         $query = "SELECT *
                 FROM tbl_impfwd 
                 WHERE RefNum LIKE ? AND Department LIKE ?";
@@ -108,14 +127,12 @@ switch ($dept) {
             } else {
                 $preparedByHtml = '<div class="signature-name">&nbsp;</div>';
             }
-
-    
-         }
+        }
 
         // Clean reference number for filenames
         $cleanRefNum = str_replace(['/', '-'], '', $refNum);
 
-       
+
 
         // Create PDF with custom HTML approach using Dompdf
         if (class_exists('\Dompdf\Dompdf')) {
@@ -420,10 +437,7 @@ switch ($dept) {
         </body>
         </html>';
 
-                // Save HTML for debugging
-                $htmlFile = $cleanRefNum . "-temp.html";
-                $htmlPath = __DIR__ . '/' . $htmlFile;
-                file_put_contents($htmlPath, $html);
+
 
                 // Create PDF using Dompdf
                 $dompdf = new \Dompdf\Dompdf([
@@ -944,7 +958,7 @@ switch ($dept) {
                 
                 .signature-table { margin-top: 20px; }
                 .signature-table td { border: 1px solid black; height: 60px; vertical-align: bottom; text-align: center; }
-                .signature-name { border-top: 1px solid black; display: inline-block; width: 80%; }
+                .signature-name { display: inline-block; width: 80%; }
                 
                 .footer { font-size: 8pt; font-style: italic; margin-top: 10px; }
             </style>
@@ -1178,7 +1192,7 @@ switch ($dept) {
                 <td style="height: 60px; vertical-align: center; text-align: center;">
                     
                     <br>
-                    <div style="text-align: left;">DATE: ____________</div>
+                    
                 </td>
             </tr>
         </table>
