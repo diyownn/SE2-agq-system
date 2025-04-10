@@ -212,7 +212,7 @@ function insertRecord($conn)
         `To:`, `Address`, Tin, Attention, `Date`, Vessel, ETA, RefNum, DestinationOrigin, ER, BHNum,
         NatureOfGoods, Packages, `Weight`, Volume, PackageType, Others, Notes, OceanFreight5, LCLCharge,
         DocsFee, Documentation, TurnOverFee, Handling, FCLCharge, Vat12, Total, Prepared_by, Edited_by, EditDate, DocType, Company_name, Department
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
     $stmt = $conn->prepare($sql);
     $stmt->bind_param(
