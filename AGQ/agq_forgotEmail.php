@@ -61,19 +61,20 @@
     if ((isset($_POST['email']) && $_POST['email'] != NULL)) {
         
         $email = $_POST['email'];
+        $_SESSION['email'] = $email;
 
         $emailVerify = "SELECT * FROM tbl_user WHERE Email = '$email'";
         $queryVerify = $conn->query($emailVerify);
 
         if ($queryVerify->num_rows>0) {
+            $row = $queryVerify->fetch_assoc();
             $otp = rand(100000,999999);
+            $name = $row['Name'];
                     
             $otpQuery = "UPDATE tbl_user SET Otp = '$otp' WHERE Email = '$email'";
             $conn->query($otpQuery);
 
-            $_SESSION['email'] = $email;
-
-            emailVerification($email, $otp);
+            emailVerification($email, $otp, $name);
 
         }else {
             ?>

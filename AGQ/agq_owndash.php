@@ -5,6 +5,38 @@ session_start();
 
 $url = isset($_GET['url']);
 $role = isset($_SESSION['department']) ? $_SESSION['department'] : '';
+$name = isset($_SESSION['name']) ? $_SESSION['name'] : '';
+
+$stmt = $conn->prepare("SELECT Privilege FROM tbl_user WHERE Name = ?");
+$stmt->bind_param("s", $name);
+$stmt->execute();
+$result = $stmt->get_result();
+
+if ($result->num_rows > 0) {
+    $row = $result->fetch_assoc();
+    $priv = $row['Privilege'];
+    $_SESSION['Priv'] = $priv;
+}
+
+echo $priv;
+
+if ($priv == "Read-Only") {
+    echo "<script>
+            document.addEventListener('DOMContentLoaded', function() {
+                var addBtn = document.getElementById('add-btn');
+                var link = document.querySelector('#members'); // Select the link
+
+                link.removeAttribute('href'); // Remove the href attribute
+                link.style.cursor = 'not-allowed'; // Optional: Change cursor
+                link.style.color = 'gray'; // Optional: Change cursor
+
+                if (addBtn) {
+                    addBtn.disabled = true; // Disable the button
+                }
+
+            });
+          </script>";
+}
 
 
 if (!$url) {
@@ -27,11 +59,6 @@ if (!isset($_SESSION['department'])) {
     exit();
 }
 
-
-
-
-
-
 if (isset($_SESSION['selected_company'])) {
     $companyName = $_SESSION['selected_company'];
 }
@@ -42,11 +69,6 @@ header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
-
-
-
-
-
 
 if (isset($_GET['logout']) && $_GET['logout'] == 'true') {
     session_unset();
@@ -75,9 +97,6 @@ if (!empty($search_query)) {
 
 
 ?>
-
-
-
 
 <html>
 <link rel="icon" type="image/x-icon" href="../AGQ/images/favicon.ico">
@@ -112,7 +131,7 @@ if (!empty($search_query)) {
                 </div>
                 <div class="nav-link-container">
                     <a href="agq_archive.php">Archive</a>
-                    <a href="agq_members.php">Members</a>
+                    <a href="agq_members.php" id="members">Members</a>
                     <a href="?logout=true">Logout</a>
                 </div>
 
@@ -160,7 +179,7 @@ if (!empty($search_query)) {
                 COMPANIES
             </div>
             <div>
-                <button class="add-company" onclick="window.location.href='agq_companyForm.php'">
+                <button class="add-company" id="add-btn" onclick="window.location.href='agq_companyForm.php'">
                     <span>NEW COMPANY </span>
                     <div class="icon">
                         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

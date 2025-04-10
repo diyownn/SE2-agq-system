@@ -89,6 +89,7 @@
             $queryVerify = $conn->query($otpVerify);
 
         if ($queryVerify->num_rows == 1) {
+            $row = $queryVerify->fetch_assoc();
 
             $_SESSION['otp_attempts'] = 0;
             $_SESSION['otplockout_start'] = 0; // Reset lockout start time
@@ -122,16 +123,36 @@
     } 
 
     if (isset($_POST['resend'])) {
-    
-        $resend_otp = "UPDATE tbl_user SET Otp = NULL WHERE Email = '$email'";
-        $conn->query($resend_otp);
 
-        $otp = rand(100000,999999);
-                    
-        $otpQuery = "UPDATE tbl_user SET Otp = '$otp' WHERE Email = '$email'";
-        $conn->query($otpQuery);
+        $stmt = $conn->prepare("SELECT Name FROM tbl_user WHERE Email = ?");
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
+        $queryVerify = $stmt->get_result();
 
-        emailVerification($email, $otp);
+        if ($queryVerify->num_rows > 0) {
+            $row = $queryVerify->fetch_assoc();
+            $name = $row['Name'];
+        }
+
+        $stmt->close(); // Close the statement
+
+       // Reset the OTP to NULL
+        $stmt = $conn->prepare("UPDATE tbl_user SET Otp = NULL WHERE Email = ?");
+        $stmt->bind_param("s", $email); // Bind the email parameter
+        $stmt->execute();
+        $stmt->close(); // Close the statement
+
+        // Generate a new OTP
+        $otp = rand(100000, 999999);
+
+        // Update the OTP with the newly generated value
+        $stmt = $conn->prepare("UPDATE tbl_user SET Otp = ? WHERE Email = ?");
+        $stmt->bind_param("is", $otp, $email); // Bind the OTP (integer) and email (string) parameters
+        $stmt->execute();
+        $stmt->close(); // Close the statement
+
+        // Send the OTP via email
+        emailVerification($email, $otp, $name);
     }
 
     $conn->close();

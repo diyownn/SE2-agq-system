@@ -1,6 +1,6 @@
 <?php
 
-require_once 'db_agq.php'; // Adjust as needed
+require_once 'db_agq.php'; 
 
 header('Content-Type: application/json');
 session_start();

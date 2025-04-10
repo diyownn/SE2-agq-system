@@ -133,10 +133,10 @@ function updateRecord($conn, $data, $sessionData)
         $data['destinationOrigin'],
         $data['er'],
         $data['bhNum'],
-        $data['natureofGoods'],
+        $data['natureOfGoods'],
         $data['packages'],
         $data['weight'],
-        $data['measurement'],
+        $data['volume'],
         $data['package'],
         $data['others'],
         $data['notes'],
@@ -258,7 +258,7 @@ function insertRecord($conn)
 
     $sql = "INSERT INTO tbl_impbrk (
         `To:`, `Address`, Tin, Attention, `Date`, Vessel, ETA, RefNum, DestinationOrigin, ER, BHNum,
-        NatureOfGoods, Packages, `Weight`, Measurement, PackageType, Others, Notes, OceanFreight95, Forwarder, WarehouseCharge, 
+        NatureOfGoods, Packages, `Weight`, Volume, PackageType, Others, Notes, OceanFreight95, Forwarder, WarehouseCharge, 
         ELodge, Processing, FormsStamps, PhotocopyNotarial, Documentation, DeliveryExpense, Miscellaneous, 
         Door2Door, ArrastreWharf, THC, AISL, GOFast, AdditionalProcessing, ExtraHandlingFee, ClearanceExpenses, 
         HaulingTrucking, AdditionalContainer, Handling, StuffingPlant, IED, EarlyGateIn, TABS, DocsFee, 
@@ -268,7 +268,7 @@ function insertRecord($conn)
 
     $stmt = $conn->prepare($sql);
     $stmt->bind_param(
-        "ssssssssssssssssddddddddddddddddddddddddddddddddsssssss",
+        "ssssssssssssssssdsddddddddddddddddddddddddddddddddsssssss",
         $_POST['to'],
         $_POST['address'],
         $_POST['tin'],
@@ -280,10 +280,10 @@ function insertRecord($conn)
         $_POST['destinationOrigin'],
         $_POST['er'],
         $_POST['bhNum'],
-        $_POST['natureofGoods'],
+        $_POST['natureOfGoods'],
         $_POST['packages'],
         $_POST['weight'],
-        $_POST['measurement'],
+        $_POST['volume'],
         $_POST['package'],
         $_POST['others'],
         $_POST['notes'],
@@ -505,8 +505,11 @@ function insertRecord($conn)
             const value = parseFloat(inputElement.value) || 0;
             const maxAmount = 16500000;
 
-            // Check for maximum allowed amount
-            if (value > maxAmount) {
+            // If the input is empty, no validation is required
+            if (inputElement.value.trim() === "") {
+                inputElement.setCustomValidity(""); // Clear validation
+            } else if (value > maxAmount) {
+                // Check for maximum allowed amount
                 inputElement.setCustomValidity("Value cannot exceed 16,500,000");
             } else if (!/^\d+(\.\d{1,2})?$/.test(inputElement.value)) {
                 // Regex ensures value is a number with up to 2 decimal places
@@ -515,25 +518,29 @@ function insertRecord($conn)
                 inputElement.setCustomValidity(""); // Clear validation
             }
 
-            inputElement.reportValidity();
+            inputElement.reportValidity(); // Show validation message
         }
 
         function validateChargeAmount(chargeElement) {
-            const maxAmount = 16500000;
             const value = parseFloat(chargeElement.value) || 0;
+            const maxAmount = 16500000;
             let isValid = true; // Track overall validity
 
-            if (value > maxAmount) {
+            // If the input is empty, no validation is required
+            if (chargeElement.value.trim() === "") {
+                chargeElement.setCustomValidity(""); // Clear validation
+            } else if (value > maxAmount) {
                 chargeElement.setCustomValidity("Value cannot exceed 16,500,000");
+                isValid = false;
             } else if (!/^\d+(\.\d{1,2})?$/.test(chargeElement.value)) {
                 // Regex ensures value is a number with up to 2 decimal places
                 chargeElement.setCustomValidity("Please enter a valid amount (up to 2 decimal places)");
+                isValid = false;
             } else {
                 chargeElement.setCustomValidity(""); // Reset validation
             }
 
             chargeElement.reportValidity(); // Show validation message
-
             return isValid;
         }
 

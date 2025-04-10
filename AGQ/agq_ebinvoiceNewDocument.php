@@ -400,8 +400,11 @@ function insertRecord($conn)
             const value = parseFloat(inputElement.value) || 0;
             const maxAmount = 16500000;
 
-            // Check for maximum allowed amount
-            if (value > maxAmount) {
+            // If the input is empty, no validation is required
+            if (inputElement.value.trim() === "") {
+                inputElement.setCustomValidity(""); // Clear validation
+            } else if (value > maxAmount) {
+                // Check for maximum allowed amount
                 inputElement.setCustomValidity("Value cannot exceed 16,500,000");
             } else if (!/^\d+(\.\d{1,2})?$/.test(inputElement.value)) {
                 // Regex ensures value is a number with up to 2 decimal places
@@ -410,25 +413,29 @@ function insertRecord($conn)
                 inputElement.setCustomValidity(""); // Clear validation
             }
 
-            inputElement.reportValidity();
+            inputElement.reportValidity(); // Show validation message
         }
 
         function validateChargeAmount(chargeElement) {
-            const maxAmount = 16500000;
             const value = parseFloat(chargeElement.value) || 0;
+            const maxAmount = 16500000;
             let isValid = true; // Track overall validity
 
-            if (value > maxAmount) {
+            // If the input is empty, no validation is required
+            if (chargeElement.value.trim() === "") {
+                chargeElement.setCustomValidity(""); // Clear validation
+            } else if (value > maxAmount) {
                 chargeElement.setCustomValidity("Value cannot exceed 16,500,000");
+                isValid = false;
             } else if (!/^\d+(\.\d{1,2})?$/.test(chargeElement.value)) {
                 // Regex ensures value is a number with up to 2 decimal places
                 chargeElement.setCustomValidity("Please enter a valid amount (up to 2 decimal places)");
+                isValid = false;
             } else {
                 chargeElement.setCustomValidity(""); // Reset validation
             }
 
             chargeElement.reportValidity(); // Show validation message
-
             return isValid;
         }
 

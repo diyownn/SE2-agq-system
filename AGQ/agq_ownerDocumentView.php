@@ -7,6 +7,35 @@ $refNum = isset($_GET['refNum']) ? $_GET['refNum'] : '';
 $url = isset($_GET['url']) ? $_GET['url'] : '';
 $dept = isset($_SESSION['SelectedDepartment']) ? $_SESSION['SelectedDepartment'] : '';
 $company = isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : '';
+$name = isset($_SESSION['name']) ? $_SESSION['name'] : '';
+
+$stmt = $conn->prepare("SELECT Privilege FROM tbl_user WHERE Name = ?");
+$stmt->bind_param("s", $name);
+$stmt->execute();
+$result = $stmt->get_result();
+
+if ($result->num_rows > 0) {
+    $row = $result->fetch_assoc();
+    $priv = $row['Privilege'];
+    $_SESSION['Priv'] = $priv;
+}
+
+echo $priv;
+
+if ($priv == "Read-Only") {
+    echo "<script>
+            document.addEventListener('DOMContentLoaded', function() {
+                var saveBtn = document.getElementById('save-btn');
+                var text = document.getElementById('textbox');
+
+                if (saveBtn, text) {
+                    saveBtn.disabled = true; // Disable the button
+                    text.disabled = true; // Disable the button
+
+                }
+            });
+          </script>";
+}
 
 if (!$url) {
   header("Location: UNAUTHORIZED.php?error=401u");
@@ -1047,7 +1076,15 @@ $record = selectRecords($conn, $dept, $refNum);
           </tr>
           <tr>
             <td>Approved By</td>
-            <td id="approved-by"><?php echo htmlspecialchars($record['Approved_by'] ?? 'N/A'); ?></td>
+            <td id="approved-by">
+              <?php
+              if (!empty($record['Approved_by'])) {
+                  echo '<img src="' . htmlspecialchars($record['Approved_by']) . '" alt="Signature" style="max-width: 150px; border: 1px solid #ccc;" />';
+              } else {
+                  echo 'N/A';
+              }
+              ?>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -1065,7 +1102,7 @@ $record = selectRecords($conn, $dept, $refNum);
           <textarea id="textbox" id="comments" maxlength="250" onchange="validateCommentField(this)" oninput="updateCounter()"> <?php echo htmlspecialchars($record['Comment'] ?? 'N/A'); ?></textarea>
           <div class="counter" id="counter">0/250</div>
           <div class="button-container" id="save-button">
-            <button class="save-button" onclick="saveComment('<?php echo htmlspecialchars($refNum, ENT_QUOTES); ?>')">Save</button>
+            <button class="save-button" id="save-btn" onclick="saveComment('<?php echo htmlspecialchars($refNum, ENT_QUOTES); ?>')">Save</button>
           </div>
         </div>
       </div>

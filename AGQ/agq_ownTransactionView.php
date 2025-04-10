@@ -98,6 +98,8 @@ if ($result) {
     <link rel="icon" type="image/x-icon" href="../AGQ/images/favicon.ico">
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.5/dist/signature_pad.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 
 <body style="background-image: url('otvbg.png'); background-repeat: no-repeat; background-size: cover; background-position: center; background-attachment: fixed;">
@@ -133,6 +135,14 @@ if ($result) {
             <div id="dropdown" class="dropdown" style="display: none;"></div>
             <button class="search-button" id="search-button">SEARCH</button>
         </div>
+
+        <select id="departmentFilter" class="department-dropdown" onchange="updateDepartment(this.value)">
+            <option value="" disabled <?php echo empty($dept) ? 'selected' : ''; ?>>All Departments</option>
+            <option value="Import Forwarding" <?php echo ($dept == 'Import Forwarding') ? 'selected' : ''; ?>>Import Forwarding</option>
+            <option value="Import Brokerage" <?php echo ($dept == 'Import Brokerage') ? 'selected' : ''; ?>>Import Brokerage</option>
+            <option value="Export Forwarding" <?php echo ($dept == 'Export Forwarding') ? 'selected' : ''; ?>>Export Forwarding</option>
+            <option value="Export Brokerage" <?php echo ($dept == 'Export Brokerage') ? 'selected' : ''; ?>>Export Brokerage</option>
+        </select>
 
         <div class="transactions mt-4">
             <?php
@@ -184,12 +194,42 @@ if ($result) {
         </div>
     </div>
 
+    <div id="signatureModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; 
+     background-color:rgba(0,0,0,0.5); justify-content:center; align-items:center; z-index:9999;">
+        <div style="background:#fff; padding:20px; border-radius:10px; text-align:center;">
+            <h3>Please Sign to Approve</h3>
+            <canvas id="signature-pad" width="400" height="200" style="border:1px solid #ccc;"></canvas><br><br>
+            <button onclick="clearSignature()">Clear</button>
+            <button onclick="submitSignature()">Submit Signature</button>
+            <button onclick="cancelSignature()">Cancel</button>
+        </div>
+    </div>
+
     <script>
         var role = "<?php echo isset($_SESSION['department']) ? $_SESSION['department'] : ''; ?>";
         var company = "<?php echo isset($_SESSION['Company_name']) ? $_SESSION['Company_name'] : ''; ?>";
         var dept = "<?php echo isset($_SESSION['SelectedDepartment']) ? $_SESSION['SelectedDepartment'] : ''; ?>";
 
-        // Function to clear search and redirect to the transaction view page
+
+        function updateDepartment(selectedDept) {
+
+            let xhr = new XMLHttpRequest();
+            xhr.open("POST", "STORE_SESSION.php", true);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+
+            xhr.send("selected_department=" + encodeURIComponent(selectedDept));
+
+
+            xhr.onload = function() {
+                if (xhr.status == 200) {
+                    console.log("Department updated to: " + selectedDept);
+
+                    location.reload();
+                }
+            };
+        }
+
         function clearSearch() {
             document.getElementById("search-input").value = "";
             location.reload();
@@ -237,57 +277,119 @@ if ($result) {
             });
         }
 
-        function updateApprovalStatus(checkbox) {
-            let refNum = checkbox.getAttribute("data-refnum");
-            let docType = checkbox.getAttribute("data-docType");
-            let isApproved = checkbox.checked ? 1 : 0; // Set to 1 if checked, 0 if unchecked
+        let currentCheckbox = null;
+const canvas = document.getElementById('signature-pad');
+const signaturePad = new SignaturePad(canvas);
 
-            fetch("UPDATE_APPROVAL.php", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        refNum: refNum,
-                        company: company,
-                        docType: docType,
-                        dept: dept,
-                        isApproved: isApproved
-                    }),
+function clearSignature() {
+    signaturePad.clear();
+}
+
+function cancelSignature() {
+    document.getElementById('signatureModal').style.display = 'none';
+    if (currentCheckbox) {
+        currentCheckbox.checked = false; // Reset checkbox
+        currentCheckbox = null;
+    }
+}
+
+function submitSignature() {
+    if (signaturePad.isEmpty()) {
+        alert("Please sign before submitting.");
+        return;
+    }
+
+    const signatureImage = signaturePad.toDataURL();
+    const checkbox = currentCheckbox;
+
+    if (!checkbox) return;
+
+    const refNum = checkbox.getAttribute("data-refnum");
+    const docType = checkbox.getAttribute("data-docType");
+    const dept = checkbox.getAttribute("data-dept");
+    const isApproved = 1;
+
+    fetch("UPDATE_APPROVAL.php", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                refNum: refNum,
+                company: company,
+                docType: docType,
+                dept: dept,
+                isApproved: isApproved,
+                signature: signatureImage
+            })
+        })
+        .then(response => response.text())  // Get response as text to see the full response body
+        .then(data => {
+            console.log("Response from server:", data);  // Log the raw response
+            try {
+                const jsonResponse = JSON.parse(data);  // Try to parse JSON
+                if (jsonResponse.success) {
+                    Swal.fire("Success", "Approval recorded with signature.", "success");
+                } else {
+                    Swal.fire("Error", jsonResponse.message, "error");
+                    checkbox.checked = false;
+                }
+            } catch (e) {
+                console.error("Error parsing JSON:", e);
+                Swal.fire("Error", "Response from server is not valid JSON.", "error");
+            }
+            document.getElementById('signatureModal').style.display = 'none';
+        })
+        .catch(error => {
+            console.error("Upload failed:", error);
+            Swal.fire("Error", "Something went wrong.", "error");
+            checkbox.checked = false;
+            document.getElementById('signatureModal').style.display = 'none';
+        });
+
+    currentCheckbox = null;
+}
+
+function updateApprovalStatus(checkbox) {
+    if (checkbox.checked) {
+        // Show signature modal
+        currentCheckbox = checkbox;
+        document.getElementById('signatureModal').style.display = 'flex';
+    } else {
+        // Optional: handle unchecking logic here
+        const refNum = checkbox.getAttribute("data-refnum");
+        const docType = checkbox.getAttribute("data-docType");
+        const dept = checkbox.getAttribute("data-dept");
+        const isApproved = 0;
+
+        fetch("UPDATE_APPROVAL.php", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    refNum: refNum,
+                    company: company,
+                    docType: docType,
+                    dept: dept,
+                    isApproved: isApproved
                 })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        Swal.fire({
-                            title: "Success!",
-                            text: "Approval status updated successfully.",
-                            icon: "success",
-                            confirmButtonColor: "#3085d6",
-                            confirmButtonText: "OK"
-                        });
-                    } else {
-                        Swal.fire({
-                            title: "Error!",
-                            text: data.message,
-                            icon: "error",
-                            confirmButtonColor: "#d33",
-                            confirmButtonText: "OK"
-                        });
-                        checkbox.checked = !checkbox.checked;
-                    }
-                })
-                .catch(error => {
-                    console.error("Error:", error);
-                    Swal.fire({
-                        title: "Error!",
-                        text: "Something went wrong. Please try again.",
-                        icon: "error",
-                        confirmButtonColor: "#d33",
-                        confirmButtonText: "OK"
-                    });
-                    checkbox.checked = !checkbox.checked;
-                });
-        }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.success) {
+                    Swal.fire("Error", data.message, "error");
+                    checkbox.checked = true;
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                Swal.fire("Error", "Unapproval failed.", "error");
+                checkbox.checked = true;
+            });
+    }
+}
+
 
         document.addEventListener("DOMContentLoaded", function() {
             document.body.addEventListener("click", function(event) {
@@ -623,7 +725,7 @@ if ($result) {
         console.log("Company:", company);
         console.log("Selected Department:", dept);
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 
 </html>

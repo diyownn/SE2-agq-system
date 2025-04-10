@@ -615,3 +615,20 @@ body {
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
+
+button:disabled {
+    opacity: 0.5; /* Make the button look faded */
+    cursor: not-allowed; /* Change the cursor to indicate it can't be clicked */
+    background-color: #ccc; /* Optionally, change the background color */
+    border: 1px solid #999; /* Adjust border color for a disabled look */
+    color: #666; /* Optionally, adjust text color */
+}
+
+.department-dropdown {
+    background-color: white;
+    font-weight: bold;
+    color: black;
+    border: 2px solid #7a9851; /* Adjust border color for a disabled look */
+    text-transform: uppercase;
+    font-size: 14px;
+  }

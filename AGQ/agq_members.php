@@ -13,7 +13,6 @@ if (!isset($_SESSION['department'])) {
     exit();
 }
 
-
 if (!$role) {
     header("Location: UNAUTHORIZED.php?error=401r");
 }
@@ -28,6 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $_SESSION['defPass'] = $defaultPassword;
     $department = htmlspecialchars(trim($_POST['department']));
     $otp = null;
+    $privilege = 'Read-Only';
 
     $errors = [];
 
@@ -66,11 +66,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     //$hashed_password = password_hash($password, PASSWORD_BCRYPT);
 
     // Insert into database
-    $stmt = $conn->prepare("INSERT INTO tbl_user (UserID, Name, Email, Password, Department, Otp) VALUES (?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("sssssi", $UserID, $name, $email, $defaultPassword, $department, $otp);
+    $stmt = $conn->prepare("INSERT INTO tbl_user (UserID, Name, Email, Password, Department, Otp, Privilege) VALUES (?, ?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("sssssis", $UserID, $name, $email, $defaultPassword, $department, $otp, $privilege);
 
     if ($stmt->execute()) {
-        $stmt = $conn->prepare("SELECT UserID, Name, Email, Department FROM tbl_user WHERE UserID = ?");
+        $stmt = $conn->prepare("SELECT UserID, Name, Email, Department, Privilege FROM tbl_user WHERE UserID = ?");
         $stmt->bind_param("s", $UserID);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -84,6 +84,40 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $stmt->close();
     exit;
 }
+
+// Handle privilege
+if (isset($_GET['priv_id']) && isset($_GET['new_privilege'])) {
+    $priv_id = $_GET['priv_id'];
+    $new_privilege = $_GET['new_privilege'];
+
+    // Validate the privilege value
+    if (in_array($new_privilege, ['Read/Write', 'Read-Only'])) {
+        // Retrieve current privilege from the database before updating (optional if not needed)
+        $stmt = $conn->prepare("SELECT Privilege FROM tbl_user WHERE UserID = ?");
+        $stmt->bind_param("s", $priv_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        // Update the privilege in the database
+        $stmt = $conn->prepare("UPDATE tbl_user SET Privilege = ? WHERE UserID = ?");
+        $stmt->bind_param("ss", $new_privilege, $priv_id);
+
+        if ($stmt->execute() && $stmt->affected_rows > 0) {
+
+            // Respond with success
+            header('Content-Type: application/json');
+            echo json_encode(["success" => true, "message" => "User Privilege updated successfully!"]);
+        } else {
+            // Respond with error
+            header('Content-Type: application/json');
+            echo json_encode(["success" => false, "message" => "Error updating User Privilege."]);
+        }
+
+        $stmt->close();
+        exit;
+    }
+}
+
 // Handle deletion
 if (isset($_GET['delete_id'])) {
     $delete_id = $_GET['delete_id'];
@@ -91,8 +125,10 @@ if (isset($_GET['delete_id'])) {
     $stmt->bind_param("s", $delete_id);
 
     if ($stmt->execute() && $stmt->affected_rows > 0) {
+        header('Content-Type: application/json');
         echo json_encode(["success" => true, "message" => "User deleted successfully!"]);
     } else {
+        header('Content-Type: application/json');
         echo json_encode(["success" => false, "message" => "Error deleting user."]);
     }
 
@@ -103,8 +139,8 @@ if (isset($_GET['delete_id'])) {
 // Search functionality
 if (isset($_GET['search'])) {
     $searchTerm = "%" . $_GET['search'] . "%";
-    $stmt = $conn->prepare("SELECT UserID, Name, Email, Department FROM tbl_user WHERE Name LIKE ? OR Email LIKE ? OR Department LIKE ?");
-    $stmt->bind_param("sss", $searchTerm, $searchTerm, $searchTerm);
+    $stmt = $conn->prepare("SELECT UserID, Name, Email, Department, Privilege FROM tbl_user WHERE Name LIKE ? OR Email LIKE ? OR Department LIKE ? OR Privilege LIKE ?");
+    $stmt->bind_param("sss", $searchTerm, $searchTerm, $searchTerm, $searchTerm);
     $stmt->execute();
     $result = $stmt->get_result();
 
@@ -118,7 +154,7 @@ if (isset($_GET['search'])) {
 }
 
 // Fetch all users initially
-$query = "SELECT UserID, Name, Email, Department FROM tbl_user";
+$query = "SELECT UserID, Name, Email, Department, Privilege FROM tbl_user";
 $result = $conn->query($query);
 ?>
 
@@ -143,7 +179,7 @@ $result = $conn->query($query);
             <div class="top-bar">
                 <input type="text" class="search-bar" id="searchInput" placeholder="Search">
                 <button class="search-btn" onclick="searchUser()">Search</button>
-                <button class="add-user-btn" onclick="openModal()">Add User</button>
+                <button class="add-user-btn" id="add-btn" onclick="openModal()">Add User</button>
             </div>
         </div>
 
@@ -155,7 +191,17 @@ $result = $conn->query($query);
                             <th>User ID</th>
                             <th>Name</th>
                             <th>Email</th>
-                            <th>Department</th>
+                            <th>
+                                <select id="departmentFilter" class="department-dropdown" onchange="updateDepartment(this.value)">
+                                    <option value="">All Departments</option>
+                                    <option value="Import Forwarding">Import Forwarding</option>
+                                    <option value="Import Brokerage">Import Brokerage</option>
+                                    <option value="Export Forwarding">Export Forwarding</option>
+                                    <option value="Export Brokerage">Export Brokerage</option>
+                                    <option value="Admin">Admin</option>
+                                </select>
+                            </th>
+                            <th>User Privilege</th>
                             <th>Delete</th>
                         </tr>
                     </thead>
@@ -166,7 +212,8 @@ $result = $conn->query($query);
                                 <td><?= htmlspecialchars($user['Name']); ?></td>
                                 <td><?= htmlspecialchars($user['Email']); ?></td>
                                 <td><?= htmlspecialchars($user['Department']); ?></td>
-                                <td><button class="delete-btn" onclick="deleteUser('<?= htmlspecialchars($user['UserID'], ENT_QUOTES); ?>')">Delete</button></td>
+                                <td><button class="priv-btn" onclick="changePrivilege('<?= htmlspecialchars($user['UserID'], ENT_QUOTES); ?>')"><?= htmlspecialchars($user['Privilege']); ?></button></td>
+                                <td><button class="delete-btn" id="del-btn" onclick="deleteUser('<?= htmlspecialchars($user['UserID'], ENT_QUOTES); ?>')">Delete</button></td>
                             </tr>
                         <?php endwhile; ?>
                     </tbody>
@@ -294,24 +341,45 @@ $result = $conn->query($query);
                 <td>${user.Name}</td>
                 <td>${user.Email}</td>
                 <td>${user.Department}</td>
-                <td><button class="delete-btn" onclick='deleteUser("${user.UserID}")'>Delete</button></td>
+                <td><button class="priv-btn" onclick="changePrivilege("${user.UserID}")">${user.Privilege}</button></td>
+                <td><button class="delete-btn" id="del-btn" onclick='deleteUser("${user.UserID}")'>Delete</button></td>
             `;
                 tableBody.appendChild(row);
             }
 
+            function updateDepartment(department) {
+                // Use the searchUser function but pass the department value
+                fetch("agq_members.php?search=" + encodeURIComponent(department))
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById("userTableBody").innerHTML = data.users.map(user => `
+                <tr data-user-id="${user.UserID}">
+                    <td>${user.UserID}</td>
+                    <td>${user.Name}</td>
+                    <td>${user.Email}</td>
+                    <td>${user.Department}</td>
+                    <td><button class="priv-btn" onclick="changePrivilege("${user.UserID}")">${user.Privilege}</button></td>
+                    <td><button class="delete-btn" id="del-btn" onclick='deleteUser("${user.UserID}")'>Delete</button></td>
+                </tr>
+            `).join('');
+                    });
+            }
+
+            // Keep the original searchUser function for the search bar
             function searchUser() {
                 fetch("agq_members.php?search=" + encodeURIComponent(document.getElementById('searchInput').value))
                     .then(response => response.json())
                     .then(data => {
                         document.getElementById("userTableBody").innerHTML = data.users.map(user => `
-                        <tr data-user-id="${user.UserID}">
-                            <td>${user.UserID}</td>
-                            <td>${user.Name}</td>
-                            <td>${user.Email}</td>
-                            <td>${user.Department}</td>
-                            <td><button class="delete-btn" onclick='deleteUser("${user.UserID}")'>Delete</button></td>
-                        </tr>
-                    `).join('');
+                <tr data-user-id="${user.UserID}">
+                    <td>${user.UserID}</td>
+                    <td>${user.Name}</td>
+                    <td>${user.Email}</td>
+                    <td>${user.Department}</td>
+                    <td><button class="priv-btn" onclick="changePrivilege("${user.UserID}")">${user.Privilege}</button></td>
+                    <td><button class="delete-btn" id="del-btn" onclick='deleteUser("${user.UserID}")'>Delete</button></td>
+                </tr>
+            `).join('');
                     });
             }
 
@@ -327,6 +395,58 @@ $result = $conn->query($query);
             }
         </script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+            function changePrivilege(userId) {
+                // Use SweetAlert2 for confirmation
+                Swal.fire({
+                    title: 'Change User Privilege?',
+                    text: "You won't be able to revert this!",
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // User confirmed, proceed with update
+                        const button = document.querySelector(`button[onclick="changePrivilege('${userId}')"]`);
+                        const currentPrivilege = button.textContent.trim(); // Get current privilege text
+                        const newPrivilege = currentPrivilege === 'Read/Write' ? 'Read-Only' : 'Read/Write'; // Toggle privilege
+
+                        fetch(`agq_members.php?priv_id=${encodeURIComponent(userId)}&new_privilege=${encodeURIComponent(newPrivilege)}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    // Show success message with SweetAlert2
+                                    Swal.fire({
+                                        title: 'Updated!',
+                                        text: data.message,
+                                        icon: 'success'
+                                    });
+
+                                    // Update the button text to the new privilege
+                                    button.textContent = newPrivilege;
+                                } else {
+                                    // Show error message with SweetAlert2
+                                    Swal.fire({
+                                        title: 'Error!',
+                                        text: data.message,
+                                        icon: 'error'
+                                    });
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error updating user:', error);
+                                // Show error message with SweetAlert2
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: 'Failed to update user privilege. Please try again.',
+                                    icon: 'error'
+                                });
+                            });
+                    }
+                });
+            }
+        </script>
         <script>
             function deleteUser(userId) {
                 // Use SweetAlert2 for confirmation

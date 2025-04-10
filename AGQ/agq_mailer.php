@@ -20,7 +20,7 @@ use PHPMailer\PHPMailer\Exception;
 //Load Composer's autoloader
 require 'vendor/autoload.php';
 
-function emailVerification($email, $otp){
+function emailVerification($email, $otp, $name){
 
     
     $mail = new PHPMailer(true);                              // Passing true enables exceptions
@@ -38,9 +38,18 @@ function emailVerification($email, $otp){
         $mail->addAddress( $email);     // Add a recipient
         //Content
         $mail->isHTML(true);  // Set email format to HTML
-        $mail->Subject = "AGQ OTP Verification";
-        $mail->Body    = "<p>Good day, this is your account verification code</p> 
-                          <br><h1><b>".$otp."</b></h1>";
+        $mail->Subject = "Your AGQ One-Time Password (OTP) Account Verification";
+        $mail->Body    = "<p>Dear $name</p>
+
+                        <p>Good day! We received a request to verify your account for Password Renewal. As part of our security protocol, please use the One-Time Password (OTP) below to complete the verification process:</p>
+
+                        <h2 style='text-align: center; color: #4CAF50;'>Your OTP: $otp</b></h2>
+
+                        <p><b>Important Notes:</b></p>
+                        <ul>
+                            <li>Do not share this code with anyone for security purposes.</li>
+                            <li>If you did not request this verification, please ignore this email</li>
+                        </ul>";
 
         $mail->send();
         ?>

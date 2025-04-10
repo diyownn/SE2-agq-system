@@ -3,7 +3,33 @@ require 'db_agq.php';
 session_start();
 
 $role = "Admin";
-$dept = isset($_SESSION['SelectedDepartment']) && !empty($_SESSION['SelectedDepartment']) ? $_SESSION['SelectedDepartment'] : 'Import Forwarding';
+$dept = isset($_SESSION['SelectedDepartment']) && !empty($_SESSION['SelectedDepartment']) ? $_SESSION['SelectedDepartment'] : '';
+
+$name = isset($_SESSION['name']) ? $_SESSION['name'] : '';
+
+$stmt = $conn->prepare("SELECT Privilege FROM tbl_user WHERE Name = ?");
+$stmt->bind_param("s", $name);
+$stmt->execute();
+$result = $stmt->get_result();
+
+if ($result->num_rows > 0) {
+    $row = $result->fetch_assoc();
+    $priv = $row['Privilege'];
+    $_SESSION['Priv'] = $priv;
+}
+
+echo $priv;
+
+if ($priv == "Read-Only") {
+    echo "<script>
+            document.addEventListener('DOMContentLoaded', function() {
+                var undoBtn = document.getElementById('undo-btn');
+                if (undoBtn) {
+                    undoBtn.disabled = true; // Disable the button
+                }
+            });
+          </script>";
+}
 
 
 $searchq = isset($_GET['search']) ? $_GET['search'] : '';
@@ -83,7 +109,7 @@ if ($result->num_rows > 0) {
     <a href="agq_dashCatcher.php" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 20px; top: 50px;">←</a>
 
     <div class="search-container">
-        <form class="searchcont method=" GET" action="agq_archive.php">
+        <form class="searchcont" method=" GET" action="agq_archive.php">
             <input type="text" class="search-input" name="search" id="searchInput" placeholder="Search archives..." />
             <button class="search-button" type="submit">SEARCH</button>
         </form>
@@ -95,14 +121,7 @@ if ($result->num_rows > 0) {
             <h1>ARCHIVES</h1>
         </div>
         <div class="undo-button-container">
-            <select id="departmentFilter" class="department-dropdown" onchange="updateDepartment(this.value)">
-                <option value="" disabled <?php echo empty($dept) ? 'selected' : ''; ?>>All Departments</option>
-                <option value="Import Forwarding" <?php echo ($dept == 'Import Forwarding') ? 'selected' : ''; ?>>Import Forwarding</option>
-                <option value="Import Brokerage" <?php echo ($dept == 'Import Brokerage') ? 'selected' : ''; ?>>Import Brokerage</option>
-                <option value="Export Forwarding" <?php echo ($dept == 'Export Forwarding') ? 'selected' : ''; ?>>Export Forwarding</option>
-                <option value="Export Brokerage" <?php echo ($dept == 'Export Brokerage') ? 'selected' : ''; ?>>Export Brokerage</option>
-            </select>
-            <button class="undo-button" onclick="openModal()">EDIT</button>
+            <button class="undo-button" id="undo-btn" onclick="openModal()">EDIT</button>
         </div>
     </div>
 
@@ -113,7 +132,15 @@ if ($result->num_rows > 0) {
                     <th>ARCHIVED ID</th>
                     <th>COMPANY NAME</th>
                     <th>REFERENCE NUMBER</th>
-                    <th>DEPARTMENT</th>
+                    <th> 
+                        <select id="departmentFilter" class="department-dropdown" onchange="updateDepartment(this.value)">
+                            <option value="" <?php echo empty($dept) ? 'selected' : ''; ?>>All Departments</option>
+                            <option value="Import Forwarding" <?php echo ($dept == 'Import Forwarding') ? 'selected' : ''; ?>>Import Forwarding</option>
+                            <option value="Import Brokerage" <?php echo ($dept == 'Import Brokerage') ? 'selected' : ''; ?>>Import Brokerage</option>
+                            <option value="Export Forwarding" <?php echo ($dept == 'Export Forwarding') ? 'selected' : ''; ?>>Export Forwarding</option>
+                            <option value="Export Brokerage" <?php echo ($dept == 'Export Brokerage') ? 'selected' : ''; ?>>Export Brokerage</option>
+                        </select>
+                    </th>
                     <th>ARCHIVE DATE</th>
                 </tr>
             </thead>
