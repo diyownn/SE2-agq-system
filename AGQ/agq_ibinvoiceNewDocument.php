@@ -84,7 +84,6 @@ function updateRecord($conn, $data, $sessionData)
         TruckingService = ?, 
         Total = ?, 
         Prepared_by = ?, 
-        Approved_by = ?, 
         Edited_by = ?, 
         EditDate = ?, 
         DocType = ?, 
@@ -95,7 +94,7 @@ function updateRecord($conn, $data, $sessionData)
     $stmt = $conn->prepare($sql);
 
     $stmt->bind_param(
-        "sssssssssssssssdsdddddssssssss",
+        "sssssssssssssssdsdddddsssssss",
         $data['to'],
         $data['address'],
         $data['tin'],
@@ -119,7 +118,6 @@ function updateRecord($conn, $data, $sessionData)
         $data['truckingservice_amount'],
         $data['total'],
         $data['prepared_by'],
-        $data['approved_by'],
         $name,
         $sessionData['editDate'],
         $docs,
@@ -206,13 +204,13 @@ function insertRecord($conn)
     $sql = "INSERT INTO tbl_impbrk (
         `To:`, `Address`, Tin, Attention, `Date`, Vessel, ETA, RefNum, DestinationOrigin, ER, BHNum,
         NatureOfGoods, Packages, `Weight`, Volume, PackageType, Others, Notes, OceanFreight5,
-        BrokerageFee, Vat12, TruckingService,Total, Prepared_by, Approved_by, Edited_by, EditDate, 
+        BrokerageFee, Vat12, TruckingService,Total, Prepared_by, Edited_by, EditDate, 
         DocType, Company_name, Department
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     $stmt = $conn->prepare($sql);
     $stmt->bind_param(
-        "ssssssssssssssssdsdddddsssssss",
+        "ssssssssssssssssdsdddddssssss",
         $_POST['to'],
         $_POST['address'],
         $_POST['tin'],
@@ -237,7 +235,6 @@ function insertRecord($conn)
         $_POST['truckingservice_amount'],
         $_POST['total'],
         $_POST['prepared_by'],
-        $_POST['approved_by'],
         $name,
         $editDate,
         $docType,        // Session variable
@@ -684,7 +681,6 @@ function insertRecord($conn)
             </div>
             <div class="section">
                 <input type="text" maxlength="25" name="prepared_by" placeholder="Prepared by" value="<?= isset($row['Prepared_by']) ? htmlspecialchars($row['Prepared_by']) : ''; ?>" onchange="validateTextFields(this)" style="width: 48%">
-                <input type="text" maxlength="25" name="approved_by" placeholder="Approved by" value="<?= isset($row['Approved_by']) ? htmlspecialchars($row['Approved_by']) : ''; ?>" onchange="validateTextFields(this)" style="width: 48%">
             </div>
             <div class="footer">
                 <input type="submit" name="save" class="save-btn" value="Save">

@@ -1054,7 +1054,7 @@ $record = selectRecords($conn, $role, $refNum);
               if (!empty($record['Approved_by'])) {
                   echo '<img src="' . htmlspecialchars($record['Approved_by']) . '" alt="Signature" style="max-width: 150px; border: 1px solid #ccc;" />';
               } else {
-                  echo 'N/A';
+                  echo 'Not yet approved.';
               }
               ?>
             </td>

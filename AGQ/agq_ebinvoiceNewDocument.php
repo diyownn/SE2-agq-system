@@ -84,7 +84,6 @@ function updateRecord($conn, $data, $sessionData)
         Vat12 = ?,
         Total = ?, 
         Prepared_by = ?, 
-        Approved_by = ?, 
         Edited_by = ?, 
         EditDate = ?, 
         DocType = ?, 
@@ -95,7 +94,7 @@ function updateRecord($conn, $data, $sessionData)
     $stmt = $conn->prepare($sql);
 
     $stmt->bind_param(
-        "sssssssssssssssdsdddddssssssss",
+        "sssssssssssssssdsdddddsssssss",
         $data['to'],
         $data['address'],
         $data['tin'],
@@ -119,7 +118,6 @@ function updateRecord($conn, $data, $sessionData)
         $data['12vat'],
         $data['total'],
         $data['prepared_by'],
-        $data['approved_by'],
         $name,
         $sessionData['editDate'],
         $docs,
@@ -208,13 +206,13 @@ function insertRecord($conn)
     $sql = "INSERT INTO tbl_expbrk (
         `To:`, `Address`, Tin, Attention, `Date`, Vessel, ETA, RefNum, DestinationOrigin, ER, BHNum,
         NatureOfGoods, Packages, `Weight`, Volume, PackageType, Others, Notes, OceanFreight5,
-        BrokerageFee, Discount50, Vat12, Total, Prepared_by, Approved_by, Edited_by, EditDate, 
+        BrokerageFee, Discount50, Vat12, Total, Prepared_by, Edited_by, EditDate, 
         DocType, Company_name, Department
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     $stmt = $conn->prepare($sql);
     $stmt->bind_param(
-        "ssssssssssssssssdsdddddsssssss",
+        "ssssssssssssssssdsdddddssssss",
         $_POST['to'],
         $_POST['address'],
         $_POST['tin'],
@@ -239,7 +237,6 @@ function insertRecord($conn)
         $_POST['12vat'],
         $_POST['total'],
         $_POST['prepared_by'],
-        $_POST['approved_by'],
         $name,
         $editDate,
         $docType,        // Session variable
@@ -688,7 +685,6 @@ function insertRecord($conn)
             </div>
             <div class="section">
                 <input type="text" maxlength="25" name="prepared_by" placeholder="Prepared by" value="<?= isset($row['Prepared_by']) ? htmlspecialchars($row['Prepared_by']) : ''; ?>" onchange="validateTextFields(this)" style="width: 48%">
-                <input type="text" maxlength="25" name="approved_by" placeholder="Approved by" value="<?= isset($row['Approved_by']) ? htmlspecialchars($row['Approved_by']) : ''; ?>" onchange="validateTextFields(this)" style="width: 48%">
             </div>
             <div class="footer">
                 <!-- <button class="save-btn">Save</button> -->
