@@ -21,7 +21,7 @@ if ($result->num_rows > 0) {
     $_SESSION['Priv'] = $priv;
 }
 
-echo $priv;
+
 
 if ($priv == "Read-Only") {
     echo "<script>
