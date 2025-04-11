@@ -30,6 +30,7 @@
 
                 <form action="agq_companyForm.php" method="POST" class="form-content" enctype="multipart/form-data" onsubmit="validate_form()">
 
+                    <label class="text-center" style="margin-bottom: 5px;">Upload company logo with png or jpg only. File Size is limited to 2mb.</label>
                     <img src="" class="d-block mx-auto" id="imgholder" alt="">
 
                     <input type="text" name=" compName" id="input3" class="form-control" placeholder="Company Name" onchange="validate_compName()">
