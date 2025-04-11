@@ -138,9 +138,10 @@ if (isset($_GET['delete_id'])) {
 
 // Search functionality
 if (isset($_GET['search'])) {
+
     $searchTerm = "%" . $_GET['search'] . "%";
     $stmt = $conn->prepare("SELECT UserID, Name, Email, Department, Privilege FROM tbl_user WHERE Name LIKE ? OR Email LIKE ? OR Department LIKE ? OR Privilege LIKE ?");
-    $stmt->bind_param("sss", $searchTerm, $searchTerm, $searchTerm, $searchTerm);
+    $stmt->bind_param("ssss", $searchTerm, $searchTerm, $searchTerm, $searchTerm);
     $stmt->execute();
     $result = $stmt->get_result();
 
@@ -240,12 +241,12 @@ $result = $conn->query($query);
 
                     <label for="department">DEPARTMENT</label>
                     <select id="department" name="department" required>
-                        <option value="">--Select Department--</option>
-                        <option value="Admin">Admin</option>
-                        <option value="Export Forwarding">Export Forwarding</option>
-                        <option value="Export Brokerage">Export Brokerage</option>
-                        <option value="Import Brokerage">Import Brokerage</option>
+                        <option value="" >--All Departments--</option>
+                        <option value="" >Admin</option>
                         <option value="Import Forwarding">Import Forwarding</option>
+                        <option value="Import Brokerage">Import Brokerage</option>
+                        <option value="Export Forwarding" >Export Forwarding</option>
+                        <option value="Export Brokerage" >Export Brokerage</option>
                     </select>
 
                     <button type="submit" onchange="return validate_form()">SAVE</button>
@@ -347,8 +348,8 @@ $result = $conn->query($query);
                 tableBody.appendChild(row);
             }
 
+
             function updateDepartment(department) {
-                // Use the searchUser function but pass the department value
                 fetch("agq_members.php?search=" + encodeURIComponent(department))
                     .then(response => response.json())
                     .then(data => {
@@ -358,8 +359,8 @@ $result = $conn->query($query);
                     <td>${user.Name}</td>
                     <td>${user.Email}</td>
                     <td>${user.Department}</td>
-                    <td><button class="priv-btn" onclick="changePrivilege("${user.UserID}")">${user.Privilege}</button></td>
-                    <td><button class="delete-btn" id="del-btn" onclick='deleteUser("${user.UserID}")'>Delete</button></td>
+                    <td><button class="priv-btn" onclick="changePrivilege('${user.UserID}')">${user.Privilege}</button></td>
+                    <td><button class="delete-btn" id="del-btn" onclick="deleteUser('${user.UserID}')">Delete</button></td>
                 </tr>
             `).join('');
                     });
@@ -376,14 +377,14 @@ $result = $conn->query($query);
                     <td>${user.Name}</td>
                     <td>${user.Email}</td>
                     <td>${user.Department}</td>
-                    <td><button class="priv-btn" onclick="changePrivilege("${user.UserID}")">${user.Privilege}</button></td>
-                    <td><button class="delete-btn" id="del-btn" onclick='deleteUser("${user.UserID}")'>Delete</button></td>
+                    <td><button class="priv-btn" onclick="changePrivilege('${user.UserID}')">${user.Privilege}</button></td>
+                    <td><button class="delete-btn" id="del-btn" onclick="deleteUser('${user.UserID}')">Delete</button></td>
                 </tr>
             `).join('');
                     });
             }
 
-            // Function to display errors in the modal
+            
             function showErrorMessage(id, message) {
                 const errorElement = document.getElementById(id);
                 if (errorElement) {

@@ -4,7 +4,6 @@ session_start();
 
 $role = "Admin";
 $dept = isset($_SESSION['SelectedDepartment']) && !empty($_SESSION['SelectedDepartment']) ? $_SESSION['SelectedDepartment'] : '';
-
 $name = isset($_SESSION['name']) ? $_SESSION['name'] : '';
 
 $stmt = $conn->prepare("SELECT Privilege FROM tbl_user WHERE Name = ?");

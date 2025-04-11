@@ -9,7 +9,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Mpdf\Mpdf;
 use Dompdf\Dompdf;
-use TCPDF;
+
 
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
@@ -37,7 +37,7 @@ $dept = isset($_SESSION['department']) ? $_SESSION['department'] : '';
 switch ($dept) {
 
     case "Import Forwarding":
-
+        
         $outputFormat = 'pdf'; // Default to PDF
 
         $templateFile = __DIR__ . '/templates/agq_ImportForwardingTemplate.xls';
@@ -63,7 +63,7 @@ switch ($dept) {
             die("Error loading template: " . $e->getMessage());
         }
 
-        
+
         $query = "SELECT *
                 FROM tbl_impfwd 
                 WHERE RefNum LIKE ? AND Department LIKE ?";
@@ -437,9 +437,32 @@ switch ($dept) {
         </body>
         </html>';
 
+        $debugLogFile = __DIR__ . '/pdf_debug_' . date('Y-m-d_H-i-s') . '.log';
+        function debugLog($message, $logFile) {
+            $timestamp = date('Y-m-d H:i:s');
+            $logMessage = "[$timestamp] $message" . PHP_EOL;
+            file_put_contents($logFile, $logMessage, FILE_APPEND);
+        }
 
+        debugLog("=== Starting Import Forwarding process ===", $debugLogFile);
+        debugLog("PHP Version: " . phpversion(), $debugLogFile);
+        debugLog("Server: " . $_SERVER['SERVER_SOFTWARE'], $debugLogFile);
+        debugLog("Memory limit: " . ini_get('memory_limit'), $debugLogFile);
 
-                // Create PDF using Dompdf
+        ini_set('memory_limit', '256M');
+        debugLog("New memory limit: " . ini_get('memory_limit'), $debugLogFile);
+
+        $domPdfAvailable = class_exists('\Dompdf\Dompdf');
+        debugLog("DomPDF class exists: " . ($domPdfAvailable ? "YES" : "NO"), $debugLogFile);
+
+        $domPdfExtensions = ['dom', 'gd', 'mbstring', 'fileinfo'];
+
+        if (!file_exists($templateFile)) {
+            debugLog("ERROR: Template file not found at: $templateFile", $debugLogFile);
+            die("Error: Template file not found at: $templateFile");
+        } else {
+            debugLog("Template file exists at: $templateFile", $debugLogFile);
+        }
                 $dompdf = new \Dompdf\Dompdf([
                     'enable_remote' => true,
                     'isRemoteEnabled' => true,

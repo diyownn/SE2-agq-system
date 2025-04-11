@@ -15,15 +15,15 @@ $stmt->execute();
 $result = $stmt->get_result();
 
 if ($result->num_rows > 0) {
-    $row = $result->fetch_assoc();
-    $priv = $row['Privilege'];
-    $_SESSION['Priv'] = $priv;
+  $row = $result->fetch_assoc();
+  $priv = $row['Privilege'];
+  $_SESSION['Priv'] = $priv;
 }
 
 
 
 if ($priv == "Read-Only") {
-    echo "<script>
+  echo "<script>
             document.addEventListener('DOMContentLoaded', function() {
                 var saveBtn = document.getElementById('save-btn');
                 var text = document.getElementById('textbox');
@@ -89,12 +89,13 @@ $record = selectRecords($conn, $dept, $refNum);
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/owndocu.css">
   <link rel="icon" type="image/x-icon" href="../AGQ/images/favicon.ico">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 </head>
 
 
 <body style="background-image: url('vdbg.png'); background-repeat: no-repeat; background-size: cover; background-position: center; background-attachment: fixed;">
-<a href="agq_ownTransactionView.php" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 40px; top: 60px;">←</a>
+  <a href="agq_ownTransactionView.php" style="text-decoration: none; color: black; font-size: x-large; position: absolute; left: 40px; top: 60px;">←</a>
 
   <!--<div class="top-container">
         <div class="dept-container">
@@ -120,7 +121,7 @@ $record = selectRecords($conn, $dept, $refNum);
 
   <div class="container">
     <div class="document-view">
-    <table class="transaction-detials-table">
+      <table class="transaction-detials-table">
         <thead class="transaction-details-header">
           <tr>
             <th>Transaction Details</th>
@@ -195,7 +196,7 @@ $record = selectRecords($conn, $dept, $refNum);
         </tbody>
       </table>
 
-      <?php 
+      <?php
 
       $dept = $record['Department'];
       $docType = $record['DocType'];
@@ -206,10 +207,10 @@ $record = selectRecords($conn, $dept, $refNum);
         case "Import Forwarding";
           $docType = $record['DocType'];
           $package = $record['PackageType'];
-          
+
 
           if ($docType == "SOA" && $package == "LCL") {
-            echo" 
+            echo " 
             <table>
               <thead>
                 <tr>
@@ -220,53 +221,52 @@ $record = selectRecords($conn, $dept, $refNum);
               <tbody>
                 <tr>
                   <td>95% Ocean Freight</td>
-                  <td id='ocean-freight-95'>P".htmlspecialchars(number_format($record['OceanFreight95'] ?? 0, 2))."</td>
+                  <td id='ocean-freight-95'>P" . htmlspecialchars(number_format($record['OceanFreight95'] ?? 0, 2)) . "</td>
                 </tr>
                 <tr>
                   <td>BL Fee</td>
-                  <td id='bl-fee'>P".htmlspecialchars(number_format($record['BLFee'] ?? 0, 2))."</td>
+                  <td id='bl-fee'>P" . htmlspecialchars(number_format($record['BLFee'] ?? 0, 2)) . "</td>
                 </tr>
                 <tr>
                   <td>Manifest Fee</td>
-                  <td id='manifest-fee'>P".htmlspecialchars(number_format($record['ManifestFee'] ?? 0, 2))."</td>
+                  <td id='manifest-fee'>P" . htmlspecialchars(number_format($record['ManifestFee'] ?? 0, 2)) . "</td>
                 </tr>
                 <tr>
                   <td>THC</td>
-                  <td id='thc'>P".htmlspecialchars(number_format($record['THC'] ?? 0, 2))."</td>
+                  <td id='thc'>P" . htmlspecialchars(number_format($record['THC'] ?? 0, 2)) . "</td>
                 </tr>
                 <tr>
                   <td>CIC</td>
-                  <td id='cic'>P".htmlspecialchars(number_format($record['CIC'] ?? 0, 2))."</td>
+                  <td id='cic'>P" . htmlspecialchars(number_format($record['CIC'] ?? 0, 2)) . "</td>
                 </tr>
                 <tr>
                   <td>ECRS</td>
-                  <td id='ecrs'>P".htmlspecialchars(number_format($record['ECRS'] ?? 0, 2))."</td>
+                  <td id='ecrs'>P" . htmlspecialchars(number_format($record['ECRS'] ?? 0, 2)) . "</td>
                 </tr>
                 <tr>
                   <td>PSS</td>
-                  <td id='pss'>P".htmlspecialchars(number_format($record['PSS'] ?? 0, 2))."</td>
+                  <td id='pss'>P" . htmlspecialchars(number_format($record['PSS'] ?? 0, 2)) . "</td>
                 </tr>
                 <tr>
                   <td>Origin</td>
-                  <td id='origin'>P".htmlspecialchars(number_format($record['Origin'] ?? 0, 2))."</td>
+                  <td id='origin'>P" . htmlspecialchars(number_format($record['Origin'] ?? 0, 2)) . "</td>
                 </tr>
                 <tr>
                   <td>Others</td>
-                  <td id='others'>P".htmlspecialchars(number_format($record['Others'] ?? 0, 2))."</td>
+                  <td id='others'>P" . htmlspecialchars(number_format($record['Others'] ?? 0, 2)) . "</td>
                 </tr>
                 <tr>
                   <td>Total</td>
-                  <td id='total'>P".htmlspecialchars(number_format($record['Total'] ?? 0, 2))."</td>
+                  <td id='total'>P" . htmlspecialchars(number_format($record['Total'] ?? 0, 2)) . "</td>
                 </tr>
                 <tr>
                   <td>Notes</td>
-                  <td id='notes'>".htmlspecialchars($record['Notes'] ?? 'N/A')."</td>
+                  <td id='notes'>" . htmlspecialchars($record['Notes'] ?? 'N/A') . "</td>
                 </tr>
               </tbody>
             </table>";
-
-          }else if ($docType == "SOA" && $package == "Full Container") {
-            echo" 
+          } else if ($docType == "SOA" && $package == "Full Container") {
+            echo " 
             <table>
               <thead>
                 <tr>
@@ -277,55 +277,55 @@ $record = selectRecords($conn, $dept, $refNum);
               <tbody>
                 <tr>
                   <td>95% Ocean Freight</td>
-                  <td id='ocean-freight-95'>P".htmlspecialchars(number_format($record['OceanFreight95'] ?? 0, 2))."</td>
+                  <td id='ocean-freight-95'>P" . htmlspecialchars(number_format($record['OceanFreight95'] ?? 0, 2)) . "</td>
                 </tr>
                 <tr>
                   <td>Handling</td>
-                  <td id='handling'>P".htmlspecialchars(number_format($record['Handling'] ?? 0, 2))."</td>
+                  <td id='handling'>P" . htmlspecialchars(number_format($record['Handling'] ?? 0, 2)) . "</td>
                 </tr>
                 <tr>
                   <td>Turn Over Fee</td>
-                  <td id='turn-over-fee'>P".htmlspecialchars(number_format($record['TurnOverFee'] ?? 0, 2))."</td>
+                  <td id='turn-over-fee'>P" . htmlspecialchars(number_format($record['TurnOverFee'] ?? 0, 2)) . "</td>
                 </tr>
                 <tr>
                   <td>BL Fee</td>
-                  <td id='bl-fee'>P".htmlspecialchars(number_format($record['BLFee'] ?? 0, 2))."</td>
+                  <td id='bl-fee'>P" . htmlspecialchars(number_format($record['BLFee'] ?? 0, 2)) . "</td>
                 </tr>
                 <tr>
                   <td>FCL Charge</td>
-                  <td id='fcl-charge'>P".htmlspecialchars(number_format($record['FCLCharge'] ?? 0, 2))."</td>
+                  <td id='fcl-charge'>P" . htmlspecialchars(number_format($record['FCLCharge'] ?? 0, 2)) . "</td>
                 </tr>
                 <tr>
                   <td>Documentation</td>
-                  <td id='documentation'>P".htmlspecialchars(number_format($record['Documentation'] ?? 0, 2))."</td>
+                  <td id='documentation'>P" . htmlspecialchars(number_format($record['Documentation'] ?? 0, 2)) . "</td>
                 </tr>
                 <tr>
                   <td>Manifest Fee</td>
-                  <td id='manifest-fee'>P".htmlspecialchars(number_format($record['ManifestFee'] ?? 0, 2))."</td>
+                  <td id='manifest-fee'>P" . htmlspecialchars(number_format($record['ManifestFee'] ?? 0, 2)) . "</td>
                 </tr>
                 <tr>
                   <td>Others</td>
-                  <td id='others'>P".htmlspecialchars(number_format($record['Others'] ?? 0, 2))."</td>
+                  <td id='others'>P" . htmlspecialchars(number_format($record['Others'] ?? 0, 2)) . "</td>
                 </tr>
                 <tr>
                   <td>Shipping Lines</td>
-                  <td id='shipping-line'>P".htmlspecialchars(number_format($record['ShippingLine'] ?? 0, 2))."</td>
+                  <td id='shipping-line'>P" . htmlspecialchars(number_format($record['ShippingLine'] ?? 0, 2)) . "</td>
                 </tr>
                 <tr>
                   <td>Ex-Work Charges</td>
-                  <td id='ex-work-charges'>P".htmlspecialchars(number_format($record['ExWorkCharges'] ?? 0, 2))."</td>
+                  <td id='ex-work-charges'>P" . htmlspecialchars(number_format($record['ExWorkCharges'] ?? 0, 2)) . "</td>
                 </tr>
                 <tr>
                   <td>Total</td>
-                  <td id='total'>P".htmlspecialchars(number_format($record['Total'] ?? 0, 2))."</td>
+                  <td id='total'>P" . htmlspecialchars(number_format($record['Total'] ?? 0, 2)) . "</td>
                 </tr>
                 <tr>
                   <td>Notes</td>
-                  <td id='notes'>".htmlspecialchars($record['Notes'] ?? 'N/A')."</td>
+                  <td id='notes'>" . htmlspecialchars($record['Notes'] ?? 'N/A') . "</td>
                 </tr>
               </tbody>
             </table>";
-          }else if ($docType == "Invoice" && $package == "LCL") {
+          } else if ($docType == "Invoice" && $package == "LCL") {
             echo "
             <table>
               <thead>
@@ -337,43 +337,43 @@ $record = selectRecords($conn, $dept, $refNum);
               <tbody>
                 <tr>
                   <td>5% Ocean Freight</td>
-                  <td id='ocean-freight-5'>P".htmlspecialchars(number_format($record['OceanFreight5'] ?? 0, 2))."</td>
+                  <td id='ocean-freight-5'>P" . htmlspecialchars(number_format($record['OceanFreight5'] ?? 0, 2)) . "</td>
                 </tr>
                 <tr>
                   <td>LCL Charge</td>
-                  <td id='lcl-charge'>P".htmlspecialchars(number_format($record['LCLCharge'] ?? 0, 2))."</td>
+                  <td id='lcl-charge'>P" . htmlspecialchars(number_format($record['LCLCharge'] ?? 0, 2)) . "</td>
                 </tr>
                 <tr>
                   <td>Docs Fee</td>
-                  <td id='docs-fee'>P".htmlspecialchars(number_format($record['DocsFee'] ?? 0, 2))."</td>
+                  <td id='docs-fee'>P" . htmlspecialchars(number_format($record['DocsFee'] ?? 0, 2)) . "</td>
                 </tr>
                 <tr>
                   <td>Documentation</td>
-                  <td id='documentation'>P".htmlspecialchars(number_format($record['Documentation'] ?? 0, 2))."</td>
+                  <td id='documentation'>P" . htmlspecialchars(number_format($record['Documentation'] ?? 0, 2)) . "</td>
                 </tr>
                 <tr>
                   <td>Turn Over Fee</td>
-                  <td id='turn-over-fee'>P".htmlspecialchars(number_format($record['TurnOverFee'] ?? 0, 2))."</td>
+                  <td id='turn-over-fee'>P" . htmlspecialchars(number_format($record['TurnOverFee'] ?? 0, 2)) . "</td>
                 </tr>
                 <tr>
                   <td>Handling</td>
-                  <td id='handling'>P".htmlspecialchars(number_format($record['Handling'] ?? 0, 2))."</td>
+                  <td id='handling'>P" . htmlspecialchars(number_format($record['Handling'] ?? 0, 2)) . "</td>
                 </tr>
                 <tr>
                   <td>Others</td>
-                  <td id='others'>P".htmlspecialchars(number_format($record['Others'] ?? 0, 2))."</td>
+                  <td id='others'>P" . htmlspecialchars(number_format($record['Others'] ?? 0, 2)) . "</td>
                 </tr>
                 <tr>
                   <td>Total</td>
-                  <td id='total'>P".htmlspecialchars(number_format($record['Total'] ?? 0, 2))."</td>
+                  <td id='total'>P" . htmlspecialchars(number_format($record['Total'] ?? 0, 2)) . "</td>
                 </tr>
                 <tr>
                   <td>Notes</td>
-                  <td id='notes'>".htmlspecialchars($record['Notes'] ?? 'N/A')."</td>
+                  <td id='notes'>" . htmlspecialchars($record['Notes'] ?? 'N/A') . "</td>
                 </tr>
                 </tbody>
             </table>";
-          }else if ($docType == "Invoice" && $package == "Full Container") {
+          } else if ($docType == "Invoice" && $package == "Full Container") {
             echo "
             <table>
             <thead>
@@ -385,39 +385,38 @@ $record = selectRecords($conn, $dept, $refNum);
             <tbody>
               <tr>
                 <td>5% Ocean Freight</td>
-                <td id='ocean-freight-5'>P".htmlspecialchars(number_format($record['OceanFreight5'] ?? 0, 2))."</td>
+                <td id='ocean-freight-5'>P" . htmlspecialchars(number_format($record['OceanFreight5'] ?? 0, 2)) . "</td>
               </tr>
               <tr>
                 <td>FCL Charge</td>
-                <td id='fcl-charge'>P".htmlspecialchars(number_format($record['FCLCharge'] ?? 0, 2))."</td>
+                <td id='fcl-charge'>P" . htmlspecialchars(number_format($record['FCLCharge'] ?? 0, 2)) . "</td>
               </tr>
               <tr>
                 <td>Documentation</td>
-                <td id='documentation'>P".htmlspecialchars(number_format($record['Documentation'] ?? 0, 2))."</td>
+                <td id='documentation'>P" . htmlspecialchars(number_format($record['Documentation'] ?? 0, 2)) . "</td>
               </tr>
               <tr>
                 <td>Handling</td>
-                <td id='handling'>P".htmlspecialchars(number_format($record['Handling'] ?? 0, 2))."</td>
+                <td id='handling'>P" . htmlspecialchars(number_format($record['Handling'] ?? 0, 2)) . "</td>
               </tr>
               <tr>
                 <td>12% VAT</td>
-                <td id='vat-12'>P".htmlspecialchars(number_format($record['Vat12'] ?? 0, 2))."</td>
+                <td id='vat-12'>P" . htmlspecialchars(number_format($record['Vat12'] ?? 0, 2)) . "</td>
               </tr>
               <tr>
                 <td>Others</td>
-                <td id='others'>P".htmlspecialchars(number_format($record['Others'] ?? 0, 2))."</td>
+                <td id='others'>P" . htmlspecialchars(number_format($record['Others'] ?? 0, 2)) . "</td>
               </tr>
               <tr>
                 <td>Total</td>
-                <td id='total'>P".htmlspecialchars(number_format($record['Total'] ?? 0, 2))."</td>
+                <td id='total'>P" . htmlspecialchars(number_format($record['Total'] ?? 0, 2)) . "</td>
               </tr>
               <tr>
                 <td>Notes</td>
-                <td id='notes'>".htmlspecialchars($record['Notes'] ?? 'N/A')."</td>
+                <td id='notes'>" . htmlspecialchars($record['Notes'] ?? 'N/A') . "</td>
               </tr>
               </tbody>
           </table>";
-
           }
 
           break;
@@ -438,64 +437,63 @@ $record = selectRecords($conn, $dept, $refNum);
             <tbody>
               <tr>
                 <td>95% Ocean Freight</td>
-                <td id='ocean-freight-95'>P".htmlspecialchars(number_format($record['OceanFreight95'] ?? 0, 2))."</td>
+                <td id='ocean-freight-95'>P" . htmlspecialchars(number_format($record['OceanFreight95'] ?? 0, 2)) . "</td>
               </tr>
               <tr>
                 <td>Forwarder</td>
-                <td id='forwarder'>P".htmlspecialchars(number_format($record['Forwarder'] ?? 0, 2))."</td>
+                <td id='forwarder'>P" . htmlspecialchars(number_format($record['Forwarder'] ?? 0, 2)) . "</td>
               </tr>
               <tr>
                 <td>Warehouse Charges</td>
-                <td id='warehouse-charge'>P".htmlspecialchars(number_format($record['WarehouseCharge'] ?? 0, 2))."</td>
+                <td id='warehouse-charge'>P" . htmlspecialchars(number_format($record['WarehouseCharge'] ?? 0, 2)) . "</td>
               </tr>
               <tr>
                 <td>E-Lodgement</td>
-                <td id='eLodge'>P".htmlspecialchars(number_format($record['ELodge'] ?? 0, 2))."</td>
+                <td id='eLodge'>P" . htmlspecialchars(number_format($record['ELodge'] ?? 0, 2)) . "</td>
               </tr>
               <tr>
                 <td>Processing</td>
-                <td id='processing'>P".htmlspecialchars(number_format($record['Processing'] ?? 0, 2))."</td>
+                <td id='processing'>P" . htmlspecialchars(number_format($record['Processing'] ?? 0, 2)) . "</td>
               </tr>
                 <tr>
                 <td>Customs Forms/Stamps</td>
-                <td id='forms-stamps'>P".htmlspecialchars(number_format($record['FormsStamps'] ?? 0, 2))."</td>
+                <td id='forms-stamps'>P" . htmlspecialchars(number_format($record['FormsStamps'] ?? 0, 2)) . "</td>
               </tr>
                 <tr>
                 <td>Photocopy/Notarial</td>
-                <td id='photocopy-notarial'>P".htmlspecialchars(number_format($record['PhotocopyNotarial'] ?? 0, 2))."</td>
+                <td id='photocopy-notarial'>P" . htmlspecialchars(number_format($record['PhotocopyNotarial'] ?? 0, 2)) . "</td>
               </tr>
                 <tr>
                 <td>Documentation</td>
-                <td id='documentation'>P".htmlspecialchars(number_format($record['Documentation'] ?? 0, 2))."</td>
+                <td id='documentation'>P" . htmlspecialchars(number_format($record['Documentation'] ?? 0, 2)) . "</td>
               </tr>
                 <tr>
                 <td>Delivery Expense</td>
-                <td id='delivery-expense'>P".htmlspecialchars(number_format($record['DeliveryExpense'] ?? 0, 2))."</td>
+                <td id='delivery-expense'>P" . htmlspecialchars(number_format($record['DeliveryExpense'] ?? 0, 2)) . "</td>
               </tr>
                 <tr>
                 <td>MISC.,transpo,tel. Card</td>
-                <td id='miscellaneous'>P".htmlspecialchars(number_format($record['Miscellaneous'] ?? 0, 2))."</td>
+                <td id='miscellaneous'>P" . htmlspecialchars(number_format($record['Miscellaneous'] ?? 0, 2)) . "</td>
               </tr>
               <tr>
                 <td>Others</td>
-                <td id='others'>P".htmlspecialchars(number_format($record['Others'] ?? 0, 2))."</td>
+                <td id='others'>P" . htmlspecialchars(number_format($record['Others'] ?? 0, 2)) . "</td>
               </tr>
               <tr>
                 <td>Door to Door Bacolod (all in)</td>
-                <td id='door2door'>P".htmlspecialchars(number_format($record['Door2Door'] ?? 0, 2))."</td>
+                <td id='door2door'>P" . htmlspecialchars(number_format($record['Door2Door'] ?? 0, 2)) . "</td>
                 </tr>
               <tr>
                 <td>Total</td>
-                <td id='total'>P".htmlspecialchars(number_format($record['Total'] ?? 0, 2))."</td>
+                <td id='total'>P" . htmlspecialchars(number_format($record['Total'] ?? 0, 2)) . "</td>
               </tr>
               <tr>
                 <td>Notes</td>
-                <td id='notes'>".htmlspecialchars($record['Notes'] ?? 'N/A')."</td>
+                <td id='notes'>" . htmlspecialchars($record['Notes'] ?? 'N/A') . "</td>
               </tr>
               </tbody>
           </table>";
-
-          }else if ($docType == "SOA" && $package == "Full Container") {
+          } else if ($docType == "SOA" && $package == "Full Container") {
             echo "
             <table>
             <thead>
@@ -507,109 +505,108 @@ $record = selectRecords($conn, $dept, $refNum);
             <tbody>
               <tr>
                 <td>95% Ocean Freight</td>
-                <td id='ocean-freight-95'>P".htmlspecialchars(number_format($record['OceanFreight95'] ?? 0, 2))."</td>
+                <td id='ocean-freight-95'>P" . htmlspecialchars(number_format($record['OceanFreight95'] ?? 0, 2)) . "</td>
               </tr>
               <tr>
                 <td>THC</td>
-                <td id='thc'>P".htmlspecialchars(number_format($record['THC'] ?? 0, 2))."</td>
+                <td id='thc'>P" . htmlspecialchars(number_format($record['THC'] ?? 0, 2)) . "</td>
               </tr>
               <tr>
                 <td>AISL</td>
-                <td id='eLodge'>P".htmlspecialchars(number_format($record['AISL'] ?? 0, 2))."</td>
+                <td id='eLodge'>P" . htmlspecialchars(number_format($record['AISL'] ?? 0, 2)) . "</td>
               </tr>
               <tr>
                 <td>GO Fast</td>
-                <td id='gofast'>P".htmlspecialchars(number_format($record['GOFast'] ?? 0, 2))."</td>
+                <td id='gofast'>P" . htmlspecialchars(number_format($record['GOFast'] ?? 0, 2)) . "</td>
               </tr>
                 <tr>
                 <td>Processing</td>
-                <td id='processing'>P".htmlspecialchars(number_format($record['Processing'] ?? 0, 2))."</td>
+                <td id='processing'>P" . htmlspecialchars(number_format($record['Processing'] ?? 0, 2)) . "</td>
               </tr>
                 <tr>
                 <td>Additional Processing</td>
-                <td id='additional-processing'>P".htmlspecialchars(number_format($record['AdditionalProcessing'] ?? 0, 2))."</td>
+                <td id='additional-processing'>P" . htmlspecialchars(number_format($record['AdditionalProcessing'] ?? 0, 2)) . "</td>
               </tr>
                 <tr>
                 <td>Customs Forms/Stamps</td>
-                <td id='forms-stamps'>P".htmlspecialchars(number_format($record['FormsStamps'] ?? 0, 2))."</td>
+                <td id='forms-stamps'>P" . htmlspecialchars(number_format($record['FormsStamps'] ?? 0, 2)) . "</td>
               </tr>
               <tr>
                   <td>Handling</td>
-                  <td id='handling'>P".htmlspecialchars(number_format($record['Handling'] ?? 0, 2))."</td>
+                  <td id='handling'>P" . htmlspecialchars(number_format($record['Handling'] ?? 0, 2)) . "</td>
                 </tr>
                 <tr>
                   <td>Extra Handling Fee</td>
-                  <td id='extra-handling'>P".htmlspecialchars(number_format($record['ExtraHandlingFee'] ?? 0, 2))."</td>
+                  <td id='extra-handling'>P" . htmlspecialchars(number_format($record['ExtraHandlingFee'] ?? 0, 2)) . "</td>
                 </tr>
                 <tr>
                 <td>Photocopy/Notarial</td>
-                <td id='photocopy-notarial'>P".htmlspecialchars(number_format($record['PhotocopyNotarial'] ?? 0, 2))."</td>
+                <td id='photocopy-notarial'>P" . htmlspecialchars(number_format($record['PhotocopyNotarial'] ?? 0, 2)) . "</td>
               </tr>
                 <tr>
                 <td>Clearance Expenses</td>
-                <td id='clearance-expenses'>P".htmlspecialchars(number_format($record['ClearanceExpenses'] ?? 0, 2))."</td>
+                <td id='clearance-expenses'>P" . htmlspecialchars(number_format($record['ClearanceExpenses'] ?? 0, 2)) . "</td>
               </tr>
                 <tr>
                 <td>Hauling and Trucking</td>
-                <td id='hauling-trucking'>P".htmlspecialchars(number_format($record['HaulingTrucking'] ?? 0, 2))."</td>
+                <td id='hauling-trucking'>P" . htmlspecialchars(number_format($record['HaulingTrucking'] ?? 0, 2)) . "</td>
               </tr>
               <tr>
                 <td>Additional Container</td>
-                <td id='additional-container'>P".htmlspecialchars(number_format($record['AdditionalContainer'] ?? 0, 2))."</td>
+                <td id='additional-container'>P" . htmlspecialchars(number_format($record['AdditionalContainer'] ?? 0, 2)) . "</td>
               </tr>
                 <tr>
                 <td>StuffingPlant</td>
-                <td id='stuffing-plant'>P".htmlspecialchars(number_format($record['StuffingPlant'] ?? 0, 2))."</td>
+                <td id='stuffing-plant'>P" . htmlspecialchars(number_format($record['StuffingPlant'] ?? 0, 2)) . "</td>
               </tr>
                 <tr>
                 <td>IED/Entry Encoding</td>
-                <td id='ied'>P".htmlspecialchars(number_format($record['IED'] ?? 0, 2))."</td>
+                <td id='ied'>P" . htmlspecialchars(number_format($record['IED'] ?? 0, 2)) . "</td>
               </tr> <tr>
                 <td>Early Gate In</td>
-                <td id='early-gate-in'>P".htmlspecialchars(number_format($record['EarlyGateIn'] ?? 0, 2))."</td>
+                <td id='early-gate-in'>P" . htmlspecialchars(number_format($record['EarlyGateIn'] ?? 0, 2)) . "</td>
               </tr> <tr>
                 <td>TABS</td>
-                <td id='tabs'>P".htmlspecialchars(number_format($record['TABS'] ?? 0, 2))."</td>
+                <td id='tabs'>P" . htmlspecialchars(number_format($record['TABS'] ?? 0, 2)) . "</td>
               </tr> <tr>
                 <td>Docs Fee</td>
-                <td id='docs-fee'>P".htmlspecialchars(number_format($record['DocsFee'] ?? 0, 2))."</td>
+                <td id='docs-fee'>P" . htmlspecialchars(number_format($record['DocsFee'] ?? 0, 2)) . "</td>
               </tr> 
               <tr>
                 <td>Others</td>
-                <td id='others'>P".htmlspecialchars(number_format($record['Others'] ?? 0, 2))."</td>
+                <td id='others'>P" . htmlspecialchars(number_format($record['Others'] ?? 0, 2)) . "</td>
               </tr> 
               <tr>
                 <td>Detention Charges</td>
-                <td id='detention-charges'>P".htmlspecialchars(number_format($record['DetentionCharges'] ?? 0, 2))."</td>
+                <td id='detention-charges'>P" . htmlspecialchars(number_format($record['DetentionCharges'] ?? 0, 2)) . "</td>
               </tr>  
               <tr>
                 <td>Container Deposit</td>
-                <td id='container-deposit'>P".htmlspecialchars(number_format($record['ContainerDeposit'] ?? 0, 2))."</td>
+                <td id='container-deposit'>P" . htmlspecialchars(number_format($record['ContainerDeposit'] ?? 0, 2)) . "</td>
               </tr> 
               <tr>
                 <td>Late Charge</td>
-                <td id='late-charge'>P".htmlspecialchars(number_format($record['LateCharge'] ?? 0, 2))."</td>
+                <td id='late-charge'>P" . htmlspecialchars(number_format($record['LateCharge'] ?? 0, 2)) . "</td>
               </tr>
               <tr>
                 <td>Late Collection</td>
-                <td id='late-collection'>P".htmlspecialchars(number_format($record['LateCollection'] ?? 0, 2))."</td>
+                <td id='late-collection'>P" . htmlspecialchars(number_format($record['LateCollection'] ?? 0, 2)) . "</td>
               </tr>
                 <tr>
                 <td>Demurrage</td>
-                <td id='demurrage'>P".htmlspecialchars(number_format($record['Demurrage'] ?? 0, 2))."</td>
+                <td id='demurrage'>P" . htmlspecialchars(number_format($record['Demurrage'] ?? 0, 2)) . "</td>
               </tr>
               <tr>
                 <td>Total</td>
-                <td id='total'>P".htmlspecialchars(number_format($record['Total'] ?? 0, 2))."</td>
+                <td id='total'>P" . htmlspecialchars(number_format($record['Total'] ?? 0, 2)) . "</td>
               </tr>
               <tr>
                 <td>Notes</td>
-                <td id='notes'>".htmlspecialchars($record['Notes'] ?? 'N/A')."</td>
+                <td id='notes'>" . htmlspecialchars($record['Notes'] ?? 'N/A') . "</td>
               </tr>
               </tbody>
           </table>";
-
-          }else if ($docType == "Invoice" && $package == "LCL") {
+          } else if ($docType == "Invoice" && $package == "LCL") {
             echo "
             <table>
             <thead>
@@ -621,32 +618,31 @@ $record = selectRecords($conn, $dept, $refNum);
             <tbody>
               <tr>
                 <td>5% Ocean Freight</td>
-                <td id='ocean-freight-5'>P".htmlspecialchars(number_format($record['OceanFreight5'] ?? 0, 2))."</td>
+                <td id='ocean-freight-5'>P" . htmlspecialchars(number_format($record['OceanFreight5'] ?? 0, 2)) . "</td>
               </tr>
               <tr>
                 <td>Brokerage Fee</td>
-                <td id='brokerage-fee'>P".htmlspecialchars(number_format($record['BrokerageFee'] ?? 0, 2))."</td>
+                <td id='brokerage-fee'>P" . htmlspecialchars(number_format($record['BrokerageFee'] ?? 0, 2)) . "</td>
               </tr>
               <tr>
                 <td>12% VAT</td>
-                <td id='vat-12'>P".htmlspecialchars(number_format($record['Vat12'] ?? 0, 2))."</td>
+                <td id='vat-12'>P" . htmlspecialchars(number_format($record['Vat12'] ?? 0, 2)) . "</td>
               </tr>
               <tr>
                 <td>Others</td>
-                <td id='others'>P".htmlspecialchars(number_format($record['Others'] ?? 0, 2))."</td>
+                <td id='others'>P" . htmlspecialchars(number_format($record['Others'] ?? 0, 2)) . "</td>
               </tr>
               <tr>
                 <td>Total</td>
-                <td id='total'>P".htmlspecialchars(number_format($record['Total'] ?? 0, 2))."</td>
+                <td id='total'>P" . htmlspecialchars(number_format($record['Total'] ?? 0, 2)) . "</td>
               </tr>
               <tr>
                 <td>Notes</td>
-                <td id='notes'>".htmlspecialchars($record['Notes'] ?? 'N/A')."</td>
+                <td id='notes'>" . htmlspecialchars($record['Notes'] ?? 'N/A') . "</td>
               </tr>
               </tbody>
           </table>";
-
-          }else if ($docType == "Invoice" && $package == "Full Container") {
+          } else if ($docType == "Invoice" && $package == "Full Container") {
             echo "
             <table>
             <thead>
@@ -658,31 +654,31 @@ $record = selectRecords($conn, $dept, $refNum);
             <tbody>
               <tr>
                 <td>5% Ocean Freight</td>
-                <td id='ocean-freight-5'>P".htmlspecialchars(number_format($record['OceanFreight5'] ?? 0, 2))."</td>
+                <td id='ocean-freight-5'>P" . htmlspecialchars(number_format($record['OceanFreight5'] ?? 0, 2)) . "</td>
               </tr>
               <tr>
                 <td>Brokerage Fee</td>
-                <td id='brokerage-fee'>P".htmlspecialchars(number_format($record['BrokerageFee'] ?? 0, 2))."</td>
+                <td id='brokerage-fee'>P" . htmlspecialchars(number_format($record['BrokerageFee'] ?? 0, 2)) . "</td>
               </tr>
               <tr>
                 <td>12% VAT</td>
-                <td id='vat-12'>P".htmlspecialchars(number_format($record['Vat12'] ?? 0, 2))."</td>
+                <td id='vat-12'>P" . htmlspecialchars(number_format($record['Vat12'] ?? 0, 2)) . "</td>
               </tr>
               <tr>
                 <td>Others</td>
-                <td id='others'>P".htmlspecialchars(number_format($record['Others'] ?? 0, 2))."</td>
+                <td id='others'>P" . htmlspecialchars(number_format($record['Others'] ?? 0, 2)) . "</td>
               </tr>
               <tr>
                 <td>Trucking Service</td>
-                <td id='trucking-service'>P".htmlspecialchars(number_format($record['TruckingService'] ?? 0, 2))."</td>
+                <td id='trucking-service'>P" . htmlspecialchars(number_format($record['TruckingService'] ?? 0, 2)) . "</td>
               </tr>
               <tr>
                 <td>Total</td>
-                <td id='total'>P".htmlspecialchars(number_format($record['Total'] ?? 0, 2))."</td>
+                <td id='total'>P" . htmlspecialchars(number_format($record['Total'] ?? 0, 2)) . "</td>
               </tr>
               <tr>
                 <td>Notes</td>
-                <td id='notes'>".htmlspecialchars($record['Notes'] ?? 'N/A')."</td>
+                <td id='notes'>" . htmlspecialchars($record['Notes'] ?? 'N/A') . "</td>
               </tr>
               </tbody>
           </table>";
@@ -695,7 +691,7 @@ $record = selectRecords($conn, $dept, $refNum);
           $package = $record['PackageType'];
 
           if ($docType == "SOA" && $package == "LCL") {
-            echo" 
+            echo " 
             <table>
               <thead>
                 <tr>
@@ -706,49 +702,48 @@ $record = selectRecords($conn, $dept, $refNum);
               <tbody>
                 <tr>
                   <td>95% Ocean Freight</td>
-                  <td id='ocean-freight-95'>P".htmlspecialchars(number_format($record['OceanFreight95'] ?? 0, 2))."</td>
+                  <td id='ocean-freight-95'>P" . htmlspecialchars(number_format($record['OceanFreight95'] ?? 0, 2)) . "</td>
                 </tr>
                 <tr>
                   <td>Docs Fee</td>
-                  <td id='docs-fee'>P".htmlspecialchars(number_format($record['DocsFee'] ?? 0, 2))."</td>
+                  <td id='docs-fee'>P" . htmlspecialchars(number_format($record['DocsFee'] ?? 0, 2)) . "</td>
                 </tr>
                 <tr>
                   <td>LCL Charge</td>
-                  <td id='lcl-charge'>P".htmlspecialchars(number_format($record['LCLCharge'] ?? 0, 2))."</td>
+                  <td id='lcl-charge'>P" . htmlspecialchars(number_format($record['LCLCharge'] ?? 0, 2)) . "</td>
                 </tr>
                 <tr>
                   <td>Export Processing</td>
-                  <td id='export-processing'>P".htmlspecialchars(number_format($record['ExportProcessing'] ?? 0, 2))."</td>
+                  <td id='export-processing'>P" . htmlspecialchars(number_format($record['ExportProcessing'] ?? 0, 2)) . "</td>
                 </tr>
                 <tr>
                 <td>Customs Forms/Stamps</td>
-                <td id='forms-stamps'>P".htmlspecialchars(number_format($record['FormsStamps'] ?? 0, 2))."</td>
+                <td id='forms-stamps'>P" . htmlspecialchars(number_format($record['FormsStamps'] ?? 0, 2)) . "</td>
               </tr>
                 <tr>
                 <td>Arrastre/Wharfage/Storage</td>
-                <td id='arrastrewharf'>P".htmlspecialchars(number_format($record['ArrastreWharf'] ?? 0, 2))."</td>
+                <td id='arrastrewharf'>P" . htmlspecialchars(number_format($record['ArrastreWharf'] ?? 0, 2)) . "</td>
               </tr>
                 <tr>
                   <td>E2M Fee</td>
-                  <td id='e2m-lodge'>P".htmlspecialchars(number_format($record['E2MLodge'] ?? 0, 2))."</td>
+                  <td id='e2m-lodge'>P" . htmlspecialchars(number_format($record['E2MLodge'] ?? 0, 2)) . "</td>
                 </tr>
                 <tr>
                   <td>Others</td>
-                  <td id='others'>P".htmlspecialchars(number_format($record['Others'] ?? 0, 2))."</td>
+                  <td id='others'>P" . htmlspecialchars(number_format($record['Others'] ?? 0, 2)) . "</td>
                 </tr>
                 <tr>
                   <td>Total</td>
-                  <td id='total'>P".htmlspecialchars(number_format($record['Total'] ?? 0, 2))."</td>
+                  <td id='total'>P" . htmlspecialchars(number_format($record['Total'] ?? 0, 2)) . "</td>
                 </tr>
                 <tr>
                  <td>Notes</td>
-                  <td id='notes'>".htmlspecialchars($record['Notes'] ?? 'N/A')."</td>
+                  <td id='notes'>" . htmlspecialchars($record['Notes'] ?? 'N/A') . "</td>
                 </tr>
               </tbody>
             </table>";
-
-          }else if ($docType == "SOA" && $package == "Full Container") {
-            echo" 
+          } else if ($docType == "SOA" && $package == "Full Container") {
+            echo " 
             <table>
               <thead>
                 <tr>
@@ -759,47 +754,47 @@ $record = selectRecords($conn, $dept, $refNum);
               <tbody>
                 <tr>
                   <td>95% Ocean Freight</td>
-                  <td id='ocean-freight-95'>P".htmlspecialchars(number_format($record['OceanFreight95'] ?? 0, 2))."</td>
+                  <td id='ocean-freight-95'>P" . htmlspecialchars(number_format($record['OceanFreight95'] ?? 0, 2)) . "</td>
                 </tr>
                 <tr>
                   <td>THC</td>
-                  <td id='thc'>P".htmlspecialchars(number_format($record['THC'] ?? 0, 2))."</td>
+                  <td id='thc'>P" . htmlspecialchars(number_format($record['THC'] ?? 0, 2)) . "</td>
                 </tr>
                 <tr>
                   <td>Docs Fee</td>
-                  <td id='docs-fee'>P".htmlspecialchars(number_format($record['DocsFee'] ?? 0, 2))."</td>
+                  <td id='docs-fee'>P" . htmlspecialchars(number_format($record['DocsFee'] ?? 0, 2)) . "</td>
                 </tr>
                 <tr>
                   <td>FAF</td>
-                  <td id='faf'>P".htmlspecialchars(number_format($record['FAF'] ?? 0, 2))."</td>
+                  <td id='faf'>P" . htmlspecialchars(number_format($record['FAF'] ?? 0, 2)) . "</td>
                 </tr>
                 <tr>
                   <td>Seal Fee</td>
-                  <td id='seal-fee'>P".htmlspecialchars(number_format($record['SealFee'] ?? 0, 2))."</td>
+                  <td id='seal-fee'>P" . htmlspecialchars(number_format($record['SealFee'] ?? 0, 2)) . "</td>
                 </tr>
                 <tr>
                 <td>Storage</td>
-                <td id='storage'>P".htmlspecialchars(number_format($record['Storage'] ?? 0, 2))."</td>
+                <td id='storage'>P" . htmlspecialchars(number_format($record['Storage'] ?? 0, 2)) . "</td>
               </tr>
                 <tr>
                   <td>Telex</td>
-                  <td id='telex'>P".htmlspecialchars(number_format($record['Telex'] ?? 0, 2))."</td>
+                  <td id='telex'>P" . htmlspecialchars(number_format($record['Telex'] ?? 0, 2)) . "</td>
                 </tr>
                 <tr>
                   <td>Others</td>
-                  <td id='others'>P".htmlspecialchars(number_format($record['Others'] ?? 0, 2))."</td>
+                  <td id='others'>P" . htmlspecialchars(number_format($record['Others'] ?? 0, 2)) . "</td>
                 </tr>
                 <tr>
                   <td>Total</td>
-                  <td id='total'>P".htmlspecialchars(number_format($record['Total'] ?? 0, 2))."</td>
+                  <td id='total'>P" . htmlspecialchars(number_format($record['Total'] ?? 0, 2)) . "</td>
                 </tr>
                 <tr>
                  <td>Notes</td>
-                  <td id='notes'>".htmlspecialchars($record['Notes'] ?? 'N/A')."</td>
+                  <td id='notes'>" . htmlspecialchars($record['Notes'] ?? 'N/A') . "</td>
                 </tr>
               </tbody>
             </table>";
-          }else if ($docType == "Invoice" && $package == "LCL") {
+          } else if ($docType == "Invoice" && $package == "LCL") {
             echo "
             <table>
             <thead>
@@ -811,28 +806,27 @@ $record = selectRecords($conn, $dept, $refNum);
             <tbody>
               <tr>
                 <td>5% Ocean Freight</td>
-                <td id='ocean-freight-5'>P".htmlspecialchars(number_format($record['OceanFreight5'] ?? 0, 2))."</td>
+                <td id='ocean-freight-5'>P" . htmlspecialchars(number_format($record['OceanFreight5'] ?? 0, 2)) . "</td>
               </tr>
               <tr>
                 <td>Brokerage Fee</td>
-                <td id='brokerage-fee'>P".htmlspecialchars(number_format($record['BrokerageFee'] ?? 0, 2))."</td>
+                <td id='brokerage-fee'>P" . htmlspecialchars(number_format($record['BrokerageFee'] ?? 0, 2)) . "</td>
               </tr>
               <tr>
                 <td>Others</td>
-                <td id='others'>P".htmlspecialchars(number_format($record['Others'] ?? 0, 2))."</td>
+                <td id='others'>P" . htmlspecialchars(number_format($record['Others'] ?? 0, 2)) . "</td>
               </tr>
               <tr>
                 <td>Total</td>
-                <td id='total'>P".htmlspecialchars(number_format($record['Total'] ?? 0, 2))."</td>
+                <td id='total'>P" . htmlspecialchars(number_format($record['Total'] ?? 0, 2)) . "</td>
               </tr>
               <tr>
                 <td>Notes</td>
-                <td id='notes'>".htmlspecialchars($record['Notes'] ?? 'N/A')."</td>
+                <td id='notes'>" . htmlspecialchars($record['Notes'] ?? 'N/A') . "</td>
               </tr>
               </tbody>
           </table>";
-
-          }else if ($docType == "Invoice" && $package == "Full Container") {
+          } else if ($docType == "Invoice" && $package == "Full Container") {
             echo "
             <table>
             <thead>
@@ -844,23 +838,23 @@ $record = selectRecords($conn, $dept, $refNum);
             <tbody>
               <tr>
                 <td>5% Ocean Freight</td>
-                <td id='ocean-freight-5'>P".htmlspecialchars(number_format($record['OceanFreight5'] ?? 0, 2))."</td>
+                <td id='ocean-freight-5'>P" . htmlspecialchars(number_format($record['OceanFreight5'] ?? 0, 2)) . "</td>
               </tr>
               <tr>
                 <td>12% VAT</td>
-                <td id='vat-12'>P".htmlspecialchars(number_format($record['Vat12'] ?? 0, 2))."</td>
+                <td id='vat-12'>P" . htmlspecialchars(number_format($record['Vat12'] ?? 0, 2)) . "</td>
               </tr>
               <tr>
                 <td>Others</td>
-                <td id='others'>P".htmlspecialchars(number_format($record['Others'] ?? 0, 2))."</td>
+                <td id='others'>P" . htmlspecialchars(number_format($record['Others'] ?? 0, 2)) . "</td>
               </tr>
               <tr>
                 <td>Total</td>
-                <td id='total'>P".htmlspecialchars(number_format($record['Total'] ?? 0, 2))."</td>
+                <td id='total'>P" . htmlspecialchars(number_format($record['Total'] ?? 0, 2)) . "</td>
               </tr>
               <tr>
                 <td>Notes</td>
-                <td id='notes'>".htmlspecialchars($record['Notes'] ?? 'N/A')."</td>
+                <td id='notes'>" . htmlspecialchars($record['Notes'] ?? 'N/A') . "</td>
               </tr>
               </tbody>
           </table>";
@@ -884,33 +878,32 @@ $record = selectRecords($conn, $dept, $refNum);
             <tbody>
               <tr>
                 <td>95% Ocean Freight</td>
-                <td id='ocean-freight-95'>P".htmlspecialchars(number_format($record['OceanFreight95'] ?? 0, 2))."</td>
+                <td id='ocean-freight-95'>P" . htmlspecialchars(number_format($record['OceanFreight95'] ?? 0, 2)) . "</td>
               </tr>
                 <tr>
                 <td>Advance Shipping Lines</td>
-                <td id='advance-shipping'>P".htmlspecialchars(number_format($record['AdvanceShipping'] ?? 0, 2))."</td>
+                <td id='advance-shipping'>P" . htmlspecialchars(number_format($record['AdvanceShipping'] ?? 0, 2)) . "</td>
               </tr>
               <tr>
                 <td>Processing</td>
-                <td id='processing'>P".htmlspecialchars(number_format($record['Processing'] ?? 0, 2))."</td>
+                <td id='processing'>P" . htmlspecialchars(number_format($record['Processing'] ?? 0, 2)) . "</td>
               </tr>
               <tr>
                 <td>Others</td>
-                <td id='others'>P".htmlspecialchars(number_format($record['Others'] ?? 0, 2))."</td>
+                <td id='others'>P" . htmlspecialchars(number_format($record['Others'] ?? 0, 2)) . "</td>
               </tr>
               <tr>
                 <td>Total</td>
-                <td id='total'>P".htmlspecialchars(number_format($record['Total'] ?? 0, 2))."</td>
+                <td id='total'>P" . htmlspecialchars(number_format($record['Total'] ?? 0, 2)) . "</td>
               </tr>
               <tr>
                 <td>Notes</td>
-                <td id='notes'>".htmlspecialchars($record['Notes'] ?? 'N/A')."</td>
+                <td id='notes'>" . htmlspecialchars($record['Notes'] ?? 'N/A') . "</td>
               </tr>
               </tbody>
           </table>";
-
-          }else if ($docType == "SOA" && $package == "Full Container") {
-            echo" 
+          } else if ($docType == "SOA" && $package == "Full Container") {
+            echo " 
             <table>
               <thead>
                 <tr>
@@ -921,60 +914,59 @@ $record = selectRecords($conn, $dept, $refNum);
               <tbody>
                 <tr>
                   <td>95% Ocean Freight</td>
-                  <td id='ocean-freight-95'>P".htmlspecialchars(number_format($record['OceanFreight95'] ?? 0, 2))."</td>
+                  <td id='ocean-freight-95'>P" . htmlspecialchars(number_format($record['OceanFreight95'] ?? 0, 2)) . "</td>
                 </tr>
                 <tr>
                 <td>Arrastre</td>
-                <td id='arrastre'>P".htmlspecialchars(number_format($record['ArrastreWharf'] ?? 0, 2))."</td>
+                <td id='arrastre'>P" . htmlspecialchars(number_format($record['ArrastreWharf'] ?? 0, 2)) . "</td>
               </tr>
                 <tr>
                 <td>Wharfage</td>
-                <td id='wharfage'>P".htmlspecialchars(number_format($record['Wharfage'] ?? 0, 2))."</td>
+                <td id='wharfage'>P" . htmlspecialchars(number_format($record['Wharfage'] ?? 0, 2)) . "</td>
               </tr>
                 <tr>
                 <td>Processing</td>
-                <td id='processing'>P".htmlspecialchars(number_format($record['Processing'] ?? 0, 2))."</td>
+                <td id='processing'>P" . htmlspecialchars(number_format($record['Processing'] ?? 0, 2)) . "</td>
               </tr>
                 <tr>
                 <td>Customs Forms/Stamps</td>
-                <td id='forms-stamps'>P".htmlspecialchars(number_format($record['FormsStamps'] ?? 0, 2))."</td>
+                <td id='forms-stamps'>P" . htmlspecialchars(number_format($record['FormsStamps'] ?? 0, 2)) . "</td>
               </tr>
                 <tr>
                 <td>Photocopy/Notarial</td>
-                <td id='photocopy-notarial'>P".htmlspecialchars(number_format($record['PhotocopyNotarial'] ?? 0, 2))."</td>
+                <td id='photocopy-notarial'>P" . htmlspecialchars(number_format($record['PhotocopyNotarial'] ?? 0, 2)) . "</td>
               </tr>
                 <tr>
                   <td>Documentation</td>
-                  <td id='documentation'>P".htmlspecialchars(number_format($record['Documentation'] ?? 0, 2))."</td>
+                  <td id='documentation'>P" . htmlspecialchars(number_format($record['Documentation'] ?? 0, 2)) . "</td>
                 </tr>
                 <tr>
                   <td>E2M Lodgement</td>
-                  <td id='e2m-lodge'>P".htmlspecialchars(number_format($record['E2MLodge'] ?? 0, 2))."</td>
+                  <td id='e2m-lodge'>P" . htmlspecialchars(number_format($record['E2MLodge'] ?? 0, 2)) . "</td>
                 </tr>
                 <tr>
                   <td>Stuffing (Mano)</td>
-                  <td id='manual-stuffing'>P".htmlspecialchars(number_format($record['ManualStuffing'] ?? 0, 2))."</td>
+                  <td id='manual-stuffing'>P" . htmlspecialchars(number_format($record['ManualStuffing'] ?? 0, 2)) . "</td>
                 </tr>
                 <tr>
                   <td>Handling</td>
-                  <td id='handling'>P".htmlspecialchars(number_format($record['Handling'] ?? 0, 2))."</td>
+                  <td id='handling'>P" . htmlspecialchars(number_format($record['Handling'] ?? 0, 2)) . "</td>
                 </tr>
                 <tr>
                   <td>Others</td>
-                  <td id='others'>P".htmlspecialchars(number_format($record['Others'] ?? 0, 2))."</td>
+                  <td id='others'>P" . htmlspecialchars(number_format($record['Others'] ?? 0, 2)) . "</td>
                 </tr>
                 <tr>
                   <td>Total</td>
-                  <td id='total'>P".htmlspecialchars(number_format($record['Total'] ?? 0, 2))."</td>
+                  <td id='total'>P" . htmlspecialchars(number_format($record['Total'] ?? 0, 2)) . "</td>
                 </tr>
                 <tr>
                  <td>Notes</td>
-                  <td id='notes'>".htmlspecialchars($record['Notes'] ?? 'N/A')."</td>
+                  <td id='notes'>" . htmlspecialchars($record['Notes'] ?? 'N/A') . "</td>
                 </tr>
               </tbody>
             </table>";
-
-          }else if ($docType == "Invoice" && $package == "LCL") {
+          } else if ($docType == "Invoice" && $package == "LCL") {
             echo "
             <table>
             <thead>
@@ -986,35 +978,35 @@ $record = selectRecords($conn, $dept, $refNum);
             <tbody>
               <tr>
                 <td>5% Ocean Freight</td>
-                <td id='ocean-freight-5'>P".htmlspecialchars(number_format($record['OceanFreight5'] ?? 0, 2))."</td>
+                <td id='ocean-freight-5'>P" . htmlspecialchars(number_format($record['OceanFreight5'] ?? 0, 2)) . "</td>
               </tr>
               <tr>
                 <td>Brokerage Fee</td>
-                <td id='brokerage-fee'>P".htmlspecialchars(number_format($record['BrokerageFee'] ?? 0, 2))."</td>
+                <td id='brokerage-fee'>P" . htmlspecialchars(number_format($record['BrokerageFee'] ?? 0, 2)) . "</td>
               </tr>
                 <tr>
                 <td>50% Discount</td>
-                <td id='discount-50'>P".htmlspecialchars(number_format($record['Discount50'] ?? 0, 2))."</td>
+                <td id='discount-50'>P" . htmlspecialchars(number_format($record['Discount50'] ?? 0, 2)) . "</td>
               </tr>
                 <tr>
                 <td>12% VAT</td>
-                <td id='vat-12'>P".htmlspecialchars(number_format($record['Vat12'] ?? 0, 2))."</td>
+                <td id='vat-12'>P" . htmlspecialchars(number_format($record['Vat12'] ?? 0, 2)) . "</td>
               </tr>
               <tr>
                 <td>Others</td>
-                <td id='others'>P".htmlspecialchars(number_format($record['Others'] ?? 0, 2))."</td>
+                <td id='others'>P" . htmlspecialchars(number_format($record['Others'] ?? 0, 2)) . "</td>
               </tr>
               <tr>
                 <td>Total</td>
-                <td id='total'>P".htmlspecialchars(number_format($record['Total'] ?? 0, 2))."</td>
+                <td id='total'>P" . htmlspecialchars(number_format($record['Total'] ?? 0, 2)) . "</td>
               </tr>
               <tr>
                 <td>Notes</td>
-                <td id='notes'>".htmlspecialchars($record['Notes'] ?? 'N/A')."</td>
+                <td id='notes'>" . htmlspecialchars($record['Notes'] ?? 'N/A') . "</td>
               </tr>
               </tbody>
           </table>";
-          }else if ($docType == "Invoice" && $package == "Full Container") {
+          } else if ($docType == "Invoice" && $package == "Full Container") {
             echo "
             <table>
             <thead>
@@ -1026,35 +1018,34 @@ $record = selectRecords($conn, $dept, $refNum);
             <tbody>
               <tr>
                 <td>5% Ocean Freight</td>
-                <td id='ocean-freight-5'>P".htmlspecialchars(number_format($record['OceanFreight5'] ?? 0, 2))."</td>
+                <td id='ocean-freight-5'>P" . htmlspecialchars(number_format($record['OceanFreight5'] ?? 0, 2)) . "</td>
               </tr>
               <tr>
                 <td>Brokerage Fee</td>
-                <td id='brokerage-fee'>P".htmlspecialchars(number_format($record['BrokerageFee'] ?? 0, 2))."</td>
+                <td id='brokerage-fee'>P" . htmlspecialchars(number_format($record['BrokerageFee'] ?? 0, 2)) . "</td>
               </tr>
                 <tr>
                 <td>50% Discount</td>
-                <td id='discount-50'>P".htmlspecialchars(number_format($record['Discount50'] ?? 0, 2))."</td>
+                <td id='discount-50'>P" . htmlspecialchars(number_format($record['Discount50'] ?? 0, 2)) . "</td>
               </tr>
                 <tr>
                 <td>12% VAT</td>
-                <td id='vat-12'>P".htmlspecialchars(number_format($record['Vat12'] ?? 0, 2))."</td>
+                <td id='vat-12'>P" . htmlspecialchars(number_format($record['Vat12'] ?? 0, 2)) . "</td>
               </tr>
               <tr>
                 <td>Others</td>
-                <td id='others'>P".htmlspecialchars(number_format($record['Others'] ?? 0, 2))."</td>
+                <td id='others'>P" . htmlspecialchars(number_format($record['Others'] ?? 0, 2)) . "</td>
               </tr>
               <tr>
                 <td>Total</td>
-                <td id='total'>P".htmlspecialchars(number_format($record['Total'] ?? 0, 2))."</td>
+                <td id='total'>P" . htmlspecialchars(number_format($record['Total'] ?? 0, 2)) . "</td>
               </tr>
               <tr>
                 <td>Notes</td>
-                <td id='notes'>".htmlspecialchars($record['Notes'] ?? 'N/A')."</td>
+                <td id='notes'>" . htmlspecialchars($record['Notes'] ?? 'N/A') . "</td>
               </tr>
               </tbody>
           </table>";
-          
           }
 
           break;
@@ -1079,9 +1070,9 @@ $record = selectRecords($conn, $dept, $refNum);
             <td id="approved-by">
               <?php
               if (!empty($record['Approved_by'])) {
-                  echo '<img src="' . htmlspecialchars($record['Approved_by']) . '" alt="Signature" style="max-width: 150px; border: 1px solid #ccc;" />';
+                echo '<img src="' . htmlspecialchars($record['Approved_by']) . '" alt="Signature" style="max-width: 150px; border: 1px solid #ccc;" />';
               } else {
-                  echo 'Not yet approved.';
+                echo 'Not yet approved.';
               }
               ?>
             </td>
@@ -1092,7 +1083,7 @@ $record = selectRecords($conn, $dept, $refNum);
     </div>
     <div class="info-view">
       <div class="docu-information">
-      <p class="ref-number"><?php echo htmlspecialchars($refNum) ?? 'N/A'; ?></p>
+        <p class="ref-number"><?php echo htmlspecialchars($refNum) ?? 'N/A'; ?></p>
         <p class="document-type"><?php echo htmlspecialchars($record['DocType'] ?? 'N/A'); ?></p>
         <p class="date"><strong>Date Created:</strong> <?php echo htmlspecialchars(date("d F, Y", strtotime($record['Date'])) ?? 'N/A'); ?></p>
         <p class="date"><strong>Created By:</strong> <?php echo htmlspecialchars($record['Prepared_by'] ?? 'N/A'); ?></p>
@@ -1108,34 +1099,34 @@ $record = selectRecords($conn, $dept, $refNum);
       </div>
     </div>
     <script>
-       function validateCommentField(comment) {
-            const allowedSymbols = /^[a-zA-Z0-9\$%\-\/\., \n?!]+$/; // Allow letters, numbers, $ % / . , - and newlines
-            const maxLength = 500; // Maximum character limit
+      function validateCommentField(comment) {
+        const allowedSymbols = /^[a-zA-Z0-9\$%\-\/\., \n?!]+$/; // Allow letters, numbers, $ % / . , - and newlines
+        const maxLength = 500; // Maximum character limit
 
-            if (!comment.value.trim()) {
-                // If the field is empty
-                comment.setCustomValidity(""); // Clear validation for empty values (optional)
-            } else if (!allowedSymbols.test(comment.value)) {
-                // Check for invalid symbols
-                comment.setCustomValidity("Only letters, numbers, and these symbols are allowed: $ % / - , . ? ! Newline is also allowed.");
-            } else if (comment.value.length > maxLength) {
-                // Check for length exceeding the limit
-                comment.setCustomValidity("Notes cannot exceed 255 characters");
-            } else {
-                // Everything is valid
-                comment.setCustomValidity(""); // Reset validation
-            }
-
-            comment.reportValidity(); // Show validation message
-
-            // Clear the custom validation message when the user starts typing
-            comment.addEventListener("input", function() {
-              comment.setCustomValidity("");
-            });
-
-            return comment.checkValidity(); // Return true if valid, false otherwise
+        if (!comment.value.trim()) {
+          // If the field is empty
+          comment.setCustomValidity(""); // Clear validation for empty values (optional)
+        } else if (!allowedSymbols.test(comment.value)) {
+          // Check for invalid symbols
+          comment.setCustomValidity("Only letters, numbers, and these symbols are allowed: $ % / - , . ? ! Newline is also allowed.");
+        } else if (comment.value.length > maxLength) {
+          // Check for length exceeding the limit
+          comment.setCustomValidity("Notes cannot exceed 255 characters");
+        } else {
+          // Everything is valid
+          comment.setCustomValidity(""); // Reset validation
         }
-        
+
+        comment.reportValidity(); // Show validation message
+
+        // Clear the custom validation message when the user starts typing
+        comment.addEventListener("input", function() {
+          comment.setCustomValidity("");
+        });
+
+        return comment.checkValidity(); // Return true if valid, false otherwise
+      }
+
       function updateCounter() {
         let textbox = document.getElementById("textbox");
         let counter = document.getElementById("counter");
@@ -1147,8 +1138,12 @@ $record = selectRecords($conn, $dept, $refNum);
         let comment = document.getElementById("textbox").value;
 
         if (comment.trim() === "") {
-          alert("Please enter a comment.");
-          return;
+          Swal.fire({
+            title: 'Error!',
+            text: 'Please input a comment: ',
+            icon: 'error',
+            confirmButtonText: 'OK'
+          });
         }
 
         fetch("SAVE_COMMENT.php", {
@@ -1160,11 +1155,21 @@ $record = selectRecords($conn, $dept, $refNum);
           })
           .then(response => response.text())
           .then(data => {
-            alert(data);
+            Swal.fire({
+              title: 'Success!',
+              text: 'Comment saved ' + comment,
+              icon: 'success',
+              confirmButtonText: 'OK'
+            });
           })
           .catch(error => {
             console.error("Error:", error);
-            alert("Failed to save comment.");
+            Swal.fire({
+              title: 'Error!',
+              text: 'Error: ' + comment,
+              icon: 'error',
+              confirmButtonText: 'OK'
+            });
           });
       }
     </script>

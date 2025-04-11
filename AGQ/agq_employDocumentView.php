@@ -86,6 +86,7 @@ $record = selectRecords($conn, $role, $refNum);
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" type="text/css" href="../css/employdocu.css">
   <link rel="icon" type="image/x-icon" href="../AGQ/images/favicon.ico">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 </head>
 

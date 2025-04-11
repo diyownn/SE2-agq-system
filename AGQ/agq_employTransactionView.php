@@ -537,7 +537,7 @@ if ($result) {
 
                             let checkBtn = document.createElement("button");
                             checkBtn.classList.add("btn", "btn-sm", "action-btn", "check-btn");
-                            checkBtn.id = `check-btn-<?php echo htmlspecialchars($transaction['RefNum']); ?>`;
+                            checkBtn.id = "check-btn-" + <?php echo isset($transaction['RefNum']) ? json_encode($transaction['RefNum']) : '""'; ?>;
                             checkBtn.title = "Complete";
                             checkBtn.innerHTML = '<i class="bi bi-check2"></i>';
                             checkBtn.style.display = "none";
