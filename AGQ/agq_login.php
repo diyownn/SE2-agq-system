@@ -78,8 +78,28 @@
 
     // Reset attempts and lockout start if 300 seconds have passed
     if (time() - $_SESSION['last_attempt_time'] > 300) {
-        $_SESSION['login_attempts'] = 1;
+        $_SESSION['login_attempts'] = 0;
         $_SESSION['lockout_start'] = 0;
+    }
+
+    // Lockout logic
+    if ($_SESSION['lockout_start'] > 0 && (time() - $_SESSION['lockout_start'] < 300)) {
+        echo "<script>
+                Swal.fire({
+                    position: 'center',
+                    icon: 'warning',
+                    title: 'Account Locked',
+                    text: 'Please wait 5 minutes before trying again.',
+                    showConfirmButton: false,
+                    timer: 5000
+                });
+            </script>";
+        echo "<script>
+                document.querySelector('input[name=email]').disabled = true;
+                document.querySelector('input[name=password]').disabled = true;
+                document.querySelector('button[type=submit]').disabled = true;
+            </script>";
+        exit;
     }
 
     if ((isset($_POST['email']) && $_POST['email'] != NULL) &&
@@ -99,17 +119,13 @@
             $storedHashedPassword = $row['Password']; // Retrieve hashed password
 
             if (password_verify($pass, $storedHashedPassword)) {
-                // Password is correct
                 $defPass = isset($_SESSION['defPass']) ? $_SESSION['defPass'] : '';
-
                 $role = $row['Department'];
                 $name = $row['Name'];
-                
 
                 // Set session variables
                 $_SESSION['department'] = $role;
                 $_SESSION['name'] = $name;
-                
 
                 $_SESSION['login_attempts'] = 0; // Reset login attempts
                 $_SESSION['lockout_start'] = 0; // Reset lockout time
@@ -138,12 +154,33 @@
                 $_SESSION['login_attempts']++;
                 $_SESSION['last_attempt_time'] = time();
 
+                // Check if lockout should start
+                if ($_SESSION['login_attempts'] >= 5) {
+                    $_SESSION['lockout_start'] = time();
+                    echo "<script>
+                            Swal.fire({
+                                position: 'center',
+                                icon: 'warning',
+                                title: 'Account Locked',
+                                text: 'You have reached the maximum login attempts. Please wait 5 minutes before trying again.',
+                                showConfirmButton: false,
+                                timer: 5000
+                            });
+                        </script>";
+                    echo "<script>
+                            document.querySelector('input[name=email]').disabled = true;
+                            document.querySelector('input[name=password]').disabled = true;
+                            document.querySelector('button[type=submit]').disabled = true;
+                        </script>";
+                    exit;
+                }
+
                 echo "<script>
                         Swal.fire({
                             position: 'center',
                             icon: 'error',
                             title: 'Invalid Log In',
-                            text: 'Account does not Exist or Email and Password does not match.',
+                            text: 'Account does not Exist or Email and Password do not match.',
                             showConfirmButton: false,
                             timer: 5000
                         });
@@ -156,7 +193,7 @@
                         position: 'center',
                         icon: 'error',
                         title: 'Invalid Log In',
-                        text: 'Account does not Exist or Email and Password does not match.',
+                        text: 'Account does not Exist or Email and Password do not match.',
                         showConfirmButton: false,
                         timer: 5000
                     });
@@ -169,7 +206,6 @@
 
     // Close the database connection
     $conn->close();
-
 ?>
 
     <!-- Bootstrap Popper -->
@@ -250,20 +286,6 @@
 
             return isValid;
 
-        }
-
-        function disableInputField() {
-            var inputEmail = document.getElementById("inputs");
-            var inputPass = document.getElementById("inputs0");
-            inputEmail.disabled = true;
-            inputPass.disabled = true;
-
-            // Enable the fields after 5 minutes (300000 milliseconds)
-
-            setTimeout(function() {
-                inputEmail.disabled = false;
-                inputPass.disabled = false;
-            }, 300000);
         }
 
         document.getElementById('toggle-password').addEventListener('click', function() {
