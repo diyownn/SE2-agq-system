@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-require __DIR__ . '/secret/vendor/autoload.php';
+require __DIR__ . '/vendor/autoload.php';
 
 use Dotenv\Dotenv;
 
@@ -10,12 +10,12 @@ $dotenv->load();
 
 
 $key = $_ENV['ENCRYPTION_KEY'];
+$role = isset($_SESSION['department']) ? $_SESSION['department'] : '';
 
-if (!$key || $role == '') {
+
+if (!$key && $role == '') {
     die("Location: UNAUTHORIZED.php?error=401k ");
 }
-
-$role = isset($_SESSION['department']) ? $_SESSION['department'] : '';
 
 function encrypt_url($url, $key)
 {

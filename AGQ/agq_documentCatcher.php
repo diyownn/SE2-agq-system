@@ -15,7 +15,7 @@ $dotenv->load();
 
 $key = $_ENV['ENCRYPTION_KEY'];
 
-if (!$key || $role == '' || $refNum == '' || $docType == '' ) {
+if (!$key && $role == '' && $refNum == '' && $docType == '') {
     header("Location: UNAUTHORIZED.php?error=401k");
     exit();
 }

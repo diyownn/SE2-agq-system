@@ -138,7 +138,7 @@ switch ($dept) {
                 
             </div>
             
-            <div class="title">' . ($docType == "SOA" ? "STATEMENT OF ACCOUNT" : "FREIGHT INVOICE") . '</div>
+            <div class="title">' . ($docType == "SOA" ? "STATEMENT OF ACCOUNT" : "SALES INVOICE") . '</div>
             
             <!-- Customer Info -->
             <table>
@@ -380,7 +380,7 @@ switch ($dept) {
                         ' . $approvedByHtml  . '
                     </td>
                     <td style="height: 60px; vertical-align: bottom; text-align: center;">
-                        <div class="signature-name">Printed Name:</div>
+                        <div class="signature-name"></div>
                         <br>
                         
                     </td>
@@ -420,6 +420,7 @@ switch ($dept) {
         // } else {
         //     debugLog("Template file exists at: $templateFile", $debugLogFile);
         // }
+               // Dompdf configuration
                 $dompdf = new \Dompdf\Dompdf([
                     'enable_remote' => true,
                     'isRemoteEnabled' => true,
@@ -442,41 +443,35 @@ switch ($dept) {
                 // Log success
                 error_log("PDF successfully created using Dompdf: $pdfSavePath");
 
-                // Clean up HTML temp file
-                if (file_exists($htmlPath)) {
-                    unlink($htmlPath);
-                }
-
                 // Serve the PDF
                 header('Content-Type: application/pdf');
                 header('Content-Disposition: attachment; filename="' . $pdfFilename . '"');
-                header('Cache-Control: max-age=0');
+                header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+                header('Cache-Control: post-check=0, pre-check=0', false);
+                header('Pragma: no-cache');
                 header('Content-Length: ' . filesize($pdfSavePath));
 
-                ob_clean();
-                flush();
+                // Ensure fresh output for each request
+                if (session_id()) {
+                    session_write_close();
+                }
+                ob_end_clean();
                 readfile($pdfSavePath);
 
-                // Clean up files
-                unlink($excelSavePath);
+                // Optional delay to prevent cleanup conflicts
+                sleep(1);
+
+                // Clean up temporary files
                 unlink($pdfSavePath);
                 exit;
+
             } catch (Exception $e) {
                 // Log detailed error
                 error_log("Dompdf conversion failed: " . $e->getMessage());
                 error_log("Error trace: " . $e->getTraceAsString());
-
-                // Fall back to Excel if PDF generation fails
-                header('Content-Type: application/vnd.ms-excel');
-                header('Content-Disposition: attachment; filename="' . $excelFilename . '"');
-                header('Cache-Control: max-age=0');
-                header('Content-Length: ' . filesize($excelSavePath));
-
-                ob_clean();
-                flush();
-                readfile($excelSavePath);
                 exit;
             }
+
         } else {
             // // If Dompdf is not available, use Excel output as fallback
             // header('Content-Type: application/vnd.ms-excel');
@@ -887,6 +882,8 @@ switch ($dept) {
                 // Log detailed error
                 error_log("Dompdf conversion failed: " . $e->getMessage());
                 error_log("Error trace: " . $e->getTraceAsString());
+
+                exit;
             }
         } else {
 

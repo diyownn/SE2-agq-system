@@ -1,6 +1,6 @@
 /* General Body Styling */
 body {
-    font-family: 'IBM Plex Sans', Arial, sans-serif;
+    font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
     background-color: #ffffff;
@@ -10,37 +10,12 @@ body {
     flex-direction: column;
 }
 
-/* Add this to your motc.css file */
-.department-dropdown {
-    width: 200px; /* Set a reasonable fixed width */
-    padding: 5px;
-    border-radius: 4px;
-    border: 1px solid #ccc;
-    background-color: white;
-    font-size: 14px;
-    box-sizing: border-box;
-}
-
-/* Adjust the table header styling */
-#userTable th {
-    padding: 10px;
-    text-align: left;
-    background-color: #f2f2f2;
-    position: relative;
-}
-
-/* Make the column that contains the dropdown wider */
-#userTable th:nth-child(4) {
-    min-width: 220px; /* Should be slightly larger than dropdown width */
-}
-
 /* Header Section */
 .header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 90%;
-    max-width: 1400px;
+    width: 80%;
     margin-top: 50px;
     margin-bottom: 20px;
 }
@@ -57,7 +32,7 @@ h1 {
 .top-bar {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 0px;
 }
 
 /* Search Bar Styling */
@@ -69,6 +44,8 @@ h1 {
     background-color: #d0d0d0;
     outline: none;
     font-size: 14px;
+    margin-top: 25px;
+
 }
 
 /* Search Button Styling */
@@ -92,11 +69,13 @@ h1 {
     color: black;
     border: none;
     border-radius: 20px;
+    margin-left: 20px;
     cursor: pointer;
     font-weight: bold;
     text-transform: uppercase;
     display: flex;
     align-items: center;
+    position: relative;
     font-size: 12px;
     height: 38px;
 }
@@ -115,8 +94,7 @@ h1 {
 
 /* Green Container */
 .container {
-    width: 90%;
-    max-width: 1400px;
+    width: 80%;
     background-color: #d6deb1;
     padding: 30px;
     border-radius: 30px;
@@ -125,141 +103,156 @@ h1 {
     margin-bottom: 50px;
 }
 
-/* Table Container Styling */
+/* Table Styling */
 .table-container {
-    width: 100%;
-    overflow-x: auto;
-    padding: 0;
+    background-color: #d6deb1;
+    padding: 20px;
     border-radius: 20px;
 }
 
-/* Table Styling */
 table {
     width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
-    table-layout: fixed;
+    border-collapse: collapse;
 }
 
-/* Table Header */
+th, td {
+    padding: 13px;
+    text-align: center;
+    border: 2px solid #8ea75e;
+}
+
 th {
-    background-color: #d6deb1;
-    border: 2px solid #8ea75e;
-    padding: 10px;
-    text-align: center;
-    font-size: 14px;
-    white-space: nowrap;
-}
-
-/* Table Cells */
-td {
-    border: 2px solid #8ea75e;
-    padding: 10px;
-    text-align: center;
-    font-size: 14px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-/* Column Specific Widths */
-table tr td:nth-child(1), /* User ID */
-table tr th:nth-child(1) {
-    width: 13%;
-    min-width: 100px;
-}
-
-table tr td:nth-child(2), /* Name */
-table tr th:nth-child(2) {
-    width: 15%;
-    min-width: 100px;
-}
-
-table tr td:nth-child(3), /* Email */
-table tr th:nth-child(3) {
-    width: 35%;
-    min-width: 200px;
-}
-
-table tr td:nth-child(4), /* Department */
-table tr th:nth-child(4) {
-    width: 22%;
-    min-width: 150px;
-}
-
-table tr td:nth-child(5), /* Delete */
-table tr th:nth-child(5) {
-    width: 15%;
-    min-width: 100px;
-}
-
-/* Delete Button Styling */
-.delete-btn {
-    display: inline-block;
-    padding: 8px 15px;
-    background-color: #8ea75e;
-    color: black;
-    border: none;
-    border-radius: 15px;
-    cursor: pointer;
+    background-color: white;
     font-weight: bold;
-    transition: background 0.3s ease;
-    white-space: nowrap;
-    font-size: 12px;
+    color: black;
+    text-transform: uppercase;
+    font-size: 14px;
 }
 
-.delete-btn:hover {
-    background-color: #7a994e;
+.department-dropdown {
+    background-color: white;
+    font-weight: bold;
+    color: black;
+    text-transform: uppercase;
+    font-size: 14px;
 }
 
-/* Responsive Design */
-@media screen and (max-width: 1200px) {
-    .header, .container {
-        width: 95%;
-    }
-
-    table {
-        font-size: 12px;
-    }
+td {
+    background-color: white;
+    height: 25px;
 }
 
-@media screen and (max-width: 768px) {
-    .header, .container {
-        width: 98%;
-        padding: 15px;
-    }
-
-    .table-container {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-    }
-
-    table {
-        min-width: 600px;
-    }
-
-    th, td {
-        font-size: 11px;
-        padding: 6px;
-    }
-
-    .delete-btn {
-        padding: 6px 12px;
-        font-size: 12px;
-    }
+/* MODAL POPUP STYLING */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
 }
 
-/* Back Button */
-.back-button {
+.modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 15px;
+    width: 350px;
+    text-align: center;
+    position: relative;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* Close Button */
+.close {
     position: absolute;
     top: 10px;
-    left: 20px;
-    margin: 0;
+    right: 15px;
+    font-size: 20px;
+    cursor: pointer;
+    font-weight: bold;
 }
 
-.back-button a {
-    text-decoration: none;
-    color: black;
-    font-size: 24px;
+/* Form Styling */
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    text-align: left;
+    font-size: 12px;
     font-weight: bold;
+    margin-top: 10px;
+}
+
+input {
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid black;
+    background-color: #d3d3d3;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+#department {
+    display: block !important;
+    padding: 10px !important;
+    padding-right: 25px !important; 
+    margin-bottom: 10px !important;
+    border: 1px solid black !important;
+    background-color: #d3d3d3 !important;
+    font-size: 14px !important;
+    width: 100% !important;
+    margin-top: 5px !important;
+    appearance: none !important; 
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="black"><path d="M7 10l5 5 5-5z"/></svg>') !important; 
+    background-repeat: no-repeat !important;
+    background-position: calc(100% - 10px) center !important; 
+    background-size: 16px !important;
+}
+
+
+button {
+    background-color: #8b9e62;
+    color: white;
+    border: none;
+    padding: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 15px;
+    border-radius: 5px;
+}
+
+.delete-btn {
+        background-color: #9e6262;
+        color: white;
+        border: none;
+        padding: 10px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        margin-top: 15px;
+        border-radius: 5px;
+    
+}
+
+button:hover {
+    background-color: #798c54;
+}
+
+/* Responsive */
+@media screen and (max-width: 768px) {
+    .header, .container {
+        width: 90%;
+    }
+
+    .search-bar {
+        width: 150px;
+    }
 }
