@@ -836,7 +836,7 @@ switch ($dept) {
         </body>
         </html>';
 
-                // Create PDF using Dompdf
+                // Dompdf configuration
                 $dompdf = new \Dompdf\Dompdf([
                     'enable_remote' => true,
                     'isRemoteEnabled' => true,
@@ -847,7 +847,7 @@ switch ($dept) {
                 $dompdf->setPaper('A4', 'portrait');
                 $dompdf->render();
 
-                $pdfFilename = $cleanRefNum . "-Export_Brokerage.pdf";
+                $pdfFilename = $cleanRefNum . "-Import_Forwarding.pdf";
                 $pdfSavePath = __DIR__ . '/' . $pdfFilename;
                 file_put_contents($pdfSavePath, $dompdf->output());
 
@@ -859,22 +859,25 @@ switch ($dept) {
                 // Log success
                 error_log("PDF successfully created using Dompdf: $pdfSavePath");
 
-                // Clean up HTML temp file
-                if (file_exists($htmlPath)) {
-                    unlink($htmlPath);
-                }
-
                 // Serve the PDF
                 header('Content-Type: application/pdf');
                 header('Content-Disposition: attachment; filename="' . $pdfFilename . '"');
-                header('Cache-Control: max-age=0');
+                header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+                header('Cache-Control: post-check=0, pre-check=0', false);
+                header('Pragma: no-cache');
                 header('Content-Length: ' . filesize($pdfSavePath));
 
-                ob_clean();
-                flush();
+                // Ensure fresh output for each request
+                if (session_id()) {
+                    session_write_close();
+                }
+                ob_end_clean();
                 readfile($pdfSavePath);
 
-                // Clean up files
+                // Optional delay to prevent cleanup conflicts
+                sleep(1);
+
+                // Clean up temporary files
                 unlink($pdfSavePath);
                 exit;
 
@@ -882,7 +885,6 @@ switch ($dept) {
                 // Log detailed error
                 error_log("Dompdf conversion failed: " . $e->getMessage());
                 error_log("Error trace: " . $e->getTraceAsString());
-
                 exit;
             }
         } else {
