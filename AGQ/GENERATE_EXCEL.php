@@ -1,31 +1,64 @@
 <?php
 require __DIR__ . '/vendor/autoload.php';
-require_once 'db_agq.php';
 
 session_start();
 
-//use Mpdf\Mpdf;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xls;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use Mpdf\Mpdf;
 use Dompdf\Dompdf;
 
 
-// ini_set('display_errors', 1);
-// ini_set('display_startup_errors', 1);
-// error_reporting(E_ALL);
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+
+$servername = "localhost";
+$username = "root";
+$pass = "";
+$dbase = "agq_database";
+
+$conn = new mysqli($servername, $username, $pass, $dbase);
+
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+// $refnum = $_GET['request'] ?? null;
+// $dept = $_GET['user'] ?? null;
 
 $refNum = isset($_GET['refNum']) ? $_GET['refNum'] : '';
+//$refNum = "EB229340";
 $dept = isset($_SESSION['department']) ? $_SESSION['department'] : '';
 
 switch ($dept) {
 
     case "Import Forwarding":
 
+        $outputFormat = 'pdf'; // Default to PDF
+
+        $templateFile = __DIR__ . '/templates/agq_ImportForwardingTemplate.xls';
+
+        // Check if Dompdf is available - if not, we'll use Excel
+        if (!class_exists('\Dompdf\Dompdf')) {
+            $outputFormat = 'excel';
+            error_log("Dompdf not available - using Excel format instead");
+        }
+
+        if (!file_exists($templateFile)) {
+            die("Error: Template file not found at: $templateFile");
+        }
+
+    
         $query = "SELECT *
-        FROM tbl_impfwd 
-        WHERE RefNum LIKE ? AND Department LIKE ?";
+                FROM tbl_impfwd 
+                WHERE RefNum LIKE ? AND Department LIKE ?";
 
         $stmt = $conn->prepare($query);
         $stmt->bind_param("ss", $refNum, $dept);
-
         $stmt->execute();
         $result = $stmt->get_result();
         $row = $result->fetch_assoc();
@@ -379,7 +412,7 @@ switch ($dept) {
                         ' . $approvedByHtml  . '
                     </td>
                     <td style="height: 60px; vertical-align: bottom; text-align: center;">
-                        <div class="signature-name"></div>
+                        <div class="signature-name">Printed Name:</div>
                         <br>
                         
                     </td>
@@ -393,33 +426,33 @@ switch ($dept) {
         </body>
         </html>';
 
-        // $debugLogFile = __DIR__ . '/pdf_debug_' . date('Y-m-d_H-i-s') . '.log';
-        // function debugLog($message, $logFile) {
-        //     $timestamp = date('Y-m-d H:i:s');
-        //     $logMessage = "[$timestamp] $message" . PHP_EOL;
-        //     file_put_contents($logFile, $logMessage, FILE_APPEND);
-        // }
+                $debugLogFile = __DIR__ . '/pdf_debug_' . date('Y-m-d_H-i-s') . '.log';
+                function debugLog($message, $logFile)
+                {
+                    $timestamp = date('Y-m-d H:i:s');
+                    $logMessage = "[$timestamp] $message" . PHP_EOL;
+                    file_put_contents($logFile, $logMessage, FILE_APPEND);
+                }
 
-        // debugLog("=== Starting Import Forwarding process ===", $debugLogFile);
-        // debugLog("PHP Version: " . phpversion(), $debugLogFile);
-        // debugLog("Server: " . $_SERVER['SERVER_SOFTWARE'], $debugLogFile);
-        // debugLog("Memory limit: " . ini_get('memory_limit'), $debugLogFile);
+                debugLog("=== Starting Import Forwarding process ===", $debugLogFile);
+                debugLog("PHP Version: " . phpversion(), $debugLogFile);
+                debugLog("Server: " . $_SERVER['SERVER_SOFTWARE'], $debugLogFile);
+                debugLog("Memory limit: " . ini_get('memory_limit'), $debugLogFile);
 
-        // ini_set('memory_limit', '256M');
-        // debugLog("New memory limit: " . ini_get('memory_limit'), $debugLogFile);
+                ini_set('memory_limit', '256M');
+                debugLog("New memory limit: " . ini_get('memory_limit'), $debugLogFile);
 
-        // $domPdfAvailable = class_exists('\Dompdf\Dompdf');
-        // debugLog("DomPDF class exists: " . ($domPdfAvailable ? "YES" : "NO"), $debugLogFile);
+                $domPdfAvailable = class_exists('\Dompdf\Dompdf');
+                debugLog("DomPDF class exists: " . ($domPdfAvailable ? "YES" : "NO"), $debugLogFile);
 
-        // $domPdfExtensions = ['dom', 'gd', 'mbstring', 'fileinfo'];
+                $domPdfExtensions = ['dom', 'gd', 'mbstring', 'fileinfo'];
 
-        // if (!file_exists($templateFile)) {
-        //     debugLog("ERROR: Template file not found at: $templateFile", $debugLogFile);
-        //     die("Error: Template file not found at: $templateFile");
-        // } else {
-        //     debugLog("Template file exists at: $templateFile", $debugLogFile);
-        // }
-               // Dompdf configuration
+                if (!file_exists($templateFile)) {
+                    debugLog("ERROR: Template file not found at: $templateFile", $debugLogFile);
+                    die("Error: Template file not found at: $templateFile");
+                } else {
+                    debugLog("Template file exists at: $templateFile", $debugLogFile);
+                }
                 $dompdf = new \Dompdf\Dompdf([
                     'enable_remote' => true,
                     'isRemoteEnabled' => true,
@@ -442,96 +475,1010 @@ switch ($dept) {
                 // Log success
                 error_log("PDF successfully created using Dompdf: $pdfSavePath");
 
+                // Clean up HTML temp file
+                if (file_exists($htmlPath)) {
+                    unlink($htmlPath);
+                }
+
                 // Serve the PDF
                 header('Content-Type: application/pdf');
                 header('Content-Disposition: attachment; filename="' . $pdfFilename . '"');
-                header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
-                header('Cache-Control: post-check=0, pre-check=0', false);
-                header('Pragma: no-cache');
+                header('Cache-Control: max-age=0');
                 header('Content-Length: ' . filesize($pdfSavePath));
 
-                // Ensure fresh output for each request
-                if (session_id()) {
-                    session_write_close();
-                }
-                ob_end_clean();
+                ob_clean();
+                flush();
                 readfile($pdfSavePath);
 
-                // Optional delay to prevent cleanup conflicts
-                sleep(1);
-
-                // Clean up temporary files
+                // Clean up files
+                unlink($excelSavePath);
                 unlink($pdfSavePath);
                 exit;
-
             } catch (Exception $e) {
                 // Log detailed error
                 error_log("Dompdf conversion failed: " . $e->getMessage());
                 error_log("Error trace: " . $e->getTraceAsString());
+
+                // Fall back to Excel if PDF generation fails
+                header('Content-Type: application/vnd.ms-excel');
+                header('Content-Disposition: attachment; filename="' . $excelFilename . '"');
+                header('Cache-Control: max-age=0');
+                header('Content-Length: ' . filesize($excelSavePath));
+
+                ob_clean();
+                flush();
+                readfile($excelSavePath);
+                unlink($excelSavePath);
                 exit;
             }
-
         } else {
-            // // If Dompdf is not available, use Excel output as fallback
-            // header('Content-Type: application/vnd.ms-excel');
-            // header('Content-Disposition: attachment; filename="' . $excelFilename . '"');
-            // header('Cache-Control: max-age=0');
-            // header('Content-Length: ' . filesize($excelSavePath));
+            // If Dompdf is not available, use Excel output as fallback
+            header('Content-Type: application/vnd.ms-excel');
+            header('Content-Disposition: attachment; filename="' . $excelFilename . '"');
+            header('Cache-Control: max-age=0');
+            header('Content-Length: ' . filesize($excelSavePath));
 
-            // ob_clean();
-            // flush();
-            // readfile($excelSavePath);
-            // unlink($excelSavePath);
+            ob_clean();
+            flush();
+            readfile($excelSavePath);
+            unlink($excelSavePath);
+            exit;
+        }
+    case "Import Brokerage":
+        $outputFormat = 'pdf'; // Default to PDF
 
-            echo '<script>
-            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-            document.addEventListener("DOMContentLoaded", function() {
-                Swal.fire({
-                    title: "Error!",
-                    text: "Error updating record: ' . $stmt->error . '",
-                    icon: "error",
-                    confirmButtonText: "OK"
-                });
-            });
-        </script>';
+        $templateFile = __DIR__ . '/templates/agq_ImportBrokerageTemplate.xls';
 
+        // Check if Dompdf is available - if not, we'll use Excel
+        if (!class_exists('\Dompdf\Dompdf')) {
+            $outputFormat = 'excel';
+            error_log("Dompdf not available - using Excel format instead");
+        }
+
+        if (!file_exists($templateFile)) {
+            die("Error: Template file not found at: $templateFile");
+        }
+
+        $query = "SELECT *
+                    FROM tbl_impbrk 
+                    WHERE RefNum LIKE ? AND Department LIKE ?";
+
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param("ss", $refNum, $dept);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+
+        if ($row) {
+            $docType = $row['DocType'];
+            $packageType = $row['PackageType'];
+
+            // Process signature data AFTER retrieving the row
+            if (isset($row['Approved_by']) && !empty($row['Approved_by'])) {
+                // Try to detect if it's a data URL
+                if (strpos($row['Approved_by'], 'data:image') === 0) {
+                    // It's a base64 image data URL, display it as an image
+                    $approvedByHtml = '<img src="' . $row['Approved_by'] . '" style="max-height:50px; max-width:80%;" />';
+                    $approvedByHtml .= '<div class="signature-name">' . (isset($row['Approved_name']) ? htmlspecialchars($row['Approved_name']) : '') . '</div>';
+                } else if (ctype_print($row['Approved_by'])) {
+                    // It's regular text, display the name
+                    $approvedByHtml = '<div class="signature-name">' . htmlspecialchars($row['Approved_by']) . '</div>';
+                } else {
+                    // It might be binary image data without the data:image prefix
+                    // Try to convert it to a proper base64 image
+                    try {
+                        $base64 = base64_encode($row['Approved_by']);
+                        $approvedByHtml = '<img src="data:image/png;base64,' . $base64 . '" style="max-height:50px; max-width:80%;" />';
+                        $approvedByHtml .= '<div class="signature-name">' . (isset($row['Approved_name']) ? htmlspecialchars($row['Approved_name']) : '') . '</div>';
+                    } catch (Exception $e) {
+                        // Fallback to just showing the name
+                        $approvedByHtml = '<div class="signature-name">' . htmlspecialchars($row['Approved_by']) . '</div>';
+                    }
+                }
+            } else {
+                $approvedByHtml = '<div class="signature-name">&nbsp;</div>';
+            }
+
+            // For prepared by signature - similar approach
+            if (isset($row['Prepared_by']) && !empty($row['Prepared_by'])) {
+                if (strpos($row['Prepared_by'], 'data:image') === 0) {
+                    // It's a base64 image data URL, display it as an image
+                    $preparedByHtml = '<img src="' . $row['Prepared_by'] . '" style="max-height:50px; max-width:80%;" />';
+                    $preparedByHtml .= '<div class="signature-name">' . (isset($row['Prepared_name']) ? htmlspecialchars($row['Prepared_name']) : '') . '</div>';
+                } else if (ctype_print($row['Prepared_by'])) {
+                    // It's regular text, display the name
+                    $preparedByHtml = '<div class="signature-name">' . htmlspecialchars($row['Prepared_by']) . '</div>';
+                } else {
+                    // Try to convert binary data to image
+                    try {
+                        $base64 = base64_encode($row['Prepared_by']);
+                        $preparedByHtml = '<img src="data:image/png;base64,' . $base64 . '" style="max-height:50px; max-width:80%;" />';
+                        $preparedByHtml .= '<div class="signature-name">' . (isset($row['Prepared_name']) ? htmlspecialchars($row['Prepared_name']) : '') . '</div>';
+                    } catch (Exception $e) {
+                        // Fallback to just showing the name
+                        $preparedByHtml = '<div class="signature-name">' . htmlspecialchars($row['Prepared_by']) . '</div>';
+                    }
+                }
+            } else {
+                $preparedByHtml = '<div class="signature-name">&nbsp;</div>';
+            }
+        }
+
+        // Clean reference number for filenames
+        $cleanRefNum = str_replace(['/', '-'], '', $refNum);
+
+
+
+        // Create PDF with custom HTML approach using Dompdf
+        if (class_exists('\Dompdf\Dompdf') && $outputFormat === 'pdf') {
+            try {
+                // Create custom HTML directly instead of converting from Excel
+                $html = '<!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <title>Import Brokerage Document</title>
+                <style>
+                    body { font-family: Arial, sans-serif; margin: 20px; font-size: 11pt; }
+                    .header { text-align: center; margin-bottom: 20px; }
+                    .logo-text { font-size: 18pt; font-weight: bold; }
+                    .address-line { font-size: 8pt; margin: 0; }
+                    .doc-number { text-align: right; margin-top: 10px; font-weight: bold; }
+                    .title { font-size: 14pt; font-weight: bold; text-align: center; margin: 15px 0; text-decoration: underline; }
+                    
+                    table { width: 100%; border-collapse: collapse; }
+                    table, th, td { border: 1px solid black; }
+                    th, td { padding: 4px; font-size: 10pt; }
+                    
+                    .header-row { background-color: #f0f0f0; }
+                    .charges-title { font-weight: bold; background-color: #f0f0f0; }
+                    .green-text { color: green; }
+                    .currency { text-align: right; }
+                    .total-row { font-weight: bold; border-top: 2px solid black; }
+                    
+                    .signature-table { margin-top: 20px; }
+                    .signature-table td { border: 1px solid black; height: 60px; vertical-align: bottom; text-align: center; }
+                    .signature-name { display: inline-block; width: 80%; }
+                    
+                    .footer { font-size: 8pt; font-style: italic; margin-top: 10px; }
+                </style>
+            </head>
+            <body>
+                <div class="header">
+                    <div class="logo-text">
+                        AGQ Freight Logistics, Inc.
+                    </div>
+                    <p class="address-line">RM. 518 G/F Alliance Bldg. 410 Quintin Paredes Street, Brgy. 289 Zone 027 1006 Binondo,</p>
+                    <p class="address-line">NCR, City Of Manila, First District, Philippines</p>
+                    <p class="address-line">VAT Reg. TIN: 243-733-638-00000 Tel. No. (632) 8244-8935* (632) 8243-7095</p>
+                    <p class="address-line">Email Add: info@agqfreight.com.ph/accounting@agqfreight.com.ph</p>
+                    
+                    
+                </div>
+                
+                <div class="title">' . ($docType == "SOA" ? "STATEMENT OF ACCOUNT" : "SALES INVOICE") . '</div>
+                
+                <!-- Customer Info -->
+                <table>
+                    <tr>
+                        <td width="50%" style="vertical-align: top;">
+                            <strong>To:</strong><br>
+                            ' . htmlspecialchars($row['To:']) . '<br>
+                            <strong>Address:</strong> ' . htmlspecialchars($row['Address']) . '<br>
+                            <strong>TIN:</strong> ' . htmlspecialchars($row['Tin']) . '<br>
+                            <strong>Attention:</strong> ' . htmlspecialchars($row['Attention']) . '
+                        </td>
+                        <td width="50%">
+                            <strong>Date:</strong><br>
+                            ' . htmlspecialchars($row['Date']) . '
+                        </td>
+                    </tr>
+                </table>
+                
+                <!-- Shipment Info -->
+                <table style="margin-top: 10px;">
+                    <tr>
+                        <td width="33%"><strong>Vessel</strong></td>
+                        <td width="33%"><strong>ETD/ETA</strong></td>
+                        <td width="34%"><strong>Ref. No.</strong></td>
+                    </tr>
+                    <tr>
+                        <td>' . htmlspecialchars($row['Vessel']) . '</td>
+                        <td>' . htmlspecialchars($row['ETA']) . '</td>
+                        <td>' . htmlspecialchars($row['RefNum']) . '</td>
+                    </tr>
+                </table>
+                
+                <table style="margin-top: 10px;">
+                    <tr>
+                        <td width="33%"><strong>Origin/Destination</strong></td>
+                        <td width="33%"><strong>ER</strong></td>
+                        <td width="34%"><strong>BL/HBL No.</strong></td>
+                    </tr>
+                    <tr>
+                        <td>' . htmlspecialchars($row['DestinationOrigin']) . '</td>
+                        <td>' . htmlspecialchars($row['ER']) . '</td>
+                        <td>' . htmlspecialchars($row['BHNum']) . '</td>
+                    </tr>
+                </table>
+                
+                <table style="margin-top: 10px;">
+                    <tr>
+                        <td width="25%"><strong>Nature of Goods</strong></td>
+                        <td width="25%"><strong>Packages</strong></td>
+                        <td width="25%"><strong>Weight</strong></td>
+                        <td width="25%"><strong>Volume</strong></td>
+                    </tr>
+                    <tr>
+                        <td>' . htmlspecialchars($row['NatureOfGoods']) . '</td>
+                        <td>' . htmlspecialchars($row['Packages']) . ' </td>
+                        <td>' . htmlspecialchars($row['Weight']) . ' </td>
+                        <td>' . htmlspecialchars($row['Volume']) . ' </td>
+                    </tr>
+                </table>
+                
+                <!-- Charges Table -->
+                <table style="margin-top: 10px;">
+                    <tr class="charges-title">
+                        <td colspan="2">Reimbursable Charges</td>
+                        <td width="20%">AMOUNT</td>
+                    </tr>';
+
+                // Generate dynamic charges based on document type and package type
+                if ($docType == "SOA" && $packageType == "LCL") {
+                    $html .= '
+                    <tr>
+                        <td colspan="2">95% OF OCEAN FREIGHT</td>
+                        <td class="currency">Php ' . number_format($row['OceanFreight95'], 2) . '</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">FORWARDER</td>
+                        <td class="currency">Php ' . number_format($row['Forwarder'], 2) . '</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">WAREHOUSE CHARGE</td>
+                        <td class="currency">Php ' . number_format($row['WarehouseCharge'], 2) . '</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">E-LODGE</td>
+                        <td class="currency">Php ' . number_format($row['ELodge'], 2) . '</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">PROCESSING</td>
+                        <td class="currency">Php ' . number_format($row['Processing'], 2) . '</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">FORMS & STAMPS</td>
+                        <td class="currency">Php ' . number_format($row['FormsStamps'], 2) . '</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">PHOTOCOPY & NOTARIAL</td>
+                        <td class="currency">Php ' . number_format($row['PhotocopyNotarial'], 2) . '</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">DOCUMENTATION</td>
+                        <td class="currency">Php ' . number_format($row['Documentation'], 2) . '</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">DELIVERY EXPENSE</td>
+                        <td class="currency">Php ' . number_format($row['DeliveryExpense'], 2) . '</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">MISCELLANEOUS</td>
+                        <td class="currency">Php ' . number_format($row['Miscellaneous'], 2) . '</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">OTHERS</td>
+                        <td class="currency">Php ' . number_format($row['Others'], 2) . '</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">DOOR 2 DOOR</td>
+                        <td class="currency">Php ' . number_format($row['Door2Door'], 2) . '</td>
+                    </tr>';
+                } else if ($docType == "SOA" && $packageType == "Full Container") {
+                    $html .= '
+                    <tr>
+                        <td colspan="2">95% OF OCEAN FREIGHT</td>
+                        <td class="currency">Php ' . number_format($row['OceanFreight95'], 2) . '</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">ARRASTRE & WHARF</td>
+                        <td class="currency">Php ' . number_format($row['ArrastreWharf'], 2) . '</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">THC</td>
+                        <td class="currency">Php ' . number_format($row['THC'], 2) . '</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">AISL</td>
+                        <td class="currency">Php ' . number_format($row['AISL'], 2) . '</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">GO FAST</td>
+                        <td class="currency">Php ' . number_format($row['GOFast'], 2) . '</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">PROCESSING</td>
+                        <td class="currency">Php ' . number_format($row['Processing'], 2) . '</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">ADDITIONAL PROCESSING</td>
+                        <td class="currency">Php ' . number_format($row['AdditionalProcessing'], 2) . '</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">FORMS & STAMPS</td>
+                        <td class="currency">Php ' . number_format($row['FormsStamps'], 2) . '</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">HANDLING</td>
+                        <td class="currency">Php ' . number_format($row['Handling'], 2) . '</td>
+                    </tr>';
+
+                    // Add all other charges for the SOA & Full Container
+                    if (isset($row['ExtraHandlingFee']) && $row['ExtraHandlingFee'] > 0) {
+                        $html .= '
+                    <tr>
+                        <td colspan="2">EXTRA HANDLING FEE</td>
+                        <td class="currency">Php ' . number_format($row['ExtraHandlingFee'], 2) . '</td>
+                    </tr>';
+                    }
+
+                    // Continue with other charges...
+                    $html .= '
+                    <tr>
+                        <td colspan="2">PHOTOCOPY & NOTARIAL</td>
+                        <td class="currency">Php ' . number_format($row['PhotocopyNotarial'], 2) . '</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">CLEARANCE EXPENSES</td>
+                        <td class="currency">Php ' . number_format($row['ClearanceExpenses'], 2) . '</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">HAULING & TRUCKING</td>
+                        <td class="currency">Php ' . number_format($row['HaulingTrucking'], 2) . '</td>
+                    </tr>';
+
+                    // Add remaining charges for Full Container SOA
+                    // ...
+                } else if ($docType == "Invoice" && $packageType == "LCL") {
+                    $html .= '
+                    <tr>
+                        <td colspan="2">5% OF OCEAN FREIGHT</td>
+                        <td class="currency">Php ' . number_format($row['OceanFreight5'], 2) . '</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">BROKERAGE FEE</td>
+                        <td class="currency">Php ' . number_format($row['BrokerageFee'], 2) . '</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">VAT (12%)</td>
+                        <td class="currency">Php ' . number_format($row['Vat12'], 2) . '</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">OTHERS</td>
+                        <td class="currency">Php ' . number_format($row['Others'], 2) . '</td>
+                    </tr>';
+                } else if ($docType == "Invoice" && $packageType == "Full Container") {
+                    $html .= '
+                <tr>
+                    <td colspan="2">5% OF OCEAN FREIGHT</td>
+                    <td class="currency">Php ' . number_format($row['OceanFreight5'], 2) . '</td>
+                </tr>
+                <tr>
+                    <td colspan="2">BROKERAGE FEE</td>
+                    <td class="currency">Php ' . number_format($row['BrokerageFee'], 2) . '</td>
+                </tr>
+                <tr>
+                    <td colspan="2">VAT (12%)</td>
+                    <td class="currency">Php ' . number_format($row['Vat12'], 2) . '</td>
+                </tr>
+                <tr>
+                    <td colspan="2">OTHERS</td>
+                    <td class="currency">Php ' . number_format($row['Others'], 2) . '</td>
+                </tr>
+                <tr>
+                    <td colspan="2">TRUCKING SERVICE</td>
+                    <td class="currency">Php ' . number_format($row['TruckingService'], 2) . '</td>
+                </tr>';
+                }
+
+                // If the Notes field contains an invoice reference, display it before the total
+                if (!empty($row['Notes'])) {
+                    $html .= '
+                <tr>
+                    <td colspan="3" style="text-align: center; font-style: italic;">***' . htmlspecialchars($row['Notes']) . '***</td>
+                </tr>';
+                }
+
+                // Total row
+                $html .= '
+                <tr class="total-row">
+                    <td colspan="2" style="text-align: right;"><strong>TOTAL:</strong></td>
+                    <td class="currency">Php ' . number_format($row['Total'], 2) . '</td>
+                </tr>
+            </table>
+            
+            <!-- Signature Section -->
+            <table class="signature-table">
+                <tr>
+                    <td width="33%">
+                        <strong>Prepared By:</strong>
+                    </td>
+                    <td width="33%">
+                        <strong>Approved By:</strong>
+                    </td>
+                    <td width="34%">
+                        <strong>Received By:</strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="height: 60px; vertical-align: bottom; text-align: center;">
+                        '  . $preparedByHtml . '
+                    </td>
+                    <td style="height: 60px; vertical-align: bottom; text-align: center;">
+                        ' . $approvedByHtml  . '
+                    </td>
+                    <td style="height: 60px; vertical-align: bottom; text-align: center;">
+                        <div class="signature-name">Printed Name:</div>
+                        <br>
+                        
+                    </td>
+                </tr>
+            </table>
+            
+            <div class="footer">
+                *Interest of 12% per annum shall be charged on all overdue accounts, and in the event of judicial proceeding to enforce collection customer...
+            </div>
+            
+        </body>
+        </html>';
+
+                // Debugging log setup
+                $debugLogFile = __DIR__ . '/pdf_debug_' . date('Y-m-d_H-i-s') . '.log';
+                function debugLog($message, $logFile)
+                {
+                    $timestamp = date('Y-m-d H:i:s');
+                    $logMessage = "[$timestamp] $message" . PHP_EOL;
+                    file_put_contents($logFile, $logMessage, FILE_APPEND);
+                }
+
+                debugLog("=== Starting Import Brokerage process ===", $debugLogFile);
+                debugLog("PHP Version: " . phpversion(), $debugLogFile);
+                debugLog("Server: " . $_SERVER['SERVER_SOFTWARE'], $debugLogFile);
+                debugLog("Memory limit: " . ini_get('memory_limit'), $debugLogFile);
+
+                ini_set('memory_limit', '256M');
+                debugLog("New memory limit: " . ini_get('memory_limit'), $debugLogFile);
+
+                $domPdfAvailable = class_exists('\Dompdf\Dompdf');
+                debugLog("DomPDF class exists: " . ($domPdfAvailable ? "YES" : "NO"), $debugLogFile);
+
+                if (!file_exists($templateFile)) {
+                    debugLog("ERROR: Template file not found at: $templateFile", $debugLogFile);
+                    die("Error: Template file not found at: $templateFile");
+                } else {
+                    debugLog("Template file exists at: $templateFile", $debugLogFile);
+                }
+
+                // Create Dompdf instance
+                $dompdf = new \Dompdf\Dompdf([
+                    'enable_remote' => true,
+                    'isRemoteEnabled' => true,
+                    'isHtml5ParserEnabled' => true,
+                    'defaultFont' => 'Arial'
+                ]);
+                $dompdf->loadHtml($html);
+                $dompdf->setPaper('A4', 'portrait');
+                $dompdf->render();
+
+                $pdfFilename = $cleanRefNum . "-Import_Brokerage.pdf";
+                $pdfSavePath = __DIR__ . '/' . $pdfFilename;
+                file_put_contents($pdfSavePath, $dompdf->output());
+
+                // Verify PDF was created successfully
+                if (!file_exists($pdfSavePath) || filesize($pdfSavePath) < 100) {
+                    throw new Exception("PDF was not created properly");
+                }
+
+                // Log success
+                error_log("PDF successfully created using Dompdf: $pdfSavePath");
+
+                // Serve the PDF
+                header('Content-Type: application/pdf');
+                header('Content-Disposition: attachment; filename="' . $pdfFilename . '"');
+                header('Cache-Control: max-age=0');
+                header('Content-Length: ' . filesize($pdfSavePath));
+
+                ob_clean();
+                flush();
+                readfile($pdfSavePath);
+
+                // Clean up files
+                unlink($excelSavePath);
+                unlink($pdfSavePath);
+                exit;
+            } catch (Exception $e) {
+                // Log detailed error
+                error_log("Dompdf conversion failed: " . $e->getMessage());
+                error_log("Error trace: " . $e->getTraceAsString());
+
+                // Fall back to Excel if PDF generation fails
+                header('Content-Type: application/vnd.ms-excel');
+                header('Content-Disposition: attachment; filename="' . $excelFilename . '"');
+                header('Cache-Control: max-age=0');
+                header('Content-Length: ' . filesize($excelSavePath));
+
+                ob_clean();
+                flush();
+                readfile($excelSavePath);
+                unlink($excelSavePath);
+                exit;
+            }
+        } else {
+            // If Dompdf is not available, use Excel output as fallback
+            header('Content-Type: application/vnd.ms-excel');
+            header('Content-Disposition: attachment; filename="' . $excelFilename . '"');
+            header('Cache-Control: max-age=0');
+            header('Content-Length: ' . filesize($excelSavePath));
+
+            ob_clean();
+            flush();
+            readfile($excelSavePath);
+            unlink($excelSavePath);
             exit;
         }
 
         break;
 
-    case "Import Brokerage":
-
-        $query = "SELECT *
-                FROM tbl_impbrk 
-                WHERE RefNum LIKE ? AND Department LIKE ?";
-
-        $stmt = $conn->prepare($query);
-        $stmt->bind_param("ss", $refNum, $dept);
-
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $row = $result->fetch_assoc();
-      
-        break;
-
-
     case "Export Forwarding":
+        $outputFormat = 'pdf'; // Default to PDF
 
-        $query = "SELECT *
-                FROM tbl_expfwd 
-                WHERE RefNum LIKE ? AND Department LIKE ?";
+        $templateFile = __DIR__ . '/templates/agq_ExportForwardingTemplate.xlsx';
+
+        // Check if Dompdf is available - if not, we'll use Excel
+        if (!class_exists('\Dompdf\Dompdf')) {
+            $outputFormat = 'excel';
+            error_log("Dompdf not available - using Excel format instead");
+        }
+
+        if (!file_exists($templateFile)) {
+            die("Error: Template file not found at: $templateFile");
+        }
+
+       
+
+        $query = "SELECT `To:`, `Address`, Tin, Attention, `Date`, Vessel, ETA, RefNum, DestinationOrigin, ER, BHNum,
+            NatureOfGoods, Packages, `Weight`, Volume, PackageType, OceanFreight95, OceanFreight5, BrokerageFee, 
+            Others, Notes, Vat12, DocsFee, LCLCharge, ExportProcessing, FormsStamps, ArrastreWharf, 
+            E2MLodge, THC, FAF, SealFee, Storage, Telex, Total, Prepared_by, Approved_by, DocType, Prepared_name, Approved_name
+            FROM tbl_expfwd 
+            WHERE RefNum LIKE ? AND Department LIKE ?";
 
         $stmt = $conn->prepare($query);
         $stmt->bind_param("ss", $refNum, $dept);
-
         $stmt->execute();
         $result = $stmt->get_result();
         $row = $result->fetch_assoc();
-       
+
+        if ($row) {
+            $docType = $row['DocType'];
+            $packageType = $row['PackageType'];
+
+            // Process signature data AFTER retrieving the row
+            if (isset($row['Approved_by']) && !empty($row['Approved_by'])) {
+                // Try to detect if it's a data URL
+                if (strpos($row['Approved_by'], 'data:image') === 0) {
+                    // It's a base64 image data URL, display it as an image
+                    $approvedByHtml = '<img src="' . $row['Approved_by'] . '" style="max-height:50px; max-width:80%;" />';
+                    $approvedByHtml .= '<div class="signature-name">' . (isset($row['Approved_name']) ? htmlspecialchars($row['Approved_name']) : '') . '</div>';
+                } else if (ctype_print($row['Approved_by'])) {
+                    // It's regular text, display the name
+                    $approvedByHtml = '<div class="signature-name">' . htmlspecialchars($row['Approved_by']) . '</div>';
+                } else {
+                    // It might be binary image data without the data:image prefix
+                    // Try to convert it to a proper base64 image
+                    try {
+                        $base64 = base64_encode($row['Approved_by']);
+                        $approvedByHtml = '<img src="data:image/png;base64,' . $base64 . '" style="max-height:50px; max-width:80%;" />';
+                        $approvedByHtml .= '<div class="signature-name">' . (isset($row['Approved_name']) ? htmlspecialchars($row['Approved_name']) : '') . '</div>';
+                    } catch (Exception $e) {
+                        // Fallback to just showing the name
+                        $approvedByHtml = '<div class="signature-name">' . htmlspecialchars($row['Approved_by']) . '</div>';
+                    }
+                }
+            } else {
+                $approvedByHtml = '<div class="signature-name">&nbsp;</div>';
+            }
+
+            // For prepared by signature - similar approach
+            if (isset($row['Prepared_by']) && !empty($row['Prepared_by'])) {
+                if (strpos($row['Prepared_by'], 'data:image') === 0) {
+                    // It's a base64 image data URL, display it as an image
+                    $preparedByHtml = '<img src="' . $row['Prepared_by'] . '" style="max-height:50px; max-width:80%;" />';
+                    $preparedByHtml .= '<div class="signature-name">' . (isset($row['Prepared_name']) ? htmlspecialchars($row['Prepared_name']) : '') . '</div>';
+                } else if (ctype_print($row['Prepared_by'])) {
+                    // It's regular text, display the name
+                    $preparedByHtml = '<div class="signature-name">' . htmlspecialchars($row['Prepared_by']) . '</div>';
+                } else {
+                    // Try to convert binary data to image
+                    try {
+                        $base64 = base64_encode($row['Prepared_by']);
+                        $preparedByHtml = '<img src="data:image/png;base64,' . $base64 . '" style="max-height:50px; max-width:80%;" />';
+                        $preparedByHtml .= '<div class="signature-name">' . (isset($row['Prepared_name']) ? htmlspecialchars($row['Prepared_name']) : '') . '</div>';
+                    } catch (Exception $e) {
+                        // Fallback to just showing the name
+                        $preparedByHtml = '<div class="signature-name">' . htmlspecialchars($row['Prepared_by']) . '</div>';
+                    }
+                }
+            } else {
+                $preparedByHtml = '<div class="signature-name">&nbsp;</div>';
+            }
+        }
+
+
+        // Create PDF with custom HTML approach using Dompdf
+        if (class_exists('\Dompdf\Dompdf') && $outputFormat === 'pdf') {
+            try {
+                // Create custom HTML directly instead of converting from Excel
+                $html = '<!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>Export Forwarding Document</title>
+            <style>
+                body { font-family: Arial, sans-serif; margin: 20px; font-size: 11pt; }
+                .header { text-align: center; margin-bottom: 20px; }
+                .logo-text { font-size: 18pt; font-weight: bold; }
+                .address-line { font-size: 8pt; margin: 0; }
+                .doc-number { text-align: right; margin-top: 10px; font-weight: bold; }
+                .title { font-size: 14pt; font-weight: bold; text-align: center; margin: 15px 0; text-decoration: underline; }
+                
+                table { width: 100%; border-collapse: collapse; }
+                table, th, td { border: 1px solid black; }
+                th, td { padding: 4px; font-size: 10pt; }
+                
+                .header-row { background-color: #f0f0f0; }
+                .charges-title { font-weight: bold; background-color: #f0f0f0; }
+                .green-text { color: green; }
+                .currency { text-align: right; }
+                .total-row { font-weight: bold; border-top: 2px solid black; }
+                
+                .signature-table { margin-top: 20px; }
+                .signature-table td { border: 1px solid black; height: 60px; vertical-align: bottom; text-align: center; }
+                .signature-name { display: inline-block; width: 80%; }
+                
+                .footer { font-size: 8pt; font-style: italic; margin-top: 10px; }
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <div class="logo-text">
+                    AGQ Freight Logistics, Inc.
+                </div>
+                <p class="address-line">RM. 518 G/F Alliance Bldg. 410 Quintin Paredes Street, Brgy. 289 Zone 027 1006 Binondo,</p>
+                <p class="address-line">NCR, City Of Manila, First District, Philippines</p>
+                <p class="address-line">VAT Reg. TIN: 243-733-638-00000 Tel. No. (632) 8244-8935* (632) 8243-7095</p>
+                <p class="address-line">Email Add: info@agqfreight.com.ph/accounting@agqfreight.com.ph</p>
+            </div>
+            
+            <div class="title">' . ($docType == "SOA" ? "STATEMENT OF ACCOUNT" : "SALES INVOICE") . '</div>
+            
+            <!-- Customer Info -->
+            <table>
+                <tr>
+                    <td width="50%" style="vertical-align: top;">
+                        <strong>To:</strong><br>
+                        ' . htmlspecialchars($row['To:']) . '<br>
+                        <strong>Address:</strong> ' . htmlspecialchars($row['Address']) . '<br>
+                        <strong>TIN:</strong> ' . htmlspecialchars($row['Tin']) . '<br>
+                        <strong>Attention:</strong> ' . htmlspecialchars($row['Attention']) . '
+                    </td>
+                    <td width="50%">
+                        <strong>Date:</strong><br>
+                        ' . htmlspecialchars($row['Date']) . '
+                    </td>
+                </tr>
+            </table>
+            
+            <!-- Shipment Info -->
+            <table style="margin-top: 10px;">
+                <tr>
+                    <td width="33%"><strong>Vessel</strong></td>
+                    <td width="33%"><strong>ETD/ETA</strong></td>
+                    <td width="34%"><strong>Ref. No.</strong></td>
+                </tr>
+                <tr>
+                    <td>' . htmlspecialchars($row['Vessel']) . '</td>
+                    <td>' . htmlspecialchars($row['ETA']) . '</td>
+                    <td>' . htmlspecialchars($row['RefNum']) . '</td>
+                </tr>
+            </table>
+            
+            <table style="margin-top: 10px;">
+                <tr>
+                    <td width="33%"><strong>Origin/Destination</strong></td>
+                    <td width="33%"><strong>ER</strong></td>
+                    <td width="34%"><strong>BL/HBL No.</strong></td>
+                </tr>
+                <tr>
+                    <td>' . htmlspecialchars($row['DestinationOrigin']) . '</td>
+                    <td>' . htmlspecialchars($row['ER']) . '</td>
+                    <td>' . htmlspecialchars($row['BHNum']) . '</td>
+                </tr>
+            </table>
+            
+            <table style="margin-top: 10px;">
+                <tr>
+                    <td width="25%"><strong>Nature of Goods</strong></td>
+                    <td width="25%"><strong>Packages</strong></td>
+                    <td width="25%"><strong>Weight</strong></td>
+                    <td width="25%"><strong>Volume</strong></td>
+                </tr>
+                <tr>
+                    <td>' . htmlspecialchars($row['NatureOfGoods']) . '</td>
+                    <td>' . htmlspecialchars($row['Packages']) . ' </td>
+                    <td>' . htmlspecialchars($row['Weight']) . ' </td>
+                    <td>' . htmlspecialchars($row['Volume']) . ' </td>
+                </tr>
+            </table>
+            
+            <!-- Charges Table -->
+            <table style="margin-top: 10px;">
+                <tr class="charges-title">
+                    <td colspan="2">Reimbursable Charges</td>
+                    <td width="20%">AMOUNT</td>
+                </tr>';
+
+                // Generate dynamic charges based on document type and package type
+                if ($docType == "SOA" && $packageType == "LCL") {
+                    $html .= '
+                <tr>
+                    <td colspan="2">95% OF OCEAN FREIGHT</td>
+                    <td class="currency">Php ' . number_format($row['OceanFreight95'], 2) . '</td>
+                </tr>
+                <tr>
+                    <td colspan="2">DOCS FEE</td>
+                    <td class="currency">Php ' . number_format($row['DocsFee'], 2) . '</td>
+                </tr>
+                <tr>
+                    <td colspan="2">LCL CHARGE</td>
+                    <td class="currency">Php ' . number_format($row['LCLCharge'], 2) . '</td>
+                </tr>
+                <tr>
+                    <td colspan="2">EXPORT PROCESSING</td>
+                    <td class="currency">Php ' . number_format($row['ExportProcessing'], 2) . '</td>
+                </tr>
+                <tr>
+                    <td colspan="2">FORMS & STAMPS</td>
+                    <td class="currency">Php ' . number_format($row['FormsStamps'], 2) . '</td>
+                </tr>
+                <tr>
+                    <td colspan="2">ARRASTRE & WHARF</td>
+                    <td class="currency">Php ' . number_format($row['ArrastreWharf'], 2) . '</td>
+                </tr>
+                <tr>
+                    <td colspan="2">E2M LODGE</td>
+                    <td class="currency">Php ' . number_format($row['E2MLodge'], 2) . '</td>
+                </tr>
+                <tr>
+                    <td colspan="2">OTHERS</td>
+                    <td class="currency">Php ' . number_format($row['Others'], 2) . '</td>
+                </tr>';
+                } else if ($docType == "SOA" && $packageType == "Full Container") {
+                    $html .= '
+                <tr>
+                    <td colspan="2">95% OF OCEAN FREIGHT</td>
+                    <td class="currency">Php ' . number_format($row['OceanFreight95'], 2) . '</td>
+                </tr>
+                <tr>
+                    <td colspan="2">THC</td>
+                    <td class="currency">Php ' . number_format($row['THC'], 2) . '</td>
+                </tr>
+                <tr>
+                    <td colspan="2">DOCS FEE</td>
+                    <td class="currency">Php ' . number_format($row['DocsFee'], 2) . '</td>
+                </tr>
+                <tr>
+                    <td colspan="2">FAF</td>
+                    <td class="currency">Php ' . number_format($row['FAF'], 2) . '</td>
+                </tr>
+                <tr>
+                    <td colspan="2">SEAL FEE</td>
+                    <td class="currency">Php ' . number_format($row['SealFee'], 2) . '</td>
+                </tr>
+                <tr>
+                    <td colspan="2">STORAGE</td>
+                    <td class="currency">Php ' . number_format($row['Storage'], 2) . '</td>
+                </tr>
+                <tr>
+                    <td colspan="2">TELEX</td>
+                    <td class="currency">Php ' . number_format($row['Telex'], 2) . '</td>
+                </tr>
+                <tr>
+                    <td colspan="2">OTHERS</td>
+                    <td class="currency">Php ' . number_format($row['Others'], 2) . '</td>
+                </tr>';
+                } else if ($docType == "Invoice" && $packageType == "LCL") {
+                    $html .= '
+                <tr>
+                    <td colspan="2">5% OF OCEAN FREIGHT</td>
+                    <td class="currency">Php ' . number_format($row['OceanFreight5'], 2) . '</td>
+                </tr>
+                <tr>
+                    <td colspan="2">BROKERAGE FEE</td>
+                    <td class="currency">Php ' . number_format($row['BrokerageFee'], 2) . '</td>
+                </tr>
+                <tr>
+                    <td colspan="2">OTHERS</td>
+                    <td class="currency">Php ' . number_format($row['Others'], 2) . '</td>
+                </tr>';
+                } else if ($docType == "Invoice" && $packageType == "Full Container") {
+                    $html .= '
+                <tr>
+                    <td colspan="2">5% OF OCEAN FREIGHT</td>
+                    <td class="currency">Php ' . number_format($row['OceanFreight5'], 2) . '</td>
+                </tr>
+                <tr>
+                    <td colspan="2">VAT (12%)</td>
+                    <td class="currency">Php ' . number_format($row['Vat12'], 2) . '</td>
+                </tr>
+                <tr>
+                    <td colspan="2">OTHERS</td>
+                    <td class="currency">Php ' . number_format($row['Others'], 2) . '</td>
+                </tr>';
+                }
+
+                // If the Notes field contains an invoice reference, display it before the total
+                if (!empty($row['Notes'])) {
+                    $html .= '
+                <tr>
+                    <td colspan="3" style="text-align: center; font-style: italic;">***' . htmlspecialchars($row['Notes']) . '***</td>
+                </tr>';
+                }
+
+                // Total row
+                $html .= '
+                <tr class="total-row">
+                    <td colspan="2" style="text-align: right;"><strong>TOTAL:</strong></td>
+                    <td class="currency">Php ' . number_format($row['Total'], 2) . '</td>
+                </tr>
+            </table>
+            
+            <!-- Signature Section -->
+            <table class="signature-table">
+                <tr>
+                    <td width="33%">
+                        <strong>Prepared By:</strong>
+                    </td>
+                    <td width="33%">
+                        <strong>Approved By:</strong>
+                    </td>
+                    <td width="34%">
+                        <strong>Received By:</strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="height: 60px; vertical-align: bottom; text-align: center;">
+                        '  . $preparedByHtml . '
+                    </td>
+                    <td style="height: 60px; vertical-align: bottom; text-align: center;">
+                        ' . $approvedByHtml  . '
+                    </td>
+                    <td style="height: 60px; vertical-align: bottom; text-align: center;">
+                        <div class="signature-name">Printed Name:</div>
+                        <br>
+                        
+                    </td>
+                </tr>
+            </table>
+            
+            <div class="footer">
+                *Interest of 12% per annum shall be charged on all overdue accounts, and in the event of judicial proceeding to enforce collection customer...
+            </div>
+            
+        </body>
+        </html>';
+
+                // Debugging log setup
+                $debugLogFile = __DIR__ . '/pdf_debug_' . date('Y-m-d_H-i-s') . '.log';
+                function debugLog($message, $logFile)
+                {
+                    $timestamp = date('Y-m-d H:i:s');
+                    $logMessage = "[$timestamp] $message" . PHP_EOL;
+                    file_put_contents($logFile, $logMessage, FILE_APPEND);
+                }
+
+                debugLog("=== Starting Export Forwarding process ===", $debugLogFile);
+                debugLog("PHP Version: " . phpversion(), $debugLogFile);
+                debugLog("Server: " . $_SERVER['SERVER_SOFTWARE'], $debugLogFile);
+                debugLog("Memory limit: " . ini_get('memory_limit'), $debugLogFile);
+
+                ini_set('memory_limit', '256M');
+                debugLog("New memory limit: " . ini_get('memory_limit'), $debugLogFile);
+
+                $domPdfAvailable = class_exists('\Dompdf\Dompdf');
+                debugLog("DomPDF class exists: " . ($domPdfAvailable ? "YES" : "NO"), $debugLogFile);
+
+                if (!file_exists($templateFile)) {
+                    debugLog("ERROR: Template file not found at: $templateFile", $debugLogFile);
+                    die("Error: Template file not found at: $templateFile");
+                } else {
+                    debugLog("Template file exists at: $templateFile", $debugLogFile);
+                }
+
+                // Create Dompdf instance
+                $dompdf = new \Dompdf\Dompdf([
+                    'enable_remote' => true,
+                    'isRemoteEnabled' => true,
+                    'isHtml5ParserEnabled' => true,
+                    'defaultFont' => 'Arial'
+                ]);
+                $dompdf->loadHtml($html);
+                $dompdf->setPaper('A4', 'portrait');
+                $dompdf->render();
+
+                $pdfFilename = $cleanRefNum . "-Export_Forwarding.pdf";
+                $pdfSavePath = __DIR__ . '/' . $pdfFilename;
+                file_put_contents($pdfSavePath, $dompdf->output());
+
+                // Verify PDF was created successfully
+                if (!file_exists($pdfSavePath) || filesize($pdfSavePath) < 100) {
+                    throw new Exception("PDF was not created properly");
+                }
+
+                // Log success
+                error_log("PDF successfully created using Dompdf: $pdfSavePath");
+
+                // Serve the PDF
+                header('Content-Type: application/pdf');
+                header('Content-Disposition: attachment; filename="' . $pdfFilename . '"');
+                header('Cache-Control: max-age=0');
+                header('Content-Length: ' . filesize($pdfSavePath));
+
+                ob_clean();
+                flush();
+                readfile($pdfSavePath);
+
+                // Clean up files
+                unlink($excelSavePath);
+                unlink($pdfSavePath);
+                exit;
+            } catch (Exception $e) {
+                // Log detailed error
+                error_log("Dompdf conversion failed: " . $e->getMessage());
+                error_log("Error trace: " . $e->getTraceAsString());
+
+                // Fall back to Excel if PDF generation fails
+                header('Content-Type: application/vnd.ms-excel');
+                header('Content-Disposition: attachment; filename="' . $excelFilename . '"');
+                header('Cache-Control: max-age=0');
+                header('Content-Length: ' . filesize($excelSavePath));
+
+                ob_clean();
+                flush();
+                readfile($excelSavePath);
+                unlink($excelSavePath);
+                exit;
+            }
+        } else {
+            // If Dompdf is not available, use Excel output as fallback
+            header('Content-Type: application/vnd.ms-excel');
+            header('Content-Disposition: attachment; filename="' . $excelFilename . '"');
+            header('Cache-Control: max-age=0');
+            header('Content-Length: ' . filesize($excelSavePath));
+
+            ob_clean();
+            flush();
+            readfile($excelSavePath);
+            unlink($excelSavePath);
+            exit;
+        }
+
         break;
+
 
     case "Export Brokerage":
+       
 
         $query = "SELECT *
                 FROM tbl_expbrk 
@@ -539,7 +1486,7 @@ switch ($dept) {
 
         $stmt = $conn->prepare($query);
         $stmt->bind_param("ss", $refNum, $dept);
-       
+        //$refNum = 'EB0002/09-20' for example;
         $stmt->execute();
         $result = $stmt->get_result();
         $row = $result->fetch_assoc();
@@ -572,6 +1519,11 @@ switch ($dept) {
                 $preparedByHtml = '<div class="signature-name">&nbsp;</div>';
             }
 
+            // Fill in Excel template as before
+            if ($docType == "SOA" && $packageType == "LCL") {
+                // Your existing Excel code...
+            }
+            // Other Excel template conditions...
         }
 
         // Clean reference number for filenames
@@ -852,7 +1804,12 @@ switch ($dept) {
         </body>
         </html>';
 
-                // Dompdf configuration
+                // Save HTML for debugging
+                $htmlFile = $cleanRefNum . "-temp.html";
+                $htmlPath = __DIR__ . '/' . $htmlFile;
+                file_put_contents($htmlPath, $html);
+
+                // Create PDF using Dompdf
                 $dompdf = new \Dompdf\Dompdf([
                     'enable_remote' => true,
                     'isRemoteEnabled' => true,
@@ -863,7 +1820,7 @@ switch ($dept) {
                 $dompdf->setPaper('A4', 'portrait');
                 $dompdf->render();
 
-                $pdfFilename = $cleanRefNum . "-Import_Forwarding.pdf";
+                $pdfFilename = $cleanRefNum . "-Export_Brokerage.pdf";
                 $pdfSavePath = __DIR__ . '/' . $pdfFilename;
                 file_put_contents($pdfSavePath, $dompdf->output());
 
@@ -875,50 +1832,29 @@ switch ($dept) {
                 // Log success
                 error_log("PDF successfully created using Dompdf: $pdfSavePath");
 
+                // Clean up HTML temp file
+                if (file_exists($htmlPath)) {
+                    unlink($htmlPath);
+                }
+
                 // Serve the PDF
                 header('Content-Type: application/pdf');
                 header('Content-Disposition: attachment; filename="' . $pdfFilename . '"');
-                header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
-                header('Cache-Control: post-check=0, pre-check=0', false);
-                header('Pragma: no-cache');
+                header('Cache-Control: max-age=0');
                 header('Content-Length: ' . filesize($pdfSavePath));
 
-                // Ensure fresh output for each request
-                if (session_id()) {
-                    session_write_close();
-                }
-                ob_end_clean();
+                ob_clean();
+                flush();
                 readfile($pdfSavePath);
 
-                // Optional delay to prevent cleanup conflicts
-                sleep(1);
-
-                // Clean up temporary files
+                // Clean up files
+                unlink($excelSavePath);
                 unlink($pdfSavePath);
                 exit;
-
             } catch (Exception $e) {
                 // Log detailed error
                 error_log("Dompdf conversion failed: " . $e->getMessage());
                 error_log("Error trace: " . $e->getTraceAsString());
-                exit;
             }
-        } else {
-
-            echo '<script>
-            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-            document.addEventListener("DOMContentLoaded", function() {
-                Swal.fire({
-                    title: "Error!",
-                    text: "Error updating record: ' . $stmt->error . '",
-                    icon: "error",
-                    confirmButtonText: "OK"
-                });
-            });
-        </script>';
-
-            exit;
         }
-
-        break;
 }
