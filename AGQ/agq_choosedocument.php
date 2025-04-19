@@ -14,69 +14,6 @@ if (!$company) {
     header("Location: UNAUTHORIZED.php?error=401c");
 }
 
-
-/*
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Retrieve and sanitize input
-    $transaction_id = isset($_POST['TransactionID']) ? htmlspecialchars(trim($_POST['TransactionID'])) : '';
-    $name = isset($_POST['Name']) ? htmlspecialchars(trim($_POST['Name'])) : '';
-    $department = isset($_POST['Department']) ? htmlspecialchars(trim($_POST['Department'])) : '';
-    $company_id = isset($_POST['CompanyID']) ? htmlspecialchars(trim($_POST['CompanyID'])) : '';
-    $keyword = isset($_POST['SearchKeyword']) ? htmlspecialchars(trim($_POST['SearchKeyword'])) : '';
-    $query_type = "user_search"; // Example query type, can be modified
-
-    // Validate input
-    if (!empty($transaction_id) && !empty($name) && !empty($department) && !empty($company_id)) {
-        // Store data in session
-        $_SESSION['TransactionID'] = $transaction_id;
-        $_SESSION['Name'] = $name;
-        $_SESSION['Department'] = $department;
-        $_SESSION['CompanyID'] = $company_id;
-
-        // Insert search query into the database
-        if (!empty($keyword)) {
-            $stmt = $conn->prepare("INSERT INTO search_queries (query_type, keyword) VALUES (?, ?)");
-            $stmt->bind_param("ss", $query_type, $keyword);
-            $stmt->execute();
-            $stmt->close();
-        }
-
-        // Redirect
-        header("Location: " . $_SERVER['PHP_SELF']);
-        exit();
-    } else {
-        echo "Please provide all required information.";
-    }
-} else {
-    // Retrieve session data
-    $transaction_id = $_SESSION['TransactionID'] ?? '';
-    $name = $_SESSION['Name'] ?? '';
-    $department = $_SESSION['Department'] ?? '';
-    $company_id = $_SESSION['CompanyID'] ?? '';
-
-    if (!empty($transaction_id) && !empty($name) && !empty($department) && !empty($company_id)) {
-        switch ($department) {
-            case "admin":
-                header("Location: ownerChooseDocument.php");
-                exit();
-            case "Import Forwarding":
-            case "Import Brokerage":
-            case "Export Forwarding":
-            case "Export Brokerage":
-                header("Location: employChooseDocument.php");
-                exit();
-            default:
-                echo "Unauthorized Account.";
-                break;
-        }
-    } else {
-        echo "No session data found. Please log in.";
-    }
-}
-dasdas 
-$conn->close();
-*/
 ?>
 
 <html>

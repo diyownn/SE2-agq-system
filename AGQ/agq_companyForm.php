@@ -15,7 +15,7 @@
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
 
     <!-- Local CSS -->
-    <link rel="stylesheet" type="text/css" href="agq.css">
+    <link rel="stylesheet" type="text/css" href="../css/agq.css">
 </head>
 <!-- Website Icon -->
 <link rel="icon" type="image/x-icon" href="../AGQ/images/favicon.ico">
@@ -198,42 +198,6 @@
             });
 
             return isValid;
-
-
-
-            // if (comp.value == '') {
-            //     comp.classList.add("is-invalid");
-            //     error_text = "*Please enter the company name";
-            //     comp_error.innerHTML = error_text;
-            //     comp_error.classList.add("invalid-feedback");
-            //     return false;
-            // } else {
-            //     var nameregex = /^.{2,25}$/;
-
-            //     if (!nameregex.test(comp.value)) {
-            //         comp.classList.add("is-invalid");
-            //         error_text = "*Company Name must be 2-25 characters";
-            //         comp_error.innerHTML = error_text;
-            //         comp_error.classList.add("invalid-feedback");
-            //         return false;
-            //     }
-
-            //     var symbolregex = /[!@#$%^&*()_+\-={};:'"\\|,<>\/?~]/;
-
-            //     if (symbolregex.test(comp.value)) {
-            //         comp.classList.add("is-invalid");
-            //         error_text = "*Company Name must not contain symbols";
-            //         comp_error.innerHTML = error_text;
-            //         comp_error.classList.add("invalid-feedback");
-            //         return false;
-            //     }
-
-            //     comp.classList.remove("is-invalid");
-            //     comp_error.innerHTML = "";
-            //     comp_error.classList.remove("invalid-feedback");
-            //     return true;
-            // }
-
 
         }
     </script>

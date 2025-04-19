@@ -16,7 +16,7 @@
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">    
 
     <!-- Local CSS -->
-    <link rel = "stylesheet" type="text/css" href="agq.css">
+    <link rel = "stylesheet" type="text/css" href="../css/agq.css">
 
 </head>
     <!-- Website Icon -->
@@ -80,26 +80,27 @@
         $finalPass = $_POST['rePword'];
         $hashedFinal = password_hash($finalPass, PASSWORD_BCRYPT);
 
-        $reset_pass = "Update tbl_user set Password = '".$hashedFinal."' where Email = '".$email."'";
-        $conn->query($reset_pass);
+        $stmt = $conn->prepare("UPDATE tbl_user SET Password = ? WHERE Email = ?");
+        $stmt->bind_param("ss", $hashedFinal, $email);
+        $stmt->execute();
 
         ?>
         <script>
-                Swal.fire({
-                    icon: "success",
-                    title: "Password Updated!",
-                    confirmButtonText: "Log In"
-                    }).then((result) => {
-                    
-                        if (result.isConfirmed) {
-                           window.location.href = "agq_login.php";
-                        }
-                    });
-            </script>
+            Swal.fire({
+                icon: "success",
+                title: "Password Updated!",
+                confirmButtonText: "Log In"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "agq_login.php";
+                }
+            });
+        </script>
         <?php
 
+        $stmt->close();
         $conn->close();
-        
+
     }
 
 ?>
@@ -183,59 +184,13 @@
                 });
 
             return isValid;
-            // if(rPass.value == ''){
-            //     rPass.classList.add("is-invalid");
-            //     error_text = "*Please re-enter your new Password";
-            //     rPass_error.innerHTML = error_text;
-            //     rPass_error.classList.add("invalid-feedback");
-            //     return false;
-            // } else {
-            
-            //     var passregex = /^.{8,100}$/; 
-
-            //     if(!passregex.test(rPass.value)){ 
-            //         rPass.classList.add("is-invalid");
-            //         error_text = "*Your Password must be at least 8 characters";
-            //         rPass_error.innerHTML = error_text;
-            //         rPass_error.classList.add("invalid-feedback");
-            //         return false;
-            //     }
-
-            //     var symbolregex = /[^a-zA-Z0-9!@$%^&()_+\-:|,~]/;
-
-            //     if (symbolregex.test(rPass.value)) {
-            //         rPass.classList.add("is-invalid");
-            //         error_text = "*Your Password contains invalid symbols";
-            //         rPass_error.innerHTML = error_text;
-            //         rPass_error.classList.add("invalid-feedback");
-            //         return false;
-            //     }
-
-            //     var allNumbersRegex = /^\d+$/;
-            //     var allUppercaseRegex = /^[A-Z]+$/;
-            //     var allLowercaseRegex = /^[a-z]+$/;
-
-            //     if (allNumbersRegex.test(rPass.value) || allUppercaseRegex.test(rPass.value) || allLowercaseRegex.test(rPass.value)) {
-            //         rPass.classList.add("is-invalid");
-            //         error_text = "*Your Password must be alphanumeric";
-            //         rPass_error.innerHTML = error_text;
-            //         rPass_error.classList.add("invalid-feedback");
-            //         return false;
-            //     }
-
-            //     rPass.classList.remove("is-invalid");
-            //     rPass_error.innerHTML = "";
-            //     rPass_error.classList.remove("invalid-feedback");
-            //     return true;
-            // }
+           
         }
 
         function validate_finalPassword() {
             var nPass = document.getElementById("newPass");
             var rPass = document.getElementById("rePass");
             let isValid = true; // Track overall validity
-            //var rPass_error = document.getElementById("pass-error2");
-            //var nPass_error = document.getElementById("pass-error1");
 
             if (nPass.value !== rPass.value) {
                 nPass.setCustomValidity("Passwords do not match."); // Clear error when user types
@@ -255,27 +210,6 @@
 
             return isValid;
 
-            // if (nPass.value !== rPass.value) {
-            //     nPass.classList.add("is-invalid");
-            //     error_text = "*Passwords do not match.";
-            //     nPass_error.innerHTML = error_text;
-            //     nPass_error.classList.add("invalid-feedback");
-
-            //     rPass.classList.add("is-invalid");
-            //     error_text = "*Passwords do not match.";
-            //     rPass_error.innerHTML = error_text;
-            //     rPass_error.classList.add("invalid-feedback");
-            //     return false;
-            // } else {
-            //     nPass.classList.remove("is-invalid");
-            //     nPass_error.innerHTML = "";
-            //     nPass_error.classList.remove("invalid-feedback");
-
-            //     rPass.classList.remove("is-invalid");
-            //     rPass_error.innerHTML = "";
-            //     rPass_error.classList.remove("invalid-feedback");
-            //     return true;
-            // }
         }
 
 

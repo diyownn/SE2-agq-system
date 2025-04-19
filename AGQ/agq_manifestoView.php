@@ -91,7 +91,7 @@ $conn->close();
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="agq.css">
+    <link rel="stylesheet" type="text/css" href="../css/agq.css">
     <link rel="icon" href="images/agq_logo.png" type="image/ico">
 </head>
 

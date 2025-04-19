@@ -14,7 +14,7 @@
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">    
 
     <!-- Local CSS -->
-    <link rel = "stylesheet" type="text/css" href="agq.css">
+    <link rel = "stylesheet" type="text/css" href="../css/agq.css">
 
 </head>
     <!-- Website Icon -->
@@ -59,24 +59,27 @@
     include "agq_mailer.php";
 
     if ((isset($_POST['email']) && $_POST['email'] != NULL)) {
-        
+
         $email = $_POST['email'];
         $_SESSION['email'] = $email;
-
-        $emailVerify = "SELECT * FROM tbl_user WHERE Email = '$email'";
-        $queryVerify = $conn->query($emailVerify);
-
-        if ($queryVerify->num_rows>0) {
+    
+        $stmt = $conn->prepare("SELECT * FROM tbl_user WHERE Email = ?");
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
+        $queryVerify = $stmt->get_result();
+    
+        if ($queryVerify->num_rows > 0) {
             $row = $queryVerify->fetch_assoc();
-            $otp = rand(100000,999999);
+            $otp = rand(100000, 999999);
             $name = $row['Name'];
-                    
-            $otpQuery = "UPDATE tbl_user SET Otp = '$otp' WHERE Email = '$email'";
-            $conn->query($otpQuery);
-
+    
+            $stmt = $conn->prepare("UPDATE tbl_user SET Otp = ? WHERE Email = ?");
+            $stmt->bind_param("is", $otp, $email);
+            $stmt->execute();
+    
             emailVerification($email, $otp, $name);
-
-        }else {
+    
+        } else {
             ?>
             <script>
                 Swal.fire({
@@ -88,13 +91,12 @@
                     timer: 3000
                 });
             </script>
-        
             <?php
-
         }
-
+    
+        $stmt->close();
         $conn->close();
-
+    
     }
 ?>
     <script>

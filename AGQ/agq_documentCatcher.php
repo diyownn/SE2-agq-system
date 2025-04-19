@@ -5,7 +5,7 @@ $role = isset($_SESSION['department']) ? $_SESSION['department'] : '';
 $refnum = isset($_GET['refNum']) ? htmlspecialchars($_GET['refNum']) : '';
 $docType = isset($_GET['doctype']) ? htmlspecialchars($_GET['doctype']) : '';
 
-require __DIR__ . '/secret/vendor/autoload.php';
+require __DIR__ . '/vendor/autoload.php';
 
 use Dotenv\Dotenv;
 
@@ -15,8 +15,9 @@ $dotenv->load();
 
 $key = $_ENV['ENCRYPTION_KEY'];
 
-if (!$key) {
-    die("Location: UNAUTHORIZED.php?error=401k");
+if (!$key || $role == '' || $refNum == '' || $docType == '' ) {
+    header("Location: UNAUTHORIZED.php?error=401k");
+    exit();
 }
 
 function encrypt_url($url, $key)

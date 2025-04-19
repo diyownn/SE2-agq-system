@@ -1093,7 +1093,7 @@ $record = selectRecords($conn, $role, $refNum);
         return;
       }
 
-      let url = `Download/GENERATE_EXCEL.php?refNum=${encodeURIComponent(refnum)}`;
+      let url = `GENERATE_EXCEL.php?refNum=${encodeURIComponent(refnum)}`;
       console.log(url)
       window.location.href = url;
     }

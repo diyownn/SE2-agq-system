@@ -14,11 +14,15 @@
 
 <?php
 
+require __DIR__ . '/vendor/autoload.php';
+
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-//Load Composer's autoloader
-require 'vendor/autoload.php';
+use Dotenv\Dotenv;
+
+$dotenv = Dotenv::createImmutable(__DIR__);
+$dotenv->load();
 
 function emailVerification($email, $otp, $name){
 
@@ -28,13 +32,13 @@ function emailVerification($email, $otp, $name){
         $mail->isSMTP();                                      // Set mailer to use SMTP
         $mail->Host = 'smtp.gmail.com';  // Specify main and backup SMTP servers
         $mail->SMTPAuth = true;                               // Enable SMTP authentication
-        $mail->Username = 'danikkacarreon@gmail.com';                 // SMTP username
-        $mail->Password = 'qidhpsnyieloqokf';                           // SMTP password
+        $mail->Username = $_ENV['SMTP_USERNAME'];                 // SMTP username
+        $mail->Password = $_ENV['SMTP_PASSWORD'];                           // SMTP password
         $mail->SMTPSecure = 'tls';                            // Enable TLS encryption, ssl also accepted
         $mail->Port = 587;                                    // TCP port to connect to
     
         //Recipients
-        $mail->setFrom( 'danikkacarreon@gmail.com', 'AGQ Freight Logistics');
+        $mail->setFrom( $_ENV['SMTP_USERNAME'], 'AGQ Freight Logistics');
         $mail->addAddress( $email);     // Add a recipient
         //Content
         $mail->isHTML(true);  // Set email format to HTML

@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-require __DIR__ . '/secret/vendor/autoload.php';
+require __DIR__ . '/vendor/autoload.php';
 
 use Dotenv\Dotenv;
 
@@ -11,7 +11,8 @@ $dotenv->load();
 $key = $_ENV['ENCRYPTION_KEY'];
 
 if (!$key) {
-    die("Location: UNAUTHORIZED.php?error=401k");
+    header("Location: UNAUTHORIZED.php?error=401k");
+    exit();
 }
 
 $role = isset($_SESSION['department']) ? $_SESSION['department'] : '';

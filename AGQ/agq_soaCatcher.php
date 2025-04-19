@@ -12,7 +12,7 @@ $dotenv->load();
 
 $key = $_ENV['ENCRYPTION_KEY'];
 
-if (!$key) {
+if (!$key || $role == '' || $refNum == '') {
     die("Location: UNAUTHORIZED.php?error=401k ");
 }
 

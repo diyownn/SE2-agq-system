@@ -4,6 +4,7 @@
         "dompdf/dompdf": "^3.1",
         "mpdf/mpdf": "^8.2",
         "tecnickcom/tcpdf": "^6.9",
-        "phpoffice/phpspreadsheet": "^4.1"
+        "phpoffice/phpspreadsheet": "^4.1",
+        "vlucas/phpdotenv": "^5.6"
     }
 }
