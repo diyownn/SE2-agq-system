@@ -40,19 +40,12 @@ switch ($dept) {
 
         $outputFormat = 'pdf'; // Default to PDF
 
-        $templateFile = __DIR__ . '/templates/agq_ImportForwardingTemplate.xls';
-
         // Check if Dompdf is available - if not, we'll use Excel
         if (!class_exists('\Dompdf\Dompdf')) {
             $outputFormat = 'excel';
             error_log("Dompdf not available - using Excel format instead");
         }
 
-        if (!file_exists($templateFile)) {
-            die("Error: Template file not found at: $templateFile");
-        }
-
-    
         $query = "SELECT *
                 FROM tbl_impfwd 
                 WHERE RefNum LIKE ? AND Department LIKE ?";
@@ -447,12 +440,7 @@ switch ($dept) {
 
                 $domPdfExtensions = ['dom', 'gd', 'mbstring', 'fileinfo'];
 
-                if (!file_exists($templateFile)) {
-                    debugLog("ERROR: Template file not found at: $templateFile", $debugLogFile);
-                    die("Error: Template file not found at: $templateFile");
-                } else {
-                    debugLog("Template file exists at: $templateFile", $debugLogFile);
-                }
+
                 $dompdf = new \Dompdf\Dompdf([
                     'enable_remote' => true,
                     'isRemoteEnabled' => true,
@@ -527,17 +515,12 @@ switch ($dept) {
     case "Import Brokerage":
         $outputFormat = 'pdf'; // Default to PDF
 
-        $templateFile = __DIR__ . '/templates/agq_ImportBrokerageTemplate.xls';
 
         // Check if Dompdf is available - if not, we'll use Excel
         if (!class_exists('\Dompdf\Dompdf')) {
-            $outputFormat = 'excel';
             error_log("Dompdf not available - using Excel format instead");
         }
 
-        if (!file_exists($templateFile)) {
-            die("Error: Template file not found at: $templateFile");
-        }
 
         $query = "SELECT *
                     FROM tbl_impbrk 
@@ -953,12 +936,7 @@ switch ($dept) {
                 $domPdfAvailable = class_exists('\Dompdf\Dompdf');
                 debugLog("DomPDF class exists: " . ($domPdfAvailable ? "YES" : "NO"), $debugLogFile);
 
-                if (!file_exists($templateFile)) {
-                    debugLog("ERROR: Template file not found at: $templateFile", $debugLogFile);
-                    die("Error: Template file not found at: $templateFile");
-                } else {
-                    debugLog("Template file exists at: $templateFile", $debugLogFile);
-                }
+
 
                 // Create Dompdf instance
                 $dompdf = new \Dompdf\Dompdf([
@@ -1033,7 +1011,6 @@ switch ($dept) {
     case "Export Forwarding":
         $outputFormat = 'pdf'; // Default to PDF
 
-        $templateFile = __DIR__ . '/templates/agq_ExportForwardingTemplate.xlsx';
 
         // Check if Dompdf is available - if not, we'll use Excel
         if (!class_exists('\Dompdf\Dompdf')) {
@@ -1041,11 +1018,8 @@ switch ($dept) {
             error_log("Dompdf not available - using Excel format instead");
         }
 
-        if (!file_exists($templateFile)) {
-            die("Error: Template file not found at: $templateFile");
-        }
 
-       
+
 
         $query = "SELECT `To:`, `Address`, Tin, Attention, `Date`, Vessel, ETA, RefNum, DestinationOrigin, ER, BHNum,
             NatureOfGoods, Packages, `Weight`, Volume, PackageType, OceanFreight95, OceanFreight5, BrokerageFee, 
@@ -1399,12 +1373,6 @@ switch ($dept) {
                 $domPdfAvailable = class_exists('\Dompdf\Dompdf');
                 debugLog("DomPDF class exists: " . ($domPdfAvailable ? "YES" : "NO"), $debugLogFile);
 
-                if (!file_exists($templateFile)) {
-                    debugLog("ERROR: Template file not found at: $templateFile", $debugLogFile);
-                    die("Error: Template file not found at: $templateFile");
-                } else {
-                    debugLog("Template file exists at: $templateFile", $debugLogFile);
-                }
 
                 // Create Dompdf instance
                 $dompdf = new \Dompdf\Dompdf([
@@ -1478,7 +1446,7 @@ switch ($dept) {
 
 
     case "Export Brokerage":
-       
+
 
         $query = "SELECT *
                 FROM tbl_expbrk 
