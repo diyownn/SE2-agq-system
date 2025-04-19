@@ -242,7 +242,7 @@ $result = $conn->query($query);
                     <label for="department">DEPARTMENT</label>
                     <select id="department" name="department" required>
                         <option value="" >--All Departments--</option>
-                        <option value="" >Admin</option>
+                        <option value="Admin" >Admin</option>
                         <option value="Import Forwarding">Import Forwarding</option>
                         <option value="Import Brokerage">Import Brokerage</option>
                         <option value="Export Forwarding" >Export Forwarding</option>
@@ -401,7 +401,7 @@ $result = $conn->query($query);
                 // Use SweetAlert2 for confirmation
                 Swal.fire({
                     title: 'Change User Privilege?',
-                    text: "You won't be able to revert this!",
+                    text: "This would allow full employee access.",
                     icon: 'question',
                     showCancelButton: true,
                     confirmButtonColor: '#3085d6',

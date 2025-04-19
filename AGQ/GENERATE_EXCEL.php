@@ -8,9 +8,9 @@ session_start();
 use Dompdf\Dompdf;
 
 
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+// ini_set('display_errors', 1);
+// ini_set('display_startup_errors', 1);
+// error_reporting(E_ALL);
 
 $refNum = isset($_GET['refNum']) ? $_GET['refNum'] : '';
 $dept = isset($_SESSION['department']) ? $_SESSION['department'] : '';
@@ -18,15 +18,14 @@ $dept = isset($_SESSION['department']) ? $_SESSION['department'] : '';
 switch ($dept) {
 
     case "Import Forwarding":
-        
-        $outputFormat = 'pdf'; // Default to PDF
 
         $query = "SELECT *
-                FROM tbl_impfwd 
-                WHERE RefNum LIKE ? AND Department LIKE ?";
+        FROM tbl_impfwd 
+        WHERE RefNum LIKE ? AND Department LIKE ?";
 
         $stmt = $conn->prepare($query);
         $stmt->bind_param("ss", $refNum, $dept);
+
         $stmt->execute();
         $result = $stmt->get_result();
         $row = $result->fetch_assoc();
@@ -502,11 +501,33 @@ switch ($dept) {
         break;
 
     case "Import Brokerage":
+
+        $query = "SELECT *
+                FROM tbl_impbrk 
+                WHERE RefNum LIKE ? AND Department LIKE ?";
+
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param("ss", $refNum, $dept);
+
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
       
         break;
 
 
     case "Export Forwarding":
+
+        $query = "SELECT *
+                FROM tbl_expfwd 
+                WHERE RefNum LIKE ? AND Department LIKE ?";
+
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param("ss", $refNum, $dept);
+
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
        
         break;
 
@@ -551,11 +572,6 @@ switch ($dept) {
                 $preparedByHtml = '<div class="signature-name">&nbsp;</div>';
             }
 
-            // Fill in Excel template as before
-            if ($docType == "SOA" && $packageType == "LCL") {
-                // Your existing Excel code...
-            }
-            // Other Excel template conditions...
         }
 
         // Clean reference number for filenames
