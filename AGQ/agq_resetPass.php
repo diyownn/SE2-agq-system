@@ -18,9 +18,11 @@
     <!-- Local CSS -->
     <link rel = "stylesheet" type="text/css" href="../css/agq.css">
 
-</head>
     <!-- Website Icon -->
     <link rel="icon" type="image/x-icon" href="../AGQ/images/favicon.ico">
+
+</head>
+    
     <body>
     <div class="container">
         <div class="row d-flex justify-content-center">

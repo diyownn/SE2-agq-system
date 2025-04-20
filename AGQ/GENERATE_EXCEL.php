@@ -1,57 +1,31 @@
 <?php
 require __DIR__ . '/vendor/autoload.php';
+require_once 'db_agq.php';
 
 session_start();
 
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Writer\Xls;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-use PhpOffice\PhpSpreadsheet\IOFactory;
-use Mpdf\Mpdf;
+//use Mpdf\Mpdf;
 use Dompdf\Dompdf;
 
 
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
-
-$servername = "localhost";
-$username = "root";
-$pass = "";
-$dbase = "agq_database";
-
-$conn = new mysqli($servername, $username, $pass, $dbase);
-
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
-// $refnum = $_GET['request'] ?? null;
-// $dept = $_GET['user'] ?? null;
+// ini_set('display_errors', 1);
+// ini_set('display_startup_errors', 1);
+// error_reporting(E_ALL);
 
 $refNum = isset($_GET['refNum']) ? $_GET['refNum'] : '';
-//$refNum = "EB229340";
 $dept = isset($_SESSION['department']) ? $_SESSION['department'] : '';
 
 switch ($dept) {
 
     case "Import Forwarding":
 
-        $outputFormat = 'pdf'; // Default to PDF
-
-        // Check if Dompdf is available - if not, we'll use Excel
-        if (!class_exists('\Dompdf\Dompdf')) {
-            $outputFormat = 'excel';
-            error_log("Dompdf not available - using Excel format instead");
-        }
-
         $query = "SELECT *
-                FROM tbl_impfwd 
-                WHERE RefNum LIKE ? AND Department LIKE ?";
+        FROM tbl_impfwd 
+        WHERE RefNum LIKE ? AND Department LIKE ?";
 
         $stmt = $conn->prepare($query);
         $stmt->bind_param("ss", $refNum, $dept);
+
         $stmt->execute();
         $result = $stmt->get_result();
         $row = $result->fetch_assoc();
@@ -65,10 +39,9 @@ switch ($dept) {
                 // Try to detect if it's a data URL
                 if (strpos($row['Approved_by'], 'data:image') === 0) {
                     // It's a base64 image data URL, display it as an image
-                    $approvedByHtml = '<img src="' . $row['Approved_by'] . '" style="max-height:50px; max-width:80%;" />';
-                    $approvedByHtml .= '<div class="signature-name">' . (isset($row['Approved_name']) ? htmlspecialchars($row['Approved_name']) : '') . '</div>';
+                    $approvedByHtml = '<img src="' . htmlspecialchars($row['Approved_by']) . '" alt="Signature" style="max-width: 150px;" />';
                 } else if (ctype_print($row['Approved_by'])) {
-                    // It's regular text, display the name
+                    //It's regular text, display the name
                     $approvedByHtml = '<div class="signature-name">' . htmlspecialchars($row['Approved_by']) . '</div>';
                 } else {
                     // It might be binary image data without the data:image prefix
@@ -76,36 +49,18 @@ switch ($dept) {
                     try {
                         $base64 = base64_encode($row['Approved_by']);
                         $approvedByHtml = '<img src="data:image/png;base64,' . $base64 . '" style="max-height:50px; max-width:80%;" />';
-                        $approvedByHtml .= '<div class="signature-name">' . (isset($row['Approved_name']) ? htmlspecialchars($row['Approved_name']) : '') . '</div>';
                     } catch (Exception $e) {
                         // Fallback to just showing the name
-                        $approvedByHtml = '<div class="signature-name">' . htmlspecialchars($row['Approved_by']) . '</div>';
+                        $approvedByHtml = '<div class="signature-name">AGQ</div>';
                     }
                 }
             } else {
                 $approvedByHtml = '<div class="signature-name">&nbsp;</div>';
             }
 
-            // For prepared by signature - similar approach
+            // For prepared by signature - keep it simple
             if (isset($row['Prepared_by']) && !empty($row['Prepared_by'])) {
-                if (strpos($row['Prepared_by'], 'data:image') === 0) {
-                    // It's a base64 image data URL, display it as an image
-                    $preparedByHtml = '<img src="' . $row['Prepared_by'] . '" style="max-height:50px; max-width:80%;" />';
-                    $preparedByHtml .= '<div class="signature-name">' . (isset($row['Prepared_name']) ? htmlspecialchars($row['Prepared_name']) : '') . '</div>';
-                } else if (ctype_print($row['Prepared_by'])) {
-                    // It's regular text, display the name
-                    $preparedByHtml = '<div class="signature-name">' . htmlspecialchars($row['Prepared_by']) . '</div>';
-                } else {
-                    // Try to convert binary data to image
-                    try {
-                        $base64 = base64_encode($row['Prepared_by']);
-                        $preparedByHtml = '<img src="data:image/png;base64,' . $base64 . '" style="max-height:50px; max-width:80%;" />';
-                        $preparedByHtml .= '<div class="signature-name">' . (isset($row['Prepared_name']) ? htmlspecialchars($row['Prepared_name']) : '') . '</div>';
-                    } catch (Exception $e) {
-                        // Fallback to just showing the name
-                        $preparedByHtml = '<div class="signature-name">' . htmlspecialchars($row['Prepared_by']) . '</div>';
-                    }
-                }
+                $preparedByHtml = '<div class="signature-name">' . htmlspecialchars($row['Prepared_by']) . '</div>';
             } else {
                 $preparedByHtml = '<div class="signature-name">&nbsp;</div>';
             }
@@ -405,7 +360,7 @@ switch ($dept) {
                         ' . $approvedByHtml  . '
                     </td>
                     <td style="height: 60px; vertical-align: bottom; text-align: center;">
-                        <div class="signature-name">Printed Name:</div>
+                        <div class="signature-name"></div>
                         <br>
                         
                     </td>
@@ -419,28 +374,7 @@ switch ($dept) {
         </body>
         </html>';
 
-                $debugLogFile = __DIR__ . '/pdf_debug_' . date('Y-m-d_H-i-s') . '.log';
-                function debugLog($message, $logFile)
-                {
-                    $timestamp = date('Y-m-d H:i:s');
-                    $logMessage = "[$timestamp] $message" . PHP_EOL;
-                    file_put_contents($logFile, $logMessage, FILE_APPEND);
-                }
-
-                debugLog("=== Starting Import Forwarding process ===", $debugLogFile);
-                debugLog("PHP Version: " . phpversion(), $debugLogFile);
-                debugLog("Server: " . $_SERVER['SERVER_SOFTWARE'], $debugLogFile);
-                debugLog("Memory limit: " . ini_get('memory_limit'), $debugLogFile);
-
-                ini_set('memory_limit', '256M');
-                debugLog("New memory limit: " . ini_get('memory_limit'), $debugLogFile);
-
-                $domPdfAvailable = class_exists('\Dompdf\Dompdf');
-                debugLog("DomPDF class exists: " . ($domPdfAvailable ? "YES" : "NO"), $debugLogFile);
-
-                $domPdfExtensions = ['dom', 'gd', 'mbstring', 'fileinfo'];
-
-
+                // Dompdf configuration
                 $dompdf = new \Dompdf\Dompdf([
                     'enable_remote' => true,
                     'isRemoteEnabled' => true,
@@ -463,64 +397,57 @@ switch ($dept) {
                 // Log success
                 error_log("PDF successfully created using Dompdf: $pdfSavePath");
 
-                // Clean up HTML temp file
-                if (file_exists($htmlPath)) {
-                    unlink($htmlPath);
-                }
-
                 // Serve the PDF
                 header('Content-Type: application/pdf');
                 header('Content-Disposition: attachment; filename="' . $pdfFilename . '"');
-                header('Cache-Control: max-age=0');
+                header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+                header('Cache-Control: post-check=0, pre-check=0', false);
+                header('Pragma: no-cache');
                 header('Content-Length: ' . filesize($pdfSavePath));
 
-                ob_clean();
-                flush();
+                // Ensure fresh output for each request
+                if (session_id()) {
+                    session_write_close();
+                }
+                ob_end_clean();
                 readfile($pdfSavePath);
 
-                // Clean up files
-                unlink($excelSavePath);
+                // Optional delay to prevent cleanup conflicts
+                sleep(1);
+
+                // Clean up temporary files
                 unlink($pdfSavePath);
                 exit;
             } catch (Exception $e) {
                 // Log detailed error
-                error_log("Dompdf conversion failed: " . $e->getMessage());
-                error_log("Error trace: " . $e->getTraceAsString());
+                if (!extension_loaded('gd')) {
+                    die("The PHP GD extension is required but not enabled on the hosting platform.");
+                } else {
+                    echo "Dompdf conversion failed: " . $e->getMessage() . "<br>";
+                }
 
-                // Fall back to Excel if PDF generation fails
-                header('Content-Type: application/vnd.ms-excel');
-                header('Content-Disposition: attachment; filename="' . $excelFilename . '"');
-                header('Cache-Control: max-age=0');
-                header('Content-Length: ' . filesize($excelSavePath));
-
-                ob_clean();
-                flush();
-                readfile($excelSavePath);
-                unlink($excelSavePath);
                 exit;
             }
         } else {
-            // If Dompdf is not available, use Excel output as fallback
-            header('Content-Type: application/vnd.ms-excel');
-            header('Content-Disposition: attachment; filename="' . $excelFilename . '"');
-            header('Cache-Control: max-age=0');
-            header('Content-Length: ' . filesize($excelSavePath));
 
-            ob_clean();
-            flush();
-            readfile($excelSavePath);
-            unlink($excelSavePath);
+            echo '<script>
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+            document.addEventListener("DOMContentLoaded", function() {
+                Swal.fire({
+                    title: "Error!",
+                    text: "Error updating record: ' . $stmt->error . '",
+                    icon: "error",
+                    confirmButtonText: "OK"
+                });
+            });
+        </script>';
+
             exit;
         }
+
+        break;
+
     case "Import Brokerage":
-        $outputFormat = 'pdf'; // Default to PDF
-
-
-        // Check if Dompdf is available - if not, we'll use Excel
-        if (!class_exists('\Dompdf\Dompdf')) {
-            error_log("Dompdf not available - using Excel format instead");
-        }
-
 
         $query = "SELECT *
                     FROM tbl_impbrk 
@@ -528,6 +455,7 @@ switch ($dept) {
 
         $stmt = $conn->prepare($query);
         $stmt->bind_param("ss", $refNum, $dept);
+
         $stmt->execute();
         $result = $stmt->get_result();
         $row = $result->fetch_assoc();
@@ -541,10 +469,9 @@ switch ($dept) {
                 // Try to detect if it's a data URL
                 if (strpos($row['Approved_by'], 'data:image') === 0) {
                     // It's a base64 image data URL, display it as an image
-                    $approvedByHtml = '<img src="' . $row['Approved_by'] . '" style="max-height:50px; max-width:80%;" />';
-                    $approvedByHtml .= '<div class="signature-name">' . (isset($row['Approved_name']) ? htmlspecialchars($row['Approved_name']) : '') . '</div>';
+                    $approvedByHtml = '<img src="' . htmlspecialchars($row['Approved_by']) . '" alt="Signature" style="max-width: 150px;" />';
                 } else if (ctype_print($row['Approved_by'])) {
-                    // It's regular text, display the name
+                    //It's regular text, display the name
                     $approvedByHtml = '<div class="signature-name">' . htmlspecialchars($row['Approved_by']) . '</div>';
                 } else {
                     // It might be binary image data without the data:image prefix
@@ -552,36 +479,18 @@ switch ($dept) {
                     try {
                         $base64 = base64_encode($row['Approved_by']);
                         $approvedByHtml = '<img src="data:image/png;base64,' . $base64 . '" style="max-height:50px; max-width:80%;" />';
-                        $approvedByHtml .= '<div class="signature-name">' . (isset($row['Approved_name']) ? htmlspecialchars($row['Approved_name']) : '') . '</div>';
                     } catch (Exception $e) {
                         // Fallback to just showing the name
-                        $approvedByHtml = '<div class="signature-name">' . htmlspecialchars($row['Approved_by']) . '</div>';
+                        $approvedByHtml = '<div class="signature-name">AGQ</div>';
                     }
                 }
             } else {
                 $approvedByHtml = '<div class="signature-name">&nbsp;</div>';
             }
 
-            // For prepared by signature - similar approach
+            // For prepared by signature - keep it simple
             if (isset($row['Prepared_by']) && !empty($row['Prepared_by'])) {
-                if (strpos($row['Prepared_by'], 'data:image') === 0) {
-                    // It's a base64 image data URL, display it as an image
-                    $preparedByHtml = '<img src="' . $row['Prepared_by'] . '" style="max-height:50px; max-width:80%;" />';
-                    $preparedByHtml .= '<div class="signature-name">' . (isset($row['Prepared_name']) ? htmlspecialchars($row['Prepared_name']) : '') . '</div>';
-                } else if (ctype_print($row['Prepared_by'])) {
-                    // It's regular text, display the name
-                    $preparedByHtml = '<div class="signature-name">' . htmlspecialchars($row['Prepared_by']) . '</div>';
-                } else {
-                    // Try to convert binary data to image
-                    try {
-                        $base64 = base64_encode($row['Prepared_by']);
-                        $preparedByHtml = '<img src="data:image/png;base64,' . $base64 . '" style="max-height:50px; max-width:80%;" />';
-                        $preparedByHtml .= '<div class="signature-name">' . (isset($row['Prepared_name']) ? htmlspecialchars($row['Prepared_name']) : '') . '</div>';
-                    } catch (Exception $e) {
-                        // Fallback to just showing the name
-                        $preparedByHtml = '<div class="signature-name">' . htmlspecialchars($row['Prepared_by']) . '</div>';
-                    }
-                }
+                $preparedByHtml = '<div class="signature-name">' . htmlspecialchars($row['Prepared_by']) . '</div>';
             } else {
                 $preparedByHtml = '<div class="signature-name">&nbsp;</div>';
             }
@@ -593,7 +502,7 @@ switch ($dept) {
 
 
         // Create PDF with custom HTML approach using Dompdf
-        if (class_exists('\Dompdf\Dompdf') && $outputFormat === 'pdf') {
+        if (class_exists('\Dompdf\Dompdf')) {
             try {
                 // Create custom HTML directly instead of converting from Excel
                 $html = '<!DOCTYPE html>
@@ -902,7 +811,7 @@ switch ($dept) {
                         ' . $approvedByHtml  . '
                     </td>
                     <td style="height: 60px; vertical-align: bottom; text-align: center;">
-                        <div class="signature-name">Printed Name:</div>
+                        <div class="signature-name"></div>
                         <br>
                         
                     </td>
@@ -916,29 +825,7 @@ switch ($dept) {
         </body>
         </html>';
 
-                // Debugging log setup
-                $debugLogFile = __DIR__ . '/pdf_debug_' . date('Y-m-d_H-i-s') . '.log';
-                function debugLog($message, $logFile)
-                {
-                    $timestamp = date('Y-m-d H:i:s');
-                    $logMessage = "[$timestamp] $message" . PHP_EOL;
-                    file_put_contents($logFile, $logMessage, FILE_APPEND);
-                }
-
-                debugLog("=== Starting Import Brokerage process ===", $debugLogFile);
-                debugLog("PHP Version: " . phpversion(), $debugLogFile);
-                debugLog("Server: " . $_SERVER['SERVER_SOFTWARE'], $debugLogFile);
-                debugLog("Memory limit: " . ini_get('memory_limit'), $debugLogFile);
-
-                ini_set('memory_limit', '256M');
-                debugLog("New memory limit: " . ini_get('memory_limit'), $debugLogFile);
-
-                $domPdfAvailable = class_exists('\Dompdf\Dompdf');
-                debugLog("DomPDF class exists: " . ($domPdfAvailable ? "YES" : "NO"), $debugLogFile);
-
-
-
-                // Create Dompdf instance
+                // Dompdf configuration
                 $dompdf = new \Dompdf\Dompdf([
                     'enable_remote' => true,
                     'isRemoteEnabled' => true,
@@ -949,7 +836,7 @@ switch ($dept) {
                 $dompdf->setPaper('A4', 'portrait');
                 $dompdf->render();
 
-                $pdfFilename = $cleanRefNum . "-Import_Brokerage.pdf";
+                $pdfFilename = $cleanRefNum . "-Import_Forwarding.pdf";
                 $pdfSavePath = __DIR__ . '/' . $pdfFilename;
                 file_put_contents($pdfSavePath, $dompdf->output());
 
@@ -964,72 +851,62 @@ switch ($dept) {
                 // Serve the PDF
                 header('Content-Type: application/pdf');
                 header('Content-Disposition: attachment; filename="' . $pdfFilename . '"');
-                header('Cache-Control: max-age=0');
+                header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+                header('Cache-Control: post-check=0, pre-check=0', false);
+                header('Pragma: no-cache');
                 header('Content-Length: ' . filesize($pdfSavePath));
 
-                ob_clean();
-                flush();
+                // Ensure fresh output for each request
+                if (session_id()) {
+                    session_write_close();
+                }
+                ob_end_clean();
                 readfile($pdfSavePath);
 
-                // Clean up files
-                unlink($excelSavePath);
+                // Optional delay to prevent cleanup conflicts
+                sleep(1);
+
+                // Clean up temporary files
                 unlink($pdfSavePath);
                 exit;
             } catch (Exception $e) {
                 // Log detailed error
-                error_log("Dompdf conversion failed: " . $e->getMessage());
-                error_log("Error trace: " . $e->getTraceAsString());
+                if (!extension_loaded('gd')) {
+                    die("The PHP GD extension is required but not enabled on the hosting platform.");
+                } else {
+                    echo "Dompdf conversion failed: " . $e->getMessage() . "<br>";
+                }
 
-                // Fall back to Excel if PDF generation fails
-                header('Content-Type: application/vnd.ms-excel');
-                header('Content-Disposition: attachment; filename="' . $excelFilename . '"');
-                header('Cache-Control: max-age=0');
-                header('Content-Length: ' . filesize($excelSavePath));
-
-                ob_clean();
-                flush();
-                readfile($excelSavePath);
-                unlink($excelSavePath);
                 exit;
             }
         } else {
-            // If Dompdf is not available, use Excel output as fallback
-            header('Content-Type: application/vnd.ms-excel');
-            header('Content-Disposition: attachment; filename="' . $excelFilename . '"');
-            header('Cache-Control: max-age=0');
-            header('Content-Length: ' . filesize($excelSavePath));
 
-            ob_clean();
-            flush();
-            readfile($excelSavePath);
-            unlink($excelSavePath);
+            echo '<script>
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+            document.addEventListener("DOMContentLoaded", function() {
+                Swal.fire({
+                    title: "Error!",
+                    text: "Error updating record: ' . $stmt->error . '",
+                    icon: "error",
+                    confirmButtonText: "OK"
+                });
+            });
+        </script>';
+
             exit;
         }
 
         break;
 
     case "Export Forwarding":
-        $outputFormat = 'pdf'; // Default to PDF
 
-
-        // Check if Dompdf is available - if not, we'll use Excel
-        if (!class_exists('\Dompdf\Dompdf')) {
-            $outputFormat = 'excel';
-            error_log("Dompdf not available - using Excel format instead");
-        }
-
-
-
-
-        $query = "SELECT `To:`, `Address`, Tin, Attention, `Date`, Vessel, ETA, RefNum, DestinationOrigin, ER, BHNum,
-            NatureOfGoods, Packages, `Weight`, Volume, PackageType, OceanFreight95, OceanFreight5, BrokerageFee, 
-            Others, Notes, Vat12, DocsFee, LCLCharge, ExportProcessing, FormsStamps, ArrastreWharf, 
-            E2MLodge, THC, FAF, SealFee, Storage, Telex, Total, Prepared_by, Approved_by, DocType, Prepared_name, Approved_name
-            FROM tbl_expfwd 
-            WHERE RefNum LIKE ? AND Department LIKE ?";
+        $query = "SELECT *
+                FROM tbl_expfwd 
+                WHERE RefNum LIKE ? AND Department LIKE ?";
 
         $stmt = $conn->prepare($query);
         $stmt->bind_param("ss", $refNum, $dept);
+
         $stmt->execute();
         $result = $stmt->get_result();
         $row = $result->fetch_assoc();
@@ -1038,15 +915,13 @@ switch ($dept) {
             $docType = $row['DocType'];
             $packageType = $row['PackageType'];
 
-            // Process signature data AFTER retrieving the row
             if (isset($row['Approved_by']) && !empty($row['Approved_by'])) {
                 // Try to detect if it's a data URL
                 if (strpos($row['Approved_by'], 'data:image') === 0) {
                     // It's a base64 image data URL, display it as an image
-                    $approvedByHtml = '<img src="' . $row['Approved_by'] . '" style="max-height:50px; max-width:80%;" />';
-                    $approvedByHtml .= '<div class="signature-name">' . (isset($row['Approved_name']) ? htmlspecialchars($row['Approved_name']) : '') . '</div>';
+                    $approvedByHtml = '<img src="' . htmlspecialchars($row['Approved_by']) . '" alt="Signature" style="max-width: 150px;" />';
                 } else if (ctype_print($row['Approved_by'])) {
-                    // It's regular text, display the name
+                    //It's regular text, display the name
                     $approvedByHtml = '<div class="signature-name">' . htmlspecialchars($row['Approved_by']) . '</div>';
                 } else {
                     // It might be binary image data without the data:image prefix
@@ -1054,44 +929,30 @@ switch ($dept) {
                     try {
                         $base64 = base64_encode($row['Approved_by']);
                         $approvedByHtml = '<img src="data:image/png;base64,' . $base64 . '" style="max-height:50px; max-width:80%;" />';
-                        $approvedByHtml .= '<div class="signature-name">' . (isset($row['Approved_name']) ? htmlspecialchars($row['Approved_name']) : '') . '</div>';
                     } catch (Exception $e) {
                         // Fallback to just showing the name
-                        $approvedByHtml = '<div class="signature-name">' . htmlspecialchars($row['Approved_by']) . '</div>';
+                        $approvedByHtml = '<div class="signature-name">AGQ</div>';
                     }
                 }
             } else {
                 $approvedByHtml = '<div class="signature-name">&nbsp;</div>';
             }
 
-            // For prepared by signature - similar approach
+
+            // For prepared by signature - keep it simple
             if (isset($row['Prepared_by']) && !empty($row['Prepared_by'])) {
-                if (strpos($row['Prepared_by'], 'data:image') === 0) {
-                    // It's a base64 image data URL, display it as an image
-                    $preparedByHtml = '<img src="' . $row['Prepared_by'] . '" style="max-height:50px; max-width:80%;" />';
-                    $preparedByHtml .= '<div class="signature-name">' . (isset($row['Prepared_name']) ? htmlspecialchars($row['Prepared_name']) : '') . '</div>';
-                } else if (ctype_print($row['Prepared_by'])) {
-                    // It's regular text, display the name
-                    $preparedByHtml = '<div class="signature-name">' . htmlspecialchars($row['Prepared_by']) . '</div>';
-                } else {
-                    // Try to convert binary data to image
-                    try {
-                        $base64 = base64_encode($row['Prepared_by']);
-                        $preparedByHtml = '<img src="data:image/png;base64,' . $base64 . '" style="max-height:50px; max-width:80%;" />';
-                        $preparedByHtml .= '<div class="signature-name">' . (isset($row['Prepared_name']) ? htmlspecialchars($row['Prepared_name']) : '') . '</div>';
-                    } catch (Exception $e) {
-                        // Fallback to just showing the name
-                        $preparedByHtml = '<div class="signature-name">' . htmlspecialchars($row['Prepared_by']) . '</div>';
-                    }
-                }
+                $preparedByHtml = '<div class="signature-name">' . htmlspecialchars($row['Prepared_by']) . '</div>';
             } else {
                 $preparedByHtml = '<div class="signature-name">&nbsp;</div>';
             }
         }
 
+        // Clean reference number for filenames
+        $cleanRefNum = str_replace(['/', '-'], '', $refNum);
+
 
         // Create PDF with custom HTML approach using Dompdf
-        if (class_exists('\Dompdf\Dompdf') && $outputFormat === 'pdf') {
+        if (class_exists('\Dompdf\Dompdf')) {
             try {
                 // Create custom HTML directly instead of converting from Excel
                 $html = '<!DOCTYPE html>
@@ -1339,7 +1200,7 @@ switch ($dept) {
                         ' . $approvedByHtml  . '
                     </td>
                     <td style="height: 60px; vertical-align: bottom; text-align: center;">
-                        <div class="signature-name">Printed Name:</div>
+                        <div class="signature-name"></div>
                         <br>
                         
                     </td>
@@ -1353,28 +1214,7 @@ switch ($dept) {
         </body>
         </html>';
 
-                // Debugging log setup
-                $debugLogFile = __DIR__ . '/pdf_debug_' . date('Y-m-d_H-i-s') . '.log';
-                function debugLog($message, $logFile)
-                {
-                    $timestamp = date('Y-m-d H:i:s');
-                    $logMessage = "[$timestamp] $message" . PHP_EOL;
-                    file_put_contents($logFile, $logMessage, FILE_APPEND);
-                }
-
-                debugLog("=== Starting Export Forwarding process ===", $debugLogFile);
-                debugLog("PHP Version: " . phpversion(), $debugLogFile);
-                debugLog("Server: " . $_SERVER['SERVER_SOFTWARE'], $debugLogFile);
-                debugLog("Memory limit: " . ini_get('memory_limit'), $debugLogFile);
-
-                ini_set('memory_limit', '256M');
-                debugLog("New memory limit: " . ini_get('memory_limit'), $debugLogFile);
-
-                $domPdfAvailable = class_exists('\Dompdf\Dompdf');
-                debugLog("DomPDF class exists: " . ($domPdfAvailable ? "YES" : "NO"), $debugLogFile);
-
-
-                // Create Dompdf instance
+                // Dompdf configuration
                 $dompdf = new \Dompdf\Dompdf([
                     'enable_remote' => true,
                     'isRemoteEnabled' => true,
@@ -1385,7 +1225,7 @@ switch ($dept) {
                 $dompdf->setPaper('A4', 'portrait');
                 $dompdf->render();
 
-                $pdfFilename = $cleanRefNum . "-Export_Forwarding.pdf";
+                $pdfFilename = $cleanRefNum . "-Import_Forwarding.pdf";
                 $pdfSavePath = __DIR__ . '/' . $pdfFilename;
                 file_put_contents($pdfSavePath, $dompdf->output());
 
@@ -1400,45 +1240,48 @@ switch ($dept) {
                 // Serve the PDF
                 header('Content-Type: application/pdf');
                 header('Content-Disposition: attachment; filename="' . $pdfFilename . '"');
-                header('Cache-Control: max-age=0');
+                header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+                header('Cache-Control: post-check=0, pre-check=0', false);
+                header('Pragma: no-cache');
                 header('Content-Length: ' . filesize($pdfSavePath));
 
-                ob_clean();
-                flush();
+                // Ensure fresh output for each request
+                if (session_id()) {
+                    session_write_close();
+                }
+                ob_end_clean();
                 readfile($pdfSavePath);
 
-                // Clean up files
-                unlink($excelSavePath);
+                // Optional delay to prevent cleanup conflicts
+                sleep(1);
+
+                // Clean up temporary files
                 unlink($pdfSavePath);
                 exit;
             } catch (Exception $e) {
                 // Log detailed error
-                error_log("Dompdf conversion failed: " . $e->getMessage());
-                error_log("Error trace: " . $e->getTraceAsString());
+                if (!extension_loaded('gd')) {
+                    die("The PHP GD extension is required but not enabled on the hosting platform.");
+                } else {
+                    echo "Dompdf conversion failed: " . $e->getMessage() . "<br>";
+                }
 
-                // Fall back to Excel if PDF generation fails
-                header('Content-Type: application/vnd.ms-excel');
-                header('Content-Disposition: attachment; filename="' . $excelFilename . '"');
-                header('Cache-Control: max-age=0');
-                header('Content-Length: ' . filesize($excelSavePath));
-
-                ob_clean();
-                flush();
-                readfile($excelSavePath);
-                unlink($excelSavePath);
                 exit;
             }
         } else {
-            // If Dompdf is not available, use Excel output as fallback
-            header('Content-Type: application/vnd.ms-excel');
-            header('Content-Disposition: attachment; filename="' . $excelFilename . '"');
-            header('Cache-Control: max-age=0');
-            header('Content-Length: ' . filesize($excelSavePath));
 
-            ob_clean();
-            flush();
-            readfile($excelSavePath);
-            unlink($excelSavePath);
+            echo '<script>
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+            document.addEventListener("DOMContentLoaded", function() {
+                Swal.fire({
+                    title: "Error!",
+                    text: "Error updating record: ' . $stmt->error . '",
+                    icon: "error",
+                    confirmButtonText: "OK"
+                });
+            });
+        </script>';
+
             exit;
         }
 
@@ -1447,14 +1290,13 @@ switch ($dept) {
 
     case "Export Brokerage":
 
-
         $query = "SELECT *
                 FROM tbl_expbrk 
                 WHERE RefNum LIKE ? AND Department LIKE ?";
 
         $stmt = $conn->prepare($query);
         $stmt->bind_param("ss", $refNum, $dept);
-        //$refNum = 'EB0002/09-20' for example;
+
         $stmt->execute();
         $result = $stmt->get_result();
         $row = $result->fetch_assoc();
@@ -1467,14 +1309,21 @@ switch ($dept) {
             if (isset($row['Approved_by']) && !empty($row['Approved_by'])) {
                 // Try to detect if it's a data URL
                 if (strpos($row['Approved_by'], 'data:image') === 0) {
-                    // It's already a data URL, but we'll extract just the image for better compatibility
-                    $approvedByHtml = '<div class="signature-name">' . htmlspecialchars($row['Approved_by']) . '</div>';
+                    // It's a base64 image data URL, display it as an image
+                    $approvedByHtml = '<img src="' . htmlspecialchars($row['Approved_by']) . '" alt="Signature" style="max-width: 150px;" />';
                 } else if (ctype_print($row['Approved_by'])) {
-                    // It's regular text, display the name
+                    //It's regular text, display the name
                     $approvedByHtml = '<div class="signature-name">' . htmlspecialchars($row['Approved_by']) . '</div>';
                 } else {
-                    // It's binary data, but we'll just display the name for now
-                    $approvedByHtml = '<div class="signature-name">' . htmlspecialchars($row['Approved_by']) . '</div>';
+                    // It might be binary image data without the data:image prefix
+                    // Try to convert it to a proper base64 image
+                    try {
+                        $base64 = base64_encode($row['Approved_by']);
+                        $approvedByHtml = '<img src="data:image/png;base64,' . $base64 . '" style="max-height:50px; max-width:80%;" />';
+                    } catch (Exception $e) {
+                        // Fallback to just showing the name
+                        $approvedByHtml = '<div class="signature-name">AGQ</div>';
+                    }
                 }
             } else {
                 $approvedByHtml = '<div class="signature-name">&nbsp;</div>';
@@ -1486,12 +1335,6 @@ switch ($dept) {
             } else {
                 $preparedByHtml = '<div class="signature-name">&nbsp;</div>';
             }
-
-            // Fill in Excel template as before
-            if ($docType == "SOA" && $packageType == "LCL") {
-                // Your existing Excel code...
-            }
-            // Other Excel template conditions...
         }
 
         // Clean reference number for filenames
@@ -1736,7 +1579,7 @@ switch ($dept) {
                 <td class="currency">Php ' . number_format($row['Total'], 2) . '</td>
             </tr>
         </table>
-        
+
         <!-- Signature Section -->
         <table class="signature-table">
             <tr>
@@ -1764,20 +1607,15 @@ switch ($dept) {
                 </td>
             </tr>
         </table>
-        
+
         <div class="footer">
             *Interest of 12% per annum shall be charged on all overdue accounts, and in the event of judicial proceeding to enforce collection customer...
         </div>
-        
+
         </body>
         </html>';
 
-                // Save HTML for debugging
-                $htmlFile = $cleanRefNum . "-temp.html";
-                $htmlPath = __DIR__ . '/' . $htmlFile;
-                file_put_contents($htmlPath, $html);
-
-                // Create PDF using Dompdf
+                // Dompdf configuration
                 $dompdf = new \Dompdf\Dompdf([
                     'enable_remote' => true,
                     'isRemoteEnabled' => true,
@@ -1788,7 +1626,7 @@ switch ($dept) {
                 $dompdf->setPaper('A4', 'portrait');
                 $dompdf->render();
 
-                $pdfFilename = $cleanRefNum . "-Export_Brokerage.pdf";
+                $pdfFilename = $cleanRefNum . "-Import_Forwarding.pdf";
                 $pdfSavePath = __DIR__ . '/' . $pdfFilename;
                 file_put_contents($pdfSavePath, $dompdf->output());
 
@@ -1800,29 +1638,53 @@ switch ($dept) {
                 // Log success
                 error_log("PDF successfully created using Dompdf: $pdfSavePath");
 
-                // Clean up HTML temp file
-                if (file_exists($htmlPath)) {
-                    unlink($htmlPath);
-                }
-
                 // Serve the PDF
                 header('Content-Type: application/pdf');
                 header('Content-Disposition: attachment; filename="' . $pdfFilename . '"');
-                header('Cache-Control: max-age=0');
+                header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+                header('Cache-Control: post-check=0, pre-check=0', false);
+                header('Pragma: no-cache');
                 header('Content-Length: ' . filesize($pdfSavePath));
 
-                ob_clean();
-                flush();
+                // Ensure fresh output for each request
+                if (session_id()) {
+                    session_write_close();
+                }
+                ob_end_clean();
                 readfile($pdfSavePath);
 
-                // Clean up files
-                unlink($excelSavePath);
+                // Optional delay to prevent cleanup conflicts
+                sleep(1);
+
+                // Clean up temporary files
                 unlink($pdfSavePath);
                 exit;
             } catch (Exception $e) {
                 // Log detailed error
-                error_log("Dompdf conversion failed: " . $e->getMessage());
-                error_log("Error trace: " . $e->getTraceAsString());
+                if (!extension_loaded('gd')) {
+                    die("The PHP GD extension is required but not enabled on the hosting platform.");
+                } else {
+                    echo "Dompdf conversion failed: " . $e->getMessage() . "<br>";
+                }
+
+                exit;
             }
+        } else {
+
+            echo '<script>
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+            document.addEventListener("DOMContentLoaded", function() {
+                Swal.fire({
+                    title: "Error!",
+                    text: "Error updating record: ' . $stmt->error . '",
+                    icon: "error",
+                    confirmButtonText: "OK"
+                });
+            });
+        </script>';
+
+            exit;
         }
+
+        break;
 }

@@ -92,7 +92,8 @@ $conn->close();
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="../css/agq.css">
-    <link rel="icon" href="images/agq_logo.png" type="image/ico">
+    <!-- Website Icon -->
+    <link rel="icon" type="image/x-icon" href="../AGQ/images/favicon.ico">
 </head>
 
 <body style="background-image: url('manifbg.png'); background-repeat: no-repeat; background-size: cover; background-position: center; background-attachment: fixed;">
