@@ -65,6 +65,16 @@
     require_once "db_agq.php";
     include "agq_mailer.php";
 
+    require __DIR__ . '/vendor/autoload.php';
+
+    use Dotenv\Dotenv;
+
+    $dotenv = Dotenv::createImmutable(__DIR__);
+    $dotenv->load();
+
+
+    $def = $_ENV['DEFAULT_PASSWORD'];
+
     // Initialize session variables if not set
     if (!isset($_SESSION['login_attempts'])) {
         $_SESSION['login_attempts'] = 0;
@@ -130,7 +140,7 @@
                 $_SESSION['login_attempts'] = 0; // Reset login attempts
                 $_SESSION['lockout_start'] = 0; // Reset lockout time
 
-                if (password_verify("AGQ@2006", $storedHashedPassword)) {
+                if (password_verify($def, $storedHashedPassword)) {
                     $otp = rand(100000, 999999);
 
                     // Prepare and execute the UPDATE query for OTP

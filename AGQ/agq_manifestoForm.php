@@ -13,7 +13,6 @@ $editDate = date('Y-m-d H:i:s');
 $imageSrc = "";
 
 if ($refNum) {
-    require_once "db_agq.php";
 
     $stmt = $conn->prepare("SELECT Document_picture FROM tbl_document WHERE RefNum = ?");
     $stmt->bind_param("s", $refNum);

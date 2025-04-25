@@ -9,7 +9,7 @@ $dotenv = Dotenv::createImmutable(__DIR__);
 $dotenv->load();
 
 $key = $_ENV['ENCRYPTION_KEY'];
-$keys = 2;
+
 
 if (!$key && $role == '') {
     header("Location: UNAUTHORIZED.php?error=401k");

@@ -31,20 +31,16 @@ function decrypt_url($encrypted_url, $key)
 }
 
 
-if (
-    ($role == 'admin' || $role == 'Admin' || $role == 'owner' || $role == 'Owner') &&
-    (!isset($pword) || $pword != 'AGQ@2006')
-) {
+if ($role == 'admin' || $role == 'Admin' || $role == 'owner' || $role == 'Owner') 
+{
     $original_url = 'http://localhost/SOFT%20ENG/owndash.php';
     $encrypted_url = encrypt_url($original_url, $key);
     $encoded_url = urlencode($encrypted_url);
 
     header('Location: agq_ownTransactionView.php?url=' . $encoded_url);
     exit;
-} elseif (
-    ($role == 'Export Forwarding' || $role == 'Import Forwarding' || $role == 'Export Brokerage' || $role == 'Import Brokerage') &&
-    (!isset($pword) || $pword != 'AGQ@2006')
-) {
+} elseif ($role == 'Export Forwarding' || $role == 'Import Forwarding' || $role == 'Export Brokerage' || $role == 'Import Brokerage')
+{
     $original_url = 'http://localhost/AGQ/employdash.php';
     $encrypted_url = encrypt_url($original_url, $key);
     $encoded_url = urlencode($encrypted_url);

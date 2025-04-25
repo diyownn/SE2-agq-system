@@ -3,6 +3,16 @@ require 'db_agq.php';
 
 session_start();
 
+require __DIR__ . '/vendor/autoload.php';
+
+use Dotenv\Dotenv;
+
+$dotenv = Dotenv::createImmutable(__DIR__);
+$dotenv->load();
+
+
+$def = $_ENV['DEFAULT_PASSWORD'];
+
 $role = isset($_SESSION['department']) ? $_SESSION['department'] : '';
 
 if (!isset($_SESSION['department'])) {
@@ -22,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $UserID = (string) random_int(10000000, 99999999);
     $name = trim($_POST['name']);
     $email = filter_var(trim($_POST['email']), FILTER_SANITIZE_EMAIL);
-    $password = "AGQ@2006";
+    $password = $def;
     $defaultPassword = password_hash($password, PASSWORD_BCRYPT);
     $_SESSION['defPass'] = $defaultPassword;
     $department = htmlspecialchars(trim($_POST['department']));
@@ -168,6 +178,7 @@ $result = $conn->query($query);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Members of the Company</title>
     <link rel="stylesheet" href="../css/motc.css">
+    <link rel="icon" type="image/x-icon" href="../AGQ/images/favicon.ico">
 </head>
 
 <body>

@@ -115,7 +115,7 @@ switch ($dept) {
                 <p class="address-line">VAT Reg. TIN: 243-733-638-00000 Tel. No. (632) 8244-8935* (632) 8243-7095</p>
                 <p class="address-line">Email Add: info@agqfreight.com.ph/accounting@agqfreight.com.ph</p>
                 
-                
+                <div class="doc-number">No. </div>
             </div>
             
             <div class="title">' . ($docType == "SOA" ? "STATEMENT OF ACCOUNT" : "SALES INVOICE") . '</div>
@@ -545,7 +545,7 @@ switch ($dept) {
                     <p class="address-line">VAT Reg. TIN: 243-733-638-00000 Tel. No. (632) 8244-8935* (632) 8243-7095</p>
                     <p class="address-line">Email Add: info@agqfreight.com.ph/accounting@agqfreight.com.ph</p>
                     
-                    
+                    <div class="doc-number">No. </div>
                 </div>
                 
                 <div class="title">' . ($docType == "SOA" ? "STATEMENT OF ACCOUNT" : "SALES INVOICE") . '</div>
@@ -994,6 +994,8 @@ switch ($dept) {
                 <p class="address-line">NCR, City Of Manila, First District, Philippines</p>
                 <p class="address-line">VAT Reg. TIN: 243-733-638-00000 Tel. No. (632) 8244-8935* (632) 8243-7095</p>
                 <p class="address-line">Email Add: info@agqfreight.com.ph/accounting@agqfreight.com.ph</p>
+                
+                <div class="doc-number">No. </div>
             </div>
             
             <div class="title">' . ($docType == "SOA" ? "STATEMENT OF ACCOUNT" : "SALES INVOICE") . '</div>
@@ -1384,7 +1386,7 @@ switch ($dept) {
                 <p class="address-line">VAT Reg. TIN: 243-733-638-00000 Tel. No. (632) 8244-8935* (632) 8243-7095</p>
                 <p class="address-line">Email Add: info@agqfreight.com.ph/accounting@agqfreight.com.ph</p>
                 
-                <div class="doc-number">No. ' . htmlspecialchars($row['RefNum']) . '</div>
+                <div class="doc-number">No. </div>
             </div>
             
             <div class="title">' . ($docType == "SOA" ? "STATEMENT OF ACCOUNT" : "SALES INVOICE") . '</div>

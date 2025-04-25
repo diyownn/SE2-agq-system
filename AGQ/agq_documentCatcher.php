@@ -14,6 +14,7 @@ $dotenv->load();
 
 
 $key = $_ENV['ENCRYPTION_KEY'];
+$def = $_ENV['DEFAULT_PASSWORD'];
 
 if (!$key && $role == '' && $refNum == '' && $docType == '') {
     header("Location: UNAUTHORIZED.php?error=401k");
@@ -43,7 +44,7 @@ if ($docType == 'MANIFESTO') {
     exit;
 } else {
 
-    if (($role == 'Admin' || $role == 'admin' || $role == 'owner' || $role == 'Owner') && $pword != 'AGQ@2006') {
+    if ($role == 'admin' || $role == 'Admin' || $role == 'owner' || $role == 'Owner') {
 
         $original_url = 'http://localhost/SE2-agq-system/AGQ/agq_ownDocumentView.php';
         $encrypted_url = encrypt_url($original_url, $key);
@@ -51,7 +52,7 @@ if ($docType == 'MANIFESTO') {
 
         header('Location: agq_ownerDocumentView.php?url=' . $encoded_url . '&refNum=' . urlencode($refnum));
         exit;
-    } else if (($role == 'Export Forwarding' || $role == 'Import Forwarding' || $role == 'Export Brokerage' || $role == 'Import Brokerage') && $pword != 'agqFreight') {
+    } else if ($role == 'Export Forwarding' || $role == 'Import Forwarding' || $role == 'Export Brokerage' || $role == 'Import Brokerage') {
 
 
         $original_url = 'http://localhost/SE2-agq-system/AGQ/agq_employDocumentView.php';
