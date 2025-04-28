@@ -53,7 +53,7 @@ $errorcode = $_GET['error'];
         }
 
         body {
-            background-color:rgb(249, 255, 239);
+            background-color: rgb(249, 255, 239);
             height: 100vh;
             display: flex;
             justify-content: center;
@@ -73,6 +73,35 @@ $errorcode = $_GET['error'];
             position: relative;
             animation: fadeIn 0.5s ease-out forwards;
             border-left: 4px solid rgb(148, 174, 94);
+        }
+
+        .login-button {
+            display: block;
+            background-color: #94ae5e;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 0.75rem 1.5rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+            margin: 1.5rem auto 0;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.2s;
+            text-align: center;
+            text-decoration: none;
+            max-width: 200px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .login-button:hover {
+            background-color: #7e9444;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .login-button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         @keyframes fadeIn {
@@ -138,7 +167,7 @@ $errorcode = $_GET['error'];
         }
 
         h1 {
-            color:rgb(83, 102, 48);
+            color: rgb(83, 102, 48);
             font-size: 1.5rem;
             font-weight: 600;
             letter-spacing: -0.01em;
@@ -146,7 +175,7 @@ $errorcode = $_GET['error'];
         }
 
         p {
-            color:rgb(154, 183, 103);
+            color: rgb(154, 183, 103);
             font-size: 1rem;
             margin-bottom: 1.5rem;
             line-height: 1.5;
@@ -155,8 +184,8 @@ $errorcode = $_GET['error'];
 
         .error-code {
             display: inline-block;
-            background-color:rgba(115, 137, 78, 0.83);
-            color:rgb(142, 255, 86);
+            background-color: rgba(115, 137, 78, 0.83);
+            color: rgb(142, 255, 86);
             padding: 0.2rem 0.5rem;
             border-radius: 2px;
             font-family: 'IBM Plex Mono', monospace;
@@ -202,12 +231,12 @@ $errorcode = $_GET['error'];
             right: 0;
             width: 1px;
             height: 20px;
-            background-color:rgba(246, 251, 238, 0.94);
+            background-color: rgba(246, 251, 238, 0.94);
         }
 
         .status-label {
             font-size: 0.75rem;
-            color:rgb(140, 163, 127);
+            color: rgb(140, 163, 127);
             text-transform: uppercase;
             letter-spacing: 0.05em;
             margin-bottom: 0.25rem;
@@ -215,12 +244,12 @@ $errorcode = $_GET['error'];
 
         .status-value {
             font-size: 0.875rem;
-            color:rgb(50, 77, 29);
+            color: rgb(50, 77, 29);
             font-weight: 500;
         }
 
         .warehouse {
-            color:rgb(94, 131, 174);
+            color: rgb(94, 131, 174);
         }
 
         .delivery {
@@ -324,7 +353,13 @@ $errorcode = $_GET['error'];
                 <div class="status-value delivery">AGQ</div>
             </div>
         </div>
+
+        <div class="button-container" style="text-align: center;">
+            <a href="agq_login.php" class="login-button">Return to Login</a>
+        </div>
     </div>
+
+
 
     <svg class="moving-truck" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" fill="#90ae5e">
         <path d="M48 0C21.5 0 0 21.5 0 48V368c0 26.5 21.5 48 48 48H64c0 53 43 96 96 96s96-43 96-96H384c0 53 43 96 96 96s96-43 96-96h32c17.7 0 32-14.3 32-32s-14.3-32-32-32V288 256 237.3c0-17-6.7-33.3-18.7-45.3L512 114.7c-12-12-28.3-18.7-45.3-18.7H416V48c0-26.5-21.5-48-48-48H48zM416 160h50.7L544 237.3V256H416V160zM208 416c0 26.5-21.5 48-48 48s-48-21.5-48-48s21.5-48 48-48s48 21.5 48 48zm272 48c-26.5 0-48-21.5-48-48s21.5-48 48-48s48 21.5 48 48s-21.5 48-48 48z" />

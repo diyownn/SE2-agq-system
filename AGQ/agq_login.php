@@ -1,3 +1,33 @@
+<?php
+
+// Add this at the top of your login page (agq_login.php)
+
+// Start session if not already started
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
+// If user is already logged in, don't allow direct access to login page
+if (isset($_SESSION['department']) && !isset($_GET['logout'])) {
+    // They're trying to access login directly without logging out
+    header("Location: agq_dashCatcher.php");
+    exit();
+}
+
+// If they're logging out properly, destroy the session
+if (isset($_GET['logout']) && $_GET['logout'] == 'true') {
+    session_unset();
+    session_destroy();
+    // Continue to login page
+}
+
+// Set cache headers to prevent back-button access to page after logout
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
+header("Expires: Sat, 26 Jul 1997 05:00:00 GMT");
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <link rel="icon" href="images/agq_logo.png" type="image/ico">
@@ -61,7 +91,6 @@
 
 
     <?php
-    session_start();
     require_once "db_agq.php";
     include "agq_mailer.php";
 
@@ -216,7 +245,7 @@
 
     // Close the database connection
     $conn->close();
-?>
+    ?>
 
     <!-- Bootstrap Popper -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
@@ -258,7 +287,7 @@
                 event.preventDefault(); // Prevent form submission if invalid
             }
 
-            email.addEventListener("input", function () {
+            email.addEventListener("input", function() {
                 email.setCustomValidity(""); // Clear error when user types
             });
 
@@ -280,19 +309,19 @@
             } else if (!passregex.test(nPass.value)) {
                 nPass.setCustomValidity("Password must be atleast 8 characters");
 
-            }else {
+            } else {
                 nPass.setCustomValidity(""); // Reset validation
-                }
+            }
 
-                nPass.reportValidity(); // Show validation message
+            nPass.reportValidity(); // Show validation message
 
-                if (!nPass.checkValidity()) {
-                    event.preventDefault(); // Prevent form submission if invalid
-                }
+            if (!nPass.checkValidity()) {
+                event.preventDefault(); // Prevent form submission if invalid
+            }
 
-                nPass.addEventListener("input", function () {
-                    nPass.setCustomValidity(""); // Clear error when user types
-                });
+            nPass.addEventListener("input", function() {
+                nPass.setCustomValidity(""); // Clear error when user types
+            });
 
             return isValid;
 

@@ -89,7 +89,7 @@ if (!empty($search_query)) {
 
 
 <body style="background-image: url('e3bg.png'); background-repeat: no-repeat; background-size: cover; background-position: center; background-attachment: fixed;">
-<div id="loader-container">
+    <div id="loader-container">
         <iframe id="loader-frame" src="LOADER.html"></iframe>
     </div>
     <div class="top-container">
@@ -99,50 +99,50 @@ if (!empty($search_query)) {
             </div>
 
             <!-- Hamburger Menu for Mobile -->
-                <div class="hamburger-menu" id="hamburger-menu">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </div>
+            <div class="hamburger-menu" id="hamburger-menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
 
-                <div class="header-container">
-                    <div class="search-container">
-                        <input type="text" class="search-bar" id="search-input" placeholder="Search Companies..." autocomplete="off">
-                        <div id="dropdown" class="dropdown" style="display: none;"></div>
-                        <button class="search-button" id="search-button"> SEARCH </button>
-                    </div>
-                    <div class="nav-link-container">
-                        <a href="?logout=true">Logout</a>
-                    </div>
+            <div class="header-container">
+                <div class="search-container">
+                    <input type="text" class="search-bar" id="search-input" placeholder="Search Companies..." autocomplete="off">
+                    <div id="dropdown" class="dropdown" style="display: none;"></div>
+                    <button class="search-button" id="search-button"> SEARCH </button>
+                </div>
+                <div class="nav-link-container">
+                    <a href="?logout=true">Logout</a>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Mobile Menu -->
-        <div class="mobile-menu" id="mobile-menu">
-            <div class="mobile-search-container">
-                <div class="mobile-search-input-wrapper">
-                    <input type="text" id="mobile-search-input" placeholder="Search Companies..." autocomplete="off">
-                    <button class="mobile-search-icon" id="mobile-search-button">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94ae5e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="11" cy="11" r="8"></circle>
-                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                        </svg>
-                    </button>
-                </div>
-                <div id="mobile-dropdown" class="dropdown" style="display: none;"></div>
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobile-menu">
+        <div class="mobile-search-container">
+            <div class="mobile-search-input-wrapper">
+                <input type="text" id="mobile-search-input" placeholder="Search Companies..." autocomplete="off">
+                <button class="mobile-search-icon" id="mobile-search-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94ae5e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                </button>
             </div>
-            <div class="mobile-nav-links">
-                <a href="?logout=true">Logout</a>
-            </div>
+            <div id="mobile-dropdown" class="dropdown" style="display: none;"></div>
         </div>
-
-        <!-- Mobile Menu Overlay -->
-        <div class="menu-overlay" id="menu-overlay"></div>
-
-
-            </div>
+        <div class="mobile-nav-links">
+            <a href="?logout=true">Logout</a>
         </div>
+    </div>
+
+    <!-- Mobile Menu Overlay -->
+    <div class="menu-overlay" id="menu-overlay"></div>
+
+
+    </div>
+    </div>
     </div>
 
     <div class=" dashboard-body">
@@ -185,207 +185,235 @@ if (!empty($search_query)) {
 
 </body>
 <script>
-      window.addEventListener("load", function() {
-    // Initially hide the main content
-    document.body.classList.add('loading');
-    
-    setTimeout(() => {
-        document.getElementById("loader-container").style.display = "none";
-        // Show the main content after loader disappears
-        document.body.classList.remove('loading');
-    }, 1500); // Waits 1.5 seconds before hiding the loader
-});
+    window.addEventListener("load", function() {
+        // Initially hide the main content
+        document.body.classList.add('loading');
 
-function storeCompanySession(companyName) {
-    fetch('STORE_SESSION.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: 'company_name=' + encodeURIComponent(companyName)
-        })
-        .then(response => response.text())
-        .then(data => {
-            console.log("Session stored:", data);
-            window.location.href = "agq_transactionCatcher.php";
-        })
-        .catch(error => console.error("Error:", error));
-}
+        setTimeout(() => {
+            document.getElementById("loader-container").style.display = "none";
+            // Show the main content after loader disappears
+            document.body.classList.remove('loading');
+        }, 1500); // Waits 1.5 seconds before hiding the loader
+    });
 
-// Function to clear search and reload the original companies
-function clearSearch() {
-    // Clear search input fields
-    document.getElementById("search-input").value = "";
-    document.getElementById("mobile-search-input").value = "";
-    
-    // Reload all companies without redirecting
-    fetchCompanies("FILTER_COMPANY.php");
-}
+    (function() {
+        // Push multiple states to make the back button ineffective
+        window.history.pushState(null, null, window.location.href);
 
-// Global function to fetch companies
-function fetchCompanies(url) {
-    fetch(url)
-        .then(response => response.json())
-        .then(data => {
-            let companyContainerParent = document.getElementById("company-container-parent");
-            companyContainerParent.innerHTML = "";
-            if (!data.company || data.company.length === 0) {
-                companyContainerParent.innerHTML = "<p>No Companies found.</p>";
-                return;
+        // The key part: when they hit back, redirect them away from login
+        window.addEventListener('popstate', function() {
+            window.history.pushState(null, null, window.location.href);
+            // Show optional message
+            alert("Please use the logout button to exit");
+        });
+
+        // Backup method: if they try to use browser navigation buttons
+        window.addEventListener('load', function() {
+            // Get the current page name
+            var currentPage = window.location.pathname.split('/').pop();
+
+            // Save in session storage to detect navigation
+            var lastPage = sessionStorage.getItem('currentPage');
+            sessionStorage.setItem('currentPage', currentPage);
+
+            // If coming back from login page without proper navigation
+            if (lastPage === 'agq_login.php') {
+                window.location.href = 'UNAUTHORIZED.php?error=backbutton';
             }
-            displayCompanies(data.company);
-        })
-        .catch(error => console.error("Error fetching companies:", error));
-}
+        });
+    })();
 
-// Global function to display companies
-function displayCompanies(companies) {
-    let companyContainerParent = document.getElementById("company-container-parent");
-    let companyRowDiv = document.createElement("div");
-    companyRowDiv.classList.add("company-container-row");
 
-    companies.forEach((company, index) => {
-        let companyButtonDiv = document.createElement("div");
-        companyButtonDiv.classList.add("company-button");
-
-        let companyButton = document.createElement("button");
-        companyButton.classList.add("company-container");
-        companyButton.onclick = () => storeCompanySession(company.Company_name);
-
-        let companyLogo = document.createElement("img");
-        companyLogo.classList.add("company-logo");
-        companyLogo.src = `data:image/jpeg;base64,${company.Company_picture}`;
-        companyLogo.alt = company.Company_name;
-
-        companyButton.appendChild(companyLogo);
-        companyButtonDiv.appendChild(companyButton);
-        companyRowDiv.appendChild(companyButtonDiv);
-
-        if ((index + 1) % 5 === 0) {
-            companyContainerParent.appendChild(companyRowDiv);
-            companyRowDiv = document.createElement("div");
-            companyRowDiv.classList.add("company-container-row");
-        }
-    });
-
-    if (companyRowDiv.children.length > 0) {
-        companyContainerParent.appendChild(companyRowDiv);
-    }
-}
-
-history.pushState(null, "", location.href);
-window.onpopstate = function() {
-    history.pushState(null, "", location.href);
-};
-
-// Hamburger menu functionality
-document.addEventListener("DOMContentLoaded", function() {
-    const hamburgerButton = document.getElementById("hamburger-menu");
-    const mobileMenu = document.getElementById("mobile-menu");
-    const menuOverlay = document.getElementById("menu-overlay");
-
-    hamburgerButton.addEventListener("click", function() {
-        mobileMenu.classList.toggle("active");
-        hamburgerButton.classList.toggle("active");
-        menuOverlay.style.display = mobileMenu.classList.contains("active") ? "block" : "none";
-    });
-
-    menuOverlay.addEventListener("click", function() {
-        mobileMenu.classList.remove("active");
-        hamburgerButton.classList.remove("active");
-        menuOverlay.style.display = "none";
-    });
-
-    setupSearchDropdown("search-input", "dropdown", "search-button");
-    setupSearchDropdown("mobile-search-input", "mobile-dropdown", "mobile-search-button");
-});
-
-function setupSearchDropdown(inputId, dropdownId, buttonId) {
-    let searchInput = document.getElementById(inputId);
-    let searchButton = document.getElementById(buttonId);
-    let dropdown = document.getElementById(dropdownId);
-    let companyContainerParent = document.getElementById("company-container-parent");
-
-    if (!searchInput || !searchButton || !dropdown || !companyContainerParent) {
-        console.error("Error: One or more elements not found for " + inputId);
-        return;
+    function storeCompanySession(companyName) {
+        fetch('STORE_SESSION.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'company_name=' + encodeURIComponent(companyName)
+            })
+            .then(response => response.text())
+            .then(data => {
+                console.log("Session stored:", data);
+                window.location.href = "agq_transactionCatcher.php";
+            })
+            .catch(error => console.error("Error:", error));
     }
 
-    // Variable to track previous search value
-    let previousSearchValue = "";
+    // Function to clear search and reload the original companies
+    function clearSearch() {
+        // Clear search input fields
+        document.getElementById("search-input").value = "";
+        document.getElementById("mobile-search-input").value = "";
 
-    // Handle dropdown search
-    searchInput.addEventListener("input", function() {
-        let currentValue = this.value.trim();
-        
-        // If value was something before and now it's empty, reload original companies
-        if (previousSearchValue !== "" && currentValue === "") {
-            clearSearch();
-            return;
-        }
-        
-        previousSearchValue = currentValue;
+        // Reload all companies without redirecting
+        fetchCompanies("FILTER_COMPANY.php");
+    }
 
-        if (!currentValue) {
-            dropdown.style.display = "none";
-            return;
-        }
-
-        fetch("FETCH_COMPANY.php?query=" + encodeURIComponent(currentValue))
+    // Global function to fetch companies
+    function fetchCompanies(url) {
+        fetch(url)
             .then(response => response.json())
             .then(data => {
-                dropdown.innerHTML = "";
-                if (!data || !Array.isArray(data.company)) {
-                    console.error("Invalid API response", data);
+                let companyContainerParent = document.getElementById("company-container-parent");
+                companyContainerParent.innerHTML = "";
+                if (!data.company || data.company.length === 0) {
+                    companyContainerParent.innerHTML = "<p>No Companies found.</p>";
                     return;
                 }
-
-                if (data.company.length > 0) {
-                    data.company.forEach(item => {
-                        let div = document.createElement("div");
-                        div.classList.add("dropdown-item");
-                        div.textContent = item.Company_name;
-                        div.onclick = () => {
-                            searchInput.value = item.Company_name;
-                            dropdown.style.display = "none";
-                        };
-                        dropdown.appendChild(div);
-                    });
-                    dropdown.style.display = "block";
-                } else {
-                    dropdown.style.display = "none";
-                }
+                displayCompanies(data.company);
             })
-            .catch(error => console.error("Error fetching search results:", error));
-    });
+            .catch(error => console.error("Error fetching companies:", error));
+    }
 
-    // Hide dropdown when clicking outside
-    document.addEventListener("click", event => {
-        if (!searchInput.contains(event.target) && !dropdown.contains(event.target)) {
-            dropdown.style.display = "none";
+    // Global function to display companies
+    function displayCompanies(companies) {
+        let companyContainerParent = document.getElementById("company-container-parent");
+        let companyRowDiv = document.createElement("div");
+        companyRowDiv.classList.add("company-container-row");
+
+        companies.forEach((company, index) => {
+            let companyButtonDiv = document.createElement("div");
+            companyButtonDiv.classList.add("company-button");
+
+            let companyButton = document.createElement("button");
+            companyButton.classList.add("company-container");
+            companyButton.onclick = () => storeCompanySession(company.Company_name);
+
+            let companyLogo = document.createElement("img");
+            companyLogo.classList.add("company-logo");
+            companyLogo.src = `data:image/jpeg;base64,${company.Company_picture}`;
+            companyLogo.alt = company.Company_name;
+
+            companyButton.appendChild(companyLogo);
+            companyButtonDiv.appendChild(companyButton);
+            companyRowDiv.appendChild(companyButtonDiv);
+
+            if ((index + 1) % 5 === 0) {
+                companyContainerParent.appendChild(companyRowDiv);
+                companyRowDiv = document.createElement("div");
+                companyRowDiv.classList.add("company-container-row");
+            }
+        });
+
+        if (companyRowDiv.children.length > 0) {
+            companyContainerParent.appendChild(companyRowDiv);
         }
+    }
+
+    history.pushState(null, "", location.href);
+    window.onpopstate = function() {
+        history.pushState(null, "", location.href);
+    };
+
+    // Hamburger menu functionality
+    document.addEventListener("DOMContentLoaded", function() {
+        const hamburgerButton = document.getElementById("hamburger-menu");
+        const mobileMenu = document.getElementById("mobile-menu");
+        const menuOverlay = document.getElementById("menu-overlay");
+
+        hamburgerButton.addEventListener("click", function() {
+            mobileMenu.classList.toggle("active");
+            hamburgerButton.classList.toggle("active");
+            menuOverlay.style.display = mobileMenu.classList.contains("active") ? "block" : "none";
+        });
+
+        menuOverlay.addEventListener("click", function() {
+            mobileMenu.classList.remove("active");
+            hamburgerButton.classList.remove("active");
+            menuOverlay.style.display = "none";
+        });
+
+        setupSearchDropdown("search-input", "dropdown", "search-button");
+        setupSearchDropdown("mobile-search-input", "mobile-dropdown", "mobile-search-button");
     });
 
-    // Search button click handler
-    searchButton.addEventListener("click", () => {
-        let query = searchInput.value.trim();
-        if (!query) {
-            // If search is empty, reload original companies
-            clearSearch();
+    function setupSearchDropdown(inputId, dropdownId, buttonId) {
+        let searchInput = document.getElementById(inputId);
+        let searchButton = document.getElementById(buttonId);
+        let dropdown = document.getElementById(dropdownId);
+        let companyContainerParent = document.getElementById("company-container-parent");
+
+        if (!searchInput || !searchButton || !dropdown || !companyContainerParent) {
+            console.error("Error: One or more elements not found for " + inputId);
             return;
         }
-        
-        let url = `FILTER_COMPANY.php?query=${encodeURIComponent(query)}`;
-        fetchCompanies(url);
-    });
 
-    searchInput.addEventListener("keydown", function(event) {
-        if (event.key === "Enter") {
-            event.preventDefault();
-            searchButton.click();
-        }
-    });
-}
+        // Variable to track previous search value
+        let previousSearchValue = "";
+
+        // Handle dropdown search
+        searchInput.addEventListener("input", function() {
+            let currentValue = this.value.trim();
+
+            // If value was something before and now it's empty, reload original companies
+            if (previousSearchValue !== "" && currentValue === "") {
+                clearSearch();
+                return;
+            }
+
+            previousSearchValue = currentValue;
+
+            if (!currentValue) {
+                dropdown.style.display = "none";
+                return;
+            }
+
+            fetch("FETCH_COMPANY.php?query=" + encodeURIComponent(currentValue))
+                .then(response => response.json())
+                .then(data => {
+                    dropdown.innerHTML = "";
+                    if (!data || !Array.isArray(data.company)) {
+                        console.error("Invalid API response", data);
+                        return;
+                    }
+
+                    if (data.company.length > 0) {
+                        data.company.forEach(item => {
+                            let div = document.createElement("div");
+                            div.classList.add("dropdown-item");
+                            div.textContent = item.Company_name;
+                            div.onclick = () => {
+                                searchInput.value = item.Company_name;
+                                dropdown.style.display = "none";
+                            };
+                            dropdown.appendChild(div);
+                        });
+                        dropdown.style.display = "block";
+                    } else {
+                        dropdown.style.display = "none";
+                    }
+                })
+                .catch(error => console.error("Error fetching search results:", error));
+        });
+
+        // Hide dropdown when clicking outside
+        document.addEventListener("click", event => {
+            if (!searchInput.contains(event.target) && !dropdown.contains(event.target)) {
+                dropdown.style.display = "none";
+            }
+        });
+
+        // Search button click handler
+        searchButton.addEventListener("click", () => {
+            let query = searchInput.value.trim();
+            if (!query) {
+                // If search is empty, reload original companies
+                clearSearch();
+                return;
+            }
+
+            let url = `FILTER_COMPANY.php?query=${encodeURIComponent(query)}`;
+            fetchCompanies(url);
+        });
+
+        searchInput.addEventListener("keydown", function(event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                searchButton.click();
+            }
+        });
+    }
 </script>
 
 
